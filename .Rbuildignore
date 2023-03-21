@@ -17,3 +17,6 @@ coverage.*
 init.sh
 workflows.md
 images
+^maicplus\.Rcheck$
+^maicplus.*\.tar\.gz$
+^maicplus.*\.tgz$
