@@ -142,11 +142,14 @@ check_weights(analysis_data = est_weights$analysis_data, matching_vars = match_c
 
 
 ########################################### MSD
+use_data <- intervention_data[,grepl("_centered$",names(intervention_data))]
+use_weigths <- cal_weights(EM = as.matrix(use_data))
+
+plot_weights(use_weigths$wt)
+plot_weights(use_weigths$wt.rs, main.title = "Scaled Individual Weights")
 
 
-
-
-
+#**!! write a print method for output object from est_weights
 
 
 
