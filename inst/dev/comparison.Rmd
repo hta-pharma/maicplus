@@ -129,7 +129,7 @@ preprocess_data <- function(intervention_input, target_pop){
         stop(paste0("Also need to provide mean for ", varwithsd, " when specifying sd"))
       }
 
-      # derive sqaured mean term
+      # derive squared mean term
       target_pop[,paste0(varwithsd, "_squared_mean")] <- target_pop[,paste0(varwithsd, "_mean")]^2 + target_pop[,paste0(varwithsd, "_sd")]^2
 
       # remove standard deviation from the data frame
@@ -150,7 +150,7 @@ preprocess_data <- function(intervention_input, target_pop){
     }
   }
 
-  # Remove everything that is not mean or prop from target_pop
+  # Remove everything that is not mean, median, or prop from target_pop
   if(!is.null(target_pop$N)){
     N <- target_pop$N  
   }
@@ -158,11 +158,11 @@ preprocess_data <- function(intervention_input, target_pop){
   vartype <- gsub("^.*_","", names(target_pop))
   target_pop <- target_pop[,which(vartype %in% c("mean", "median", "prop"))]
   
-  # intervention_input is centered using the aggregate data averages. 
   varnames <- gsub("_([^_]+)$","", names(target_pop))
   if(any(duplicated(varnames))){stop("Cannot have more than 1 summary stat for each variable")}
   names(target_pop) <- varnames
   
+  # intervention_input is centered using the aggregate data averages. 
   intervention_data <- intervention_input
   for(i in varnames){
     intervention_data[,paste0(i, "_centered")] <- intervention_input[,i] - target_pop[,i]
