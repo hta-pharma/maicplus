@@ -13,7 +13,14 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE,
 
 ```{r}
 library(dplyr)
-setwd("~/GitHub/maicplus") #set your working directory
+library(survival) # for survfit
+library(survminer) # for ggsurvplot
+library(boot) # for boot
+
+setwd("~/GitHub/maicplus/inst/dev")
+source("functions_all.R")
+
+setwd("~/GitHub/maicplus") # Set your working directory
 devtools::load_all()
 
 # Read in relevant ADaM data
@@ -28,7 +35,7 @@ adtte <- read.csv(system.file("extdata", "adtte.csv", package = "maicplus",
                               mustWork = TRUE))
 ```
 
-## Use dplyr to preprocess.. :)
+## Use dplyr to preprocess
 
 ```{r}
 adsl <- adsl %>% # Data containing the matching variables
@@ -50,16 +57,18 @@ intervention_input <- adsl %>%
 
 # Change to lower case
 names(intervention_input) <- tolower(names(intervention_input))
+intervention_input <- intervention_input %>% rename(Time = time, Event = event)
 
 # Create a variable for age squared (optional)
 intervention_input <- intervention_input %>%
   mutate(age_squared = age^2)
 head(intervention_input)
 
-match_cov <- c("age", "age_squared", "sex", "smoke", "ecog0", "n_pr_ther")
+#match_cov <- c("age", "age_squared", "sex", "smoke", "ecog0", "n_pr_ther")
+match_cov <- c("age", "age_squared", "sex", "smoke", "ecog0")
 ```
 
-## Get Aggregate data. TODO: change csv to our standard format
+## Get Aggregate data
 
 ```{r}
 # Baseline aggregate data for the comparator population
@@ -81,14 +90,23 @@ match_cov <- c("age", "age_squared", "sex", "smoke", "ecog0", "n_pr_ther")
 # If the specified data is in count form: Requires N, count, and possible missing
 
 # Define target_pop without excel
+# target_pop <- data.frame(
+#   N = 300,
+#   age_mean = 50.06,
+#   age_sd = 3.23,
+#   sex_prop = 147/300, #male proportion
+#   smoke_prop = 58/(300-2), #2 missing patients
+#   ecog0_prop = 105/300,
+#   n_pr_ther_median = 3 #number of previous therapies
+# )
+
 target_pop <- data.frame(
   N = 300,
-  age_mean = 50.06,
-  age_sd = 3.23,
+  age_mean = 50.06333,
+  age_sd = 3.235359,
   sex_prop = 147/300, #male proportion
-  smoke_prop = 58/(300-2), #2 missing patients
-  ecog0_prop = 105/300,
-  n_pr_ther_median = 3 #number of previous therapies
+  smoke_prop = 58/300,
+  ecog0_prop = 105/300
 )
 ```
 
@@ -97,203 +115,23 @@ target_pop <- data.frame(
 Center IPD using aggregate level means, preprocess standard deviations and medians
 
 ```{r}
-#' @param intervention_input A data frame containing individual patient data from
-#'   the intervention study.
-#' @param target_pop A data frame containing aggregate dataset for the target population. 
-#'   Variables are followed by one of the following suffixes to denote the type of summary: 
-#'   varname_mean, varname_sd, varname_median, varname_prop. 
-#'   After preprocessing these summary suffixes, intervention_input is 
-#'   centered using the aggregate data averages. 
-
-preprocess_data <- function(intervention_input, target_pop){
-
-  # Check intervention_data and target_pop are data frame and match_cov is a character vector
-  if(!is.data.frame(intervention_input)){stop("intervention_input is expected to be a data frame")}
-  if(!is.data.frame(target_pop)){stop("target_pop is expected to be a data frame")}
-
-  # Check if target_pop is 1 row of aggregate data
-  if(nrow(target_pop)!=1){stop("target_pop should have exactly 1 row")}
-  
-  # Strip off naming convention in the aggregate data
-  varnames <- gsub("_([^_]+)$","", names(target_pop))
-  vartype <- gsub("^.*_","", names(target_pop))
-  
-  #Preprocess standard deviation
-  for(i in 1:dim(target_pop)[2]){
-    if(vartype[i] == "sd"){
-
-      # retrieve which variable sd was specified
-      varwithsd <- varnames[i]
-
-      if(!paste0(varwithsd, "_mean") %in% names(target_pop)){
-        stop(paste0("Also need to provide mean for ", varwithsd, " when specifying sd"))
-      }
-
-      # derive squared mean term
-      target_pop[,paste0(varwithsd, "_squared_mean")] <- target_pop[,paste0(varwithsd, "_mean")]^2 + target_pop[,paste0(varwithsd, "_sd")]^2
-
-      # remove standard deviation from the data frame
-      target_pop <- target_pop[,-which(colnames(target_pop) == paste0(varwithsd, "_sd"))]
-    }
-  }
-
-  # Preprocess median
-  for(i in 1:dim(target_pop)[2]){
-    if(vartype[i] == "median"){
-
-      # retrieve which variable median was specified
-      varwithmedian <- varnames[i]
-
-      # make median into binary category
-      intervention_input[,varwithmedian] <- ifelse(intervention_input[,varwithmedian] > target_pop[,paste0(varwithmedian, "_median")], 1, 0)
-      target_pop[,paste0(varwithmedian, "_median")] <- 0.5
-    }
-  }
-
-  # Remove everything that is not mean, median, or prop from target_pop
-  if(!is.null(target_pop$N)){
-    N <- target_pop$N  
-  }
-  
-  vartype <- gsub("^.*_","", names(target_pop))
-  target_pop <- target_pop[,which(vartype %in% c("mean", "median", "prop"))]
-  
-  varnames <- gsub("_([^_]+)$","", names(target_pop))
-  if(any(duplicated(varnames))){stop("Cannot have more than 1 summary stat for each variable")}
-  names(target_pop) <- varnames
-  
-  # intervention_input is centered using the aggregate data averages. 
-  intervention_data <- intervention_input
-  for(i in varnames){
-    intervention_data[,paste0(i, "_centered")] <- intervention_input[,i] - target_pop[,i]
-  }
-  
-  # Add back in N
-  if(!is.null(target_pop$N)){
-    N <- target_pop$N  
-  }
-  
-  return(list(intervention_data = intervention_data, target_pop = target_pop))
-}
-
 preprocessed <- preprocess_data(intervention_input, target_pop)
 intervention_data <- preprocessed$intervention_data
 target_pop <- preprocessed$target_pop
 ```
 
-## Combined calculate weights function from Roche and MSD
+## Calculate weights
 
 ```{r}
-#' Estimate MAIC propensity weights
-#'
-#' Estimate propensity weights for matching-adjusted indirect comparison (MAIC).
-#'
-#' @param intervention_data A data frame containing individual patient data from
-#'   the intervention study. Intervention_data is assumed to have been preprocessed using 
-#'   preprocess_data (i.e. centered using aggregate data means)
-#' @param match_cov A character vector giving the names of the covariates to
-#'   use in matching. These names must match the column names in intervention_data.
-#' @param method The method used for optimisation - The default is method =
-#'   "BFGS". Refer to \code{\link[stats]{optim}} for options.
-#' @param startVal a scalar, the starting value for all coefficients of the propensity score 
-#'   regression
-#' @param ... Additional arguments to be passed to optimisation functions such
-#'   as the method for maximum likelihood optimisation. Refer to \code{\link[stats]{optim}} 
-#'   for options.
-#' @return a list with 4 elements,
-#' \describe{
-#'   \item wt - a numeric vector of unscaled individual weights.
-#'   \item wt.rs - a numerical vector of rescaled individual weights, with summation equaling to sample size (# rows of input \code{EM})
-#'   \item ess - effective sample size, square of sum divided by sum of squares
-#'   \item opt - R object returned by \code{base::optim()}, for assess convergence and other details
-#' }
-#' @references NICE DSU TECHNICAL SUPPORT DOCUMENT 18: METHODS FOR
-#'   POPULATION-ADJUSTED INDIRECT COMPARISONS IN SUBMSISSIONS TO NICE, REPORT BY
-#'   THE DECISION SUPPORT UNIT, December 2016
-#' @seealso \code{\link{optim}}
-#' @export
-
-estimate_weights <- function(intervention_data, match_cov, startVal = 0, 
-                             method = "BFGS", ...){
-  
-  # Check intervention_data is a data frame and match_cov is a character vector
-  if(!is.data.frame(intervention_data)){stop("intervention_data is expected to be a data frame")}
-  if(!is.character(match_cov)){stop("match_cov is expected to be a character vector")}
-
-  # Check if there is any missingness in intervention_data
-  missing <- apply(intervention_data[,match_cov], 1, function(x) any(is.na(x)))
-  if(any(missing)){
-    stop(paste0("Following rows have missing values: ", paste(which(missing), collapse = ",")))
-  } 
-
-  for(i in match_cov){
-    # Check that match_vars is in one of the columns of intervention_data
-    if(!i %in% colnames(intervention_data)){
-      stop(paste0("Variable ", i, " is not one of intervention_data column names"))
-    }
-    
-    # Check whether intervention_data has not been centered by the aggregate data means
-    # by looking at whether binary variables have only values of 0 and 1 
-    if(all(unique(intervention_data[,i]) == 2 & unique(intervention_data[,i]) %in% c(0,1))){
-      stop("intervention_data does not seem to be centered by the aggregate data means")
-    }
-  }
-  
-  # Objective function
-  objfn <- function(a1, X){
-    sum(exp(X %*% a1))
-  }
-  
-  # Gradient function
-  gradfn <- function(a1, X){
-    colSums(sweep(X, 1, exp(X %*% a1), "*"))
-  }
-  
-  # Optimise Q(b) using Newton-Raphson techniques
-  opt1 <- stats::optim(par = rep(startVal,dim(intervention_data[,match_cov])[2]),
-                       fn = objfn,
-                       gr = gradfn,
-                       X = as.matrix(intervention_data[,paste0(match_cov,"_centered")]),
-                       method = method,
-                       control = list(maxit = 300, trace = 2),
-                       ...)
-
-  alpha <- opt1$par
-  wt <- as.vector(exp(as.matrix(intervention_data[,paste0(match_cov,"_centered")]) %*% alpha))
-  wt_rs <- (wt / sum(wt)) * nrow(intervention_data)
-  
-  output <- list(
-    wt = wt,
-    wt_rs = wt_rs,
-    ess = sum(wt)^2 / sum(wt^2),
-    opt = opt1
-  )
-  return(output)
-}
-
-# Estimate weights
 weights <- estimate_weights(intervention_data = intervention_data,
-                                match_cov = match_cov)
+                            match_cov = match_cov)
+intervention_data <- intervention_data %>%
+  mutate(wt = weights$wt, ARM = "Intervention")
 ```
 
 ## Summarize weights
 
 ```{r}
-summarize_wts <- function(weights){
-  
-  with(weights, {
-    summary <- data.frame(
-      type = c("Weights", "Rescaled weights"),
-      mean = c(mean(wt), mean(wt_rs)),
-      sd = c(stats::sd(wt), stats::sd(wt_rs)),
-      median = c(stats::median(wt), stats::median(wt_rs)),
-      min = c(min(wt), min(wt_rs)),
-      max = c(max(wt), max(wt_rs))
-    )
-    return(summary)
-  })
-}
-
 weight_summ <- summarize_wts(weights)
 weight_summ
 
@@ -303,25 +141,193 @@ profile_data <- profile_data[!duplicated(profile_data[,match_cov]), c(match_cov,
 head(profile_data)
 ```
 
-
 ## Has optimization worked
 
 ```{r}
-check_weights <- function(intervention_data, weights, match_cov, target_pop){
-  
-  ARM <- c("Intervention", "Intervention_weighted", "Comparator")
-  ESS <- round(c(nrow(intervention_data), weights$ess,
-                 target_pop$N))
-  
-  weighted_cov <- intervention_data %>% summarise_at(match_cov, list(~ weighted.mean(., weights$wt)))
-  unweighted_cov <- intervention_data %>% summarise_at(match_cov, list(~ mean(.)))
-  comparator_cov <- select(target_pop, all_of(match_cov))
-  
-  cov <- rbind(unweighted_cov, weighted_cov, comparator_cov)
-  baseline_summary <- cbind(ARM, ESS, cov)
-  
-  return(baseline_summary)
-}
+check_weights(intervention_data, target_pop, weights, match_cov)
+```
 
-check_weights(intervention_data, weights, match_cov, target_pop)
+## Comparator pseudo data
+
+```{r}
+# Read in digitised pseudo survival data, col names must match intervention_input
+comparator_surv <- read.csv(system.file("extdata", "psuedo_IPD.csv",
+                                        package = "MAIC", mustWork = TRUE))
+
+comparator_input <- comparator_surv %>%
+                    mutate(wt = 1, ARM = "Comparator")
+
+combined_data <-  bind_rows(intervention_data, comparator_input)
+combined_data$ARM <- relevel(as.factor(combined_data$ARM), ref="Comparator")
+```
+
+## Cox model
+
+```{r}
+# Fit a Cox model without weights to estimate the unweighted HR
+unweighted_cox <- coxph(Surv(Time, Event==1) ~ ARM, data = combined_data)
+
+HR_CI_cox <- summary(unweighted_cox)$conf.int %>%
+  as.data.frame() %>%
+  transmute("HR" = `exp(coef)`, "HR_low_CI" = `lower .95`, "HR_upp_CI" = `upper .95`)
+HR_CI_cox
+
+# Fit a Cox model with weights to estimate the weighted HR
+weighted_cox <- coxph(Surv(Time, Event==1) ~ ARM, data = combined_data, weights = wt)
+
+HR_CI_cox_wtd <- summary(weighted_cox)$conf.int %>%
+  as.data.frame() %>%
+  transmute("HR" = `exp(coef)`, "HR_low_CI" = `lower .95`, "HR_upp_CI" = `upper .95`)
+HR_CI_cox_wtd
+```
+
+## bootstrap CI
+
+```{r, results = 'hide'}
+# Bootstrap 1000 HRs
+HR_bootstraps <- boot(data = intervention_data, # intervention data
+                      statistic = bootstrap_HR, # bootstrap the HR (defined in the MAIC package)
+                      match_cov = match_cov, # matching variables
+                      R=1000, # number of bootstrap samples
+                      comparator_input = comparator_input, # comparator pseudo data
+                      model = Surv(Time, Event==1) ~ ARM # model to fit
+                      )
+
+# Median of the bootstrap samples
+HR_median <- median(HR_bootstraps$t)
+
+# Bootstrap CI - Percentile CI
+boot_ci_HR <- boot.ci(boot.out = HR_bootstraps, index=1, type="perc")
+
+# Bootstrap CI - BCa CI
+boot_ci_HR_BCA <- boot.ci(boot.out = HR_bootstraps, index=1, type="bca")
+```
+
+```{r}
+HR_median
+boot_ci_HR
+boot_ci_HR_BCA
+```
+
+## logistic model
+
+```{r}
+# Simulate response data based on the known proportion of responders
+comparator_n <- nrow(comparator_surv) # total number of patients in the comparator data
+comparator_prop_events <- 0.4 # proportion of responders
+# Calculate number with event
+# Use round() to ensure we end up with a whole number of people
+# number without an event = Total N - number with event to ensure we keep the same number of patients
+n_with_event <- round(comparator_n*comparator_prop_events, digits = 0)
+comparator_binary <- data.frame("response"= c(rep(1, n_with_event), rep(0, comparator_n - n_with_event)))
+
+# Join survival and response comparator data
+# (note the rows do not represent observations from a particular patient)
+comparator_input <- cbind(comparator_surv, comparator_binary) %>%
+  mutate(wt=1, wt_rs=1, ARM="Comparator") # All patients have weight = 1
+#head(comparator_input)
+
+combined_data <-  bind_rows(intervention_data, comparator_input)
+combined_data$ARM <- relevel(as.factor(combined_data$ARM), ref="Comparator")
+```
+
+
+```{r}
+unweighted_OR <- glm(formula = response ~ ARM,
+                     family = binomial(link="logit"),
+                     data = combined_data)
+
+# Log odds ratio
+log_OR_CI_logit <- cbind(coef(unweighted_OR), confint.default(unweighted_OR, level = 0.95))[2,]
+
+# Odds ratio
+OR_CI_logit <- exp(log_OR_CI_logit)
+names(OR_CI_logit) <- c("OR", "OR_low_CI", "OR_upp_CI")
+OR_CI_logit
+
+# Fit a logistic regression model with weights to estimate the weighted OR
+weighted_OR <- suppressWarnings(glm(formula = response~ ARM,
+                                    family = binomial(link="logit"),
+                                    data = combined_data,
+                                    weight = wt))
+
+# Weighted log odds ratio
+log_OR_CI_logit_wtd <- cbind(coef(weighted_OR), confint.default(weighted_OR, level = 0.95))[2,]
+
+# Weighted odds ratio
+OR_CI_logit_wtd <- exp(log_OR_CI_logit_wtd)
+names(OR_CI_logit_wtd) <- c("OR", "OR_low_CI", "OR_upp_CI")
+OR_CI_logit_wtd
+
+```
+
+```{r, results = 'hide', eval = FALSE}
+# Bootstrap 1000 HRs
+OR_bootstraps <- boot(data = intervention_data, # intervention data
+                      statistic = bootstrap_OR, # bootstrap the HR (defined in the MAIC package)
+                      R=1000, # number of bootstrap samples
+                      match_cov = match_cov, # matching variables
+                      comparator_input = comparator_input, # comparator pseudo data
+                      model = 'response ~ ARM' # model to fit
+                      )
+
+# Median of the bootstrap samples
+HR_median <- median(HR_bootstraps$t)
+
+# Bootstrap CI - Percentile CI
+boot_ci_HR <- boot.ci(boot.out = HR_bootstraps, index=1, type="perc")
+
+# Bootstrap CI - BCa CI
+boot_ci_HR_BCA <- boot.ci(boot.out = HR_bootstraps, index=1, type="bca")
+```
+
+```{r, eval = FALSE}
+HR_median
+boot_ci_HR
+boot_ci_HR_BCA
+```
+
+
+## KM plots
+
+```{r}
+##### Drawing kaplan meier plots
+# Unweighted intervention data
+KM_int <- survfit(formula = Surv(Time, Event==1) ~ 1,
+                  data = intervention_data,
+                  type="kaplan-meier")
+# Weighted intervention data
+KM_int_wtd <- survfit(formula = Surv(Time, Event==1) ~ 1,
+                      data = intervention_data,
+                      weights = weights$wt,
+                      type="kaplan-meier")
+# Comparator data
+KM_comp <- survfit(formula = Surv(Time, Event==1) ~ 1,
+                   data = comparator_input,
+                   type="kaplan-meier")
+
+# Combine the survfit objects ready for ggsurvplot
+KM_list <- list(Intervention = KM_int,
+                Intervention_weighted = KM_int_wtd,
+                Comparator = KM_comp)
+
+#Produce the Kaplan-Meier plot
+KM_plot <- ggsurvplot(KM_list,
+                      linetype = c(1,1,2),
+                      combine = TRUE,
+                      risk.table= TRUE, # numbers at risk displayed on the plot
+                      break.x.by= 30, # need to change depending on plotting days/month
+                      xlab="Time (days)",
+                      ylab="Overall survival", # need?
+                      censor=TRUE,
+                      legend.title = "Treatment",
+                      legend=c(0.85,0.82),
+                      title = "Kaplan-Meier plot of overall survival",
+                      legend.labs=c("Intervention", "Intervention weighted", "Comparator"),
+                      risk.table.y.text.col = T,
+                      risk.table.y.text = FALSE,
+                      tables.theme = theme_cleantable(),
+                      ggtheme = theme_classic(base_size = 13),
+                      conf.int = FALSE)
+KM_plot
 ```
