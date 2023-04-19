@@ -129,7 +129,7 @@ intervention_data <- intervention_data %>%
   mutate(wt = weights$wt, ARM = "Intervention")
 ```
 
-## Summarize weights
+## Summarize/checking weights
 
 ```{r}
 weight_summ <- summarize_wts(weights)
@@ -139,11 +139,7 @@ profile_data <- intervention_data %>%
   mutate(wt = weights$wt, wt_rs = weights$wt_rs)
 profile_data <- profile_data[!duplicated(profile_data[,match_cov]), c(match_cov, "wt", "wt_rs")]
 head(profile_data)
-```
 
-## Has optimization worked
-
-```{r}
 check_weights(intervention_data, target_pop, weights, match_cov)
 ```
 
@@ -153,7 +149,6 @@ check_weights(intervention_data, target_pop, weights, match_cov)
 # Read in digitised pseudo survival data, col names must match intervention_input
 comparator_surv <- read.csv(system.file("extdata", "psuedo_IPD.csv",
                                         package = "MAIC", mustWork = TRUE))
-
 comparator_input <- comparator_surv %>%
                     mutate(wt = 1, ARM = "Comparator")
 
@@ -272,19 +267,19 @@ OR_bootstraps <- boot(data = intervention_data, # intervention data
                       )
 
 # Median of the bootstrap samples
-HR_median <- median(HR_bootstraps$t)
+OR_median <- median(OR_bootstraps$t)
 
 # Bootstrap CI - Percentile CI
-boot_ci_HR <- boot.ci(boot.out = HR_bootstraps, index=1, type="perc")
+boot_ci_OR <- boot.ci(boot.out = OR_bootstraps, index=1, type="perc")
 
 # Bootstrap CI - BCa CI
-boot_ci_HR_BCA <- boot.ci(boot.out = HR_bootstraps, index=1, type="bca")
+boot_ci_OR_BCA <- boot.ci(boot.out = OR_bootstraps, index=1, type="bca")
 ```
 
 ```{r, eval = FALSE}
-HR_median
-boot_ci_HR
-boot_ci_HR_BCA
+OR_median
+boot_ci_OR
+boot_ci_OR_BCA
 ```
 
 

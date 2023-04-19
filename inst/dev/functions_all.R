@@ -253,17 +253,17 @@ bootstrap_HR <- function(intervention_data, i, match_cov, comparator_input, mode
   # Estimates weights
   weights <- estimate_weights(intervention_data=bootstrap_data, match_cov=match_cov)
   
-  bootstrap_data <- bootstrap_data %>%
-    mutate(wt = weights$wt, ARM = "Intervention") %>%
-    select(Time, Event, wt, ARM)
+  bootstrap_data$wt <- weights$wt
+  bootstrap_data$ARM <- "Intervention"
+  bootstrap_data <- bootstrap_data[,c("Time", "Event", "wt", "ARM")]
   
   # Give comparator data weights of 1
-  comparator_input_wts <- comparator_input
-  comparator_input_wts$wt <- 1
-  comparator_input_wts$ARM <- "Comparator"
+  comparator_input$wt <- 1
+  comparator_input$ARM <- "Comparator"
+  comparator_input <- comparator_input[,c("Time", "Event", "wt", "ARM")] 
   
   # Add the comparator data
-  combined_data <- rbind(bootstrap_data, comparator_input_wts)
+  combined_data <- rbind(bootstrap_data, comparator_input)
   combined_data$ARM <- stats::relevel(as.factor(combined_data$ARM), ref="Comparator")
   
   # set weights that are below min_weight to min_weight to avoid issues with 0 values
@@ -318,12 +318,12 @@ bootstrap_OR <- function(intervention_data, i, match_cov, comparator_input, mode
   bootstrap_data <- bootstrap_data[,c("response", "wt", "ARM")]
   
   # Give comparator data weights of 1
-  comparator_input_wts <- comparator_input[,c("Event", "wt", "ARM")]
-  comparator_input_wts$wt <- 1
-  comparator_input_wts$ARM <- "Comparator"
+  comparator_input$wt <- 1
+  comparator_input$ARM <- "Comparator"
+  comparator_input <- comparator_input[,c("response", "wt", "ARM")]
   
   # Add the comparator data
-  combined_data <- rbind(bootstrap_data, comparator_input_wts)
+  combined_data <- rbind(bootstrap_data, comparator_input)
   combined_data$ARM <- stats::relevel(as.factor(combined_data$ARM), ref="Comparator")
   
   # set weights that are below min_weight to min_weight to avoid issues with 0 values
