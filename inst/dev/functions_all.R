@@ -255,12 +255,14 @@ bootstrap_HR <- function(intervention_data, i, match_cov, comparator_input, mode
   
   bootstrap_data$wt <- weights$wt
   bootstrap_data$ARM <- "Intervention"
-  bootstrap_data <- bootstrap_data[,c("Time", "Event", "wt", "ARM")]
-  
+
   # Give comparator data weights of 1
   comparator_input$wt <- 1
   comparator_input$ARM <- "Comparator"
-  comparator_input <- comparator_input[,c("Time", "Event", "wt", "ARM")] 
+  
+  # fill in non-overlapping columns with NAs
+  bootstrap_data[setdiff(names(comparator_input), names(bootstrap_data))] <- NA
+  comparator_input[setdiff(names(bootstrap_data), names(comparator_input))] <- NA
   
   # Add the comparator data
   combined_data <- rbind(bootstrap_data, comparator_input)
@@ -315,12 +317,14 @@ bootstrap_OR <- function(intervention_data, i, match_cov, comparator_input, mode
   
   bootstrap_data$wt <- weights$wt
   bootstrap_data$ARM <- "Intervention"
-  bootstrap_data <- bootstrap_data[,c("response", "wt", "ARM")]
   
   # Give comparator data weights of 1
   comparator_input$wt <- 1
   comparator_input$ARM <- "Comparator"
-  comparator_input <- comparator_input[,c("response", "wt", "ARM")]
+  
+  # fill in non-overlapping columns with NAs
+  bootstrap_data[setdiff(names(comparator_input), names(bootstrap_data))] <- NA
+  comparator_input[setdiff(names(bootstrap_data), names(comparator_input))] <- NA
   
   # Add the comparator data
   combined_data <- rbind(bootstrap_data, comparator_input)

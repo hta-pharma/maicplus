@@ -64,8 +64,7 @@ intervention_input <- intervention_input %>%
   mutate(age_squared = age^2)
 head(intervention_input)
 
-#match_cov <- c("age", "age_squared", "sex", "smoke", "ecog0", "n_pr_ther")
-match_cov <- c("age", "age_squared", "sex", "smoke", "ecog0")
+match_cov <- c("age", "age_squared", "sex", "smoke", "ecog0", "n_pr_ther")
 ```
 
 ## Get Aggregate data
@@ -90,23 +89,14 @@ match_cov <- c("age", "age_squared", "sex", "smoke", "ecog0")
 # If the specified data is in count form: Requires N, count, and possible missing
 
 # Define target_pop without excel
-# target_pop <- data.frame(
-#   N = 300,
-#   age_mean = 50.06,
-#   age_sd = 3.23,
-#   sex_prop = 147/300, #male proportion
-#   smoke_prop = 58/(300-2), #2 missing patients
-#   ecog0_prop = 105/300,
-#   n_pr_ther_median = 3 #number of previous therapies
-# )
-
 target_pop <- data.frame(
   N = 300,
-  age_mean = 50.06333,
-  age_sd = 3.235359,
+  age_mean = 50.06,
+  age_sd = 3.23,
   sex_prop = 147/300, #male proportion
-  smoke_prop = 58/300,
-  ecog0_prop = 105/300
+  smoke_prop = 58/(300-2), #2 missing patients
+  ecog0_prop = 105/300,
+  n_pr_ther_median = 3 #number of previous therapies
 )
 ```
 
@@ -154,6 +144,7 @@ comparator_input <- comparator_surv %>%
 
 combined_data <-  bind_rows(intervention_data, comparator_input)
 combined_data$ARM <- relevel(as.factor(combined_data$ARM), ref="Comparator")
+combined_data$usubjid <- seq(dim(combined_data)[1])
 ```
 
 ## Cox model
@@ -202,86 +193,12 @@ boot_ci_HR_BCA <- boot.ci(boot.out = HR_bootstraps, index=1, type="bca")
 HR_median
 boot_ci_HR
 boot_ci_HR_BCA
+
+# Summarize bootstrap estimates in a histogram
+# Vertical lines indicate the median and upper and lower CIs
+hist(HR_bootstraps$t, main = "", xlab = "Bootstrapped HR")
+abline(v= quantile(HR_bootstraps$t, probs = c(0.025, 0.5, 0.975)), lty=2)
 ```
-
-## logistic model
-
-```{r}
-# Simulate response data based on the known proportion of responders
-comparator_n <- nrow(comparator_surv) # total number of patients in the comparator data
-comparator_prop_events <- 0.4 # proportion of responders
-# Calculate number with event
-# Use round() to ensure we end up with a whole number of people
-# number without an event = Total N - number with event to ensure we keep the same number of patients
-n_with_event <- round(comparator_n*comparator_prop_events, digits = 0)
-comparator_binary <- data.frame("response"= c(rep(1, n_with_event), rep(0, comparator_n - n_with_event)))
-
-# Join survival and response comparator data
-# (note the rows do not represent observations from a particular patient)
-comparator_input <- cbind(comparator_surv, comparator_binary) %>%
-  mutate(wt=1, wt_rs=1, ARM="Comparator") # All patients have weight = 1
-#head(comparator_input)
-
-combined_data <-  bind_rows(intervention_data, comparator_input)
-combined_data$ARM <- relevel(as.factor(combined_data$ARM), ref="Comparator")
-```
-
-
-```{r}
-unweighted_OR <- glm(formula = response ~ ARM,
-                     family = binomial(link="logit"),
-                     data = combined_data)
-
-# Log odds ratio
-log_OR_CI_logit <- cbind(coef(unweighted_OR), confint.default(unweighted_OR, level = 0.95))[2,]
-
-# Odds ratio
-OR_CI_logit <- exp(log_OR_CI_logit)
-names(OR_CI_logit) <- c("OR", "OR_low_CI", "OR_upp_CI")
-OR_CI_logit
-
-# Fit a logistic regression model with weights to estimate the weighted OR
-weighted_OR <- suppressWarnings(glm(formula = response~ ARM,
-                                    family = binomial(link="logit"),
-                                    data = combined_data,
-                                    weight = wt))
-
-# Weighted log odds ratio
-log_OR_CI_logit_wtd <- cbind(coef(weighted_OR), confint.default(weighted_OR, level = 0.95))[2,]
-
-# Weighted odds ratio
-OR_CI_logit_wtd <- exp(log_OR_CI_logit_wtd)
-names(OR_CI_logit_wtd) <- c("OR", "OR_low_CI", "OR_upp_CI")
-OR_CI_logit_wtd
-
-```
-
-```{r, results = 'hide', eval = FALSE}
-# Bootstrap 1000 HRs
-OR_bootstraps <- boot(data = intervention_data, # intervention data
-                      statistic = bootstrap_OR, # bootstrap the HR (defined in the MAIC package)
-                      R=1000, # number of bootstrap samples
-                      match_cov = match_cov, # matching variables
-                      comparator_input = comparator_input, # comparator pseudo data
-                      model = 'response ~ ARM' # model to fit
-                      )
-
-# Median of the bootstrap samples
-OR_median <- median(OR_bootstraps$t)
-
-# Bootstrap CI - Percentile CI
-boot_ci_OR <- boot.ci(boot.out = OR_bootstraps, index=1, type="perc")
-
-# Bootstrap CI - BCa CI
-boot_ci_OR_BCA <- boot.ci(boot.out = OR_bootstraps, index=1, type="bca")
-```
-
-```{r, eval = FALSE}
-OR_median
-boot_ci_OR
-boot_ci_OR_BCA
-```
-
 
 ## KM plots
 
@@ -326,3 +243,100 @@ KM_plot <- ggsurvplot(KM_list,
                       conf.int = FALSE)
 KM_plot
 ```
+
+
+## Logistic model
+
+```{r}
+# Simulate response data based on the known proportion of responders
+comparator_n <- nrow(comparator_surv) # total number of patients in the comparator data
+comparator_prop_events <- 0.4 # proportion of responders
+# Calculate number with event
+# Use round() to ensure we end up with a whole number of people
+# number without an event = Total N - number with event to ensure we keep the same number of patients
+n_with_event <- round(comparator_n*comparator_prop_events, digits = 0)
+comparator_binary <- data.frame("response"= c(rep(1, n_with_event), rep(0, comparator_n - n_with_event)))
+
+# Join response comparator data
+# (note the rows do not represent observations from a particular patient)
+comparator_input <- comparator_binary %>%
+  mutate(wt=1, ARM="Comparator") # All patients have weight = 1
+
+combined_data <-  bind_rows(intervention_data, comparator_input)
+combined_data$ARM <- relevel(as.factor(combined_data$ARM), ref="Comparator")
+combined_data$usubjid <- seq(dim(combined_data)[1])
+```
+
+
+```{r}
+unweighted_OR <- glm(formula = response ~ ARM,
+                     family = binomial(link="logit"),
+                     data = combined_data)
+
+# Log odds ratio
+log_OR_CI <- cbind(coef(unweighted_OR), confint.default(unweighted_OR, level = 0.95))[2,]
+
+# Odds ratio
+OR_CI <- exp(log_OR_CI)
+names(OR_CI) <- c("OR", "OR_low_CI", "OR_upp_CI")
+OR_CI
+
+# Fit a logistic regression model with weights to estimate the weighted OR
+weighted_OR <- suppressWarnings(glm(formula = response~ ARM,
+                                    family = binomial(link="logit"),
+                                    data = combined_data,
+                                    weight = wt))
+
+# Weighted log odds ratio
+log_OR_CI_wtd <- cbind(coef(weighted_OR), confint.default(weighted_OR, level = 0.95))[2,]
+
+# Weighted odds ratio
+OR_CI_wtd <- exp(log_OR_CI_wtd)
+names(OR_CI_wtd) <- c("OR", "OR_low_CI", "OR_upp_CI")
+OR_CI_wtd
+
+# Robust standard error
+vmod <- clubSandwich::vcovCR(weighted_OR, cluster=combined_data$usubjid,type="CR2")
+coef_res <- clubSandwich::conf_int(weighted_OR,vmod,coef=2)
+
+OR_CI_robust <- with(coef_res, c(beta, CI_L, CI_U, SE))
+names(OR_CI_robust) <- c("Estimate", "Lower 95% CI", "Upper 95% CI", "SE")
+OR_CI_robust
+```
+
+```{r, results = 'hide'}
+# Bootstrap 1000 HRs
+OR_bootstraps <- boot(data = intervention_data, # intervention data
+                      statistic = bootstrap_OR, # bootstrap the HR (defined in the MAIC package)
+                      R=1000, # number of bootstrap samples
+                      match_cov = match_cov, # matching variables
+                      comparator_input = comparator_input, # comparator pseudo data
+                      model = 'response ~ ARM' # model to fit
+                      )
+
+# Median of the bootstrap samples
+OR_median <- median(OR_bootstraps$t)
+
+# Bootstrap CI - Percentile CI
+boot_ci_OR <- boot.ci(boot.out = OR_bootstraps, index=1, type="perc")
+
+# Bootstrap CI - BCa CI
+boot_ci_OR_BCA <- boot.ci(boot.out = OR_bootstraps, index=1, type="bca")
+```
+
+```{r}
+OR_median
+boot_ci_OR
+boot_ci_OR_BCA
+
+# Summarize bootstrap estimates in a histogram
+# Vertical lines indicate the median and upper and lower CIs
+hist(OR_bootstraps$t, main = "", xlab = "Boostrapped OR")
+abline(v= quantile(OR_bootstraps$t, probs = c(0.025,0.5,0.975)), lty=2)
+```
+
+
+# Things to add
+
+bucher
+
