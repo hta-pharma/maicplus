@@ -1,102 +1,8 @@
----
-title: "MAIC package comparison"
-output:
-  pdf_document: default
----
 
-```{r, echo= FALSE} 
-knitr::opts_chunk$set(warning = FALSE, message = FALSE,
-                      tidy.opts = list(width.cutoff = 60), tidy = TRUE)
-```
-
-## Setup
-
-```{r}
-library(dplyr)
-setwd("~/GitHub/maicplus") #set your working directory
-devtools::load_all()
-
-# Read in relevant ADaM data
-adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus",
-                             mustWork = TRUE))
-# Add in a new variable: number of therapies
-adsl$n_pr_ther <- sample(1:4, size = dim(adsl)[1], replace = TRUE)
-  
-adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus",
-                             mustWork = TRUE))
-adtte <- read.csv(system.file("extdata", "adtte.csv", package = "maicplus",
-                              mustWork = TRUE))
-```
-
-## Use dplyr to preprocess.. :)
-
-```{r}
-adsl <- adsl %>% # Data containing the matching variables
-  mutate(SEX=ifelse(SEX=="Male", 1, 0)) # Coded 1 for males and 0 for females
-
-adrs <- adrs %>% # Response data
-  filter(PARAM=="Response") %>%
-  transmute(USUBJID, ARM, response=AVAL)
-
-adtte <- adtte %>% # Time to event data (overall survival)
-  filter(PARAMCD=="OS") %>%
-  mutate(Event=1-CNSR) %>% #Set up coding as Event = 1, Censor = 0
-  transmute(USUBJID, ARM, Time=AVAL, Event)
-
-# Combine all intervention data
-intervention_input <- adsl %>%
-  full_join(adrs, by=c("USUBJID", "ARM")) %>%
-  full_join(adtte, by=c("USUBJID", "ARM"))
-
-# Change to lower case
-names(intervention_input) <- tolower(names(intervention_input))
-
-# Create a variable for age squared (optional)
-intervention_input <- intervention_input %>%
-  mutate(age_squared = age^2)
-head(intervention_input)
-
-match_cov <- c("age", "age_squared", "sex", "smoke", "ecog0", "n_pr_ther")
-```
-
-## Get Aggregate data. TODO: change csv to our standard format
-
-```{r}
-# Baseline aggregate data for the comparator population
-# Getting data from csv
-# target_pop <- read.csv(system.file("extdata", "aggregate_data_updated.csv",
-#                                   package = "MAIC", mustWork = TRUE))
-# target_pop_standard <- target_pop %>%
-#   rename(N = N,
-#          Treatment = ARM,
-#          age_mean = age.mean,
-#          sex_prop = prop.male,
-#          smoke_prop = prop.smoke,
-#          ecog0_prop = prop.ecog0
-#   ) %>%
-#   mutate(AGE_SQUARED = AGE^2 + age.sd^2) %>%
-#   select(N, Treatment, age_mean, sex_prop, smoke_prop, ecog0_prop)
-
-# Prior step:
-# If the specified data is in count form: Requires N, count, and possible missing
-
-# Define target_pop without excel
-target_pop <- data.frame(
-  N = 300,
-  age_mean = 50.06,
-  age_sd = 3.23,
-  sex_prop = 147/300, #male proportion
-  smoke_prop = 58/(300-2), #2 missing patients
-  ecog0_prop = 105/300,
-  n_pr_ther_median = 3 #number of previous therapies
-)
-```
-
-## Preprocess IPD and aggregate level data
-
-Center IPD using aggregate level means, preprocess standard deviations and medians
-
-```{r}
+#' Preprocess data
+#'
+#' Preprocess data before estimating weights for matching-adjusted indirect comparison (MAIC).
+#'
 #' @param intervention_input A data frame containing individual patient data from
 #'   the intervention study.
 #' @param target_pop A data frame containing aggregate dataset for the target population. 
@@ -104,13 +10,22 @@ Center IPD using aggregate level means, preprocess standard deviations and media
 #'   varname_mean, varname_sd, varname_median, varname_prop. 
 #'   After preprocessing these summary suffixes, intervention_input is 
 #'   centered using the aggregate data averages. 
+#' @return A list containing 2 objects. First, a data frame named analysis_data
+#'   containing intervention_data with additional columns named wt (weights) and
+#'   wt_rs (rescaled weights). Second, a vector called matching_vars of the
+#'   names of the centered matching variables used.
+#' @references NICE DSU TECHNICAL SUPPORT DOCUMENT 18: METHODS FOR
+#'   POPULATION-ADJUSTED INDIRECT COMPARISONS IN SUBMSISSIONS TO NICE, REPORT BY
+#'   THE DECISION SUPPORT UNIT, December 2016
+#'
+#' @export
 
 preprocess_data <- function(intervention_input, target_pop){
-
+  
   # Check intervention_data and target_pop are data frame and match_cov is a character vector
   if(!is.data.frame(intervention_input)){stop("intervention_input is expected to be a data frame")}
   if(!is.data.frame(target_pop)){stop("target_pop is expected to be a data frame")}
-
+  
   # Check if target_pop is 1 row of aggregate data
   if(nrow(target_pop)!=1){stop("target_pop should have exactly 1 row")}
   
@@ -121,35 +36,35 @@ preprocess_data <- function(intervention_input, target_pop){
   #Preprocess standard deviation
   for(i in 1:dim(target_pop)[2]){
     if(vartype[i] == "sd"){
-
+      
       # retrieve which variable sd was specified
       varwithsd <- varnames[i]
-
+      
       if(!paste0(varwithsd, "_mean") %in% names(target_pop)){
         stop(paste0("Also need to provide mean for ", varwithsd, " when specifying sd"))
       }
-
+      
       # derive squared mean term
       target_pop[,paste0(varwithsd, "_squared_mean")] <- target_pop[,paste0(varwithsd, "_mean")]^2 + target_pop[,paste0(varwithsd, "_sd")]^2
-
+      
       # remove standard deviation from the data frame
       target_pop <- target_pop[,-which(colnames(target_pop) == paste0(varwithsd, "_sd"))]
     }
   }
-
+  
   # Preprocess median
   for(i in 1:dim(target_pop)[2]){
     if(vartype[i] == "median"){
-
+      
       # retrieve which variable median was specified
       varwithmedian <- varnames[i]
-
+      
       # make median into binary category
       intervention_input[,varwithmedian] <- ifelse(intervention_input[,varwithmedian] > target_pop[,paste0(varwithmedian, "_median")], 1, 0)
       target_pop[,paste0(varwithmedian, "_median")] <- 0.5
     }
   }
-
+  
   # Remove everything that is not mean, median, or prop from target_pop
   if(!is.null(target_pop$N)){
     N <- target_pop$N  
@@ -162,28 +77,22 @@ preprocess_data <- function(intervention_input, target_pop){
   if(any(duplicated(varnames))){stop("Cannot have more than 1 summary stat for each variable")}
   names(target_pop) <- varnames
   
-  # intervention_input is centered using the aggregate data averages. 
+  # intervention_input is centered using the aggregate data averages.
   intervention_data <- intervention_input
   for(i in varnames){
     intervention_data[,paste0(i, "_centered")] <- intervention_input[,i] - target_pop[,i]
   }
   
   # Add back in N
-  if(!is.null(target_pop$N)){
-    N <- target_pop$N  
+  if(!is.null(N)){
+    target_pop$N <- N 
   }
   
   return(list(intervention_data = intervention_data, target_pop = target_pop))
 }
 
-preprocessed <- preprocess_data(intervention_input, target_pop)
-intervention_data <- preprocessed$intervention_data
-target_pop <- preprocessed$target_pop
-```
 
-## Combined calculate weights function from Roche and MSD
 
-```{r}
 #' Estimate MAIC propensity weights
 #'
 #' Estimate propensity weights for matching-adjusted indirect comparison (MAIC).
@@ -219,16 +128,19 @@ estimate_weights <- function(intervention_data, match_cov, startVal = 0,
   # Check intervention_data is a data frame and match_cov is a character vector
   if(!is.data.frame(intervention_data)){stop("intervention_data is expected to be a data frame")}
   if(!is.character(match_cov)){stop("match_cov is expected to be a character vector")}
-
+  
+  # Check if match_cov name is included in the IPD data
+  
+  
   # Check if there is any missingness in intervention_data
   missing <- apply(intervention_data[,match_cov], 1, function(x) any(is.na(x)))
   if(any(missing)){
     stop(paste0("Following rows have missing values: ", paste(which(missing), collapse = ",")))
   } 
-
+  
   for(i in match_cov){
     # Check that match_vars is in one of the columns of intervention_data
-    if(!i %in% colnames(intervention_data)){
+    if(!paste0(i, "_centered") %in% colnames(intervention_data)){
       stop(paste0("Variable ", i, " is not one of intervention_data column names"))
     }
     
@@ -257,7 +169,7 @@ estimate_weights <- function(intervention_data, match_cov, startVal = 0,
                        method = method,
                        control = list(maxit = 300, trace = 2),
                        ...)
-
+  
   alpha <- opt1$par
   wt <- as.vector(exp(as.matrix(intervention_data[,paste0(match_cov,"_centered")]) %*% alpha))
   wt_rs <- (wt / sum(wt)) * nrow(intervention_data)
@@ -271,14 +183,6 @@ estimate_weights <- function(intervention_data, match_cov, startVal = 0,
   return(output)
 }
 
-# Estimate weights
-weights <- estimate_weights(intervention_data = intervention_data,
-                                match_cov = match_cov)
-```
-
-## Summarize weights
-
-```{r}
 summarize_wts <- function(weights){
   
   with(weights, {
@@ -294,27 +198,19 @@ summarize_wts <- function(weights){
   })
 }
 
-weight_summ <- summarize_wts(weights)
-weight_summ
 
-profile_data <- intervention_data %>%
-  mutate(wt = weights$wt, wt_rs = weights$wt_rs)
-profile_data <- profile_data[!duplicated(profile_data[,match_cov]), c(match_cov, "wt", "wt_rs")]
-head(profile_data)
-```
-
-
-## Has optimization worked
-
-```{r}
-check_weights <- function(intervention_data, weights, match_cov, target_pop){
+check_weights <- function(intervention_data, target_pop, weights, match_cov){
+  
+  if(is.null(target_pop$N)){
+    stop("Assumes target_pop stores reported sample size (N)")
+  }
   
   ARM <- c("Intervention", "Intervention_weighted", "Comparator")
   ESS <- round(c(nrow(intervention_data), weights$ess,
                  target_pop$N))
   
-  weighted_cov <- intervention_data %>% summarise_at(match_cov, list(~ weighted.mean(., weights$wt)))
   unweighted_cov <- intervention_data %>% summarise_at(match_cov, list(~ mean(.)))
+  weighted_cov <- intervention_data %>% summarise_at(match_cov, list(~ weighted.mean(., weights$wt)))
   comparator_cov <- select(target_pop, all_of(match_cov))
   
   cov <- rbind(unweighted_cov, weighted_cov, comparator_cov)
@@ -323,5 +219,121 @@ check_weights <- function(intervention_data, weights, match_cov, target_pop){
   return(baseline_summary)
 }
 
-check_weights(intervention_data, weights, match_cov, target_pop)
-```
+
+#' Bootstrapping for MAIC weighted hazard ratios
+#'
+#' @param intervention_data A data frame containing individual patient data
+#'   from the intervention study.
+#' @param match_cov A character vector giving the names of the covariates to use
+#'   in matching. These names must match the column names in intervention_data.
+#' @param i Index used to select a sample within \code{\link{boot}}.
+#' @param model A model formula in the form 'Surv(Time, Event==1) ~ ARM'.
+#'   Variable names need to match the corresponding columns in intervention_data.
+#' @param comparator_input A data frame containing pseudo individual patient data
+#'   from the comparator study needed to derive the relative treatment effect.
+#'   The outcome variables names must match intervention_data.
+#' @param min_weight A numeric value that defines the minimum weight allowed. 
+#'   This value (default 0.0001) will replace weights estimated at 0 in a sample.
+#'
+#' @details This function is intended to be used in conjunction with the
+#'   \code{\link{boot}} function to return the statistic to be
+#'   bootstrapped. In this case by performing MAIC weighting using
+#'   {\link{estimate_weights}} and returning a weighted hazard ratio (HR) from a
+#'   Cox proportional hazards model. This is used as the 'statistic' argument in
+#'   the boot function.
+#'
+#' @return The HR as a numeric value.
+#' @export
+
+bootstrap_HR <- function(intervention_data, i, match_cov, comparator_input, model, min_weight = 0.0001){
+  
+  # Samples the data
+  bootstrap_data <- intervention_data[i,]
+  
+  # Estimates weights
+  weights <- estimate_weights(intervention_data=bootstrap_data, match_cov=match_cov)
+  
+  bootstrap_data$wt <- weights$wt
+  bootstrap_data$ARM <- "Intervention"
+
+  # Give comparator data weights of 1
+  comparator_input$wt <- 1
+  comparator_input$ARM <- "Comparator"
+  
+  # fill in non-overlapping columns with NAs
+  bootstrap_data[setdiff(names(comparator_input), names(bootstrap_data))] <- NA
+  comparator_input[setdiff(names(bootstrap_data), names(comparator_input))] <- NA
+  
+  # Add the comparator data
+  combined_data <- rbind(bootstrap_data, comparator_input)
+  combined_data$ARM <- stats::relevel(as.factor(combined_data$ARM), ref="Comparator")
+  
+  # set weights that are below min_weight to min_weight to avoid issues with 0 values
+  combined_data$wt <- ifelse(combined_data$wt < min_weight, min_weight, combined_data$wt)
+  
+  # survival data stat
+  cox_model <- survival::coxph(model, data = combined_data, weights = wt)
+  HR <- exp(cox_model$coefficients)
+}
+
+
+
+
+#' Bootstrapping for MAIC weighted odds ratios
+#'
+#' @param intervention_data  A data frame containing individual patient data
+#'   from the intervention study.
+#' @param i Index used to select a sample within \code{\link{boot}}.
+#' @param match_cov A character vector giving the names of the covariates to use
+#'   in matching. These names must match the column names in intervention_data.
+#' @param comparator_data A data frame containing pseudo individual patient data
+#'   from the comparator study needed to derive the relative treatment effect.
+#'   The outcome variables names must match intervention_data.
+#' @param model A model formula in the form 'endpoint ~ treatment_var'. Variable
+#'   names need to match the corresponding columns in intervention_data.
+#' @param min_weight A numeric value that defines the minimum weight allowed. 
+#'   This value (default 0.0001) will replace weights estimated at 0 in a sample.
+#'
+#' @details This function is intended to be used in conjunction with the
+#'   \code{\link{boot}} function to return the statistic to be
+#'   bootstrapped. In this case by performing MAIC weighting using
+#'   {\link{estimate_weights}} and returning a weighted odds ratio (OR) from a
+#'   logistic regression model. This is used as the 'statistic' argument in
+#'   the boot function.
+#'
+#' @return The OR as a numeric value.
+#'
+#' @seealso \code{\link{estimate_weights}}, \code{\link{boot}}
+#'
+#' @export
+
+bootstrap_OR <- function(intervention_data, i, match_cov, comparator_input, model, min_weight = 0.0001){
+  
+  # Samples the data
+  bootstrap_data <- intervention_data[i,]
+  
+  # Estimates weights
+  weights <- estimate_weights(intervention_data=bootstrap_data, match_cov=match_cov)
+  
+  bootstrap_data$wt <- weights$wt
+  bootstrap_data$ARM <- "Intervention"
+  
+  # Give comparator data weights of 1
+  comparator_input$wt <- 1
+  comparator_input$ARM <- "Comparator"
+  
+  # fill in non-overlapping columns with NAs
+  bootstrap_data[setdiff(names(comparator_input), names(bootstrap_data))] <- NA
+  comparator_input[setdiff(names(bootstrap_data), names(comparator_input))] <- NA
+  
+  # Add the comparator data
+  combined_data <- rbind(bootstrap_data, comparator_input)
+  combined_data$ARM <- stats::relevel(as.factor(combined_data$ARM), ref="Comparator")
+  
+  # set weights that are below min_weight to min_weight to avoid issues with 0 values
+  combined_data$wt <- ifelse(combined_data$wt < min_weight, min_weight, combined_data$wt)
+  
+  # Perform logistic regression and extract the OR estimate
+  logistic.regr <- suppressWarnings(stats::glm(formula = model, family=stats::binomial(link="logit"), data = combined_data, weight = wt))
+  OR <- exp(as.numeric(stats::coef(logistic.regr)[2]))
+}
