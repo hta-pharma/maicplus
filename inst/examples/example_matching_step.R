@@ -1,4 +1,3 @@
-
 # This example code estimates weights for individual patient data from a single
 # arm study of 'intervention' based on aggregate baseline characteristics from
 # the comparator trial
@@ -7,12 +6,9 @@
 # Matching by arms are not supported, due to lack of merit as from current literature (or lack of research)
 
 devtools::load_all()
-library(magrittr)
+#### load data ----------------------------------------------------------
 
-#### Prepare the data ----------------------------------------------------------
-
-### Intervention data
-
+### IPD
 # Read in relevant ADaM data and rename variables of interest
 adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus",
                              mustWork = TRUE))
@@ -21,8 +17,33 @@ adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus",
 adtte <- read.csv(system.file("extdata", "adtte.csv", package = "maicplus",
                               mustWork = TRUE))
 
+### AgD
+# Baseline aggregate data for the comparator population
+target_pop <- read.csv(system.file("extdata", "aggregate_data.csv",
+                                   package = "maicplus", mustWork = TRUE))
+# for time-to-event endpoints, pseudo IPD from digitalized KM
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus",
                                    mustWork = TRUE))
+
+
+#**!! change of the csv file, to follow our standard naming convention
+#**!!
+
+#### prepare data ----------------------------------------------------------
+target_pop <- process.agd(target_pop)
+
+adsl <- process.ipd(adsl,dummize.cols=c("SEX"),dummize.ref.level=c("Female"))
+use_adsl <- center.ipd(ipd = adsl, agd = target_pop)
+
+match_res <-  estimate.weights(data=use_adsl,
+                               centered.colnames = grep("_CENTERED$",names(use_adsl)),
+                               startVal = 0,
+                               method = "BFGS")
+
+plot.weights(wt = match_res$data$weights, main.title = "Unscaled Individual Weigths")
+
+
+
 
 # Data containing the matching variables
 adsl <- within(adsl, SEX <- ifelse(SEX=="Male", 1, 0)) # Coded 1 for males and 0 for females
@@ -54,12 +75,7 @@ match_cov <- c("AGE",
                "SMOKE",
                "ECOG0")
 
-## Baseline data from the comparator trial
-# Baseline aggregate data for the comparator population
-target_pop <- read.csv(system.file("extdata", "aggregate_data.csv",
-                                   package = "maicplus", mustWork = TRUE))
-#**!! change of the csv file, to follow our standard naming convention
-#**!!
+
 
 
 # Rename target population cols to be consistent with match_cov

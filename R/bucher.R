@@ -1,10 +1,14 @@
+# Functions for adjusting step for anchored cases
+
+# functions to be exported ---------------------------------------
+
 #' Bucher method for adjusted treatment effect
 #'
 #' Given two estimated treatment effects of A vs. C and B vs. C (i.e. two point estimates and corresponding standard errors),
 #' derive the adjusted treatment of A vs. B using Bucher method, with two-sided confidence limits and Z-test p-value
 #'
 #' @param trt a list with two named scalars for the study with interested experimental arm, one named 'est' for the point estimate, and the other named 'se' for the standard error
-#' @param com same as \code{trt} for the study with interested control arm
+#' @param com same as \code{trt}, but for the study with interested control arm
 #' @param conf.lv a numerical scalar, prescribe confidence level to derive two-sided confidence interval for the adjusted treatment effect
 #'
 #' @return a list with 5 elements,
@@ -38,6 +42,8 @@ bucher <- function(trt, com, conf.lv = 0.95) {
   )
 }
 
+# functions NOT to be exported ---------------------------------------
+
 #' Report-friendly output format for resutl from Bucher's method
 #'
 #' @param output output from \code{\link{bucher}} function
@@ -53,8 +59,8 @@ print.bucher <- function(output, ci.digits = 2, pval.digits = 3) {
     format(round(output$ci_u, ci.digits), nsmall = ci.digits), ")"
   )
 
-  disp.pval <- round(output$pval, pval.digits)
-  disp.pval <- ifelse(disp.pval == 0, paste0("<", 1 / (10^pval.digits)), format(output$pval, nsmall = pval.digits))
+  disp_pval <- round(output$pval, pval.digits)
+  disp_pval <- ifelse(disp_pval == 0, paste0("<", 1 / (10^pval.digits)), format(output$pval, nsmall = pval.digits))
 
-  c(result = res, pvalue = disp.pval)
+  c(result = res, pvalue = disp_pval)
 }
