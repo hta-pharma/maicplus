@@ -21,6 +21,9 @@ adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus",
 adtte <- read.csv(system.file("extdata", "adtte.csv", package = "maicplus",
                               mustWork = TRUE))
 
+pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus",
+                                   mustWork = TRUE))
+
 # Data containing the matching variables
 adsl <- within(adsl, SEX <- ifelse(SEX=="Male", 1, 0)) # Coded 1 for males and 0 for females
 
@@ -147,6 +150,29 @@ use_weigths <- cal_weights(EM = as.matrix(use_data))
 
 plot_weights(use_weigths$wt)
 plot_weights(use_weigths$wt.rs, main.title = "Scaled Individual Weights")
+
+### unanchored tte
+
+# emulate IPD
+ipd_dat <- adtte
+ipd_dat_ext <- pseudo_ipd
+ipd_dat_ext$treatment <- "B"
+ipd_dat_ext$time <- ipd_dat_ext$Time
+ipd_dat_ext$status <- ipd_dat_ext$Event
+ipd_dat$treatment <- ipd_dat$ARM
+ipd_dat$time <- ipd_dat$Time
+ipd_dat$status <- ipd_dat$Event
+
+library(survival)
+fit_unanchored <- maic_tte_unanchor(useWt=use_weigths$wt,
+                                    dat=ipd_dat,
+                                    dat_ext=ipd_dat_ext,
+                                    trt="A",
+                                    trt_ext="B",
+                                    time_scale = "month",
+                                    endpoint_name = "OS",
+                                    transform = "log")
+fit_unanchored$report_median_surv
 
 
 #**!! write a print method for output object from est_weights

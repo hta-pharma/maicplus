@@ -1,4 +1,3 @@
-
 # Functions for the estimation of propensity weights
 
 
@@ -26,7 +25,7 @@ gradfn <- function(a1, X){
 #' @param method The method used for optimisation - The default is method =
 #'   "BFGS". Refer to \code{\link[stats]{optim}} for options.
 #' @param ... Additional arguments to be passed to optimisation functions such
-#'   as the method for maximum likelihood optimisation. Refer to \code{\link[stats]{optim}} 
+#'   as the method for maximum likelihood optimisation. Refer to \code{\link[stats]{optim}}
 #'   for options.
 #'
 #' @details The premise of MAIC methods is to adjust for between-trial
@@ -244,13 +243,13 @@ hist_wts <- function(data, wt_col="wt", rs_wt_col="wt_rs", bin = 30) {
 
   # create visible local bindings for R CMD check
   value <- `Rescaled weights` <- Weights <- NULL
-  
+
   wt_data1 <- data %>%
     dplyr::select(tidyselect::all_of(c(wt_col, rs_wt_col))) %>% # select only the weights and rescaled weights
     dplyr::rename("Weights" = tidyselect::all_of(wt_col), "Rescaled weights" = tidyselect::all_of(rs_wt_col))  # rename so for plots
-  
+
   # tidyr::gather() # weights and rescaled weights in one column for plotting
-  
+
   wt_data <- dplyr::bind_rows(
     dplyr::transmute(wt_data1, key = "Weights", value = Weights),
     dplyr::transmute(wt_data1, key = "Rescaled weights", value = `Rescaled weights`)
@@ -367,30 +366,30 @@ wt_diagnostics <- function(data, wt_col="wt", wt_rs="wt_rs", vars){
 #' Convenient function to check whether the re-weighted baseline characteristics for
 #' the intervention-treated patients match those aggregate characteristics from the
 #' comparator trial and outputs a summary that can be used for reporting
-#' 
+#'
 #' @param analysis_data A data frame containing individual patient data from
 #'   the intervention study, including a column containing the weights (derived
 #'   using estimate_weights).
-#' @param match_covs A character vector giving the names of the covariates that were used to estimate weights 
+#' @param match_covs A character vector giving the names of the covariates that were used to estimate weights
 #' @param target_pop_standard aggregate characteristics of the comparator trial with the same naming as the analysis_data
 #' @example inst/examples/MAIC_example_weight_diagnostics.R
 #' @seealso \code{\link{estimate_weights}}
 #' @return Summary of patient characteristics before and after matching, including ESS and comparator trial aggregate summary
 #' @export
 
-check_weights <- function(analysis_data = NULL, matching_vars = NULL, 
+check_weights <- function(analysis_data = NULL, matching_vars = NULL,
                           target_pop_standard = NULL){
-  
+
   ARM <- c("Intervention", "Intervention_weighted", "Comparator")
   ESS <- round(c(nrow(analysis_data), estimate_ess(analysis_data),
                  target_pop_standard$N))
-  
+
   weighted_cov <- analysis_data %>% summarise_at(match_cov, list(~ weighted.mean(., wt)))
   unweighted_cov <-  analysis_data %>% summarise_at(match_cov, list(~ mean(.)))
   comparator_cov <- select(target_pop_standard, all_of(match_cov))
-  
+
   cov <- rbind(unweighted_cov, weighted_cov, comparator_cov)
   baseline_summary <- cbind(ARM, ESS, cov)
-  
+
   return(baseline_summary)
 }
