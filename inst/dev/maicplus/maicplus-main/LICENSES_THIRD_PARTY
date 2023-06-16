@@ -1,0 +1,10 @@
+--------------------------------------------------
+Third party dependencies listed by License type
+[Format: R package name - URL]
+--------------------------------------------------
+
+LGPL 
+* survival - https://github.com/therneau/survival/blob/master/DESCRIPTION
+
+GPL-3
+* clubSandwich - https://github.com/jepusto/clubSandwich/blob/main/DESCRIPTION

@@ -31,7 +31,6 @@ pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicp
 
 #### prepare data ----------------------------------------------------------
 target_pop <- process.agd(target_pop)
-
 adsl <- process.ipd(adsl,dummize.cols=c("SEX"),dummize.ref.level=c("Female"))
 use_adsl <- center.ipd(ipd = adsl, agd = target_pop)
 
