@@ -2,7 +2,7 @@
 % Please edit documentation in R/process_data.R
 \name{complete_agd}
 \alias{complete_agd}
-\title{Calculate pooled arm statistics in AgD based on arm-specific statistics}
+\title{Calculate pooled arm statistics in Aggregated Data (AgD) based on arm-specific statistics}
 \usage{
 complete_agd(use_agd)
 }
@@ -10,5 +10,5 @@ complete_agd(use_agd)
 \item{use_agd}{}
 }
 \description{
-Calculate pooled arm statistics in AgD based on arm-specific statistics
+Calculate pooled arm statistics in Aggregated Data (AgD) based on arm-specific statistics
 }

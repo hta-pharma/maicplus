@@ -7,7 +7,7 @@
 ext_tte_transfer(dd, time_scale = "month", trt = NULL)
 }
 \arguments{
-\item{dd}{data frame, ADTTE read via haven::read_sas}
+\item{dd}{data frame, ADTTE read via \code{haven::read_sas()}}
 
 \item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
 }

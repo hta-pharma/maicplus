@@ -210,7 +210,7 @@ log_cum_haz_plot <- function(clldat, time_scale, log_time = TRUE, endpoint_name 
 }
 
 
-#' Plot schoenfeld residual plot for a Cox model fit
+#' Plot Schoenfeld residuals for a Cox model fit
 #'
 #' @param coxobj object returned from \code{\link[survival]{coxph}}
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
@@ -233,7 +233,7 @@ resid_plot <- function(coxobj, time_scale = "month", log_time = TRUE, endpoint_n
     cex = 0.9, col = "navyblue", yaxt = "n",
     ylab = "Unscaled Schoenfeld Residual", xlab = paste0(ifelse(log_time, "Log-", ""), "Time in ", time_scale),
     main = paste0(
-      "Diagnosis Plot: Unscaled Schoefeld Residual\nEndpoint: ", endpoint_name,
+      "Diagnosis Plot: Unscaled Schoenfeld Residual\nEndpoint: ", endpoint_name,
       ifelse(subtitle == "", "", "\n"), subtitle
     )
   )

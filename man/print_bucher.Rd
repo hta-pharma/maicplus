@@ -2,7 +2,7 @@
 % Please edit documentation in R/bucher.R
 \name{print_bucher}
 \alias{print_bucher}
-\title{Report-friendly output format for resutl from Bucher's method}
+\title{Report-friendly output format for result from Bucher's method}
 \usage{
 print_bucher(output, ci_digits = 2, pval_digits = 3)
 }
@@ -14,8 +14,9 @@ print_bucher(output, ci_digits = 2, pval_digits = 3)
 \item{pval_digits}{an integer, number of decimal places to display Z-test p-value}
 }
 \value{
-a character vector of two elements, first element inf format of 'est (ci_l; ci_u)', second element is Z-test p-value, rounded according to \code{pval_digits}
+a character vector of two elements, first element in format of 'est (ci_l; ci_u)'`,
+second element is the Z-test p-value, rounded according to \code{pval_digits}
 }
 \description{
-Report-friendly output format for resutl from Bucher's method
+Report-friendly output format for result from Bucher's method
 }

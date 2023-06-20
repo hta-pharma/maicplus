@@ -15,6 +15,7 @@ plot_weights(wt, main_title = "Unscaled Individual Weigths")
 a plot
 }
 \description{
-Generates a plot given the individuals weights with key summary in top right legend that includes
-median weight, effective sample size (ESS), reduction percentage (what percent ESS takes up in the original sample size),
+Generates a plot given the individuals weights with key summary in top right legend that
+includes median weight, effective sample size (ESS), reduction percentage (what percent
+ESS takes up in the original sample size),
 }

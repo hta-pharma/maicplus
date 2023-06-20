@@ -96,8 +96,9 @@ estimate_weights <- function(data, centered_colnames = NULL, startVal = 0, metho
 
 #' Plot MAIC weights in a histogram with key statistics in legend
 #'
-#' Generates a plot given the individuals weights with key summary in top right legend that includes
-#' median weight, effective sample size (ESS), reduction percentage (what percent ESS takes up in the original sample size),
+#' Generates a plot given the individuals weights with key summary in top right legend that
+#' includes median weight, effective sample size (ESS), reduction percentage (what percent
+#' ESS takes up in the original sample size),
 #'
 #'
 #' @param wt a numeric vector of individual MAIC weights (derived use in \code{\link{cal_weights}})

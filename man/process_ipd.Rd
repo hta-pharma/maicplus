@@ -2,7 +2,7 @@
 % Please edit documentation in R/process_data.R
 \name{process_ipd}
 \alias{process_ipd}
-\title{Process Individual Patient data to dummize categorical effective modifiers}
+\title{Process Individual Patient data categorical effective modifiers to dummy variables}
 \usage{
 process_ipd(raw_ipd, dummize_cols, dummize_ref_level)
 }
@@ -10,5 +10,5 @@ process_ipd(raw_ipd, dummize_cols, dummize_ref_level)
 \item{dummize_ref_level}{}
 }
 \description{
-Process Individual Patient data to dummize categorical effective modifiers
+Process Individual Patient data categorical effective modifiers to dummy variables
 }

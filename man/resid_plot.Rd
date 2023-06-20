@@ -2,7 +2,7 @@
 % Please edit documentation in R/survival-helper.R
 \name{resid_plot}
 \alias{resid_plot}
-\title{Plot schoenfeld residual plot for a Cox model fit}
+\title{Plot Schoenfeld residuals for a Cox model fit}
 \usage{
 resid_plot(
   coxobj,
@@ -27,5 +27,5 @@ resid_plot(
 a plot
 }
 \description{
-Plot schoenfeld residual plot for a Cox model fit
+Plot Schoenfeld residuals for a Cox model fit
 }

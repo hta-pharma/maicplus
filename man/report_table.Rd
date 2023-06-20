@@ -3,7 +3,7 @@
 \name{report_table}
 \alias{report_table}
 \title{helper function: sort out a nice report table to summarize survival analysis results
-for maic_tte_unanchor}
+for \code{maic_tte_unanchor}}
 \usage{
 report_table(coxobj, medSurvobj, tag = NULL)
 }
@@ -15,9 +15,10 @@ report_table(coxobj, medSurvobj, tag = NULL)
 \item{tag}{a string, by default NULL, if specified, an extra 1st column is created in the output}
 }
 \value{
-a data frame with sample size, incidence rate, median survival time with 95\%CI, hazard ratio estimate with 95\%CI and wald test of hazard ratio
+a data frame with sample size, incidence rate, median survival time with 95\% CI, hazard ratio estimate with
+95\% CI and Wald test of hazard ratio
 }
 \description{
 helper function: sort out a nice report table to summarize survival analysis results
-for maic_tte_unanchor
+for \code{maic_tte_unanchor}
 }

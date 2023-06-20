@@ -7,11 +7,13 @@
 bucher(trt, com, conf_lv = 0.95)
 }
 \arguments{
-\item{trt}{a list with two named scalars for the study with interested experimental arm, one named 'est' for the point estimate, and the other named 'se' for the standard error}
+\item{trt}{a list with two named scalars for the study with interested experimental arm,
+one named \code{'est'} for the point estimate, and the other named \code{'se'} for the standard error}
 
 \item{com}{same as \code{trt}, but for the study with interested control arm}
 
-\item{conf_lv}{a numerical scalar, prescribe confidence level to derive two-sided confidence interval for the adjusted treatment effect}
+\item{conf_lv}{a numerical scalar, prescribe confidence level to derive two-sided
+confidence interval for the adjusted treatment effect}
 }
 \value{
 a list with 5 elements,
@@ -24,6 +26,8 @@ a list with 5 elements,
 }
 }
 \description{
-Given two estimated treatment effects of A vs. C and B vs. C (i.e. two point estimates and corresponding standard errors),
-derive the adjusted treatment of A vs. B using Bucher method, with two-sided confidence limits and Z-test p-value
+Given two estimated treatment effects of A vs. C and B vs. C
+(i.e. two point estimates and corresponding standard errors),
+derive the adjusted treatment of A vs. B using Bucher method,
+with two-sided confidence limits and Z-test p-value
 }
