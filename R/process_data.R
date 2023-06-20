@@ -205,7 +205,7 @@ complete_agd <- function(use_agd) {
 
   # complete SD
   for(i in grep("_SD$",names(use_agd),value=TRUE)){
-    use_agd[[i]][rowId] <- sqrt( sum(use_agd[[i]]^2*(nn-1))/(N-1) )
+    use_agd[[i]][rowId] <- sqrt( sum(use_agd[[i]]^2*(nn-1))/(NN-1) )
   }
 
   # complete MEDIAN, approximately!!
