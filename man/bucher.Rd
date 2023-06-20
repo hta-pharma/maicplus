@@ -18,8 +18,8 @@ a list with 5 elements,
 \describe{
 \item{est}{a scalar, point estimate of the adjusted treatment effect}
 \item{se}{a scalar, standard error of the adjusted treatment effect (i.e. \code{est} in return)}
-\item{ci_l}{a scalar, lower confidence limit of a two-sided CI with prescribed nominal level by \code{conf.lv}}
-\item{ci_u}{a scalar, upper confidence limit of a two-sided CI with prescribed nominal level by \code{conf.lv}}
+\item{ci_l}{a scalar, lower confidence limit of a two-sided CI with prescribed nominal level by \code{conf_lv}}
+\item{ci_u}{a scalar, upper confidence limit of a two-sided CI with prescribed nominal level by \code{conf_lv}}
 \item{pval}{p-value of Z-test, with null hypothesis that \code{est} is zero}
 }
 }

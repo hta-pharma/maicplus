@@ -96,7 +96,7 @@ process_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level){
 #'
 #' @return
 #' @export
-center_ipd <- function(ipd,agd){
+center_ipd <- function(ipd, agd){
   # regulaized column name patterns
   must_exist <- c("STUDY","ARM", "N")
   legal_suffix <- c("MEAN","MEDIAN","SD","PROP")
@@ -192,8 +192,8 @@ complete_agd <- function(use_agd) {
   use_agd$ARM[rowId] <- "total"
 
   # complete N and count
-  NN <- use_agd$N[rowId] <- sum(use_agd$N, na.rm=TRUE)
-  nn <- use_agd$N[-rowId]
+  NN <- use_agd[["N"]][rowId] <- sum(use_agd[["N"]], na.rm=TRUE)
+  nn <- use_agd[["N"]][-rowId]
   for(i in grep("_COUNT$",names(use_agd),value=TRUE)){
      use_agd[[i]][rowId] <- sum(use_agd[[i]], na.rm=TRUE)
   }

@@ -15,8 +15,8 @@
 #' \describe{
 #'   \item{est}{a scalar, point estimate of the adjusted treatment effect}
 #'   \item{se}{a scalar, standard error of the adjusted treatment effect (i.e. \code{est} in return)}
-#'   \item{ci_l}{a scalar, lower confidence limit of a two-sided CI with prescribed nominal level by \code{conf.lv}}
-#'   \item{ci_u}{a scalar, upper confidence limit of a two-sided CI with prescribed nominal level by \code{conf.lv}}
+#'   \item{ci_l}{a scalar, lower confidence limit of a two-sided CI with prescribed nominal level by \code{conf_lv}}
+#'   \item{ci_u}{a scalar, upper confidence limit of a two-sided CI with prescribed nominal level by \code{conf_lv}}
 #'   \item{pval}{p-value of Z-test, with null hypothesis that \code{est} is zero}
 #' }
 #' @export
@@ -26,8 +26,8 @@
 bucher <- function(trt, com, conf_lv = 0.95) {
   est <- trt$est - com$est
   se <- sqrt(trt$se^2 + com$se^2)
-  ci_l <- est - stats::qnorm(0.5 + conf.lv / 2) * se
-  ci_u <- est + stats::qnorm(0.5 + conf.lv / 2) * se
+  ci_l <- est - stats::qnorm(0.5 + conf_lv / 2) * se
+  ci_u <- est + stats::qnorm(0.5 + conf_lv / 2) * se
   if (est > 0) {
     pval <- 2 * (1 - stats::pnorm(est, 0, se))
   } else {

@@ -13,7 +13,7 @@ resid_plot(
 )
 }
 \arguments{
-\item{coxobj}{object returned from \code{\link[surival]{coxph}}}
+\item{coxobj}{object returned from \code{\link[survival]{coxph}}}
 
 \item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
 
