@@ -12,7 +12,7 @@ ext_tte_transfer(dd, time_scale = "month", trt = NULL)
 \item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
 }
 \value{
-a data frame can be used as input to survival::Surv
+a data frame can be used as input to \code{\link[survival:Surv]{survival::Surv()}}
 }
 \description{
 helper function: transform TTE ADaM data to suitable input for survival R pkg

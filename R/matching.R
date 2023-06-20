@@ -10,7 +10,8 @@
 #' @param data a numeric matrix, centered effect modifiers of IPD, no missing value in any cell is allowed
 #' @param centered_colnames a character or numeric vector, column indicators of centered effect modifiers, by default NULL meaning all columns in \code{data} are effect modifiers
 #' @param startVal a scalar, the starting value for all coefficients of the propensity score regression
-#' @param method a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()}). The default is "BFGS", other options are "Nelder-Mead", "CG", "L-BFGS-B", "SANN", and "Brent"
+#' @param method a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()}).
+#' The default is `"BFGS"`, other options are `"Nelder-Mead"`, `"CG"`, `"L-BFGS-B"`, `"SANN"`, and `"Brent"`
 #' @param ... all other arguments from \code{base::optim()}
 #'
 #' @return a list with the following 4 elements,

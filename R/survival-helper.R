@@ -1,4 +1,4 @@
-#' helper function: makeup to get median survival time from a survival::survfit object
+#' helper function: makeup to get median survival time from a `survival::survfit` object
 #'
 #' extract and display median survival time with confidence interval
 #'
@@ -6,7 +6,7 @@
 #' @param legend a character string, name used in 'type' column in returned data frame
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #'
-#' @return a data frame with a index column 'type', mdian survival time and confidence interval
+#' @return a data frame with a index column 'type', median survival time and confidence interval
 #' @export
 medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
   timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
@@ -30,7 +30,7 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 
 
 
-#' helper function: makeup survival::survfit object for km plot
+#' helper function: makeup `survival::survfit` object for km plot
 #'
 #' @param km_fit returned object from \code{survival::survfit}
 #'

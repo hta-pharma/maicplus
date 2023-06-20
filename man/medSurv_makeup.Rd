@@ -2,7 +2,7 @@
 % Please edit documentation in R/survival-helper.R
 \name{medSurv_makeup}
 \alias{medSurv_makeup}
-\title{helper function: makeup to get median survival time from a survival::survfit object}
+\title{helper function: makeup to get median survival time from a \code{survival::survfit} object}
 \usage{
 medSurv_makeup(km_fit, legend = "before matching", time_scale)
 }
@@ -14,7 +14,7 @@ medSurv_makeup(km_fit, legend = "before matching", time_scale)
 \item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
 }
 \value{
-a data frame with a index column 'type', mdian survival time and confidence interval
+a data frame with a index column 'type', median survival time and confidence interval
 }
 \description{
 extract and display median survival time with confidence interval

@@ -20,7 +20,7 @@ maic_tte_unanchor(
 
 \item{dat}{a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial}
 
-\item{dat_ext}{a data frame, pseudo IPD from digitalized KM curve of external trial}
+\item{dat_ext}{a data frame, pseudo IPD from digitized KM curve of external trial}
 
 \item{trt}{a character string, name of the interested treatment in internal trial (real IPD)}
 

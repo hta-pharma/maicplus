@@ -2,7 +2,7 @@
 % Please edit documentation in R/survival-helper.R
 \name{survfit_makeup}
 \alias{survfit_makeup}
-\title{helper function: makeup survival::survfit object for km plot}
+\title{helper function: makeup \code{survival::survfit} object for km plot}
 \usage{
 survfit_makeup(km_fit)
 }
@@ -13,5 +13,5 @@ survfit_makeup(km_fit)
 a list of data frames, one element per treatment
 }
 \description{
-helper function: makeup survival::survfit object for km plot
+helper function: makeup \code{survival::survfit} object for km plot
 }

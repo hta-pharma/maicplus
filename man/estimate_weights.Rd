@@ -19,7 +19,8 @@ estimate_weights(
 
 \item{startVal}{a scalar, the starting value for all coefficients of the propensity score regression}
 
-\item{method}{a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()}). The default is "BFGS", other options are "Nelder-Mead", "CG", "L-BFGS-B", "SANN", and "Brent"}
+\item{method}{a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()}).
+The default is \code{"BFGS"}, other options are \code{"Nelder-Mead"}, \code{"CG"}, \code{"L-BFGS-B"}, \code{"SANN"}, and \code{"Brent"}}
 
 \item{...}{all other arguments from \code{base::optim()}}
 }

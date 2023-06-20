@@ -149,7 +149,7 @@ center_ipd <- function(ipd, agd){
 #' @param dd data frame, ADTTE read via haven::read_sas
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #'
-#' @return a data frame can be used as input to survival::Surv
+#' @return a data frame can be used as input to [survival::Surv()]
 ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
   timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
