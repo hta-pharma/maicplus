@@ -13,24 +13,25 @@
 #'
 #' @return a list with 5 elements,
 #' \describe{
-#'   \item est - a scalar, point estimate of the adjusted treatment effect
-#'   \item se - a scalar, standard error of the adjusted treatment effect (i.e. \code{est} in return)
-#'   \item ci_l - a scalor, lower confidence limit of a two-sided CI with prescribed nominal level by \code{conf_lv}
-#'   \item ci_u - a scalor, upper confidence limit of a two-sided CI with prescribed nominal level by \code{conf_lv}
-#'   \item pval - p-value of Z-test, with null hypothesis that \code{est} is zero
+#'   \item{est}{a scalar, point estimate of the adjusted treatment effect}
+#'   \item{se}{a scalar, standard error of the adjusted treatment effect (i.e. \code{est} in return)}
+#'   \item{ci_l}{a scalar, lower confidence limit of a two-sided CI with prescribed nominal level by \code{conf.lv}}
+#'   \item{ci_u}{a scalar, upper confidence limit of a two-sided CI with prescribed nominal level by \code{conf.lv}}
+#'   \item{pval}{p-value of Z-test, with null hypothesis that \code{est} is zero}
 #' }
 #' @export
+#' @import stats
 #'
 #' @examples
 bucher <- function(trt, com, conf_lv = 0.95) {
   est <- trt$est - com$est
   se <- sqrt(trt$se^2 + com$se^2)
-  ci_l <- est - qnorm(0.5 + conf_lv / 2) * se
-  ci_u <- est + qnorm(0.5 + conf_lv / 2) * se
+  ci_l <- est - stats::qnorm(0.5 + conf.lv / 2) * se
+  ci_u <- est + stats::qnorm(0.5 + conf.lv / 2) * se
   if (est > 0) {
-    pval <- 2 * (1 - pnorm(est, 0, se))
+    pval <- 2 * (1 - stats::pnorm(est, 0, se))
   } else {
-    pval <- 2 * pnorm(est, 0, se)
+    pval <- 2 * stats::pnorm(est, 0, se)
   }
 
   list(

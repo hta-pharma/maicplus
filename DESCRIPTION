@@ -12,15 +12,14 @@ BugReports: https://github.com/hta-pharma/maicplus/issues
 Depends:
     R (>= 3.6)
 Imports:
-    plumber,
-    shiny,
+    graphics,
+    stats,
     survival,
-    stringr
+    stringr,
+    clubSandwich
 Suggests:
-    future,
     httr,
     knitr,
-    shinytest,
     testthat (>= 2.0)
 VignetteBuilder:
     knitr

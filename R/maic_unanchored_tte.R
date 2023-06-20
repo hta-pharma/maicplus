@@ -13,11 +13,12 @@
 #' \itemize{
 #'   \item treatment - character or factor column
 #'   \item status - logical column, TRUE for censored/death, FALSE for otherwise
-#'   \time time - numeric column, observation time of the \code{status}; unit in days
+#'   \item time - numeric column, observation time of the \code{status}; unit in days
 #' }
 #'
 #' @return
 #' @importFrom survival Surv survfit coxph cox.zph
+#' @importFrom graphics par axis lines points legend abline
 #' @export
 #'
 #' @examples
@@ -50,10 +51,10 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
   # derive km w and w/o weights
   kmobj <- survfit(Surv(time, status) ~ treatment, dat, conf.type = "log-log")
   kmobj_adj <- survfit(Surv(time, status) ~ treatment, dat, weights = dat$weight, conf.type = "log-log")
-  
+
   par(cex.main=0.85)
-  km_makeup(kmobj, kmobj_adj, time_scale = time_scale, 
-            trt = trt, trt_ext = trt_ext, 
+  km_makeup(kmobj, kmobj_adj, time_scale = time_scale,
+            trt = trt, trt_ext = trt_ext,
             endpoint_name = endpoint_name)
   res[["plot_km"]] <- grDevices::recordPlot()
 
