@@ -4,14 +4,14 @@
 \alias{bucher}
 \title{Bucher method for adjusted treatment effect}
 \usage{
-bucher(trt, com, conf.lv = 0.95)
+bucher(trt, com, conf_lv = 0.95)
 }
 \arguments{
 \item{trt}{a list with two named scalars for the study with interested experimental arm, one named 'est' for the point estimate, and the other named 'se' for the standard error}
 
 \item{com}{same as \code{trt}, but for the study with interested control arm}
 
-\item{conf.lv}{a numerical scalar, prescribe confidence level to derive two-sided confidence interval for the adjusted treatment effect}
+\item{conf_lv}{a numerical scalar, prescribe confidence level to derive two-sided confidence interval for the adjusted treatment effect}
 }
 \value{
 a list with 5 elements,
