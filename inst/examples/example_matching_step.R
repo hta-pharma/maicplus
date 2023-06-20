@@ -1,4 +1,3 @@
-
 # This example code estimates weights for individual patient data from a single
 # arm study of 'intervention' based on aggregate baseline characteristics from
 # the comparator trial
@@ -7,12 +6,9 @@
 # Matching by arms are not supported, due to lack of merit as from current literature (or lack of research)
 
 devtools::load_all()
-library(magrittr)
+#### load data ----------------------------------------------------------
 
-#### Prepare the data ----------------------------------------------------------
-
-### Intervention data
-
+### IPD
 # Read in relevant ADaM data and rename variables of interest
 adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus",
                              mustWork = TRUE))
@@ -20,6 +16,33 @@ adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus",
                              mustWork = TRUE))
 adtte <- read.csv(system.file("extdata", "adtte.csv", package = "maicplus",
                               mustWork = TRUE))
+
+### AgD
+# Baseline aggregate data for the comparator population
+target_pop <- read.csv(system.file("extdata", "aggregate_data.csv",
+                                   package = "maicplus", mustWork = TRUE))
+# for time-to-event endpoints, pseudo IPD from digitalized KM
+pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus",
+                                   mustWork = TRUE))
+
+
+#**!! change of the csv file, to follow our standard naming convention
+#**!!
+
+#### prepare data ----------------------------------------------------------
+target_pop <- process_agd(target_pop)
+adsl <- process_ipd(adsl,dummize_cols=c("SEX"),dummize_ref_level=c("Female"))
+use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
+
+match_res <-  estimate_weights(data=use_adsl,
+                               centered_colnames = grep("_CENTERED$",names(use_adsl)),
+                               startVal = 0,
+                               method = "BFGS")
+
+plot_weights(wt = match_res$data$weights, main_title = "Unscaled Individual Weigths")
+
+
+
 
 # Data containing the matching variables
 adsl <- within(adsl, SEX <- ifelse(SEX=="Male", 1, 0)) # Coded 1 for males and 0 for females
@@ -51,12 +74,7 @@ match_cov <- c("AGE",
                "SMOKE",
                "ECOG0")
 
-## Baseline data from the comparator trial
-# Baseline aggregate data for the comparator population
-target_pop <- read.csv(system.file("extdata", "aggregate_data.csv",
-                                   package = "maicplus", mustWork = TRUE))
-#**!! change of the csv file, to follow our standard naming convention
-#**!!
+
 
 
 # Rename target population cols to be consistent with match_cov
@@ -147,6 +165,29 @@ use_weigths <- cal_weights(EM = as.matrix(use_data))
 
 plot_weights(use_weigths$wt)
 plot_weights(use_weigths$wt.rs, main.title = "Scaled Individual Weights")
+
+### unanchored tte
+
+# emulate IPD
+ipd_dat <- adtte
+ipd_dat_ext <- pseudo_ipd
+ipd_dat_ext$treatment <- "B"
+ipd_dat_ext$time <- ipd_dat_ext$Time
+ipd_dat_ext$status <- ipd_dat_ext$Event
+ipd_dat$treatment <- ipd_dat$ARM
+ipd_dat$time <- ipd_dat$Time
+ipd_dat$status <- ipd_dat$Event
+
+library(survival)
+fit_unanchored <- maic_tte_unanchor(useWt=use_weigths$wt,
+                                    dat=ipd_dat,
+                                    dat_ext=ipd_dat_ext,
+                                    trt="A",
+                                    trt_ext="B",
+                                    time_scale = "month",
+                                    endpoint_name = "OS",
+                                    transform = "log")
+fit_unanchored$report_median_surv
 
 
 #**!! write a print method for output object from est_weights
