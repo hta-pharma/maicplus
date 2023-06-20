@@ -4,34 +4,34 @@
 
 #' Process and Check Aggregated data format
 #'
-#' @param raw.agd
+#' @param raw_agd
 #'
 #' @return
 #' @export
-process.agd <- function(raw.agd) {
+process_agd <- function(raw_agd) {
 
-  raw.agd <- as.data.frame(raw.agd)
+  raw_agd <- as.data.frame(raw_agd)
   # make all column names to be capital, avoid different style
-  names(raw.agd) <- toupper(names(raw.agd))
+  names(raw_agd) <- toupper(names(raw_agd))
 
   # regulaized column name patterns
   must_exist <- c("STUDY","ARM", "N")
   legal_suffix <- c("MEAN","MEDIAN","SD","COUNT")
 
   # swap "TREATMENT" column to "ARM", if applicable
-  if("TREATMENT"%in%names(raw.agd) & (!"ARM"%in%names(raw.agd))){
-    raw.agd$ARM <- raw.agd$TREATMENT
-    raw.agd <- raw.agd[,names(raw.agd)!="TREATMENT"]
+  if("TREATMENT"%in%names(raw_agd) & (!"ARM"%in%names(raw_agd))){
+    raw_agd$ARM <- raw_agd$TREATMENT
+    raw_agd <- raw_agd[,names(raw_agd)!="TREATMENT"]
     warning("'TREATMENT' column is renamed as 'ARM'")
   }
 
   # check: must exist
-  if(!all(must_exist%in%names(raw.agd))){
-    stop("At least 1 of the must-exists columns (STUDY, ARM, N) cannot be found in raw.agd!")
+  if(!all(must_exist%in%names(raw_agd))){
+    stop("At least 1 of the must-exists columns (STUDY, ARM, N) cannot be found in raw_agd!")
   }
 
   # check: legal suffix
-  other_colnames <- setdiff(names(raw.agd),must_exist)
+  other_colnames <- setdiff(names(raw_agd),must_exist)
   ind1 <- grepl("_",other_colnames,fixed=TRUE)
   ind2 <- sapply(other_colnames,function(xx){
       tmp <- unlist(strsplit(xx,split="_"))
@@ -40,7 +40,7 @@ process.agd <- function(raw.agd) {
   ind2 <- (ind2%in%legal_suffix)
 
   use_cols <- other_colnames[ind1&ind2]
-  use_agd <- raw.agd[,c(must_exist,use_cols),drop=FALSE]
+  use_agd <- raw_agd[,c(must_exist,use_cols),drop=FALSE]
   if(!all(other_colnames%in%use_cols)){
     warning(paste0("following columns are ignored since it does not following the naming convention:",
                    paste(setdiff(other_colnames,use_cols),collapse = ",")))
@@ -66,26 +66,26 @@ process.agd <- function(raw.agd) {
 
 #' Process Individual Patient data to dummize categorical effective modifiers
 #'
-#' @param raw.ipd
-#' @param dummize.cols
-#' @param dummize.ref.level
+#' @param raw_ipd
+#' @param dummize_cols
+#' @param dummize_ref_level
 #'
 #' @return
 #' @export
 
-process.ipd <- function(raw.ipd, dummize.cols, dummize.ref.level){
-   for(i in 1:length(dummize.cols)){
-     yy <- raw.ipd[[ dummize.cols[i] ]]
+process_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level){
+   for(i in 1:length(dummize_cols)){
+     yy <- raw_ipd[[ dummize_cols[i] ]]
      yy_levels <- na.omit(unique(yy))
-     yy <- factor( as.character(yy), levels=c(dummize.ref.level[i], setdiff(yy_levels,dummize.ref.level[i])) )
+     yy <- factor( as.character(yy), levels=c(dummize_ref_level[i], setdiff(yy_levels,dummize_ref_level[i])) )
      new_yy <- sapply(levels(yy)[-1],function(j){
                    as.numeric(yy == j)
                })
      new_yy <- as.data.frame(new_yy)
-     names(new_yy) <- toupper(paste(dummize.cols[i],levels(yy)[-1], sep="_"))
-     raw.ipd <- cbind(raw.ipd,new_yy)
+     names(new_yy) <- toupper(paste(dummize_cols[i],levels(yy)[-1], sep="_"))
+     raw_ipd <- cbind(raw_ipd,new_yy)
    }
-   raw.ipd
+   raw_ipd
 }
 
 
@@ -96,7 +96,7 @@ process.ipd <- function(raw.ipd, dummize.cols, dummize.ref.level){
 #'
 #' @return
 #' @export
-center.ipd <- function(ipd,agd){
+center_ipd <- function(ipd,agd){
   # regulaized column name patterns
   must_exist <- c("STUDY","ARM", "N")
   legal_suffix <- c("MEAN","MEDIAN","SD","PROP")
@@ -180,41 +180,41 @@ ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
 #' @param use_agd
 #'
 #' @return
-complete.agd <- function(use.agd) {
-  use.agd <- as.data.frame(use.agd)
-  use.agd <- with(use.agd, {use.agd[tolower(ARM)!="total",,drop=FALSE]})
+complete_agd <- function(use_agd) {
+  use_agd <- as.data.frame(use_agd)
+  use_agd <- with(use_agd, {use_agd[tolower(ARM)!="total",,drop=FALSE]})
 
-  if(nrow(use.agd)<2) stop("error in call complete_agd: need to have at least 2 rows that ARM!='total' ")
+  if(nrow(use_agd)<2) stop("error in call complete_agd: need to have at least 2 rows that ARM!='total' ")
 
-  rowId <- nrow(use.agd)+1
-  use.agd[rowId, ] <- NA
-  use.agd$STUDY[rowId] <-   use.agd$STUDY[1]
-  use.agd$ARM[rowId] <- "total"
+  rowId <- nrow(use_agd)+1
+  use_agd[rowId, ] <- NA
+  use_agd$STUDY[rowId] <-   use_agd$STUDY[1]
+  use_agd$ARM[rowId] <- "total"
 
   # complete N and count
-  NN <- use.agd$N[rowId] <- sum(use.agd$N, na.rm=TRUE)
-  nn <- use.agd$N[-rowId]
-  for(i in grep("_COUNT$",names(use.agd),value=TRUE)){
-     use.agd[[i]][rowId] <- sum(use.agd[[i]], na.rm=TRUE)
+  NN <- use_agd$N[rowId] <- sum(use_agd$N, na.rm=TRUE)
+  nn <- use_agd$N[-rowId]
+  for(i in grep("_COUNT$",names(use_agd),value=TRUE)){
+     use_agd[[i]][rowId] <- sum(use_agd[[i]], na.rm=TRUE)
   }
 
   # complete MEAN
-  for(i in grep("_MEAN$",names(use.agd),value=TRUE)){
-    use.agd[[i]][rowId] <- sum(use.agd[[i]]*nn)/NN
+  for(i in grep("_MEAN$",names(use_agd),value=TRUE)){
+    use_agd[[i]][rowId] <- sum(use_agd[[i]]*nn)/NN
   }
 
   # complete SD
-  for(i in grep("_SD$",names(use.agd),value=TRUE)){
-    use.agd[[i]][rowId] <- sqrt( sum(use.agd[[i]]^2*(nn-1))/(N-1) )
+  for(i in grep("_SD$",names(use_agd),value=TRUE)){
+    use_agd[[i]][rowId] <- sqrt( sum(use_agd[[i]]^2*(nn-1))/(N-1) )
   }
 
   # complete MEDIAN, approximately!!
-  for(i in grep("_MEDIAN$",names(use.agd),value=TRUE)){
-    use.agd[[i]][rowId] <- mean(use.agd[[i]][-rowId])
+  for(i in grep("_MEDIAN$",names(use_agd),value=TRUE)){
+    use_agd[[i]][rowId] <- mean(use_agd[[i]][-rowId])
   }
 
   # output
-  use.agd
+  use_agd
 }
 
 

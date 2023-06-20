@@ -8,7 +8,7 @@
 #' and generates weights for each individual in IPD trial that matches the chosen statistics of those effect modifiers in Aggregated Data (AgD) trial.
 #'
 #' @param data a numeric matrix, centered effect modifiers of IPD, no missing value in any cell is allowed
-#' @param centered.colnames a character or numeric vector, column indicators of centered effect modifiers, by default NULL meaning all columns in \code{data} are effect modifiers
+#' @param centered_colnames a character or numeric vector, column indicators of centered effect modifiers, by default NULL meaning all columns in \code{data} are effect modifiers
 #' @param startVal a scalar, the starting value for all coefficients of the propensity score regression
 #' @param method a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()}). The default is "BFGS", other options are "Nelder-Mead", "CG", "L-BFGS-B", "SANN", and "Brent"
 #' @param ... all other arguments from \code{base::optim()}
@@ -16,7 +16,7 @@
 #' @return a list with the following 4 elements,
 #' \describe{
 #'   \item data - a data.frame, includes the input \code{data} with appended column 'weights' and 'scaled_weights'. Scaled weights has a summation to be the number of rows in \code{data} that has no missing value in any of the effect modifiers
-#'   \item centered.colnames - column names of centered effect modifiers in \code{data}
+#'   \item centered_colnames - column names of centered effect modifiers in \code{data}
 #'   \item nr_missing - number of rows in \code{data} that has at least 1 missing value in specified centered effect modifiers
 #'   \item ess - effective sample size, square of sum divided by sum of squares
 #'   \item opt - R object returned by \code{base::optim()}, for assess convergence and other details
@@ -24,30 +24,30 @@
 #' @export
 #'
 #' @examples
-estimate.weights <- function(data, centered.colnames = NULL, startVal = 0, method = "BFGS", ...) {
+estimate_weights <- function(data, centered_colnames = NULL, startVal = 0, method = "BFGS", ...) {
   # pre check
   ch1 <- is.data.frame(data)
   if(!ch1) stop("'data' is not a data.frame")
 
-  ch2 <- (!is.null(centered.colnames))
-  if(ch2 & is.numeric(centered.colnames)){
-    ch2b <- any(centered.colnames<1|centered.colnames>ncol(data))
-    if(ch2b) stop("specified centered.colnames are out of bound")
-  }else if(ch2 & is.character(centered.colnames)){
-    ch2b <- !all(centered.colnames%in%names(data))
-    if(ch2b) stop("1 or more specified centered.colnames are not found in 'data'")
+  ch2 <- (!is.null(centered_colnames))
+  if(ch2 & is.numeric(centered_colnames)){
+    ch2b <- any(centered_colnames<1|centered_colnames>ncol(data))
+    if(ch2b) stop("specified centered_colnames are out of bound")
+  }else if(ch2 & is.character(centered_colnames)){
+    ch2b <- !all(centered_colnames%in%names(data))
+    if(ch2b) stop("1 or more specified centered_colnames are not found in 'data'")
   }else{
-    stop("'centered.colnames' should be either a numeric or character vector")
+    stop("'centered_colnames' should be either a numeric or character vector")
   }
 
-  ch3 <- sapply(1:length(centered.colnames), function(ii){
-     !is.numeric(data[,centered.colnames[ii]])
+  ch3 <- sapply(1:length(centered_colnames), function(ii){
+     !is.numeric(data[,centered_colnames[ii]])
   })
   if(any(ch3)) stop(paste0("following columns of 'data' are not numeric for the calculation:",paste(which(ch3),collapse = ",")))
 
   # prepare data for optimization
-  if(is.null(centered.colnames)) centered.colnames <- 1:ncol(data)
-  EM <- data[ , centered.colnames, drop=FALSE]
+  if(is.null(centered_colnames)) centered_colnames <- 1:ncol(data)
+  EM <- data[ , centered_colnames, drop=FALSE]
   ind <- apply(EM,1,function(xx) any(is.na(xx)))
   nr_missing <- sum(ind)
   EM <- as.matrix(EM[!ind,,drop=FALSE])
@@ -79,12 +79,12 @@ estimate.weights <- function(data, centered.colnames = NULL, startVal = 0, metho
   data$scaled_weights <- NA
   data$scaled_weights[!ind] <- wt_rs
 
-  if(is.numeric(centered.colnames)) centered.colnames <- names(data)[centered.colnames]
+  if(is.numeric(centered_colnames)) centered_colnames <- names(data)[centered_colnames]
 
   # Output
   list(
     data = data,
-    centered.colnames = centered.colnames,
+    centered_colnames = centered_colnames,
     nr_missing = nr_missing,
     ess = sum(wt)^2 / sum(wt^2),
     opt = opt1
@@ -99,11 +99,11 @@ estimate.weights <- function(data, centered.colnames = NULL, startVal = 0, metho
 #'
 #'
 #' @param wt a numeric vector of individual MAIC weights (derived use in \code{\link{cal_weights}})
-#' @param main.title a character string, main title of the plot
+#' @param main_title a character string, main title of the plot
 #'
 #' @return a plot
 #' @export
-plot.weights <- function(wt, main.title = "Unscaled Individual Weigths") {
+plot_weights <- function(wt, main_title = "Unscaled Individual Weigths") {
 
   # calculate sample size and exclude NA from wt
   nr_na <- sum(is.na(wt))
@@ -129,7 +129,7 @@ plot.weights <- function(wt, main.title = "Unscaled Individual Weigths") {
 
   # plot
   par(mfrow = c(1, 1), family = "HersheySerif", mgp = c(2.3, 0.5, 0), cex.axis = 0.9, cex.lab = 0.95, bty = "n")
-  hist(wt, border = "white", col = "#6ECEB2", main = main.title, breaks = 20, yaxt = "n", xlab = "")
+  hist(wt, border = "white", col = "#6ECEB2", main = main_title, breaks = 20, yaxt = "n", xlab = "")
   axis(2, las = 1)
   abline(v = median(wt), lty = 2, col = "#688CE8", lwd = 2)
   legend("topright", bty = "n", lty = plot_lty, cex = 0.8, legend = plot_legend)

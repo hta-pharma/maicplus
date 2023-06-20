@@ -30,16 +30,16 @@ pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicp
 #**!!
 
 #### prepare data ----------------------------------------------------------
-target_pop <- process.agd(target_pop)
-adsl <- process.ipd(adsl,dummize.cols=c("SEX"),dummize.ref.level=c("Female"))
-use_adsl <- center.ipd(ipd = adsl, agd = target_pop)
+target_pop <- process_agd(target_pop)
+adsl <- process_ipd(adsl,dummize_cols=c("SEX"),dummize_ref_level=c("Female"))
+use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
 
-match_res <-  estimate.weights(data=use_adsl,
-                               centered.colnames = grep("_CENTERED$",names(use_adsl)),
+match_res <-  estimate_weights(data=use_adsl,
+                               centered_colnames = grep("_CENTERED$",names(use_adsl)),
                                startVal = 0,
                                method = "BFGS")
 
-plot.weights(wt = match_res$data$weights, main.title = "Unscaled Individual Weigths")
+plot_weights(wt = match_res$data$weights, main_title = "Unscaled Individual Weigths")
 
 
 
