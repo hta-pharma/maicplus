@@ -1,0 +1,35 @@
+---
+title: "runthrough_example"
+output: html_document
+---
+
+```{r, echo= FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE,
+                      tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+```
+
+
+## Data
+
+```{r}
+setwd("~/GitHub/maicplus")
+devtools::load_all()
+```
+
+```{r}
+target_pop <- data.frame(
+  STUDY = "Study_XXXX",
+  ARM = "Total",
+  N = 300,
+  AGE_MEAN = 51,
+ # AGE_MEDIAN = 49, can have both mean and median?
+  AGE_SD = 3.25, 
+  SEX_MALE_COUNT = 147,
+  ECOG0_COUNT = 105,
+  SMOKE_COUNT = 58
+)
+```
+
+```{r}
+process_agd(raw_agd)
+```

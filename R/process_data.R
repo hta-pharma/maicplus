@@ -1,13 +1,28 @@
-# Functions for pre-processing data before conduct MAIC
+# Functions for pre-processing data before conducting MAIC
+# Functions to be exported ---------------------------------------
 
-# functions to be exported ---------------------------------------
-
-#' Process and Check Aggregated data format
+#' Process and check aggregated data format
 #'
-#' @param raw_agd
+#' @param raw_agd Raw data must contain STUDY, ARM, and N. Also, variable names should be followed
+#' by legal suffixes (i.e. MEAN, MEDIAN, SD, or COUNT)
 #'
+#' @example 
+#' target_pop <- data.frame(
+#' STUDY = "Study_XXXX",
+#' ARM = "Total",
+#' N = 300,
+#' AGE_MEAN = 51,
+#' AGE_MEDIAN = 49, can have both mean and median?
+#' AGE_SD = 3.25,
+#' SEX_MALE_COUNT = 147,
+#' ECOG0_COUNT = 105,
+#' SMOKE_COUNT = 58
+#' )
+#' raw_agd(target_pop)
+#' 
 #' @return
 #' @export
+
 process_agd <- function(raw_agd) {
 
   raw_agd <- as.data.frame(raw_agd)
