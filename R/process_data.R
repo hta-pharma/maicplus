@@ -1,10 +1,14 @@
 # Functions for pre-processing data before conducting MAIC
 # Functions to be exported ---------------------------------------
 
-#' Process and check aggregated data format
+#' Pre-process aggregate level data
 #'
-#' @param raw_agd Raw data must contain STUDY, ARM, and N. Also, variable names should be followed
-#' by legal suffixes (i.e. MEAN, MEDIAN, SD, or COUNT)
+#' Function checks the format of aggregated level data. 
+#' Raw data that does not have legal suffixes are dropped. 
+#' If a variable is a count variable, it is divided by sample size (N) and converted to proportions.
+#'
+#' @param raw_agd raw aggregate data should contain STUDY, ARM, and N. Variable names should be followed
+#' by legal suffixes (i.e. MEAN, MEDIAN, SD, or COUNT).
 #'
 #' @example 
 #' target_pop <- data.frame(
@@ -12,7 +16,7 @@
 #' ARM = "Total",
 #' N = 300,
 #' AGE_MEAN = 51,
-#' AGE_MEDIAN = 49, can have both mean and median?
+#' AGE_MEDIAN = 49,
 #' AGE_SD = 3.25,
 #' SEX_MALE_COUNT = 147,
 #' ECOG0_COUNT = 105,
@@ -20,17 +24,17 @@
 #' )
 #' raw_agd(target_pop)
 #' 
-#' @return
+#' @return pre-processed aggregate level data
 #' @export
 
 process_agd <- function(raw_agd) {
 
   raw_agd <- as.data.frame(raw_agd)
-  # make all column names to be capital, avoid different style
+  # make all column names to be capital letters to avoid different style
   names(raw_agd) <- toupper(names(raw_agd))
 
-  # regulaized column name patterns
-  must_exist <- c("STUDY","ARM", "N")
+  # define column name patterns
+  must_exist <- c("STUDY","ARM","N")
   legal_suffix <- c("MEAN","MEDIAN","SD","COUNT")
 
   # swap "TREATMENT" column to "ARM", if applicable
@@ -57,7 +61,7 @@ process_agd <- function(raw_agd) {
   use_cols <- other_colnames[ind1&ind2]
   use_agd <- raw_agd[,c(must_exist,use_cols),drop=FALSE]
   if(!all(other_colnames%in%use_cols)){
-    warning(paste0("following columns are ignored since it does not following the naming convention:",
+    warning(paste0("following columns are ignored since it does not follow the naming conventions:",
                    paste(setdiff(other_colnames,use_cols),collapse = ",")))
   }
 
@@ -76,19 +80,22 @@ process_agd <- function(raw_agd) {
   }
 
   # output
-  with(use_agd,{ use_agd[tolower(ARM)=="total",,drop=FALSE] })
+  with(use_agd, use_agd[tolower(ARM)=="total",,drop=FALSE])
 }
 
-#' Process Individual Patient data to dummize categorical effective modifiers
+#' Dummize categorical variables in an individual patient data (ipd)
+#' 
+#' This is a convenient function to convert categorical variables into dummy binary variables.
+#' This would be especially useful if the variable has more than two factors. 
 #'
-#' @param raw_ipd
-#' @param dummize_cols
-#' @param dummize_ref_level
+#' @param raw_ipd ipd data that contains variable that you want to dummize
+#' @param dummize_cols vector of column names to binarize
+#' @param dummize_ref_level vector of reference level of the variables to binarize 
 #'
-#' @return
+#' @return ipd with dummized data
 #' @export
 
-process_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level){
+dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level){
    for(i in 1:length(dummize_cols)){
      yy <- raw_ipd[[ dummize_cols[i] ]]
      yy_levels <- na.omit(unique(yy))
@@ -104,12 +111,16 @@ process_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level){
 }
 
 
-#' Center effect modifiers
+#' Center variables using aggregate level data averages
 #'
-#' @param ipd
-#' @param agd
+#' This function subtracts variables by the aggregate level data averages
 #'
-#' @return
+#' @param ipd ipd should contain STUDY, ARM, and N. Variable names should be followed
+#' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP).
+#' @param agd pre-processed aggregate data which contain STUDY, ARM, and N. Variable names should be followed
+#' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP).
+#'
+#' @return centered ipd using aggregate level data
 #' @export
 center_ipd <- function(ipd,agd){
   # regulaized column name patterns
@@ -156,8 +167,7 @@ center_ipd <- function(ipd,agd){
 
 
 
-
-
+# functions NOT to be exported ---------------------------------------
 
 #' helper function: transform TTE ADaM data to suitable input for survival R pkg
 #'
@@ -186,9 +196,6 @@ ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
   as.data.frame(dd)
 }
 
-
-
-# functions NOT to be exported ---------------------------------------
 
 #' Calculate pooled arm statistics in AgD based on arm-specific statistics
 #'
