@@ -1,14 +1,18 @@
-# Functions for pre-processing data before conducting MAIC
+
 # Functions to be exported ---------------------------------------
 
 #' Pre-process aggregate level data
 #'
-#' Function checks the format of aggregated level data. 
-#' Raw data that does not have legal suffixes are dropped. 
-#' If a variable is a count variable, it is divided by sample size (N) and converted to proportions.
+#' This function checks the format of aggregated level data. Aggregate level data is required
+#' to have three columns: STUDY, ARM and N. STUDY and ARM serves as a purpose to describe the
+#' aggregate level data and is not crucial what value it is assigned.
+#' Column names that do not have legal suffixes (MEAN, MEDIAN, SD, COUNT, or PROP) are dropped.
+#' If a variable is a count variable, it is converted to proportions by dividing the sample size (N).
+#' If the aggregated data comes from multiple sources (i.e. different analysis population) and 
+#' sample size differs for each variable, one option is to specify proportion directly instead of count by using suffix PROP. 
 #'
 #' @param raw_agd raw aggregate data should contain STUDY, ARM, and N. Variable names should be followed
-#' by legal suffixes (i.e. MEAN, MEDIAN, SD, or COUNT).
+#' by legal suffixes (i.e. MEAN, MEDIAN, SD, COUNT, or PROP).
 #'
 #' @example 
 #' target_pop <- data.frame(
@@ -20,7 +24,7 @@
 #' AGE_SD = 3.25,
 #' SEX_MALE_COUNT = 147,
 #' ECOG0_COUNT = 105,
-#' SMOKE_COUNT = 58
+#' SMOKE_PROP = 58/290
 #' )
 #' raw_agd(target_pop)
 #' 
@@ -35,7 +39,7 @@ process_agd <- function(raw_agd) {
 
   # define column name patterns
   must_exist <- c("STUDY","ARM","N")
-  legal_suffix <- c("MEAN","MEDIAN","SD","COUNT")
+  legal_suffix <- c("MEAN","MEDIAN","SD","COUNT","PROP")
 
   # swap "TREATMENT" column to "ARM", if applicable
   if("TREATMENT"%in%names(raw_agd) & (!"ARM"%in%names(raw_agd))){
@@ -86,13 +90,14 @@ process_agd <- function(raw_agd) {
 #' Dummize categorical variables in an individual patient data (ipd)
 #' 
 #' This is a convenient function to convert categorical variables into dummy binary variables.
-#' This would be especially useful if the variable has more than two factors. 
+#' This would be especially useful if the variable has more than two factors.
+#' Note that the original variable is kept after a variable is dummized. 
 #'
-#' @param raw_ipd ipd data that contains variable that you want to dummize
+#' @param raw_ipd ipd data that contains variable to dummize
 #' @param dummize_cols vector of column names to binarize
 #' @param dummize_ref_level vector of reference level of the variables to binarize 
 #'
-#' @return ipd with dummized data
+#' @return ipd with dummized columns
 #' @export
 
 dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level){
@@ -113,15 +118,17 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level){
 
 #' Center variables using aggregate level data averages
 #'
-#' This function subtracts variables by the aggregate level data averages
+#' This function subtracts individual patient data (ipd) variables by the aggregate level 
+#' data averages. This centering is needed in order to calculate weights.
 #'
 #' @param ipd ipd should contain STUDY, ARM, and N. Variable names should be followed
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP).
 #' @param agd pre-processed aggregate data which contain STUDY, ARM, and N. Variable names should be followed
-#' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP).
+#' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP). Note that COUNT suffix is no longer accepted.
 #'
 #' @return centered ipd using aggregate level data
 #' @export
+
 center_ipd <- function(ipd,agd){
   # regulaized column name patterns
   must_exist <- c("STUDY","ARM", "N")
@@ -129,32 +136,31 @@ center_ipd <- function(ipd,agd){
   suffix_pat <- paste(paste0("_",legal_suffix,"$"),collapse = "|")
 
   for(i in 1:nrow(agd)){# study i
-     study_id <- agd$STUDY[i]
-     use_agd <- agd[i,!names(agd)%in%must_exist,drop=FALSE]
-     param_id <- gsub(suffix_pat,"",names(use_agd))
+    study_id <- agd$STUDY[i]
+    use_agd <- agd[i,!names(agd)%in%must_exist,drop=FALSE]
+    param_id <- gsub(suffix_pat,"",names(use_agd))
 
-     for(j in 1:ncol(use_agd)){# effect modifier j
-       if(is.na(use_agd[[j]])) next
+    for(j in 1:ncol(use_agd)){# effect modifier j
+    if(is.na(use_agd[[j]])) next
 
-       ipd_param <- param_id[j]
+      ipd_param <- param_id[j]
 
-       if(grepl("_MEAN$|_PROP$",names(use_agd)[j])){
+      if(grepl("_MEAN$|_PROP$",names(use_agd)[j])){
 
-            ipd[[paste0(ipd_param,"_","CENTERED")]] <- ipd[[ipd_param]] - use_agd[[j]]
+        ipd[[paste0(ipd_param,"_","CENTERED")]] <- ipd[[ipd_param]] - use_agd[[j]]
 
-       }else if(grepl("_MEDIAN$",names(use_agd)[j])){
+      } else if(grepl("_MEDIAN$",names(use_agd)[j])){
 
-            ipd[[paste0(ipd_param,"_MED_","CENTERED")]] <- ipd[[ipd_param]] > use_agd[[j]]
-            ipd[[paste0(ipd_param,"_MED_","CENTERED")]] <- ipd[[paste0(ipd_param,"_MED_","CENTERED")]] - 0.5
+        ipd[[paste0(ipd_param,"_MED_","CENTERED")]] <- ipd[[ipd_param]] > use_agd[[j]]
+        ipd[[paste0(ipd_param,"_MED_","CENTERED")]] <- ipd[[paste0(ipd_param,"_MED_","CENTERED")]] - 0.5
+      
+      } else if(grepl("_SD$",names(use_agd)[j])){
 
-       }else if(grepl("_SD$",names(use_agd)[j])){
-
-            ipd[[paste0(ipd_param,"_SD_","CENTERED")]] <- ipd[[ipd_param]]^2
-            tmp_aim <- use_agd[[j]]^2 + (use_agd[[paste0(ipd_param,"_MEAN")]]^2)
-            ipd[[paste0(ipd_param,"_SD_","CENTERED")]] <- ipd[[paste0(ipd_param,"_SD_","CENTERED")]] - tmp_aim
-
-       }
-     } # end of j
+        ipd[[paste0(ipd_param,"_SD_","CENTERED")]] <- ipd[[ipd_param]]^2
+        tmp_aim <- use_agd[[j]]^2 + (use_agd[[paste0(ipd_param,"_MEAN")]]^2)
+        ipd[[paste0(ipd_param,"_SD_","CENTERED")]] <- ipd[[paste0(ipd_param,"_SD_","CENTERED")]] - tmp_aim
+      }
+    } # end of j
   } # end of i
 
   # output
