@@ -1,11 +1,10 @@
 
 # Functions to be exported ---------------------------------------
 
-#' Pre-process aggregate level data
+#' Pre-process aggregate data
 #'
-#' This function checks the format of aggregated level data. Aggregate level data is required
-#' to have three columns: STUDY, ARM and N. STUDY and ARM serves as a purpose to describe the
-#' aggregate level data and is not crucial what value it is assigned.
+#' This function checks the format of the aggregate data. 
+#' Data is required to have three columns: STUDY, ARM, and N. 
 #' Column names that do not have legal suffixes (MEAN, MEDIAN, SD, COUNT, or PROP) are dropped.
 #' If a variable is a count variable, it is converted to proportions by dividing the sample size (N).
 #' If the aggregated data comes from multiple sources (i.e. different analysis population) and 
@@ -69,7 +68,10 @@ process_agd <- function(raw_agd) {
                    paste(setdiff(other_colnames,use_cols),collapse = ",")))
   }
 
-  # complete statistics for ARM=="Total"
+  # If the aggregate data is divided by different arms, calculate pooled arm statistics using 
+  # complete_agd function
+  
+  complete statistics for ARM=="Total"
   if(!"total"%in%tolower(use_agd$ARM)){
      use_agd <- complete_agd(use_agd)
   }
@@ -116,22 +118,26 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level){
 }
 
 
-#' Center variables using aggregate level data averages
+#' Center variables using aggregate data averages
 #'
-#' This function subtracts individual patient data (ipd) variables by the aggregate level 
-#' data averages. This centering is needed in order to calculate weights.
+#' This function subtracts individual patient data (IPD) variables by the aggregate 
+#' data averages. This centering is needed in order to calculate weights. IPD and aggregate data
+#' variable names should match.
 #'
-#' @param ipd ipd should contain STUDY, ARM, and N. Variable names should be followed
-#' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP).
+#' @param ipd ipd should contain STUDY, ARM, and N. 
+#' IPD names should match the aggregate data names without the suffix.
+#' This would involve either changing the aggregate data name or the ipd name.
+#' For instance, if we binarize SEX variable with MALE as a reference, function names the new variable SEX_MALE.
+#' In this case, SEX_MALE should also be available in the aggregate data.
 #' @param agd pre-processed aggregate data which contain STUDY, ARM, and N. Variable names should be followed
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP). Note that COUNT suffix is no longer accepted.
 #'
 #' @return centered ipd using aggregate level data
 #' @export
 
-center_ipd <- function(ipd,agd){
+center_ipd <- function(ipd, agd){
   # regulaized column name patterns
-  must_exist <- c("STUDY","ARM", "N")
+  must_exist <- c("STUDY","ARM","N")
   legal_suffix <- c("MEAN","MEDIAN","SD","PROP")
   suffix_pat <- paste(paste0("_",legal_suffix,"$"),collapse = "|")
 
@@ -156,6 +162,7 @@ center_ipd <- function(ipd,agd){
       
       } else if(grepl("_SD$",names(use_agd)[j])){
 
+        # this term is denoted as SD, but it is really a squared mean term
         ipd[[paste0(ipd_param,"_SD_","CENTERED")]] <- ipd[[ipd_param]]^2
         tmp_aim <- use_agd[[j]]^2 + (use_agd[[paste0(ipd_param,"_MEAN")]]^2)
         ipd[[paste0(ipd_param,"_SD_","CENTERED")]] <- ipd[[paste0(ipd_param,"_SD_","CENTERED")]] - tmp_aim
@@ -180,7 +187,7 @@ center_ipd <- function(ipd,agd){
 #' @param dd data frame, ADTTE read via haven::read_sas
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #'
-#' @return a data frame can be used as input to survival::Surv
+#' @return a data frame that can be used as input to survival::Surv
 ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
   timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
@@ -205,6 +212,8 @@ ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
 
 #' Calculate pooled arm statistics in AgD based on arm-specific statistics
 #'
+#' Write definition.. 
+#'
 #' @param use_agd
 #'
 #' @return
@@ -216,7 +225,7 @@ complete_agd <- function(use_agd) {
 
   rowId <- nrow(use_agd)+1
   use_agd[rowId, ] <- NA
-  use_agd$STUDY[rowId] <-   use_agd$STUDY[1]
+  use_agd$STUDY[rowId] <- use_agd$STUDY[1]
   use_agd$ARM[rowId] <- "total"
 
   # complete N and count
