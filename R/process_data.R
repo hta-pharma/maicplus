@@ -1,3 +1,4 @@
+# Functions for pre-processing data before conduct MAIC
 
 # Functions to be exported ---------------------------------------
 
@@ -69,9 +70,7 @@ process_agd <- function(raw_agd) {
   }
 
   # If the aggregate data is divided by different arms, calculate pooled arm statistics using 
-  # complete_agd function
-  
-  complete statistics for ARM=="Total"
+  # complete_agd function; complete statistics is specified by ARM=="Total"
   if(!"total"%in%tolower(use_agd$ARM)){
      use_agd <- complete_agd(use_agd)
   }
@@ -118,21 +117,20 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level){
 }
 
 
-#' Center variables using aggregate data averages
+#' Center individual patient data (IPD) variables using aggregate data averages
 #'
-#' This function subtracts individual patient data (IPD) variables by the aggregate 
-#' data averages. This centering is needed in order to calculate weights. IPD and aggregate data
-#' variable names should match.
+#' This function subtracts IPD variables (prognostic variables and/or effect modifiers) 
+#' by the aggregate data averages. This centering is needed in order to calculate weights. 
+#' IPD and aggregate data variable names should match.
 #'
-#' @param ipd ipd should contain STUDY, ARM, and N. 
-#' IPD names should match the aggregate data names without the suffix.
+#' @param ipd IPD variable names should match the aggregate data names without the suffix.
 #' This would involve either changing the aggregate data name or the ipd name.
-#' For instance, if we binarize SEX variable with MALE as a reference, function names the new variable SEX_MALE.
+#' For instance, if we binarize SEX variable with MALE as a reference, function names the new variable as SEX_MALE.
 #' In this case, SEX_MALE should also be available in the aggregate data.
 #' @param agd pre-processed aggregate data which contain STUDY, ARM, and N. Variable names should be followed
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP). Note that COUNT suffix is no longer accepted.
 #'
-#' @return centered ipd using aggregate level data
+#' @return centered ipd using aggregate level data averages
 #' @export
 
 center_ipd <- function(ipd, agd){
@@ -175,12 +173,53 @@ center_ipd <- function(ipd, agd){
 }
 
 
+# Functions NOT to be exported ---------------------------------------
+
+#' Calculate pooled arm statistics in AgD based on arm-specific statistics
+#'
+#' This is a convenient function to pool arm statistics ## FILL IN
+#'
+#' @param use_agd ## FILL IN: is this aggregate data before preprocessing or not
+#'
+#' @return
+complete_agd <- function(use_agd) {
+  use_agd <- as.data.frame(use_agd)
+  use_agd <- with(use_agd, {use_agd[tolower(ARM)!="total",,drop=FALSE]})
+  
+  if(nrow(use_agd)<2) stop("error in call complete_agd: need to have at least 2 rows that ARM!='total' ")
+  
+  rowId <- nrow(use_agd)+1
+  use_agd[rowId, ] <- NA
+  use_agd$STUDY[rowId] <- use_agd$STUDY[1]
+  use_agd$ARM[rowId] <- "total"
+  
+  # complete N and count
+  NN <- use_agd$N[rowId] <- sum(use_agd$N, na.rm=TRUE)
+  nn <- use_agd$N[-rowId]
+  for(i in grep("_COUNT$",names(use_agd),value=TRUE)){
+    use_agd[[i]][rowId] <- sum(use_agd[[i]], na.rm=TRUE)
+  }
+  
+  # complete MEAN
+  for(i in grep("_MEAN$",names(use_agd),value=TRUE)){
+    use_agd[[i]][rowId] <- sum(use_agd[[i]]*nn)/NN
+  }
+  
+  # complete SD
+  for(i in grep("_SD$",names(use_agd),value=TRUE)){
+    use_agd[[i]][rowId] <- sqrt( sum(use_agd[[i]]^2*(nn-1))/(N-1) )
+  }
+  
+  # complete MEDIAN, approximately!!
+  for(i in grep("_MEDIAN$",names(use_agd),value=TRUE)){
+    use_agd[[i]][rowId] <- mean(use_agd[[i]][-rowId])
+  }
+  
+  # output
+  use_agd
+}
 
 
-
-
-
-# functions NOT to be exported ---------------------------------------
 
 #' helper function: transform TTE ADaM data to suitable input for survival R pkg
 #'
@@ -208,50 +247,4 @@ ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
   if (!is.null(trt)) dd$treatment <- trt
   as.data.frame(dd)
 }
-
-
-#' Calculate pooled arm statistics in AgD based on arm-specific statistics
-#'
-#' Write definition.. 
-#'
-#' @param use_agd
-#'
-#' @return
-complete_agd <- function(use_agd) {
-  use_agd <- as.data.frame(use_agd)
-  use_agd <- with(use_agd, {use_agd[tolower(ARM)!="total",,drop=FALSE]})
-
-  if(nrow(use_agd)<2) stop("error in call complete_agd: need to have at least 2 rows that ARM!='total' ")
-
-  rowId <- nrow(use_agd)+1
-  use_agd[rowId, ] <- NA
-  use_agd$STUDY[rowId] <- use_agd$STUDY[1]
-  use_agd$ARM[rowId] <- "total"
-
-  # complete N and count
-  NN <- use_agd$N[rowId] <- sum(use_agd$N, na.rm=TRUE)
-  nn <- use_agd$N[-rowId]
-  for(i in grep("_COUNT$",names(use_agd),value=TRUE)){
-     use_agd[[i]][rowId] <- sum(use_agd[[i]], na.rm=TRUE)
-  }
-
-  # complete MEAN
-  for(i in grep("_MEAN$",names(use_agd),value=TRUE)){
-    use_agd[[i]][rowId] <- sum(use_agd[[i]]*nn)/NN
-  }
-
-  # complete SD
-  for(i in grep("_SD$",names(use_agd),value=TRUE)){
-    use_agd[[i]][rowId] <- sqrt( sum(use_agd[[i]]^2*(nn-1))/(N-1) )
-  }
-
-  # complete MEDIAN, approximately!!
-  for(i in grep("_MEDIAN$",names(use_agd),value=TRUE)){
-    use_agd[[i]][rowId] <- mean(use_agd[[i]][-rowId])
-  }
-
-  # output
-  use_agd
-}
-
 

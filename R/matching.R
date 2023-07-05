@@ -4,11 +4,11 @@
 
 #' Derive individual weights in the matching step of MAIC
 #'
-#' Assuming data is properly processed, this function takes individual patient data (IPD) with centered effect modifiers as input,
-#' and generates weights for each individual in IPD trial that matches the chosen statistics of those effect modifiers in Aggregated Data (AgD) trial.
+#' Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates (effect modifiers and/or prognostic variables) as input,
+#' and generates weights for each individual in IPD trial that matches the chosen statistics of those covariates in Aggregated Data (AgD) trial.
 #'
-#' @param data a numeric matrix, centered effect modifiers of IPD, no missing value in any cell is allowed
-#' @param centered_colnames a character or numeric vector, column indicators of centered effect modifiers, by default NULL meaning all columns in \code{data} are effect modifiers
+#' @param data a numeric matrix, centered covariates of IPD, no missing value in any cell is allowed
+#' @param centered_colnames a character or numeric vector (column indicators) of centered covariates
 #' @param startVal a scalar, the starting value for all coefficients of the propensity score regression
 #' @param method a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()}). The default is "BFGS", other options are "Nelder-Mead", "CG", "L-BFGS-B", "SANN", and "Brent"
 #' @param ... all other arguments from \code{base::optim()}
@@ -24,7 +24,7 @@
 #' @export
 #'
 #' @examples
-estimate_weights <- function(data, centered_colnames = NULL, startVal = 0, method = "BFGS", ...) {
+estimate_weights <- function(data, centered_colnames, startVal = 0, method = "BFGS", ...) {
   # pre check
   ch1 <- is.data.frame(data)
   if(!ch1) stop("'data' is not a data.frame")
@@ -95,14 +95,14 @@ estimate_weights <- function(data, centered_colnames = NULL, startVal = 0, metho
 #' Plot MAIC weights in a histogram with key statistics in legend
 #'
 #' Generates a plot given the individuals weights with key summary in top right legend that includes
-#' median weight, effective sample size (ESS), reduction percentage (what percent ESS takes up in the original sample size),
+#' median weight, effective sample size (ESS), reduction percentage (what percent ESS is reduced from the original sample size),
 #'
-#'
-#' @param wt a numeric vector of individual MAIC weights (derived use in \code{\link{cal_weights}})
+#' @param wt a numeric vector of individual MAIC weights (derived using \code{\link{cal_weights}})
 #' @param main_title a character string, main title of the plot
 #'
 #' @return a plot
 #' @export
+
 plot_weights <- function(wt, main_title = "Unscaled Individual Weigths") {
 
   # calculate sample size and exclude NA from wt
@@ -117,10 +117,11 @@ plot_weights <- function(wt, main_title = "Unscaled Individual Weigths") {
   # prepare legend
   plot_legend <- c(
     paste0("Median = ", round(median(wt), 4)),
+    paste0("N = ", n),
     paste0("ESS = ", round(ess, 2)),
     paste0("Reduction% = ", ess_reduct)
   )
-  plot_lty <- c(2, NA, NA)
+  plot_lty <- c(2, NA, NA, NA)
 
   if (nr_na > 0){
     plot_legend <- c(plot_legend, paste0("#Missing Weights = ", nr_na))
@@ -135,3 +136,32 @@ plot_weights <- function(wt, main_title = "Unscaled Individual Weigths") {
   legend("topright", bty = "n", lty = plot_lty, cex = 0.8, legend = plot_legend)
 }
 
+#' Check to see if weights are optimized correctly
+#'
+#' This function checks to see if the optimization is done properly by checking the covariate averages
+#' before and after adjustment.
+#'
+#' @param optimized object returned after calculating weights using \code{\link{cal_weights}}
+#' @param match_cov covariates that should be checked to see if the IPD weighted average matches the aggregate data average
+#' This could be same set of variables that were used to match or it can include variables that were not included to match (i.e. stratification variables)
+#' 
+#' @return data.frame of weighted and unweighted covariate averages of the IPD
+#' @export
+
+
+check_weights <- function(optimized, match_cov){
+  
+  ipd_with_weights <- optimized$data
+  
+  ARM <- c("Unweighted IPD", "Weighted IPD")
+  ESS <- round(c(nrow(ipd_with_weights), optimized$ess))
+  
+  unweighted_cov <- sapply(ipd_with_weights[,match_cov], mean)
+  weighted_cov <- sapply(ipd_with_weights[,match_cov], stats::weighted.mean, w = ipd_with_weights$weights)
+  
+  cov_combined <- rbind(unweighted_cov, weighted_cov)
+  baseline_summary <- data.frame(ARM = ARM, ESS = ESS)
+  baseline_summary <- cbind(baseline_summary, cov_combined)
+  
+  baseline_summary
+}
