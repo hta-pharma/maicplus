@@ -161,12 +161,12 @@ check_weights <- function(optimized, match_cov){
   weighted_mean <- function(x,w){
     sum(x * w / sum(w))
   }
-  
   weighted_cov <- round(sapply(ipd_with_weights[,match_cov], weighted_mean, w = ipd_with_weights$weights), digits = 2)
 
   cov_combined <- rbind(unweighted_cov, weighted_cov)
-  baseline_summary <- data.frame(ARM = ARM, ESS = ESS)
-  baseline_summary <- cbind(baseline_summary, cov_combined)
+  
+  baseline_summary <- cbind(ESS, cov_combined)
+  rownames(baseline_summary) <- ARM
   
   baseline_summary
 }
