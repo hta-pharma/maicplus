@@ -95,15 +95,19 @@ estimate_weights <- function(data, centered_colnames = NULL, startVal = 0, metho
 #' Plot MAIC weights in a histogram with key statistics in legend
 #'
 #' Generates a plot given the individuals weights with key summary in top right legend that includes
-#' median weight, effective sample size (ESS), reduction percentage (what percent ESS is reduced from the original sample size),
+#' median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the original sample size).
+#' There are two options of weights provided in \code{\link{cal_weights}}: unscaled or scaled.
+#' Scaled weights are relative to the original unit weights of each individual. 
+#' In other words, a scaled weight greater than 1 means that an individual carries more weight in the re-weighted population than the original data 
+#' and a scaled weight less than 1 means that an individual carries less weight in the re-weighted population than the original data. 
 #'
 #' @param wt a numeric vector of individual MAIC weights (derived using \code{\link{cal_weights}})
 #' @param main_title a character string, main title of the plot
 #'
-#' @return a plot
+#' @return a plot of unscaled or scaled weights
 #' @export
 
-plot_weights <- function(wt, main_title = "Unscaled Individual Weigths") {
+plot_weights <- function(wt, main_title = "Unscaled Individual Weights") {
 
   # calculate sample size and exclude NA from wt
   nr_na <- sum(is.na(wt))
@@ -117,11 +121,10 @@ plot_weights <- function(wt, main_title = "Unscaled Individual Weigths") {
   # prepare legend
   plot_legend <- c(
     paste0("Median = ", round(median(wt), 4)),
-    paste0("N = ", n),
     paste0("ESS = ", round(ess, 2)),
     paste0("Reduction% = ", ess_reduct)
   )
-  plot_lty <- c(2, NA, NA, NA)
+  plot_lty <- c(2, NA, NA)
 
   if (nr_na > 0){
     plot_legend <- c(plot_legend, paste0("#Missing Weights = ", nr_na))
