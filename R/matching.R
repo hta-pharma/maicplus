@@ -24,7 +24,7 @@
 #' @export
 #'
 #' @examples
-estimate_weights <- function(data, centered_colnames, startVal = 0, method = "BFGS", ...) {
+estimate_weights <- function(data, centered_colnames = NULL, startVal = 0, method = "BFGS", ...) {
   # pre check
   ch1 <- is.data.frame(data)
   if(!ch1) stop("'data' is not a data.frame")
@@ -154,11 +154,16 @@ check_weights <- function(optimized, match_cov){
   ipd_with_weights <- optimized$data
   
   ARM <- c("Unweighted IPD", "Weighted IPD")
-  ESS <- round(c(nrow(ipd_with_weights), optimized$ess))
+  ESS <- round(c(nrow(ipd_with_weights), optimized$ess), digits = 2)
   
-  unweighted_cov <- sapply(ipd_with_weights[,match_cov], mean)
-  weighted_cov <- sapply(ipd_with_weights[,match_cov], stats::weighted.mean, w = ipd_with_weights$weights)
+  unweighted_cov <- round(sapply(ipd_with_weights[,match_cov], mean), digits = 2)
+
+  weighted_mean <- function(x,w){
+    sum(x * w / sum(w))
+  }
   
+  weighted_cov <- round(sapply(ipd_with_weights[,match_cov], weighted_mean, w = ipd_with_weights$weights), digits = 2)
+
   cov_combined <- rbind(unweighted_cov, weighted_cov)
   baseline_summary <- data.frame(ARM = ARM, ESS = ESS)
   baseline_summary <- cbind(baseline_summary, cov_combined)
