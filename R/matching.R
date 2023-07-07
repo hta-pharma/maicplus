@@ -113,7 +113,6 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
 #' @export
 
 plot_weights <- function(wt, main_title = "Unscaled Individual Weights") {
-
   # calculate sample size and exclude NA from wt
   nr_na <- sum(is.na(wt))
   n <- length(wt) - nr_na
@@ -131,7 +130,7 @@ plot_weights <- function(wt, main_title = "Unscaled Individual Weights") {
   )
   plot_lty <- c(2, NA, NA)
 
-  if (nr_na > 0){
+  if (nr_na > 0) {
     plot_legend <- c(plot_legend, paste0("#Missing Weights = ", nr_na))
     plot_lty <- c(plot_lty, NA)
   }
@@ -158,16 +157,15 @@ plot_weights <- function(wt, main_title = "Unscaled Individual Weights") {
 #' @export
 
 
-check_weights <- function(optimized, match_cov, digits = 2){
-
+check_weights <- function(optimized, match_cov, digits = 2) {
   ipd_with_weights <- optimized$data
 
   arm_names <- c("Unweighted IPD", "Weighted IPD")
   ess <- c(nrow(ipd_with_weights), optimized$ess)
 
-  unweighted_cov <- sapply(ipd_with_weights[,match_cov], mean)
+  unweighted_cov <- sapply(ipd_with_weights[, match_cov], mean)
 
-  weighted_cov <- sapply(ipd_with_weights[,match_cov], weighted.mean, w = ipd_with_weights$weights)
+  weighted_cov <- sapply(ipd_with_weights[, match_cov], weighted.mean, w = ipd_with_weights$weights)
 
   cov_combined <- rbind(unweighted_cov, weighted_cov)
 
