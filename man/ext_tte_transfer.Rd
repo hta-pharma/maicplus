@@ -7,12 +7,12 @@
 ext_tte_transfer(dd, time_scale = "month", trt = NULL)
 }
 \arguments{
-\item{dd}{data frame, ADTTE read via \code{haven::read_sas()}}
+\item{dd}{data frame, ADTTE read via haven::read_sas}
 
 \item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
 }
 \value{
-a data frame can be used as input to \code{\link[survival:Surv]{survival::Surv()}}
+a data frame that can be used as input to survival::Surv
 }
 \description{
 helper function: transform TTE ADaM data to suitable input for survival R pkg
