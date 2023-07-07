@@ -5,24 +5,24 @@
 #'
 #' @param trt a list with two named scalars for the study with interested experimental arm, one named 'est' for the point estimate, and the other named 'se' for the standard error
 #' @param com same as \code{trt} for the study with interested control arm
-#' @param conf.lv a numerical scalar, prescribe confidence level to derive two-sided confidence interval for the adjusted treatment effect
+#' @param conf_lv a numerical scalar, prescribe confidence level to derive two-sided confidence interval for the adjusted treatment effect
 #'
 #' @return a list with 5 elements,
 #' \describe{
 #'   \item est - a scalar, point estimate of the adjusted treatment effect
 #'   \item se - a scalar, standard error of the adjusted treatment effect (i.e. \code{est} in return)
-#'   \item ci_l - a scalor, lower confidence limit of a two-sided CI with prescribed nominal level by \code{conf.lv}
-#'   \item ci_u - a scalor, upper confidence limit of a two-sided CI with prescribed nominal level by \code{conf.lv}
+#'   \item ci_l - a scalor, lower confidence limit of a two-sided CI with prescribed nominal level by \code{conf_lv}
+#'   \item ci_u - a scalor, upper confidence limit of a two-sided CI with prescribed nominal level by \code{conf_lv}
 #'   \item pval - p-value of Z-test, with null hypothesis that \code{est} is zero
 #' }
 #' @export
 #'
 #' @examples
-bucher <- function(trt, com, conf.lv = 0.95) {
+bucher <- function(trt, com, conf_lv = 0.95) {
   est <- trt$est - com$est
   se <- sqrt(trt$se^2 + com$se^2)
-  ci_l <- est - qnorm(0.5 + conf.lv / 2) * se
-  ci_u <- est + qnorm(0.5 + conf.lv / 2) * se
+  ci_l <- est - qnorm(0.5 + conf_lv / 2) * se
+  ci_u <- est + qnorm(0.5 + conf_lv / 2) * se
   if (est > 0) {
     pval <- 2 * (1 - pnorm(est, 0, se))
   } else {

@@ -10,16 +10,18 @@
 #' @param data a numeric matrix, centered effect modifiers of IPD, no missing value in any cell is allowed
 #' @param centered_colnames a character or numeric vector, column indicators of centered effect modifiers, by default NULL meaning all columns in \code{data} are effect modifiers
 #' @param startVal a scalar, the starting value for all coefficients of the propensity score regression
-#' @param method a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()}). The default is "BFGS", other options are "Nelder-Mead", "CG", "L-BFGS-B", "SANN", and "Brent"
+#' @param method a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()}).
+#' The default is `"BFGS"`, other options are `"Nelder-Mead"`, `"CG"`, `"L-BFGS-B"`, `"SANN"`, and `"Brent"`
 #' @param ... all other arguments from \code{base::optim()}
 #'
 #' @return a list with the following 4 elements,
 #' \describe{
-#'   \item data - a data.frame, includes the input \code{data} with appended column 'weights' and 'scaled_weights'. Scaled weights has a summation to be the number of rows in \code{data} that has no missing value in any of the effect modifiers
-#'   \item centered_colnames - column names of centered effect modifiers in \code{data}
-#'   \item nr_missing - number of rows in \code{data} that has at least 1 missing value in specified centered effect modifiers
-#'   \item ess - effective sample size, square of sum divided by sum of squares
-#'   \item opt - R object returned by \code{base::optim()}, for assess convergence and other details
+#'   \item{data}{a data.frame, includes the input \code{data} with appended column 'weights' and 'scaled_weights'.
+#'   Scaled weights has a summation to be the number of rows in \code{data} that has no missing value in any of the effect modifiers}
+#'   \item{centered.colnames}{column names of centered effect modifiers in \code{data}}
+#'   \item{nr_missing}{number of rows in \code{data} that has at least 1 missing value in specified centered effect modifiers}
+#'   \item{ess}{effective sample size, square of sum divided by sum of squares}
+#'   \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
 #' }
 #' @export
 #'
@@ -94,14 +96,16 @@ estimate_weights <- function(data, centered_colnames = NULL, startVal = 0, metho
 
 #' Plot MAIC weights in a histogram with key statistics in legend
 #'
-#' Generates a plot given the individuals weights with key summary in top right legend that includes
-#' median weight, effective sample size (ESS), reduction percentage (what percent ESS takes up in the original sample size),
+#' Generates a plot given the individuals weights with key summary in top right legend that
+#' includes median weight, effective sample size (ESS), reduction percentage (what percent
+#' ESS takes up in the original sample size),
 #'
 #'
 #' @param wt a numeric vector of individual MAIC weights (derived use in \code{\link{cal_weights}})
 #' @param main_title a character string, main title of the plot
 #'
 #' @return a plot
+#' @importFrom graphics hist
 #' @export
 plot_weights <- function(wt, main_title = "Unscaled Individual Weigths") {
 

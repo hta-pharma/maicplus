@@ -20,3 +20,4 @@ images
 ^maicplus\.Rcheck$
 ^maicplus.*\.tar\.gz$
 ^maicplus.*\.tgz$
+^inst/dev/MAIC/MAIC-main/.Rbuildignore

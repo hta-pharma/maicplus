@@ -64,7 +64,7 @@ process_agd <- function(raw_agd) {
   with(use_agd,{ use_agd[tolower(ARM)=="total",,drop=FALSE] })
 }
 
-#' Process Individual Patient data to dummize categorical effective modifiers
+#' Process Individual Patient data categorical effective modifiers to dummy variables
 #'
 #' @param raw_ipd
 #' @param dummize_cols
@@ -96,7 +96,7 @@ process_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level){
 #'
 #' @return
 #' @export
-center_ipd <- function(ipd,agd){
+center_ipd <- function(ipd, agd){
   # regulaized column name patterns
   must_exist <- c("STUDY","ARM", "N")
   legal_suffix <- c("MEAN","MEDIAN","SD","PROP")
@@ -146,10 +146,10 @@ center_ipd <- function(ipd,agd){
 
 #' helper function: transform TTE ADaM data to suitable input for survival R pkg
 #'
-#' @param dd data frame, ADTTE read via haven::read_sas
+#' @param dd data frame, ADTTE read via `haven::read_sas()`
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #'
-#' @return a data frame can be used as input to survival::Surv
+#' @return a data frame can be used as input to [survival::Surv()]
 ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
   timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
@@ -175,7 +175,7 @@ ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
 
 # functions NOT to be exported ---------------------------------------
 
-#' Calculate pooled arm statistics in AgD based on arm-specific statistics
+#' Calculate pooled arm statistics in Aggregated Data (AgD) based on arm-specific statistics
 #'
 #' @param use_agd
 #'
@@ -192,8 +192,8 @@ complete_agd <- function(use_agd) {
   use_agd$ARM[rowId] <- "total"
 
   # complete N and count
-  NN <- use_agd$N[rowId] <- sum(use_agd$N, na.rm=TRUE)
-  nn <- use_agd$N[-rowId]
+  NN <- use_agd[["N"]][rowId] <- sum(use_agd[["N"]], na.rm=TRUE)
+  nn <- use_agd[["N"]][-rowId]
   for(i in grep("_COUNT$",names(use_agd),value=TRUE)){
      use_agd[[i]][rowId] <- sum(use_agd[[i]], na.rm=TRUE)
   }
@@ -205,7 +205,7 @@ complete_agd <- function(use_agd) {
 
   # complete SD
   for(i in grep("_SD$",names(use_agd),value=TRUE)){
-    use_agd[[i]][rowId] <- sqrt( sum(use_agd[[i]]^2*(nn-1))/(N-1) )
+    use_agd[[i]][rowId] <- sqrt( sum(use_agd[[i]]^2*(nn-1))/(NN-1) )
   }
 
   # complete MEDIAN, approximately!!

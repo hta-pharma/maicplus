@@ -2,7 +2,7 @@
 #'
 #' @param useWt a numeric vector of individual MAIC weights, length should the same as \code{nrow(dat)}
 #' @param dat a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial
-#' @param dat_ext a data frame, pseudo IPD from digitalized KM curve of external trial
+#' @param dat_ext a data frame, pseudo IPD from digitized KM curve of external trial
 #' @param trt  a character string, name of the interested treatment in internal trial (real IPD)
 #' @param trt_ext character string, name of the interested comparator in external trial used to subset \code{dat_ext} (pseudo IPD)
 #' @param endpoint_name a character string, name of the endpoint
@@ -13,11 +13,12 @@
 #' \itemize{
 #'   \item treatment - character or factor column
 #'   \item status - logical column, TRUE for censored/death, FALSE for otherwise
-#'   \time time - numeric column, observation time of the \code{status}; unit in days
+#'   \item time - numeric column, observation time of the \code{status}; unit in days
 #' }
 #'
 #' @return
 #' @importFrom survival Surv survfit coxph cox.zph
+#' @importFrom graphics par axis lines points legend abline
 #' @export
 #'
 #' @examples
@@ -50,10 +51,10 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
   # derive km w and w/o weights
   kmobj <- survfit(Surv(time, status) ~ treatment, dat, conf.type = "log-log")
   kmobj_adj <- survfit(Surv(time, status) ~ treatment, dat, weights = dat$weight, conf.type = "log-log")
-  
+
   par(cex.main=0.85)
-  km_makeup(kmobj, kmobj_adj, time_scale = time_scale, 
-            trt = trt, trt_ext = trt_ext, 
+  km_makeup(kmobj, kmobj_adj, time_scale = time_scale,
+            trt = trt, trt_ext = trt_ext,
             endpoint_name = endpoint_name)
   res[["plot_km"]] <- grDevices::recordPlot()
 
@@ -131,13 +132,14 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
 }
 
 #' helper function: sort out a nice report table to summarize survival analysis results
-#' for maic_tte_unanchor
+#' for `maic_tte_unanchor`
 #'
 #' @param coxobj returned object from \code{\link[survival]{coxph}}
 #' @param medSurvobj returned object from \code{\link{medSurv_makeup}}
 #' @param tag a string, by default NULL, if specified, an extra 1st column is created in the output
 #'
-#' @return a data frame with sample size, incidence rate, median survival time with 95%CI, hazard ratio estimate with 95%CI and wald test of hazard ratio
+#' @return a data frame with sample size, incidence rate, median survival time with 95% CI, hazard ratio estimate with
+#' 95% CI and Wald test of hazard ratio
 
 report_table <- function(coxobj, medSurvobj, tag = NULL) {
   hr_res <- format(round(summary(coxobj)$conf.int[-2], 2), nsmall = 2)
