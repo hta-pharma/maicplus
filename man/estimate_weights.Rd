@@ -13,9 +13,9 @@ estimate_weights(
 )
 }
 \arguments{
-\item{data}{a numeric matrix, centered effect modifiers of IPD, no missing value in any cell is allowed}
+\item{data}{a numeric matrix, centered covariates of IPD, no missing value in any cell is allowed}
 
-\item{centered_colnames}{a character or numeric vector, column indicators of centered effect modifiers, by default NULL meaning all columns in \code{data} are effect modifiers}
+\item{centered_colnames}{a character or numeric vector (column indicators) of centered covariates}
 
 \item{startVal}{a scalar, the starting value for all coefficients of the propensity score regression}
 
@@ -36,6 +36,6 @@ Scaled weights has a summation to be the number of rows in \code{data} that has 
 }
 }
 \description{
-Assuming data is properly processed, this function takes individual patient data (IPD) with centered effect modifiers as input,
-and generates weights for each individual in IPD trial that matches the chosen statistics of those effect modifiers in Aggregated Data (AgD) trial.
+Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates (effect modifiers and/or prognostic variables) as input,
+and generates weights for each individual in IPD trial that matches the chosen statistics of those covariates in Aggregated Data (AgD) trial.
 }

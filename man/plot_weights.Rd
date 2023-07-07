@@ -4,18 +4,21 @@
 \alias{plot_weights}
 \title{Plot MAIC weights in a histogram with key statistics in legend}
 \usage{
-plot_weights(wt, main_title = "Unscaled Individual Weigths")
+plot_weights(wt, main_title = "Unscaled Individual Weights")
 }
 \arguments{
-\item{wt}{a numeric vector of individual MAIC weights (derived use in \code{\link{cal_weights}})}
+\item{wt}{a numeric vector of individual MAIC weights (derived using \code{\link{cal_weights}})}
 
 \item{main_title}{a character string, main title of the plot}
 }
 \value{
-a plot
+a plot of unscaled or scaled weights
 }
 \description{
-Generates a plot given the individuals weights with key summary in top right legend that
-includes median weight, effective sample size (ESS), reduction percentage (what percent
-ESS takes up in the original sample size),
+Generates a plot given the individuals weights with key summary in top right legend that includes
+median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the original sample size).
+There are two options of weights provided in \code{\link{cal_weights}}: unscaled or scaled.
+Scaled weights are relative to the original unit weights of each individual.
+In other words, a scaled weight greater than 1 means that an individual carries more weight in the re-weighted population than the original data
+and a scaled weight less than 1 means that an individual carries less weight in the re-weighted population than the original data.
 }

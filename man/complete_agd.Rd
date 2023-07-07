@@ -7,8 +7,9 @@
 complete_agd(use_agd)
 }
 \arguments{
-\item{use_agd}{}
+\item{use_agd}{\subsection{FILL IN: is this aggregate data before preprocessing or not}{
+}}
 }
 \description{
-Calculate pooled arm statistics in Aggregated Data (AgD) based on arm-specific statistics
+This is a convenient function to pool arm statistics ## FILL IN
 }
