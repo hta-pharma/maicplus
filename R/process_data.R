@@ -88,7 +88,8 @@ process_agd <- function(raw_agd) {
   with(use_agd, use_agd[tolower(ARM)=="total",,drop=FALSE])
 }
 
-#' Dummize categorical variables in an individual patient data (ipd)
+
+#' Create dummy variables from categorical variables in an individual patient data (ipd)
 #' 
 #' This is a convenient function to convert categorical variables into dummy binary variables.
 #' This would be especially useful if the variable has more than two factors.
@@ -173,9 +174,11 @@ center_ipd <- function(ipd, agd){
 }
 
 
+
 # Functions NOT to be exported ---------------------------------------
 
-#' Calculate pooled arm statistics in AgD based on arm-specific statistics
+
+#' Calculate pooled arm statistics in Aggregated Data (AgD) based on arm-specific statistics
 #'
 #' This is a convenient function to pool arm statistics ## FILL IN
 #'
@@ -194,8 +197,8 @@ complete_agd <- function(use_agd) {
   use_agd$ARM[rowId] <- "total"
   
   # complete N and count
-  NN <- use_agd$N[rowId] <- sum(use_agd$N, na.rm=TRUE)
-  nn <- use_agd$N[-rowId]
+  NN <- use_agd[["N"]][rowId] <- sum(use_agd[["N"]], na.rm=TRUE)
+  nn <- use_agd[["N"]][-rowId]
   for(i in grep("_COUNT$",names(use_agd),value=TRUE)){
     use_agd[[i]][rowId] <- sum(use_agd[[i]], na.rm=TRUE)
   }
@@ -207,7 +210,7 @@ complete_agd <- function(use_agd) {
   
   # complete SD
   for(i in grep("_SD$",names(use_agd),value=TRUE)){
-    use_agd[[i]][rowId] <- sqrt( sum(use_agd[[i]]^2*(nn-1))/(N-1) )
+    use_agd[[i]][rowId] <- sqrt( sum(use_agd[[i]]^2*(nn-1))/(NN-1) )
   }
   
   # complete MEDIAN, approximately!!
@@ -218,7 +221,6 @@ complete_agd <- function(use_agd) {
   # output
   use_agd
 }
-
 
 
 #' helper function: transform TTE ADaM data to suitable input for survival R pkg

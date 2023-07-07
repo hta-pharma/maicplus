@@ -1,4 +1,4 @@
-#' helper function: makeup to get median survival time from a survival::survfit object
+#' helper function: makeup to get median survival time from a `survival::survfit` object
 #'
 #' extract and display median survival time with confidence interval
 #'
@@ -6,7 +6,7 @@
 #' @param legend a character string, name used in 'type' column in returned data frame
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #'
-#' @return a data frame with a index column 'type', mdian survival time and confidence interval
+#' @return a data frame with a index column 'type', median survival time and confidence interval
 #' @export
 medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
   timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
@@ -30,7 +30,7 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 
 
 
-#' helper function: makeup survival::survfit object for km plot
+#' helper function: makeup `survival::survfit` object for km plot
 #'
 #' @param km_fit returned object from \code{survival::survfit}
 #'
@@ -210,9 +210,9 @@ log_cum_haz_plot <- function(clldat, time_scale, log_time = TRUE, endpoint_name 
 }
 
 
-#' Plot schoenfeld residual plot for a Cox model fit
+#' Plot Schoenfeld residuals for a Cox model fit
 #'
-#' @param coxobj object returned from \code{\link[surival]{coxph}}
+#' @param coxobj object returned from \code{\link[survival]{coxph}}
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #' @param log_time logical, TRUE (default) or FALSE
 #' @param endpoint_name a character string, name of the endpoint
@@ -233,7 +233,7 @@ resid_plot <- function(coxobj, time_scale = "month", log_time = TRUE, endpoint_n
     cex = 0.9, col = "navyblue", yaxt = "n",
     ylab = "Unscaled Schoenfeld Residual", xlab = paste0(ifelse(log_time, "Log-", ""), "Time in ", time_scale),
     main = paste0(
-      "Diagnosis Plot: Unscaled Schoefeld Residual\nEndpoint: ", endpoint_name,
+      "Diagnosis Plot: Unscaled Schoenfeld Residual\nEndpoint: ", endpoint_name,
       ifelse(subtitle == "", "", "\n"), subtitle
     )
   )
