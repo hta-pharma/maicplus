@@ -7,7 +7,7 @@
 estimate_weights(
   data,
   centered_colnames = NULL,
-  startVal = 0,
+  start_val = 0,
   method = "BFGS",
   ...
 )
@@ -17,7 +17,7 @@ estimate_weights(
 
 \item{centered_colnames}{a character or numeric vector (column indicators) of centered covariates}
 
-\item{startVal}{a scalar, the starting value for all coefficients of the propensity score regression}
+\item{start_val}{a scalar, the starting value for all coefficients of the propensity score regression}
 
 \item{method}{a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()}).
 The default is \code{"BFGS"}, other options are \code{"Nelder-Mead"}, \code{"CG"}, \code{"L-BFGS-B"}, \code{"SANN"}, and \code{"Brent"}}
@@ -29,7 +29,7 @@ a list with the following 4 elements,
 \describe{
 \item{data}{a data.frame, includes the input \code{data} with appended column 'weights' and 'scaled_weights'.
 Scaled weights has a summation to be the number of rows in \code{data} that has no missing value in any of the effect modifiers}
-\item{centered.colnames}{column names of centered effect modifiers in \code{data}}
+\item{centered_colnames}{column names of centered effect modifiers in \code{data}}
 \item{nr_missing}{number of rows in \code{data} that has at least 1 missing value in specified centered effect modifiers}
 \item{ess}{effective sample size, square of sum divided by sum of squares}
 \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
