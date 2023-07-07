@@ -4,8 +4,9 @@
 
 #' Derive individual weights in the matching step of MAIC
 #'
-#' Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates (effect modifiers and/or prognostic variables) as input,
-#' and generates weights for each individual in IPD trial that matches the chosen statistics of those covariates in Aggregated Data (AgD) trial.
+#' Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates
+#' (effect modifiers and/or prognostic variables) as input, and generates weights for each individual in IPD trial that
+#' matches the chosen statistics of those covariates in Aggregated Data (AgD) trial.
 #'
 #' @param data a numeric matrix, centered covariates of IPD, no missing value in any cell is allowed
 #' @param centered_colnames a character or numeric vector (column indicators) of centered covariates
@@ -17,9 +18,11 @@
 #' @return a list with the following 4 elements,
 #' \describe{
 #'   \item{data}{a data.frame, includes the input \code{data} with appended column 'weights' and 'scaled_weights'.
-#'   Scaled weights has a summation to be the number of rows in \code{data} that has no missing value in any of the effect modifiers}
+#'   Scaled weights has a summation to be the number of rows in \code{data} that has no missing value in any of the
+#'   effect modifiers}
 #'   \item{centered_colnames}{column names of centered effect modifiers in \code{data}}
-#'   \item{nr_missing}{number of rows in \code{data} that has at least 1 missing value in specified centered effect modifiers}
+#'   \item{nr_missing}{number of rows in \code{data} that has at least 1 missing value in specified centered effect
+#'   modifiers}
 #'   \item{ess}{effective sample size, square of sum divided by sum of squares}
 #'   \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
 #' }
@@ -32,10 +35,10 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
   if (!ch1) stop("'data' is not a data.frame")
 
   ch2 <- (!is.null(centered_colnames))
-  if (ch2 & is.numeric(centered_colnames)) {
+  if (ch2 && is.numeric(centered_colnames)) {
     ch2b <- any(centered_colnames < 1 | centered_colnames > ncol(data))
     if (ch2b) stop("specified centered_colnames are out of bound")
-  } else if (ch2 & is.character(centered_colnames)) {
+  } else if (ch2 && is.character(centered_colnames)) {
     ch2b <- !all(centered_colnames %in% names(data))
     if (ch2b) stop("1 or more specified centered_colnames are not found in 'data'")
   } else {
@@ -45,7 +48,9 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
   ch3 <- sapply(seq_along(centered_colnames), function(ii) {
     !is.numeric(data[, centered_colnames[ii]])
   })
-  if (any(ch3)) stop(paste0("following columns of 'data' are not numeric for the calculation:", paste(which(ch3), collapse = ",")))
+  if (any(ch3)) {
+    stop(paste0("following columns of 'data' are not numeric for the calculation:", paste(which(ch3), collapse = ",")))
+  }
 
   # prepare data for optimization
   if (is.null(centered_colnames)) centered_colnames <- seq_len(ncol(data))
@@ -149,8 +154,9 @@ plot_weights <- function(wt, main_title = "Unscaled Individual Weights") {
 #' before and after adjustment.
 #'
 #' @param optimized object returned after calculating weights using \code{\link{cal_weights}}
-#' @param match_cov covariates that should be checked to see if the IPD weighted average matches the aggregate data average
-#' This could be same set of variables that were used to match or it can include variables that were not included to match (i.e. stratification variables)
+#' @param match_cov covariates that should be checked to see if the IPD weighted average matches the aggregate data
+#' average. This could be same set of variables that were used to match or it can include variables that were not
+#' included to match (i.e. stratification variables)
 #' @param digits number of digits for rounding summary table
 #'
 #' @return data.frame of weighted and unweighted covariate averages of the IPD

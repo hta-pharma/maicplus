@@ -28,14 +28,17 @@ The default is \code{"BFGS"}, other options are \code{"Nelder-Mead"}, \code{"CG"
 a list with the following 4 elements,
 \describe{
 \item{data}{a data.frame, includes the input \code{data} with appended column 'weights' and 'scaled_weights'.
-Scaled weights has a summation to be the number of rows in \code{data} that has no missing value in any of the effect modifiers}
+Scaled weights has a summation to be the number of rows in \code{data} that has no missing value in any of the
+effect modifiers}
 \item{centered_colnames}{column names of centered effect modifiers in \code{data}}
-\item{nr_missing}{number of rows in \code{data} that has at least 1 missing value in specified centered effect modifiers}
+\item{nr_missing}{number of rows in \code{data} that has at least 1 missing value in specified centered effect
+modifiers}
 \item{ess}{effective sample size, square of sum divided by sum of squares}
 \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
 }
 }
 \description{
-Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates (effect modifiers and/or prognostic variables) as input,
-and generates weights for each individual in IPD trial that matches the chosen statistics of those covariates in Aggregated Data (AgD) trial.
+Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates
+(effect modifiers and/or prognostic variables) as input, and generates weights for each individual in IPD trial that
+matches the chosen statistics of those covariates in Aggregated Data (AgD) trial.
 }

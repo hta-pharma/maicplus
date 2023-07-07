@@ -9,6 +9,7 @@
 #' of 35% under the active treatment at baseline (with the values of the covariates set to zero).
 #'
 #' @param N sample size
+#' @param ncov number of covariates to generate
 #' @param lambda scale parameter in baseline hazard function
 #' @param nu shape parameter in baseline hazard function
 #' @param censor_rate rate parameter of the exponential distribution of censoring times

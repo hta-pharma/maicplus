@@ -22,6 +22,8 @@ generate_survival_data(
 \arguments{
 \item{N}{sample size}
 
+\item{ncov}{number of covariates to generate}
+
 \item{lambda}{scale parameter in baseline hazard function}
 
 \item{nu}{shape parameter in baseline hazard function}

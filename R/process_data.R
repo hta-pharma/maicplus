@@ -226,6 +226,7 @@ complete_agd <- function(use_agd) {
 #'
 #' @param dd data frame, ADTTE read via haven::read_sas
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
+#' @param trt values to include in treatment column
 #'
 #' @return a data frame that can be used as input to survival::Surv
 ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {

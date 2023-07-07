@@ -10,6 +10,8 @@ ext_tte_transfer(dd, time_scale = "month", trt = NULL)
 \item{dd}{data frame, ADTTE read via haven::read_sas}
 
 \item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
+
+\item{trt}{values to include in treatment column}
 }
 \value{
 a data frame that can be used as input to survival::Surv
