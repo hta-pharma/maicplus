@@ -4,17 +4,17 @@
 
 #' Pre-process aggregate data
 #'
-#' This function checks the format of the aggregate data. 
-#' Data is required to have three columns: STUDY, ARM, and N. 
+#' This function checks the format of the aggregate data.
+#' Data is required to have three columns: STUDY, ARM, and N.
 #' Column names that do not have legal suffixes (MEAN, MEDIAN, SD, COUNT, or PROP) are dropped.
 #' If a variable is a count variable, it is converted to proportions by dividing the sample size (N).
-#' If the aggregated data comes from multiple sources (i.e. different analysis population) and 
-#' sample size differs for each variable, one option is to specify proportion directly instead of count by using suffix PROP. 
+#' If the aggregated data comes from multiple sources (i.e. different analysis population) and
+#' sample size differs for each variable, one option is to specify proportion directly instead of count by using suffix PROP.
 #'
 #' @param raw_agd raw aggregate data should contain STUDY, ARM, and N. Variable names should be followed
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, COUNT, or PROP).
 #'
-#' @example 
+#' @examples
 #' target_pop <- data.frame(
 #' STUDY = "Study_XXXX",
 #' ARM = "Total",
@@ -27,7 +27,7 @@
 #' SMOKE_PROP = 58/290
 #' )
 #' raw_agd(target_pop)
-#' 
+#'
 #' @return pre-processed aggregate level data
 #' @export
 
@@ -69,7 +69,7 @@ process_agd <- function(raw_agd) {
                    paste(setdiff(other_colnames,use_cols),collapse = ",")))
   }
 
-  # If the aggregate data is divided by different arms, calculate pooled arm statistics using 
+  # If the aggregate data is divided by different arms, calculate pooled arm statistics using
   # complete_agd function; complete statistics is specified by ARM=="Total"
   if(!"total"%in%tolower(use_agd$ARM)){
      use_agd <- complete_agd(use_agd)
@@ -90,14 +90,14 @@ process_agd <- function(raw_agd) {
 
 
 #' Create dummy variables from categorical variables in an individual patient data (ipd)
-#' 
+#'
 #' This is a convenient function to convert categorical variables into dummy binary variables.
 #' This would be especially useful if the variable has more than two factors.
-#' Note that the original variable is kept after a variable is dummized. 
+#' Note that the original variable is kept after a variable is dummized.
 #'
 #' @param raw_ipd ipd data that contains variable to dummize
 #' @param dummize_cols vector of column names to binarize
-#' @param dummize_ref_level vector of reference level of the variables to binarize 
+#' @param dummize_ref_level vector of reference level of the variables to binarize
 #'
 #' @return ipd with dummized columns
 #' @export
@@ -120,8 +120,8 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level){
 
 #' Center individual patient data (IPD) variables using aggregate data averages
 #'
-#' This function subtracts IPD variables (prognostic variables and/or effect modifiers) 
-#' by the aggregate data averages. This centering is needed in order to calculate weights. 
+#' This function subtracts IPD variables (prognostic variables and/or effect modifiers)
+#' by the aggregate data averages. This centering is needed in order to calculate weights.
 #' IPD and aggregate data variable names should match.
 #'
 #' @param ipd IPD variable names should match the aggregate data names without the suffix.
@@ -158,7 +158,7 @@ center_ipd <- function(ipd, agd){
 
         ipd[[paste0(ipd_param,"_MED_","CENTERED")]] <- ipd[[ipd_param]] > use_agd[[j]]
         ipd[[paste0(ipd_param,"_MED_","CENTERED")]] <- ipd[[paste0(ipd_param,"_MED_","CENTERED")]] - 0.5
-      
+
       } else if(grepl("_SD$",names(use_agd)[j])){
 
         # this term is denoted as SD, but it is really a squared mean term
@@ -188,36 +188,36 @@ center_ipd <- function(ipd, agd){
 complete_agd <- function(use_agd) {
   use_agd <- as.data.frame(use_agd)
   use_agd <- with(use_agd, {use_agd[tolower(ARM)!="total",,drop=FALSE]})
-  
+
   if(nrow(use_agd)<2) stop("error in call complete_agd: need to have at least 2 rows that ARM!='total' ")
-  
+
   rowId <- nrow(use_agd)+1
   use_agd[rowId, ] <- NA
   use_agd$STUDY[rowId] <- use_agd$STUDY[1]
   use_agd$ARM[rowId] <- "total"
-  
+
   # complete N and count
   NN <- use_agd[["N"]][rowId] <- sum(use_agd[["N"]], na.rm=TRUE)
   nn <- use_agd[["N"]][-rowId]
   for(i in grep("_COUNT$",names(use_agd),value=TRUE)){
     use_agd[[i]][rowId] <- sum(use_agd[[i]], na.rm=TRUE)
   }
-  
+
   # complete MEAN
   for(i in grep("_MEAN$",names(use_agd),value=TRUE)){
     use_agd[[i]][rowId] <- sum(use_agd[[i]]*nn)/NN
   }
-  
+
   # complete SD
   for(i in grep("_SD$",names(use_agd),value=TRUE)){
     use_agd[[i]][rowId] <- sqrt( sum(use_agd[[i]]^2*(nn-1))/(NN-1) )
   }
-  
+
   # complete MEDIAN, approximately!!
   for(i in grep("_MEDIAN$",names(use_agd),value=TRUE)){
     use_agd[[i]][rowId] <- mean(use_agd[[i]][-rowId])
   }
-  
+
   # output
   use_agd
 }
