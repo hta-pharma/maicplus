@@ -7,7 +7,7 @@
 check_weights(optimized, match_cov, digits = 2)
 }
 \arguments{
-\item{optimized}{object returned after calculating weights using \code{\link{cal_weights}}}
+\item{optimized}{object returned after calculating weights using \code{\link{estimate_weights}}}
 
 \item{match_cov}{covariates that should be checked to see if the IPD weighted average matches the aggregate data
 average. This could be same set of variables that were used to match or it can include variables that were not

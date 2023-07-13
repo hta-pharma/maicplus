@@ -7,7 +7,7 @@
 plot_weights(wt, main_title = "Unscaled Individual Weights")
 }
 \arguments{
-\item{wt}{a numeric vector of individual MAIC weights (derived using \code{\link{cal_weights}})}
+\item{wt}{a numeric vector of individual MAIC weights (derived using \code{\link{estimate_weights}})}
 
 \item{main_title}{a character string, main title of the plot}
 }
@@ -18,7 +18,7 @@ a plot of unscaled or scaled weights
 Generates a plot given the individuals weights with key summary in top right legend that includes
 median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the
 original sample size).
-There are two options of weights provided in \code{\link{cal_weights}}: unscaled or scaled.
+There are two options of weights provided in \code{\link{estimate_weights}}: unscaled or scaled.
 Scaled weights are relative to the original unit weights of each individual.
 In other words, a scaled weight greater than 1 means that an individual carries more weight in the
 re-weighted population than the original data and a scaled weight less than 1 means that an individual carries

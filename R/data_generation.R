@@ -1,7 +1,7 @@
 #' Generate time-to-event data
 #'
 #' Function generates time-to-event data. We follow the data-generating mechanism from
-#' Bender et al. and Remiro-Azocar et al. 2021 to simulate Weibull-distribued survival times
+#' Bender et al. and Remiro-Azocar et al. 2021 to simulate Weibull-distributed survival times
 #' under a proportional hazards parameterization. As per Remiro-Azocar et al, we set the
 #' default scale parameter (lambda) to 8.5 and shape parameter (nu) to 1.3 to reflect frequently
 #' observed mortality trends in metastatic cancer patients. Censoring times are generated from

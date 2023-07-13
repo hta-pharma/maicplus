@@ -104,13 +104,13 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
 #' Generates a plot given the individuals weights with key summary in top right legend that includes
 #' median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the
 #' original sample size).
-#' There are two options of weights provided in \code{\link{cal_weights}}: unscaled or scaled.
+#' There are two options of weights provided in \code{\link{estimate_weights}}: unscaled or scaled.
 #' Scaled weights are relative to the original unit weights of each individual.
 #' In other words, a scaled weight greater than 1 means that an individual carries more weight in the
 #' re-weighted population than the original data and a scaled weight less than 1 means that an individual carries
 #' less weight in the re-weighted population than the original data.
 #'
-#' @param wt a numeric vector of individual MAIC weights (derived using \code{\link{cal_weights}})
+#' @param wt a numeric vector of individual MAIC weights (derived using \code{\link{estimate_weights}})
 #' @param main_title a character string, main title of the plot
 #'
 #' @return a plot of unscaled or scaled weights
@@ -153,7 +153,7 @@ plot_weights <- function(wt, main_title = "Unscaled Individual Weights") {
 #' This function checks to see if the optimization is done properly by checking the covariate averages
 #' before and after adjustment.
 #'
-#' @param optimized object returned after calculating weights using \code{\link{cal_weights}}
+#' @param optimized object returned after calculating weights using \code{\link{estimate_weights}}
 #' @param match_cov covariates that should be checked to see if the IPD weighted average matches the aggregate data
 #' average. This could be same set of variables that were used to match or it can include variables that were not
 #' included to match (i.e. stratification variables)
@@ -163,15 +163,21 @@ plot_weights <- function(wt, main_title = "Unscaled Individual Weights") {
 #' @export
 
 
+
 check_weights <- function(optimized, match_cov, digits = 2) {
+  if (missing(match_cov)) stop("match_cov is missing. Covariates to check must be defined.")
   ipd_with_weights <- optimized$data
 
   arm_names <- c("Unweighted IPD", "Weighted IPD")
   ess <- c(nrow(ipd_with_weights), optimized$ess)
 
-  unweighted_cov <- sapply(ipd_with_weights[, match_cov], mean)
+  unweighted_cov <- sapply(ipd_with_weights[, match_cov, drop = FALSE], mean)
 
-  weighted_cov <- sapply(ipd_with_weights[, match_cov], weighted.mean, w = ipd_with_weights$weights)
+  weighted_cov <- sapply(
+    ipd_with_weights[, match_cov, drop = FALSE],
+    weighted.mean,
+    w = ipd_with_weights$weights
+  )
 
   cov_combined <- rbind(unweighted_cov, weighted_cov)
 
