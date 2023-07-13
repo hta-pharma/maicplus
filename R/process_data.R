@@ -179,7 +179,7 @@ center_ipd <- function(ipd, agd) {
 #'
 #' This is a convenient function to pool arm statistics ## FILL IN
 #'
-#' @param use_agd ## FILL IN: is this aggregate data before preprocessing or not
+#' @param use_agd aggregated data ## FILL IN: is this aggregate data before preprocessing or not
 #'
 #' @return
 complete_agd <- function(use_agd) {

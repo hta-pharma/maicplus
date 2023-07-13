@@ -7,8 +7,7 @@
 complete_agd(use_agd)
 }
 \arguments{
-\item{use_agd}{\subsection{FILL IN: is this aggregate data before preprocessing or not}{
-}}
+\item{use_agd}{aggregated data ## FILL IN: is this aggregate data before preprocessing or not}
 }
 \description{
 This is a convenient function to pool arm statistics ## FILL IN
