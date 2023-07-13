@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.0300230946882217" branch-rate="0" lines-covered="13" lines-valid="433" branches-covered="0" branches-valid="0" complexity="0" version="3.6.2" timestamp="2023-07-07 10:18:30.16234">
+<coverage line-rate="0.0296803652968037" branch-rate="0" lines-covered="13" lines-valid="438" branches-covered="0" branches-valid="0" complexity="0" version="3.6.2" timestamp="2023-07-13 06:54:49.517586">
   <sources>
     <source>/__w/maicplus/maicplus/maicplus</source>
   </sources>
   <packages>
-    <package name="maicplus" line-rate="0.0300230946882217" branch-rate="0" complexity="0">
+    <package name="maicplus" line-rate="0.0296803652968037" branch-rate="0" complexity="0">
       <classes>
         <class name="bucher.R" filename="R/bucher.R" line-rate="0.590909090909091" branch-rate="0" complexity="0">
           <methods>
@@ -370,15 +370,20 @@
             </method>
             <method name="check_weights" signature="" line-rate="0" branch-rate="0" complexity="0">
               <lines>
-                <line number="167" hits="0" branch="false"/>
+                <line number="168" hits="0" branch="false"/>
                 <line number="169" hits="0" branch="false"/>
-                <line number="170" hits="0" branch="false"/>
+                <line number="171" hits="0" branch="false"/>
                 <line number="172" hits="0" branch="false"/>
                 <line number="174" hits="0" branch="false"/>
                 <line number="176" hits="0" branch="false"/>
+                <line number="177" hits="0" branch="false"/>
                 <line number="178" hits="0" branch="false"/>
                 <line number="179" hits="0" branch="false"/>
-                <line number="181" hits="0" branch="false"/>
+                <line number="180" hits="0" branch="false"/>
+                <line number="182" hits="0" branch="false"/>
+                <line number="184" hits="0" branch="false"/>
+                <line number="185" hits="0" branch="false"/>
+                <line number="187" hits="0" branch="false"/>
               </lines>
             </method>
           </methods>
@@ -450,15 +455,20 @@
             <line number="146" hits="0" branch="false"/>
             <line number="147" hits="0" branch="false"/>
             <line number="148" hits="0" branch="false"/>
-            <line number="167" hits="0" branch="false"/>
+            <line number="168" hits="0" branch="false"/>
             <line number="169" hits="0" branch="false"/>
-            <line number="170" hits="0" branch="false"/>
+            <line number="171" hits="0" branch="false"/>
             <line number="172" hits="0" branch="false"/>
             <line number="174" hits="0" branch="false"/>
             <line number="176" hits="0" branch="false"/>
+            <line number="177" hits="0" branch="false"/>
             <line number="178" hits="0" branch="false"/>
             <line number="179" hits="0" branch="false"/>
-            <line number="181" hits="0" branch="false"/>
+            <line number="180" hits="0" branch="false"/>
+            <line number="182" hits="0" branch="false"/>
+            <line number="184" hits="0" branch="false"/>
+            <line number="185" hits="0" branch="false"/>
+            <line number="187" hits="0" branch="false"/>
           </lines>
         </class>
         <class name="process_data.R" filename="R/process_data.R" line-rate="0" branch-rate="0" complexity="0">
