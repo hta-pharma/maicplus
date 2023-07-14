@@ -137,7 +137,7 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level) {
 #' @export
 
 center_ipd <- function(ipd, agd) {
-  # regulaized column name patterns
+  # regularized column name patterns
   must_exist <- c("STUDY", "ARM", "N")
   legal_suffix <- c("MEAN", "MEDIAN", "SD", "PROP")
   suffix_pat <- paste(paste0("_", legal_suffix, "$"), collapse = "|")
