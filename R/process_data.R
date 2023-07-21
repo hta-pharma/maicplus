@@ -173,15 +173,16 @@ center_ipd <- function(ipd, agd){
 }
 
 
-# Functions NOT to be exported ---------------------------------------
+#' Calculate pooled arm statistics in Aggregated Data (AgD) based on arm-specific statistics
+#'
+#' This is a convenient function to pool arm statistics. This function is called
+#' within process_agd and when the ARM is not equal to "Total". Note pooled
+#' median can't be calculated and it is only an approximation.
+#'
+#' @param use_agd aggregated data that is processed within process_agd
+#'
+#' @return Complete N, count, mean, sd, and median for the pooled arm
 
-#' Calculate pooled arm statistics in AgD based on arm-specific statistics
-#'
-#' This is a convenient function to pool arm statistics ## FILL IN
-#'
-#' @param use_agd ## FILL IN: is this aggregate data before preprocessing or not
-#'
-#' @return
 complete_agd <- function(use_agd) {
   use_agd <- as.data.frame(use_agd)
   use_agd <- with(use_agd, {use_agd[tolower(ARM)!="total",,drop=FALSE]})
