@@ -7,8 +7,13 @@
 complete_agd(use_agd)
 }
 \arguments{
-\item{use_agd}{aggregated data ## FILL IN: is this aggregate data before preprocessing or not}
+\item{use_agd}{aggregated data that is processed within process_agd}
+}
+\value{
+Complete N, count, mean, sd, and median for the pooled arm
 }
 \description{
-This is a convenient function to pool arm statistics ## FILL IN
+This is a convenient function to pool arm statistics. This function is called
+within process_agd and when the ARM is not equal to "Total". Note pooled
+median can't be calculated and it is only an approximation.
 }
