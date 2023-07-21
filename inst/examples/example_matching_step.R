@@ -39,12 +39,15 @@ use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
 
 match_res <-  estimate_weights(data=use_adsl,
                                centered_colnames = grep("_CENTERED$",names(use_adsl)),
-                               startVal = 0,
+                               start_val = 0,
                                method = "BFGS")
 
 plot_weights(wt = match_res$data$weights, main_title = "Unscaled Individual Weigths")
-
-
+check_weights(optimized = match_res,
+              processed_agd = target_pop,
+              mean_digits = 2,
+              prop_digits = 2,
+              sd_digits = 3)
 
 
 # Data containing the matching variables
