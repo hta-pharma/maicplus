@@ -159,6 +159,8 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' @param processed_agd a data frame, object returned after using \code{\link{process_agd}} or aggregated data following the same naming convention
 #' @param digits number of digits for rounding summary table
 #'
+#' @import DescTools
+#'
 #' @return data.frame of weighted and unweighted covariate averages of the IPD
 #' @export
 

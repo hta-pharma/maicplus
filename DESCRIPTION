@@ -15,6 +15,7 @@ Imports:
     graphics,
     stats,
     survival,
+    DescTools,
     MASS
 Suggests:
     knitr,
