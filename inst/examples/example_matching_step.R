@@ -19,19 +19,22 @@ adtte <- read.csv(system.file("extdata", "adtte.csv", package = "maicplus",
 
 ### AgD
 # Baseline aggregate data for the comparator population
-target_pop <- read.csv(system.file("extdata", "aggregate_data.csv",
+target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
                                    package = "maicplus", mustWork = TRUE))
+# target_pop2 <- read.csv(system.file("extdata", "aggregate_data_example_2.csv",
+#                                     package = "maicplus", mustWork = TRUE))
+# target_pop3 <- read.csv(system.file("extdata", "aggregate_data_example_3.csv",
+#                                     package = "maicplus", mustWork = TRUE))
+
 # for time-to-event endpoints, pseudo IPD from digitalized KM
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus",
                                    mustWork = TRUE))
 
-
-#**!! change of the csv file, to follow our standard naming convention
-#**!!
-
 #### prepare data ----------------------------------------------------------
 target_pop <- process_agd(target_pop)
-adsl <- process_ipd(adsl,dummize_cols=c("SEX"),dummize_ref_level=c("Female"))
+# target_pop2 <- process_agd(target_pop2) # demo of process_agd in different scenarios
+# target_pop3 <- process_agd(target_pop3) # demo of process_agd in different scenarios
+adsl <- dummize_ipd(adsl,dummize_cols=c("SEX"),dummize_ref_level=c("Female"))
 use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
 
 match_res <-  estimate_weights(data=use_adsl,
