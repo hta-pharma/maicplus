@@ -111,13 +111,15 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
 #' less weight in the re-weighted population than the original data.
 #'
 #' @param wt a numeric vector of individual MAIC weights (derived using \code{\link{estimate_weights}})
+#' @param bin_col a string, color for the bins of histogram
+#' @param vline_col a string, color for the vertical line in the histogram
 #' @param main_title a character string, main title of the plot
 #'
 #' @return a plot of unscaled or scaled weights
 #' @importFrom graphics hist
 #' @export
 
-plot_weights <- function(wt, main_title = "Unscaled Individual Weights") {
+plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_title = "Unscaled Individual Weights") {
   # calculate sample size and exclude NA from wt
   nr_na <- sum(is.na(wt))
   n <- length(wt) - nr_na
@@ -142,9 +144,9 @@ plot_weights <- function(wt, main_title = "Unscaled Individual Weights") {
 
   # plot
   par(mfrow = c(1, 1), family = "HersheySerif", mgp = c(2.3, 0.5, 0), cex.axis = 0.9, cex.lab = 0.95, bty = "n")
-  hist(wt, border = "white", col = "#6ECEB2", main = main_title, breaks = 20, yaxt = "n", xlab = "")
+  hist(wt, border = "white", col = bin_col, main = main_title, breaks = 20, yaxt = "n", xlab = "")
   axis(2, las = 1)
-  abline(v = median(wt), lty = 2, col = "#688CE8", lwd = 2)
+  abline(v = median(wt), lty = 2, col = vline_col, lwd = 2)
   legend("topright", bty = "n", lty = plot_lty, cex = 0.8, legend = plot_legend)
 }
 
@@ -154,35 +156,83 @@ plot_weights <- function(wt, main_title = "Unscaled Individual Weights") {
 #' before and after adjustment.
 #'
 #' @param optimized object returned after calculating weights using \code{\link{estimate_weights}}
-#' @param match_cov covariates that should be checked to see if the IPD weighted average matches the aggregate data
-#' average. This could be same set of variables that were used to match or it can include variables that were not
-#' included to match (i.e. stratification variables)
+#' @param processed_agd a data frame, object returned after using \code{\link{process_agd}} or aggregated data following the same naming convention
 #' @param digits number of digits for rounding summary table
 #'
 #' @return data.frame of weighted and unweighted covariate averages of the IPD
 #' @export
 
-
-
-check_weights <- function(optimized, match_cov, digits = 2) {
-  if (missing(match_cov)) stop("match_cov is missing. Covariates to check must be defined.")
+check_weights <- function(optimized, processed_agd, mean_digits = 2, prop_digits = 2, sd_digits = 3) {
   ipd_with_weights <- optimized$data
+  match_cov <- optimized$centered_colnames
 
-  arm_names <- c("Unweighted IPD", "Weighted IPD")
-  ess <- c(nrow(ipd_with_weights), optimized$ess)
+  # if algorithm is correct, all centered columns should have a weighted summation to a very small number around zero
+  num_check <- ipd_with_weights$weights %*% as.matrix(ipd_with_weights[, match_cov, drop = FALSE])
+  num_check <- round(num_check, 4)
 
-  unweighted_cov <- sapply(ipd_with_weights[, match_cov, drop = FALSE], mean)
-
-  weighted_cov <- sapply(
-    ipd_with_weights[, match_cov, drop = FALSE],
-    weighted.mean,
-    w = ipd_with_weights$weights
+  # for reporting
+  outdata <- data.frame(
+    covariate = gsub("_CENTERED$", "", match_cov),
+    match_stat = NA,
+    external_trial = NA,
+    internal_trial = NA,
+    internal_trial_after_weighted = NA,
+    sum_centered_IPD_with_weights = as.vector(num_check)
   )
-
-  cov_combined <- rbind(unweighted_cov, weighted_cov)
-
-  baseline_summary <- cbind(ess, cov_combined)
-  rownames(baseline_summary) <- arm_names
-
-  round(baseline_summary, digits = digits)
+  attr(outdata, "footer") <- list()
+  ind_mean <- lapply(outdata$covariate, grep, x = names(processed_agd), value = TRUE) # find item that was matched by mean
+  ind_mean <- sapply(ind_mean, function(ii) any(grepl("_MEAN$", ii)))
+  outdata$match_stat <- ifelse(grepl("_MEDIAN$", outdata$covariate), "Median",
+    ifelse(grepl("_SQUARED$", outdata$covariate), "SD",
+      ifelse(ind_mean, "Mean", "Prop")
+    )
+  )
+  outdata$covariate <- gsub("_MEDIAN|_SQUARED", "", outdata$covariate)
+  # fill in corresponding agd data
+  outdata$external_trial <- unlist(processed_agd[paste(outdata$covariate, toupper(outdata$match_stat), sep = "_")])
+  outdata$external_trial[outdata$match_stat == "Mean"] <- round(outdata$external_trial[outdata$match_stat == "Mean"], mean_digits)
+  outdata$external_trial[outdata$match_stat == "Prop"] <- round(outdata$external_trial[outdata$match_stat == "Prop"], prop_digits)
+  outdata$external_trial[outdata$match_stat == "SD"] <- round(outdata$external_trial[outdata$match_stat == "SD"], sd_digits)
+  # fill in stat from unweighted and weighted IPD
+  for (ii in 1:nrow(outdata)) {
+    covname <- outdata$covariate[ii]
+    if (outdata$match_stat[ii] %in% c("Mean", "Prop")) {
+      outdata$internal_trial[ii] <- mean(ipd_with_weights[[covname]], na.rm = TRUE)
+      outdata$internal_trial_after_weighted[ii] <- weighted.mean(ipd_with_weights[[covname]], w = ipd_with_weights$weights, na.rm = TRUE)
+    } else if (outdata$match_stat[ii] == "Median") {
+      outdata$internal_trial[ii] <- quantile(ipd_with_weights[[covname]],
+        probs = 0.5,
+        na.rm = TRUE,
+        type = 2,
+        names = FALSE
+      ) # SAS default
+      outdata$internal_trial_after_weighted[ii] <- DescTools::Quantile(ipd_with_weights[[covname]],
+        weights = ipd_with_weights$weights,
+        probs = 0.5,
+        na.rm = TRUE,
+        type = 5,
+        names = FALSE
+      )
+      # no IPD equals to reported AgD median
+      msg_ind <- !any(ipd_with_weights[[covname]] == outdata$external_trial[ii], na.rm = TRUE)
+      if (msg_ind) {
+        msg_txt <- paste("For covariate", covname, ", it was matched to AgD median, but there is no IPD identical to AgD median, hence median after weighted will not equal to AgD median exactly.")
+        attr(outdata, "footer") <- c(attr(outdata, "footer"), msg_txt)
+      }
+    } else if (outdata$match_stat[ii] == "SD") {
+      outdata$internal_trial[ii] <- sd(ipd_with_weights[[covname]], na.rm = TRUE)
+      wm_squared <- weighted.mean(ipd_with_weights[[covname]]^2, w = ipd_with_weights$weights, na.rm = TRUE)
+      ms_agd <- processed_agd[[paste0(outdata$covariate[ii], "_MEAN")]]^2
+      outdata$internal_trial_after_weighted[ii] <- sqrt(wm_squared - ms_agd)
+    }
+  }
+  # formating
+  outdata$internal_trial[outdata$match_stat == "Mean"] <- round(outdata$internal_trial[outdata$match_stat == "Mean"], mean_digits)
+  outdata$internal_trial[outdata$match_stat == "Prop"] <- round(outdata$internal_trial[outdata$match_stat == "Prop"], prop_digits)
+  outdata$internal_trial[outdata$match_stat == "SD"] <- round(outdata$internal_trial[outdata$match_stat == "SD"], sd_digits)
+  outdata$internal_trial_after_weighted[outdata$match_stat == "Mean"] <- round(outdata$internal_trial_after_weighted[outdata$match_stat == "Mean"], mean_digits)
+  outdata$internal_trial_after_weighted[outdata$match_stat == "Prop"] <- round(outdata$internal_trial_after_weighted[outdata$match_stat == "Prop"], prop_digits)
+  outdata$internal_trial_after_weighted[outdata$match_stat == "SD"] <- round(outdata$internal_trial_after_weighted[outdata$match_stat == "SD"], sd_digits)
+  # output
+  outdata
 }

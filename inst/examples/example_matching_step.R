@@ -19,29 +19,35 @@ adtte <- read.csv(system.file("extdata", "adtte.csv", package = "maicplus",
 
 ### AgD
 # Baseline aggregate data for the comparator population
-target_pop <- read.csv(system.file("extdata", "aggregate_data.csv",
+target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
                                    package = "maicplus", mustWork = TRUE))
+# target_pop2 <- read.csv(system.file("extdata", "aggregate_data_example_2.csv",
+#                                     package = "maicplus", mustWork = TRUE))
+# target_pop3 <- read.csv(system.file("extdata", "aggregate_data_example_3.csv",
+#                                     package = "maicplus", mustWork = TRUE))
+
 # for time-to-event endpoints, pseudo IPD from digitalized KM
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus",
                                    mustWork = TRUE))
 
-
-#**!! change of the csv file, to follow our standard naming convention
-#**!!
-
 #### prepare data ----------------------------------------------------------
 target_pop <- process_agd(target_pop)
-adsl <- process_ipd(adsl,dummize_cols=c("SEX"),dummize_ref_level=c("Female"))
+# target_pop2 <- process_agd(target_pop2) # demo of process_agd in different scenarios
+# target_pop3 <- process_agd(target_pop3) # demo of process_agd in different scenarios
+adsl <- dummize_ipd(adsl,dummize_cols=c("SEX"),dummize_ref_level=c("Female"))
 use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
 
 match_res <-  estimate_weights(data=use_adsl,
                                centered_colnames = grep("_CENTERED$",names(use_adsl)),
-                               startVal = 0,
+                               start_val = 0,
                                method = "BFGS")
 
 plot_weights(wt = match_res$data$weights, main_title = "Unscaled Individual Weigths")
-
-
+check_weights(optimized = match_res,
+              processed_agd = target_pop,
+              mean_digits = 2,
+              prop_digits = 2,
+              sd_digits = 3)
 
 
 # Data containing the matching variables
