@@ -7,8 +7,13 @@
 complete_agd(use_agd)
 }
 \arguments{
-\item{use_agd}{}
+\item{use_agd}{aggregated data that is processed within process_agd}
+}
+\value{
+Complete N, count, mean, sd, and median for the pooled arm
 }
 \description{
-Calculate pooled arm statistics in Aggregated Data (AgD) based on arm-specific statistics
+This is a convenient function to pool arm statistics. This function is called
+within process_agd and when the ARM is not equal to "Total". Note pooled
+median can't be calculated and it is only an approximation.
 }

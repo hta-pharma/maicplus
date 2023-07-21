@@ -2,13 +2,38 @@
 % Please edit documentation in R/process_data.R
 \name{process_agd}
 \alias{process_agd}
-\title{Process and Check Aggregated data format}
+\title{Pre-process aggregate data}
 \usage{
 process_agd(raw_agd)
 }
 \arguments{
-\item{raw_agd}{}
+\item{raw_agd}{raw aggregate data should contain STUDY, ARM, and N. Variable names should be followed
+by legal suffixes (i.e. MEAN, MEDIAN, SD, COUNT, or PROP).}
+}
+\value{
+pre-processed aggregate level data
 }
 \description{
-Process and Check Aggregated data format
+This function checks the format of the aggregate data.
+Data is required to have three columns: STUDY, ARM, and N.
+Column names that do not have legal suffixes (MEAN, MEDIAN, SD, COUNT, or PROP) are dropped.
+If a variable is a count variable, it is converted to proportions by dividing the sample size (N).
+If the aggregated data comes from multiple sources (i.e. different analysis population) and
+sample size differs for each variable, one option is to specify proportion directly instead of count by using suffix
+_PROP.
+}
+\examples{
+target_pop <- data.frame(
+  STUDY = "Study_XXXX",
+  ARM = "Total",
+  N = 300,
+  AGE_MEAN = 51,
+  AGE_MEDIAN = 49,
+  AGE_SD = 3.25,
+  SEX_MALE_COUNT = 147,
+  ECOG0_COUNT = 105,
+  SMOKE_PROP = 58 / 290
+)
+process_agd(target_pop)
+
 }

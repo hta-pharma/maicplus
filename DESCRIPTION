@@ -14,7 +14,8 @@ Depends:
 Imports:
     graphics,
     stats,
-    survival
+    survival,
+    MASS
 Suggests:
     knitr,
     testthat (>= 2.0)

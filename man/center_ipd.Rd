@@ -2,13 +2,24 @@
 % Please edit documentation in R/process_data.R
 \name{center_ipd}
 \alias{center_ipd}
-\title{Center effect modifiers}
+\title{Center individual patient data (IPD) variables using aggregate data averages}
 \usage{
 center_ipd(ipd, agd)
 }
 \arguments{
-\item{agd}{}
+\item{ipd}{IPD variable names should match the aggregate data names without the suffix.
+This would involve either changing the aggregate data name or the ipd name.
+For instance, if we binarize SEX variable with MALE as a reference, function names the new variable as SEX_MALE.
+In this case, SEX_MALE should also be available in the aggregate data.}
+
+\item{agd}{pre-processed aggregate data which contain STUDY, ARM, and N. Variable names should be followed
+by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP). Note that COUNT suffix is no longer accepted.}
+}
+\value{
+centered ipd using aggregate level data averages
 }
 \description{
-Center effect modifiers
+This function subtracts IPD variables (prognostic variables and/or effect modifiers)
+by the aggregate data averages. This centering is needed in order to calculate weights.
+IPD and aggregate data variable names should match.
 }
