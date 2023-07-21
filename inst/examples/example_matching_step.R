@@ -10,87 +10,102 @@ devtools::load_all()
 
 ### IPD
 # Read in relevant ADaM data and rename variables of interest
-adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus",
-                             mustWork = TRUE))
-adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus",
-                             mustWork = TRUE))
-adtte <- read.csv(system.file("extdata", "adtte.csv", package = "maicplus",
-                              mustWork = TRUE))
+adsl <- read.csv(system.file("extdata", "adsl.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
+adrs <- read.csv(system.file("extdata", "adrs.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
+adtte <- read.csv(system.file("extdata", "adtte.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
 
 ### AgD
 # Baseline aggregate data for the comparator population
 target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
-                                   package = "maicplus", mustWork = TRUE))
+  package = "maicplus", mustWork = TRUE
+))
 # target_pop2 <- read.csv(system.file("extdata", "aggregate_data_example_2.csv",
 #                                     package = "maicplus", mustWork = TRUE))
 # target_pop3 <- read.csv(system.file("extdata", "aggregate_data_example_3.csv",
 #                                     package = "maicplus", mustWork = TRUE))
 
 # for time-to-event endpoints, pseudo IPD from digitalized KM
-pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus",
-                                   mustWork = TRUE))
+pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
 
 #### prepare data ----------------------------------------------------------
 target_pop <- process_agd(target_pop)
 # target_pop2 <- process_agd(target_pop2) # demo of process_agd in different scenarios
 # target_pop3 <- process_agd(target_pop3) # demo of process_agd in different scenarios
-adsl <- dummize_ipd(adsl,dummize_cols=c("SEX"),dummize_ref_level=c("Female"))
+adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
 use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
 
-match_res <-  estimate_weights(data=use_adsl,
-                               centered_colnames = grep("_CENTERED$",names(use_adsl)),
-                               start_val = 0,
-                               method = "BFGS")
+match_res <- estimate_weights(
+  data = use_adsl,
+  centered_colnames = grep("_CENTERED$", names(use_adsl)),
+  start_val = 0,
+  method = "BFGS"
+)
 
 plot_weights(wt = match_res$data$weights, main_title = "Unscaled Individual Weigths")
-check_weights(optimized = match_res,
-              processed_agd = target_pop,
-              mean_digits = 2,
-              prop_digits = 2,
-              sd_digits = 3)
+check_weights(
+  optimized = match_res,
+  processed_agd = target_pop,
+  mean_digits = 2,
+  prop_digits = 2,
+  sd_digits = 3
+)
 
 
 # Data containing the matching variables
-adsl <- within(adsl, SEX <- ifelse(SEX=="Male", 1, 0)) # Coded 1 for males and 0 for females
+adsl <- within(adsl, SEX <- ifelse(SEX == "Male", 1, 0)) # Coded 1 for males and 0 for females
 
 # Response data
-adrs <- with(adrs,{
-  tmp <- adrs[PARAM=="Response", ]
+adrs <- with(adrs, {
+  tmp <- adrs[PARAM == "Response", ]
   tmp$response <- tmp$AVAL
-  tmp[,c("USUBJID","ARM","response")]
+  tmp[, c("USUBJID", "ARM", "response")]
 })
 
 # Time to event data (overall survival)
-adtte <- with(adtte,{
-  tmp <- adtte[PARAMCD=="OS", ]
-  tmp$Event <- 1-tmp$CNSR
+adtte <- with(adtte, {
+  tmp <- adtte[PARAMCD == "OS", ]
+  tmp$Event <- 1 - tmp$CNSR
   tmp$Time <- tmp$AVAL
-  tmp[,c("USUBJID","ARM","Time","Event")]
+  tmp[, c("USUBJID", "ARM", "Time", "Event")]
 })
 
 # Combine all intervention data
-intervention_input <- merge(adsl,adrs, by=c("USUBJID", "ARM"), all=TRUE)
-intervention_input <- merge(intervention_input,adtte, by=c("USUBJID", "ARM"), all=TRUE)
+intervention_input <- merge(adsl, adrs, by = c("USUBJID", "ARM"), all = TRUE)
+intervention_input <- merge(intervention_input, adtte, by = c("USUBJID", "ARM"), all = TRUE)
 
 # List out the variables in the intervention data that have been identified as
 # prognostic factors or treatment effect modifiers and will be used in the
 # matching
-match_cov <- c("AGE",
-               "SEX",
-               "SMOKE",
-               "ECOG0")
+match_cov <- c(
+  "AGE",
+  "SEX",
+  "SMOKE",
+  "ECOG0"
+)
 
 
 
 
 # Rename target population cols to be consistent with match_cov
-target_pop <- within(target_pop,{
-  N = N
-  Treatment=ARM
-  AGE=age.mean
-  SEX=prop.male
-  SMOKE=prop.smoke
-  ECOG0=prop.ecog0
+target_pop <- within(target_pop, {
+  N <- N
+  Treatment <- ARM
+  AGE <- age.mean
+  SEX <- prop.male
+  SMOKE <- prop.smoke
+  ECOG0 <- prop.ecog0
 })
 target_pop
 
@@ -100,23 +115,25 @@ target_pop
 ### Center baseline characteristics
 # (subtract the aggregate comparator data from the corresponding column of
 # intervention PLD)
-intervention_data <- within(intervention_input,{
-  Age_centered = AGE - target_pop$age.mean
+intervention_data <- within(intervention_input, {
+  Age_centered <- AGE - target_pop$age.mean
   # matching on both mean and standard deviation for continuous variables (optional)
-  Age_squared_centered = (AGE^2) - (target_pop$age.mean^2 + target_pop$age.sd^2)
-  Sex_centered = SEX - target_pop$prop.male
-  Smoke_centered = SMOKE - target_pop$prop.smoke
-  ECOG0_centered = ECOG0 - target_pop$prop.ecog0
+  Age_squared_centered <- (AGE^2) - (target_pop$age.mean^2 + target_pop$age.sd^2)
+  Sex_centered <- SEX - target_pop$prop.male
+  Smoke_centered <- SMOKE - target_pop$prop.smoke
+  ECOG0_centered <- ECOG0 - target_pop$prop.ecog0
 })
 
 
 ########################################### ROCHE
 ## Define the matching covariates
-cent_match_cov <- c("Age_centered",
-                    "Age_squared_centered",
-                    "Sex_centered",
-                    "Smoke_centered",
-                    "ECOG0_centered")
+cent_match_cov <- c(
+  "Age_centered",
+  "Age_squared_centered",
+  "Sex_centered",
+  "Smoke_centered",
+  "ECOG0_centered"
+)
 
 ## Optimization procedure
 # Following the centering of the baseline characteristics of the intervention
@@ -124,8 +141,10 @@ cent_match_cov <- c("Age_centered",
 # The function output is a list containing (1) a data set of the individual
 # patient data with the assigned weights "analysis_data" and (2) a vector
 # containing the matching variables "matching_vars"
-est_weights <- estimate_weights(intervention_data = intervention_data,
-                                matching_vars = cent_match_cov)
+est_weights <- estimate_weights(
+  intervention_data = intervention_data,
+  matching_vars = cent_match_cov
+)
 
 # Are the weights sensible? ----------------------------------------------------
 
@@ -138,7 +157,8 @@ est_weights <- estimate_weights(intervention_data = intervention_data,
 #   matching variables
 
 diagnostics <- wt_diagnostics(est_weights$analysis_data,
-                              vars = match_cov)
+  vars = match_cov
+)
 diagnostics$ESS
 diagnostics$Summary_of_weights
 diagnostics$Weight_profiles
@@ -161,12 +181,14 @@ histogram
 # characteristics before and after matching compared with the comparator
 # baseline characteristics:
 
-check_weights(analysis_data = est_weights$analysis_data, matching_vars = match_cov,
-              target_pop_standard = target_pop_standard)
+check_weights(
+  analysis_data = est_weights$analysis_data, matching_vars = match_cov,
+  target_pop_standard = target_pop_standard
+)
 
 
 ########################################### MSD
-use_data <- intervention_data[,grepl("_centered$",names(intervention_data))]
+use_data <- intervention_data[, grepl("_centered$", names(intervention_data))]
 use_weigths <- cal_weights(EM = as.matrix(use_data))
 
 plot_weights(use_weigths$wt)
@@ -185,29 +207,17 @@ ipd_dat$time <- ipd_dat$Time
 ipd_dat$status <- ipd_dat$Event
 
 library(survival)
-fit_unanchored <- maic_tte_unanchor(useWt=use_weigths$wt,
-                                    dat=ipd_dat,
-                                    dat_ext=ipd_dat_ext,
-                                    trt="A",
-                                    trt_ext="B",
-                                    time_scale = "month",
-                                    endpoint_name = "OS",
-                                    transform = "log")
+fit_unanchored <- maic_tte_unanchor(
+  useWt = use_weigths$wt,
+  dat = ipd_dat,
+  dat_ext = ipd_dat_ext,
+  trt = "A",
+  trt_ext = "B",
+  time_scale = "month",
+  endpoint_name = "OS",
+  transform = "log"
+)
 fit_unanchored$report_median_surv
 
 
-#**!! write a print method for output object from est_weights
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#** !! write a print method for output object from est_weights
