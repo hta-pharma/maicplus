@@ -52,10 +52,12 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
   kmobj <- survfit(Surv(time, status) ~ treatment, dat, conf.type = "log-log")
   kmobj_adj <- survfit(Surv(time, status) ~ treatment, dat, weights = dat$weight, conf.type = "log-log")
 
-  par(cex.main=0.85)
-  km_makeup(kmobj, kmobj_adj, time_scale = time_scale,
-            trt = trt, trt_ext = trt_ext,
-            endpoint_name = endpoint_name)
+  par(cex.main = 0.85)
+  km_makeup(kmobj, kmobj_adj,
+    time_scale = time_scale,
+    trt = trt, trt_ext = trt_ext,
+    endpoint_name = endpoint_name
+  )
   res[["plot_km"]] <- grDevices::recordPlot()
 
   res[["fit_km_data_before"]] <- survfit_makeup(kmobj)
@@ -151,10 +153,12 @@ report_table <- function(coxobj, medSurvobj, tag = NULL) {
   meds_report <- apply(meds_report, 1, function(xx) paste0(xx[1], "[", xx[2], ";", xx[3], "]"))
 
   desc_res <- cbind(medSurvobj[, "treatment", drop = F],
-                    data.frame(N=round(medSurvobj$n.max,1)),
-                    "n.events(%)" = paste0(round(medSurvobj$events,1), "(",
-                                   format(round(medSurvobj$events * 100 / medSurvobj$n.max, 1), nsmall = 1),")"),
-                    "median[95% CI]" = meds_report
+    data.frame(N = round(medSurvobj$n.max, 1)),
+    "n.events(%)" = paste0(
+      round(medSurvobj$events, 1), "(",
+      format(round(medSurvobj$events * 100 / medSurvobj$n.max, 1), nsmall = 1), ")"
+    ),
+    "median[95% CI]" = meds_report
   )
 
   desc_res <- cbind(desc_res[c(2, 1), ], "HR[95% CI]" = c(hr_res, ""), "WaldTest" = c(hr_pval, ""))
