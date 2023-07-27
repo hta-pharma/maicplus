@@ -90,7 +90,7 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
 
   res[["fit_GT_test_before"]] <- coxdiag
   par(mfrow = c(1, 1), tcl = -0.15)
-  plot(coxdiag_adj, yaxt = "n", main = "Grambsch & Terneau Plot (before matching)")
+  plot(coxdiag, yaxt = "n", main = "Grambsch & Terneau Plot (before matching)")
   axis(2, las = 1)
   res[["plot_GT_before"]] <- grDevices::recordPlot()
 
@@ -151,14 +151,14 @@ report_table <- function(coxobj, medSurvobj, tag = NULL) {
   meds_report <- apply(meds_report, 1, function(xx) paste0(xx[1], "[", xx[2], ";", xx[3], "]"))
 
   desc_res <- cbind(medSurvobj[, "treatment", drop = F],
-                    data.frame(n.max=round(medSurvobj$n.max,1)),
-                    "pwe" = paste0(round(medSurvobj$events,1), "(",
+                    data.frame(N=round(medSurvobj$n.max,1)),
+                    "n.events(%)" = paste0(round(medSurvobj$events,1), "(",
                                    format(round(medSurvobj$events * 100 / medSurvobj$n.max, 1), nsmall = 1),")"),
-                    "medSurv" = meds_report
+                    "median[95% CI]" = meds_report
   )
 
-  desc_res <- cbind(desc_res[c(2, 1), ], "HazardRate" = c(hr_res, ""), "WaldTest" = c(hr_pval, ""))
+  desc_res <- cbind(desc_res[c(2, 1), ], "HR[95% CI]" = c(hr_res, ""), "WaldTest" = c(hr_pval, ""))
 
-  if (!is.null(tag)) desc_res <- cbind(data.frame(Tag = rep(tag, nrow(desc_res))), desc_res)
+  if (!is.null(tag)) desc_res <- cbind(data.frame(Matching = rep(tag, nrow(desc_res))), desc_res)
   desc_res
 }
