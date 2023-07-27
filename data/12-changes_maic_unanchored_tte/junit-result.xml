@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="bucher" timestamp="2023-07-27T16:45:05Z" hostname="8428de4e97e8" tests="1" skipped="0" failures="0" errors="0" time="0.014">
+    <testcase time="0.014" classname="bucher" name="bucher_works_as_expected"/>
+  </testsuite>
+</testsuites>
