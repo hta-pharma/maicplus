@@ -156,8 +156,12 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' before and after adjustment.
 #'
 #' @param optimized object returned after calculating weights using \code{\link{estimate_weights}}
-#' @param processed_agd a data frame, object returned after using \code{\link{process_agd}} or aggregated data following the same naming convention
-#' @param digits number of digits for rounding summary table
+#' @param processed_agd a data frame, object returned after using \code{\link{process_agd}} or
+#' aggregated data following the same naming convention
+#' @param mean_digits number of digits for rounding mean columns in the output
+#' @param prop_digits number of digits for rounding proportion columns in the output
+#' @param sd_digits number of digits for rounding mean columns in the output
+
 #'
 #' @import DescTools
 #'
@@ -218,7 +222,9 @@ check_weights <- function(optimized, processed_agd, mean_digits = 2, prop_digits
       # no IPD equals to reported AgD median
       msg_ind <- !any(ipd_with_weights[[covname]] == outdata$external_trial[ii], na.rm = TRUE)
       if (msg_ind) {
-        msg_txt <- paste("For covariate", covname, ", it was matched to AgD median, but there is no IPD identical to AgD median, hence median after weighted will not equal to AgD median exactly.")
+        msg_txt <- paste0(
+          "For covariate ", covname, ", it was matched to AgD median, but there is no IPD identical to AgD median,",
+          "hence median after weighted will not equal to AgD median exactly.")
         attr(outdata, "footer") <- c(attr(outdata, "footer"), msg_txt)
       }
     } else if (outdata$match_stat[ii] == "SD") {
@@ -229,6 +235,7 @@ check_weights <- function(optimized, processed_agd, mean_digits = 2, prop_digits
     }
   }
   # formating
+
   outdata$internal_trial[outdata$match_stat == "Mean"] <- round(outdata$internal_trial[outdata$match_stat == "Mean"], mean_digits)
   outdata$internal_trial[outdata$match_stat == "Prop"] <- round(outdata$internal_trial[outdata$match_stat == "Prop"], prop_digits)
   outdata$internal_trial[outdata$match_stat == "SD"] <- round(outdata$internal_trial[outdata$match_stat == "SD"], sd_digits)

@@ -15,9 +15,14 @@ check_weights(
 \arguments{
 \item{optimized}{object returned after calculating weights using \code{\link{estimate_weights}}}
 
-\item{processed_agd}{a data frame, object returned after using \code{\link{process_agd}} or aggregated data following the same naming convention}
+\item{processed_agd}{a data frame, object returned after using \code{\link{process_agd}} or
+aggregated data following the same naming convention}
 
-\item{digits}{number of digits for rounding summary table}
+\item{mean_digits}{number of digits for rounding mean columns in the output}
+
+\item{prop_digits}{number of digits for rounding proportion columns in the output}
+
+\item{sd_digits}{number of digits for rounding mean columns in the output}
 }
 \value{
 data.frame of weighted and unweighted covariate averages of the IPD
