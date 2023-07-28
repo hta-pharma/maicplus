@@ -182,7 +182,7 @@ check_weights <- function(optimized, processed_agd, mean_digits = 2, prop_digits
     match_stat = NA,
     internal_trial = NA,
     internal_trial_after_weighted = NA,
-     external_trial = NA,
+    external_trial = NA,
     sum_centered_IPD_with_weights = as.vector(num_check)
   )
   attr(outdata, "footer") <- list()
