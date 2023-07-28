@@ -25,7 +25,7 @@ aggregated data following the same naming convention}
 \item{sd_digits}{number of digits for rounding mean columns in the output}
 }
 \value{
-data.frame of weighted and unweighted covariate averages of the IPD
+data.frame of weighted and unweighted covariate averages of the IPD, and average of aggregate data
 }
 \description{
 This function checks to see if the optimization is done properly by checking the covariate averages

@@ -27,8 +27,7 @@
 #'   \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
 #' }
 #' @export
-#'
-#' @examples
+
 estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, method = "BFGS", ...) {
   # pre check
   ch1 <- is.data.frame(data)
@@ -161,11 +160,10 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' @param mean_digits number of digits for rounding mean columns in the output
 #' @param prop_digits number of digits for rounding proportion columns in the output
 #' @param sd_digits number of digits for rounding mean columns in the output
-
 #'
 #' @import DescTools
 #'
-#' @return data.frame of weighted and unweighted covariate averages of the IPD
+#' @return data.frame of weighted and unweighted covariate averages of the IPD, and average of aggregate data
 #' @export
 
 check_weights <- function(optimized, processed_agd, mean_digits = 2, prop_digits = 2, sd_digits = 3) {
@@ -244,5 +242,33 @@ check_weights <- function(optimized, processed_agd, mean_digits = 2, prop_digits
   outdata$internal_trial_after_weighted[outdata$match_stat == "Prop"] <- round(outdata$internal_trial_after_weighted[outdata$match_stat == "Prop"], prop_digits)
   outdata$internal_trial_after_weighted[outdata$match_stat == "SD"] <- round(outdata$internal_trial_after_weighted[outdata$match_stat == "SD"], sd_digits)
   # output
+  class(outdata) <- c("check.weights", "data.frame")
   outdata
+}
+
+
+#' Print the data frame from \code{\link{check_weights}}
+#'
+#' Print the data frame from \code{\link{check_weights}}. It also gives a warning
+#' message if median is used to match and no IPD equals to reported 
+#' aggregate data median.
+#' 
+#' @param x Result object created by \code{\link{network.run}} function
+#' @param ... Additional arguments for printing a data frame
+#' @return Returns data frame of summary statistics of weighted and unweighted IPD and aggregate data
+#' @export
+
+print.check.weights <- function(x,...){
+  
+  if(!inherits(x, "check.weights")) {
+    stop("This is not the output from the function check_weights")
+  }
+  
+  pp <- print.data.frame(x,...)
+  
+  cat(pp,
+      attr(x, "footer"),
+      sep="\n")
+  
+  print("Hi")
 }
