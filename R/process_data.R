@@ -8,6 +8,8 @@
 #' Data is required to have three columns: STUDY, ARM, and N.
 #' Column names that do not have legal suffixes (MEAN, MEDIAN, SD, COUNT, or PROP) are dropped.
 #' If a variable is a count variable, it is converted to proportions by dividing the sample size (N).
+#' Note, when the count is specified, proportion is always calculated based on the count, that is,
+#' specified proportion will be ignored if applicable.
 #' If the aggregated data comes from multiple sources (i.e. different analysis population) and
 #' sample size differs for each variable, one option is to specify proportion directly instead of count by using suffix
 #' _PROP.
@@ -16,6 +18,22 @@
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, COUNT, or PROP).
 #'
 #' @examples
+#' # example
+#' target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
+#'   package = "maicplus", mustWork = TRUE
+#' ))
+#' target_pop2 <- read.csv(system.file("extdata", "aggregate_data_example_2.csv",
+#'   package = "maicplus", mustWork = TRUE
+#' ))
+#' target_pop3 <- read.csv(system.file("extdata", "aggregate_data_example_3.csv",
+#'   package = "maicplus", mustWork = TRUE
+#' ))
+#'
+#' target_pop <- process_agd(target_pop)
+#' target_pop2 <- process_agd(target_pop2)
+#' target_pop3 <- process_agd(target_pop3)
+#'
+#' # another example
 #' target_pop <- data.frame(
 #'   STUDY = "Study_XXXX",
 #'   ARM = "Total",
@@ -37,7 +55,7 @@ process_agd <- function(raw_agd) {
   # make all column names to be capital letters to avoid different style
   names(raw_agd) <- toupper(names(raw_agd))
 
-  # define column name patterns
+  # define column name patterns[-]
   must_exist <- c("STUDY", "ARM", "N")
   legal_suffix <- c("MEAN", "MEDIAN", "SD", "COUNT", "PROP")
 
@@ -81,10 +99,19 @@ process_agd <- function(raw_agd) {
   ind <- grepl("_COUNT$", names(use_agd))
   if (any(ind)) {
     for (i in which(ind)) {
-      use_agd[[i]] <- use_agd[[i]] / use_agd$N
+      tmp_prop <- use_agd[[i]] / use_agd$N
+      # in case some count are not specified, but proportion are specified, copy over those proportions
+      # this also means, in case count is specified, proportion is ignored even it is specified
+      prop_name_i <- gsub("_COUNT$", "_PROP", names(use_agd)[i])
+      if (prop_name_i %in% names(use_agd)) {
+        tmp_prop[is.na(tmp_prop)] <- use_agd[is.na(tmp_prop), prop_name_i]
+        names(use_agd)[names(use_agd) == prop_name_i] <- paste0(prop_name_i, "_redundant")
+      }
+      use_agd[[i]] <- tmp_prop
     }
     names(use_agd) <- gsub("_COUNT$", "_PROP", names(use_agd))
   }
+  use_agd <- use_agd[, !grepl("_redundant$", names(use_agd))]
 
   # output
   with(use_agd, use_agd[tolower(ARM) == "total", , drop = FALSE])
@@ -155,13 +182,12 @@ center_ipd <- function(ipd, agd) {
       if (grepl("_MEAN$|_PROP$", names(use_agd)[j])) {
         ipd[[paste0(ipd_param, "_", "CENTERED")]] <- ipd[[ipd_param]] - use_agd[[j]]
       } else if (grepl("_MEDIAN$", names(use_agd)[j])) {
-        ipd[[paste0(ipd_param, "_MED_", "CENTERED")]] <- ipd[[ipd_param]] > use_agd[[j]]
-        ipd[[paste0(ipd_param, "_MED_", "CENTERED")]] <- ipd[[paste0(ipd_param, "_MED_", "CENTERED")]] - 0.5
+        ipd[[paste0(ipd_param, "_MEDIAN_", "CENTERED")]] <- ipd[[ipd_param]] > use_agd[[j]]
+        ipd[[paste0(ipd_param, "_MEDIAN_", "CENTERED")]] <- ipd[[paste0(ipd_param, "_MEDIAN_", "CENTERED")]] - 0.5
       } else if (grepl("_SD$", names(use_agd)[j])) {
-        # this term is denoted as SD, but it is really a squared mean term
-        ipd[[paste0(ipd_param, "_SD_", "CENTERED")]] <- ipd[[ipd_param]]^2
+        ipd[[paste0(ipd_param, "_SQUARED_", "CENTERED")]] <- ipd[[ipd_param]]^2
         tmp_aim <- use_agd[[j]]^2 + (use_agd[[paste0(ipd_param, "_MEAN")]]^2)
-        ipd[[paste0(ipd_param, "_SD_", "CENTERED")]] <- ipd[[paste0(ipd_param, "_SD_", "CENTERED")]] - tmp_aim
+        ipd[[paste0(ipd_param, "_SQUARED_", "CENTERED")]] <- ipd[[paste0(ipd_param, "_SQUARED_", "CENTERED")]] - tmp_aim
       }
     } # end of j
   } # end of i
@@ -198,17 +224,17 @@ complete_agd <- function(use_agd) {
   NN <- use_agd[["N"]][rowId] <- sum(use_agd[["N"]], na.rm = TRUE)
   nn <- use_agd[["N"]][-rowId]
   for (i in grep("_COUNT$", names(use_agd), value = TRUE)) {
-    use_agd[[i]][rowId] <- sum(use_agd[[i]], na.rm = TRUE)
+    use_agd[[i]][rowId] <- sum(use_agd[[i]][-rowId], na.rm = TRUE)
   }
 
   # complete MEAN
   for (i in grep("_MEAN$", names(use_agd), value = TRUE)) {
-    use_agd[[i]][rowId] <- sum(use_agd[[i]] * nn) / NN
+    use_agd[[i]][rowId] <- sum(use_agd[[i]][-rowId] * nn) / NN
   }
 
   # complete SD
   for (i in grep("_SD$", names(use_agd), value = TRUE)) {
-    use_agd[[i]][rowId] <- sqrt(sum(use_agd[[i]]^2 * (nn - 1)) / (NN - 1))
+    use_agd[[i]][rowId] <- sqrt(sum(use_agd[[i]][-rowId]^2 * (nn - 1)) / (NN - 1))
   }
 
   # complete MEDIAN, approximately!!

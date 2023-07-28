@@ -4,16 +4,25 @@
 \alias{check_weights}
 \title{Check to see if weights are optimized correctly}
 \usage{
-check_weights(optimized, match_cov, digits = 2)
+check_weights(
+  optimized,
+  processed_agd,
+  mean_digits = 2,
+  prop_digits = 2,
+  sd_digits = 3
+)
 }
 \arguments{
 \item{optimized}{object returned after calculating weights using \code{\link{estimate_weights}}}
 
-\item{match_cov}{covariates that should be checked to see if the IPD weighted average matches the aggregate data
-average. This could be same set of variables that were used to match or it can include variables that were not
-included to match (i.e. stratification variables)}
+\item{processed_agd}{a data frame, object returned after using \code{\link{process_agd}} or
+aggregated data following the same naming convention}
 
-\item{digits}{number of digits for rounding summary table}
+\item{mean_digits}{number of digits for rounding mean columns in the output}
+
+\item{prop_digits}{number of digits for rounding proportion columns in the output}
+
+\item{sd_digits}{number of digits for rounding mean columns in the output}
 }
 \value{
 data.frame of weighted and unweighted covariate averages of the IPD

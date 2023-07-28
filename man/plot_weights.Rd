@@ -4,10 +4,19 @@
 \alias{plot_weights}
 \title{Plot MAIC weights in a histogram with key statistics in legend}
 \usage{
-plot_weights(wt, main_title = "Unscaled Individual Weights")
+plot_weights(
+  wt,
+  bin_col = "#6ECEB2",
+  vline_col = "#688CE8",
+  main_title = "Unscaled Individual Weights"
+)
 }
 \arguments{
 \item{wt}{a numeric vector of individual MAIC weights (derived using \code{\link{estimate_weights}})}
+
+\item{bin_col}{a string, color for the bins of histogram}
+
+\item{vline_col}{a string, color for the vertical line in the histogram}
 
 \item{main_title}{a character string, main title of the plot}
 }
