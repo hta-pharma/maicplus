@@ -143,7 +143,7 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
   }
 
   # plot
-  par(mfrow = c(1, 1), family = "HersheySerif", mgp = c(2.3, 0.5, 0), cex.axis = 0.9, cex.lab = 0.95, bty = "n")
+  par(mgp = c(2.3, 0.5, 0), cex.axis = 0.9, cex.lab = 0.95, bty = "n")
   hist(wt, border = "white", col = bin_col, main = main_title, breaks = 20, yaxt = "n", xlab = "")
   axis(2, las = 1)
   abline(v = median(wt), lty = 2, col = vline_col, lwd = 2)
