@@ -18,11 +18,29 @@ This function checks the format of the aggregate data.
 Data is required to have three columns: STUDY, ARM, and N.
 Column names that do not have legal suffixes (MEAN, MEDIAN, SD, COUNT, or PROP) are dropped.
 If a variable is a count variable, it is converted to proportions by dividing the sample size (N).
+Note, when the count is specified, proportion is always calculated based on the count, that is,
+specified proportion will be ignored if applicable.
 If the aggregated data comes from multiple sources (i.e. different analysis population) and
 sample size differs for each variable, one option is to specify proportion directly instead of count by using suffix
 _PROP.
 }
 \examples{
+# example
+target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
+  package = "maicplus", mustWork = TRUE
+))
+target_pop2 <- read.csv(system.file("extdata", "aggregate_data_example_2.csv",
+  package = "maicplus", mustWork = TRUE
+))
+target_pop3 <- read.csv(system.file("extdata", "aggregate_data_example_3.csv",
+  package = "maicplus", mustWork = TRUE
+))
+
+target_pop <- process_agd(target_pop)
+target_pop2 <- process_agd(target_pop2)
+target_pop3 <- process_agd(target_pop3)
+
+# another example
 target_pop <- data.frame(
   STUDY = "Study_XXXX",
   ARM = "Total",
