@@ -180,12 +180,6 @@ check_weights <- function(optimized, processed_agd, mean_digits = 2, prop_digits
   outdata <- data.frame(
     covariate = gsub("_CENTERED$", "", match_cov),
     match_stat = NA,
-    external_trial = NA,
-    internal_trial = NA,
-    internal_trial_after_weighted = NA,
-  outdata <- data.frame(
-    covariate = gsub("_CENTERED$", "", match_cov),
-    match_stat = NA,
     internal_trial = NA,
     internal_trial_after_weighted = NA,
      external_trial = NA,
