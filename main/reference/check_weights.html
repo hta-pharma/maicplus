@@ -31,12 +31,6 @@ before and after adjustment."><!-- mathjax --><script src="https://cdnjs.cloudfl
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/main">main</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -65,7 +59,13 @@ before and after adjustment.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_weights</span><span class="op">(</span><span class="va">optimized</span>, <span class="va">match_cov</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_weights</span><span class="op">(</span></span>
+<span>  <span class="va">optimized</span>,</span>
+<span>  <span class="va">processed_agd</span>,</span>
+<span>  mean_digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  prop_digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  sd_digits <span class="op">=</span> <span class="fl">3</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -74,14 +74,21 @@ before and after adjustment.</p>
 <dd><p>object returned after calculating weights using <code><a href="estimate_weights.html">estimate_weights</a></code></p></dd>
 
 
-<dt>match_cov</dt>
-<dd><p>covariates that should be checked to see if the IPD weighted average matches the aggregate data
-average. This could be same set of variables that were used to match or it can include variables that were not
-included to match (i.e. stratification variables)</p></dd>
+<dt>processed_agd</dt>
+<dd><p>a data frame, object returned after using <code><a href="process_agd.html">process_agd</a></code> or
+aggregated data following the same naming convention</p></dd>
 
 
-<dt>digits</dt>
-<dd><p>number of digits for rounding summary table</p></dd>
+<dt>mean_digits</dt>
+<dd><p>number of digits for rounding mean columns in the output</p></dd>
+
+
+<dt>prop_digits</dt>
+<dd><p>number of digits for rounding proportion columns in the output</p></dd>
+
+
+<dt>sd_digits</dt>
+<dd><p>number of digits for rounding mean columns in the output</p></dd>
 
 </dl></div>
     <div class="section level2">
