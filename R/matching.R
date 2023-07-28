@@ -224,7 +224,8 @@ check_weights <- function(optimized, processed_agd, mean_digits = 2, prop_digits
       if (msg_ind) {
         msg_txt <- paste0(
           "For covariate ", covname, ", it was matched to AgD median, but there is no IPD identical to AgD median,",
-          "hence median after weighted will not equal to AgD median exactly.")
+          "hence median after weighted will not equal to AgD median exactly."
+        )
         attr(outdata, "footer") <- c(attr(outdata, "footer"), msg_txt)
       }
     } else if (outdata$match_stat[ii] == "SD") {
