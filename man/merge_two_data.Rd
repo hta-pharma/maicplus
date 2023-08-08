@@ -32,7 +32,7 @@ external ARM is assigned to be the reference treatment in the unanchored case. c
 treatment for the anchored case.
 }
 \description{
-For a survival outcome, we can digitize Kaplan Meier curves to obtain
+For a survival outcome, we can digitize Kaplan-Meier curves to obtain
 pseudo IPD. For a binomial outcome, we can simulate response data based
 on the known proportion of responders. For both types of outcomes,
 we need to merge the pseudo comparator IPD with the internal IPD data
