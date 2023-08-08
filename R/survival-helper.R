@@ -57,12 +57,12 @@ survfit_makeup <- function(km_fit) {
 #' Function to plot Kaplan-Meier curves using survminer package
 #'
 #' @param combined_data combined data 
-#' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
-#' @param trt  a character string, name of the interested treatment in internal trial (real IPD)
-#' @param trt_ext character string, name of the interested comparator in external trial used to subset \code{dat_ext} (pseudo IPD)
-#' @param endpoint_name a character string, name of the endpoint
+#' @param trt internal trial treatment
+#' @param trt_ext external trial treatment
+#' @param trt_common treatment that is shared between internal and external trial. Only applies in anchored comparison.
+#' @param endpoint_name a character name of the endpoint
 #'
-#' @return a KM plot
+#' @return a Kaplan-Meier plot
 
 km_plot2 <- function(combined_data, trt, trt_ext, trt_common = NULL,
                     endpoint_name = "") {
@@ -72,21 +72,19 @@ km_plot2 <- function(combined_data, trt, trt_ext, trt_common = NULL,
     stop("survminer package is needed to run this function")
   }
   
-  store_names <- names(combined_data) #stored in this order: Time, Event, ARM, Weights
-  internal <- combined_data[store_names[3] == trt,]
-  external <- combined_data[store_names[3] == trt_ext,]
+  colnames(combined_data) <- c("TIME", "EVENT", "ARM", "weights")
   
   # Unweighted internal data
-  km_internal <- survfit(Surv(store_names[1], store_names[2]==1) ~ 1,
+  km_internal <- survfit(Surv(TIME, EVENT==1) ~ 1,
                          data = internal,
                          conf.type = "log-log")
   # Weighted internal data
-  km_internal_weighted <- survfit(Surv(store_names[1], store_names[2]==1) ~ 1,
+  km_internal_weighted <- survfit(Surv(TIME, EVENT==1) ~ 1,
                                   data = internal,
                                   weights = internal$weights,
                                   conf.type = "log-log")
   # Comparator data
-  km_external <- survfit(Surv(Time, Event==1) ~ 1,
+  km_external <- survfit(Surv(TIME, EVENT==1) ~ 1,
                          data = external,
                          conf.type = "log-log")
 
@@ -136,12 +134,12 @@ km_plot2 <- function(combined_data, trt, trt_ext, trt_common = NULL,
 #'
 #' @param km_fit_before returned object from \code{survival::survfit} before adjustment
 #' @param km_fit_after returned object from \code{survival::survfit} after adjustment
-#' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
-#' @param trt  a character string, name of the interested treatment in internal trial (real IPD)
-#' @param trt_ext character string, name of the interested comparator in external trial used to subset \code{dat_ext} (pseudo IPD)
-#' @param endpoint_name a character string, name of the endpoint
+#' @param time_scale time unit of median survival time, taking a value of 'year', 'month', 'week' or 'day'
+#' @param trt internal trial treatment
+#' @param trt_ext external trial treatment
+#' @param endpoint_name name of the endpoint
 #'
-#' @return a KM plot
+#' @return a Kaplan-Meier plot
 #' @export
 
 km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext, endpoint_name = "") {
