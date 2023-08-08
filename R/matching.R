@@ -249,9 +249,7 @@ check_weights <- function(optimized, processed_agd, mean_digits = 2, prop_digits
 
 #' Print the data frame from \code{\link{check_weights}}
 #'
-#' Print the data frame from \code{\link{check_weights}}. It also gives a warning
-#' message if median is used to match and no IPD equals to reported 
-#' aggregate data median.
+#' Print the data frame from \code{\link{check_weights}}.
 #' 
 #' @param x Result object created by \code{\link{network.run}} function
 #' @param ... Additional arguments for printing a data frame
@@ -264,11 +262,9 @@ print.check.weights <- function(x,...){
     stop("This is not the output from the function check_weights")
   }
   
-  pp <- print.data.frame(x,...)
+  print.data.frame(x,...)
   
-  cat(pp,
-      attr(x, "footer"),
-      sep="\n")
-  
-  print("Hi")
+  if(length(attr(outdata, "footer"))!=0){
+    cat(unlist(attr(x, "footer")), sep = "\n")
+  }
 }

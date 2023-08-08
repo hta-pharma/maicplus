@@ -35,7 +35,6 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 #' @param km_fit returned object from \code{survival::survfit}
 #'
 #' @export
-#'
 #' @return a list of data frames, one element per treatment
 survfit_makeup <- function(km_fit) {
   kmdat <- data.frame(
@@ -49,10 +48,88 @@ survfit_makeup <- function(km_fit) {
     upper = km_fit$upper,
     cumhaz = km_fit$cumhaz
   )
-  kmdat$treatment <- gsub("treatment=", "", attr(km_fit$strata, "names"))[kmdat$treatment]
+  kmdat$treatment <- sapply(strsplit(names(km_fit$strata), "="), "[[", 2)[kmdat$treatment]
+  # gsub("treatment=", "", attr(km_fit$strata, "names"))[kmdat$treatment]
   split(kmdat, f = kmdat$treatment)
 }
 
+
+#' Function to plot Kaplan-Meier curves using survminer package
+#'
+#' @param combined_data combined data 
+#' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
+#' @param trt  a character string, name of the interested treatment in internal trial (real IPD)
+#' @param trt_ext character string, name of the interested comparator in external trial used to subset \code{dat_ext} (pseudo IPD)
+#' @param endpoint_name a character string, name of the endpoint
+#'
+#' @return a KM plot
+km_plot2 <- function(combined_data, trt, trt_ext, trt_common = NULL,
+                    endpoint_name = "") {
+  
+  # check if survminer package is installed
+  if(!"survminer" %in% rownames(installed.packages())){
+    stop("survminer package is needed to run this function")
+  }
+  
+  store_names <- names(combined_data) #stored in this order: Time, Event, ARM, Weights
+  internal <- combined_data[store_names[3] == trt,]
+  external <- combined_data[store_names[3] == trt_ext,]
+  
+  # Unweighted internal data
+  KM_internal <- survfit(Surv(store_names[1], store_names[2]==1) ~ 1,
+                         data = internal,
+                         conf.type = "log-log")
+  # Weighted internal data
+  KM_internal_weighted <- survfit(Surv(store_names[1], store_names[2]==1) ~ 1,
+                                  data = internal,
+                                  weights = internal$weights,
+                                  conf.type = "log-log")
+  # Comparator data
+  KM_external <- survfit(Surv(Time, Event==1) ~ 1,
+                         data = external,
+                         conf.type = "log-log")
+
+  # Combine the survfit objects ready for ggsurvplot
+  KM_list <- list(internal = KM_internal,
+                  internal_weighted = KM_internal_weighted,
+                  Comparator = KM_external)
+  
+  #Produce the Kaplan-Meier plot
+  KM_plot <- survminer::ggsurvplot(KM_list,
+                        linetype = c(1,1,2),
+                        censor.size= 3,
+                        size = 0.2,
+                        combine = TRUE,
+                        risk.table= TRUE, 
+                        break.x.by= 30, 
+                        xlab="Time (days)",
+                        ylab="Overall survival",
+                        censor=TRUE,
+                        legend.title = "Treatment",
+                        legend=c(0.85,0.82),
+                        title = "Kaplan-Meier plot of overall survival",
+                        legend.labs=c("Internal IPD", "Internal IPD weighted", "External comparator"),
+                        risk.table.y.text.col = T,
+                        risk.table.y.text = FALSE,
+                        tables.theme = theme_cleantable(),
+                        ggtheme = theme_classic(base_size = 10),
+                        fontsize = 3,
+                        conf.int = FALSE)
+  # font.title = c(16, "bold", "darkblue"),
+  # font.subtitle = c(15, "bold.italic", "purple"),
+  # font.caption = c(14, "plain", "orange"),
+  # font.x = c(14, "bold.italic", "red"),
+  # font.y = c(14, "bold.italic", "darkred"),
+  # font.tickslab = c(12, "plain", "darkgreen"))
+  # risk.table.title = "Note the risk set sizes",
+  # risk.table.subtitle = "and remember about censoring.",
+  # risk.table.caption = "source code: website.com",
+  # risk.table.height = 0.45
+  # )
+  KM_plot
+  
+  
+}
 
 #' helper function: KM plot with unadjusted and adjusted KM
 #'
@@ -64,7 +141,9 @@ survfit_makeup <- function(km_fit) {
 #' @param endpoint_name a character string, name of the endpoint
 #'
 #' @return a KM plot
-km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext, endpoint_name = "") {
+#' @export
+
+km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext, endpoint_name = "") {
   timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
   if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
@@ -84,7 +163,7 @@ km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_e
   # base plot
   par(mfrow = c(1, 1), bty = "n", tcl = -0.15, mgp = c(2.3, 0.5, 0))
   plot(0, 0,
-    type = "n", xlab = paste0("Time in", time_scale), ylab = "Survival Probability",
+    type = "n", xlab = paste0("Time in ", time_scale), ylab = "Survival Probability",
     ylim = c(0, 1), xlim = t_range, yaxt = "n",
     main = paste0(
       "Kaplan-Meier Curves of Comparator ", ifelse(!is.null(km_fit_after), "(AgD) ", ""),
@@ -94,7 +173,7 @@ km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_e
   )
   axis(2, las = 1)
 
-  # add km lines from external trail
+  # add km lines from external trial
   lines(
     y = pd_be[[trt_ext]]$surv,
     x = (pd_be[[trt_ext]]$time / timeUnit[[time_scale]]), col = "#5450E4",
@@ -142,7 +221,7 @@ km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_e
     legend = c(
       paste0("Comparator: ", trt_ext),
       paste0("Treatment: ", trt),
-      paste0("Treatment: ", trt, "(with weights)")
+      paste0("Treatment: ", trt, " (with weights)")
     )[use_leg]
   )
 }

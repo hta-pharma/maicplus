@@ -97,8 +97,16 @@ process_agd <- function(raw_agd) {
 
   # calculate percentage columns
   ind <- grepl("_COUNT$", names(use_agd))
+
   if (any(ind)) {
     for (i in which(ind)) {
+      
+      # Check if _PROP also exists for this name and print a message it will be overwritten
+      check_name <- gsub("_COUNT$", "_PROP", names(use_agd)[i])
+      if(check_name %in% names(use_agd)){
+        warning(paste0(check_name, " will be ignored since count is specified"))
+      }
+      
       tmp_prop <- use_agd[[i]] / use_agd$N
       # in case some count are not specified, but proportion are specified, copy over those proportions
       # this also means, in case count is specified, proportion is ignored even it is specified
@@ -109,6 +117,7 @@ process_agd <- function(raw_agd) {
       }
       use_agd[[i]] <- tmp_prop
     }
+    
     names(use_agd) <- gsub("_COUNT$", "_PROP", names(use_agd))
   }
   use_agd <- use_agd[, !grepl("_redundant$", names(use_agd))]
@@ -273,4 +282,105 @@ ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
   dd$time <- dd$AVAL * time_units[[time_scale]]
   if (!is.null(trt)) dd$treatment <- trt
   as.data.frame(dd)
+}
+
+
+#' Function to merge IPD data and pseudo comparator IPD
+#'
+#' For a survival outcome, we can digitize Kaplan-Meier curves to obtain 
+#' pseudo IPD. For a binomial outcome, we can simulate response data based 
+#' on the known proportion of responders. For both types of outcomes, 
+#' we need to merge the pseudo comparator IPD with the internal IPD data
+#' to run the regression (i.e. cox regression). This function joins merges
+#' the two data into a single data. For the external pseudo IPD, a weight
+#' of 1 is assigned.
+#'
+#' @param external pseudo comparator IPD. Should be a data frame. 
+#' For a time to event outcome, time, status(i.e. event=1), and ARM should be specified
+#' For a response outcome, response and ARM should be specified.
+#' ARM has to be in capital letters as in legal suffixes.
+#' @param internal internal IPD data that is returned from \code{\link{estimate_weights}}
+#' @param internal_time_name how the time variable is named in the internal IPD (for time to event outcome)
+#' @param internal_event_name how the event variable is named in the internal IPD (for time to event outcome)
+#' @param internal_response_name how the response variable is named in the internal IPD (for binary outcome)
+#' @return Merged dataset with time, event, ARM, and weights for time to event data and response, ARM, and weights for binary.
+#' external ARM is assigned to be the reference treatment in the unanchored case. common treatment is assigned to be reference
+#' treatment for the anchored case.
+
+merge_two_data <- function(external = NULL, internal = NULL, internal_time_name = NULL, internal_event_name = NULL, internal_response_name = NULL){
+  
+  if(is.null(external) || is.null(internal)){
+    stop("Both external and internal have to be specified")
+  }
+  
+  if(is.null(external$ARM)){
+    stop("ARM (in capital) has to be specified in external")
+  }
+  
+  if(!is.null(internal_time_name) & !is.null(internal_event_name)){
+    response <- "tte"
+    if(!internal_time_name %in% names(internal)){
+      stop("internal_time_name is not in internal")
+    }
+    if(!internal_event_name %in% names(internal)){
+      stop("internal_event_name is not in internal")
+    }
+  } else if(!is.null(internal_response_name)){
+    response <- "binary"
+    if(!internal_response_name %in% names(internal)){
+      stop("internal_response_name is not in internal")
+    }
+  } else {
+    stop("Need to specify internal name parameters")
+  }
+  
+  if(!is.data.frame(external)){
+    stop("external is not a data frame")
+  }
+  
+  if(response == "tte"){
+    
+    if(dim(external)[2] != 3){
+      stop("external needs three columns: Time, Event, and ARM")
+    }
+    unique_length <- sapply(external, function(x) length(unique(x)))
+    
+    find_time_index <- which(unique_length > 2)
+    find_event_index <- which(unique_length == 2)
+    find_event_index <- find_event_index[names(find_event_index) != "ARM"]
+    
+    # change external names to internal names
+    colnames(external)[find_event_index] <- internal_event_name
+    colnames(external)[find_time_index] <- internal_time_name 
+    
+    external <- external[,c(internal_time_name, internal_event_name, "ARM")]
+  }
+  
+  if(response == "binary"){
+    if(dim(external)[2] != 2){
+      stop("external needs two columns: Response and ARM")
+    }
+    
+    find_response_index <- which(colnames(external) != "ARM")
+    
+    # change external response name to internal response name
+    colnames(external)[find_response_index] <- internal_response_name
+  }
+  
+  external[["weights"]] <- 1
+  
+  internal_names <- colnames(external)
+  internal <- internal[,internal_names]
+  
+  combined_data <- rbind(internal, external)
+  
+  if(length(intersect(internal$ARM, external$ARM)) == 1){
+    # if there is a common treatment (i.e. anchored)
+    ref_treat <- intersect(internal$ARM, external$ARM)
+  } else{
+    ref_treat <- external$ARM[1]
+  }
+  combined_data$ARM <- relevel(as.factor(combined_data[["ARM"]]), ref = ref_treat)
+  
+  return(combined_data)
 }

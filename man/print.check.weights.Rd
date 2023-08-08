@@ -15,7 +15,5 @@
 Returns data frame of summary statistics of weighted and unweighted IPD and aggregate data
 }
 \description{
-Print the data frame from \code{\link{check_weights}}. It also gives a warning
-message if median is used to match and no IPD equals to reported
-aggregate data median.
+Print the data frame from \code{\link{check_weights}}.
 }
