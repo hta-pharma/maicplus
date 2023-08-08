@@ -31,12 +31,6 @@ before and after adjustment."><!-- mathjax --><script src="https://cdnjs.cloudfl
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/main">main</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -65,12 +59,16 @@ before and after adjustment.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_weights</span><span class="op">(</span></span>
-<span>  <span class="va">optimized</span>,</span>
-<span>  <span class="va">processed_agd</span>,</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_weights</span><span class="op">(</span><span class="va">optimized</span>, <span class="va">processed_agd</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for maicplus_check_weights</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
 <span>  mean_digits <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  prop_digits <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  sd_digits <span class="op">=</span> <span class="fl">3</span></span>
+<span>  sd_digits <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"digits"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -85,6 +83,10 @@ before and after adjustment.</p>
 aggregated data following the same naming convention</p></dd>
 
 
+<dt>x</dt>
+<dd><p>object from check_weights</p></dd>
+
+
 <dt>mean_digits</dt>
 <dd><p>number of digits for rounding mean columns in the output</p></dd>
 
@@ -96,6 +98,14 @@ aggregated data following the same naming convention</p></dd>
 <dt>sd_digits</dt>
 <dd><p>number of digits for rounding mean columns in the output</p></dd>
 
+
+<dt>digits</dt>
+<dd><p>minimal number of significant digits, see <a href="https://rdrr.io/r/base/print.default.html" class="external-link">print.default</a>.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>further arguments to <a href="https://rdrr.io/r/base/print.dataframe.html" class="external-link">print.data.frame</a></p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -103,7 +113,84 @@ aggregated data following the same naming convention</p></dd>
 
 <p>data.frame of weighted and unweighted covariate averages of the IPD</p>
     </div>
+    <div class="section level2">
+    <h2 id="methods-by-generic-">Methods (by generic)<a class="anchor" aria-label="anchor" href="#methods-by-generic-"></a></h2>
+    
+<ul><li><p><code>print(maicplus_check_weights)</code>: Print method for check_weights objects</p></li>
+</ul></div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"adsl.csv"</span>,</span></span>
+<span class="r-in"><span>  package <span class="op">=</span> <span class="st">"maicplus"</span>,</span></span>
+<span class="r-in"><span>  mustWork <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">adrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"adrs.csv"</span>,</span></span>
+<span class="r-in"><span>  package <span class="op">=</span> <span class="st">"maicplus"</span>,</span></span>
+<span class="r-in"><span>  mustWork <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">adtte</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"adtte.csv"</span>,</span></span>
+<span class="r-in"><span>  package <span class="op">=</span> <span class="st">"maicplus"</span>,</span></span>
+<span class="r-in"><span>  mustWork <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">### AgD</span></span></span>
+<span class="r-in"><span><span class="co"># Baseline aggregate data for the comparator population</span></span></span>
+<span class="r-in"><span><span class="va">target_pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"aggregate_data_example_1.csv"</span>,</span></span>
+<span class="r-in"><span>  package <span class="op">=</span> <span class="st">"maicplus"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># target_pop2 &lt;- read.csv(system.file("extdata", "aggregate_data_example_2.csv",</span></span></span>
+<span class="r-in"><span><span class="co">#                                     package = "maicplus", mustWork = TRUE))</span></span></span>
+<span class="r-in"><span><span class="co"># target_pop3 &lt;- read.csv(system.file("extdata", "aggregate_data_example_3.csv",</span></span></span>
+<span class="r-in"><span><span class="co">#                                     package = "maicplus", mustWork = TRUE))</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># for time-to-event endpoints, pseudo IPD from digitalized KM</span></span></span>
+<span class="r-in"><span><span class="va">pseudo_ipd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"psuedo_IPD.csv"</span>,</span></span>
+<span class="r-in"><span>  package <span class="op">=</span> <span class="st">"maicplus"</span>,</span></span>
+<span class="r-in"><span>  mustWork <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### prepare data ----------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="va">target_pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="process_agd.html">process_agd</a></span><span class="op">(</span><span class="va">target_pop</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># target_pop2 &lt;- process_agd(target_pop2) # demo of process_agd in different scenarios</span></span></span>
+<span class="r-in"><span><span class="co"># target_pop3 &lt;- process_agd(target_pop3) # demo of process_agd in different scenarios</span></span></span>
+<span class="r-in"><span><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="dummize_ipd.html">dummize_ipd</a></span><span class="op">(</span><span class="va">adsl</span>, dummize_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SEX"</span><span class="op">)</span>, dummize_ref_level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Female"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">use_adsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="center_ipd.html">center_ipd</a></span><span class="op">(</span>ipd <span class="op">=</span> <span class="va">adsl</span>, agd <span class="op">=</span> <span class="va">target_pop</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">match_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="estimate_weights.html">estimate_weights</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">use_adsl</span>,</span></span>
+<span class="r-in"><span>  centered_colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"_CENTERED$"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">use_adsl</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  start_val <span class="op">=</span> <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"BFGS"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> initial  value 500.000000 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> iter  10 value 196.020742</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> iter  20 value 173.488262</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> final  value 173.420820 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> converged</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">check</span> <span class="op">&lt;-</span> <span class="fu">check_weights</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  optimized <span class="op">=</span> <span class="va">match_res</span>,</span></span>
+<span class="r-in"><span>  processed_agd <span class="op">=</span> <span class="va">target_pop</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">check</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   covariate match_stat internal_trial internal_trial_after_weighted</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       AGE       Mean         59.850                         51.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       AGE     Median         59.000                         49.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       AGE         SD          9.011                          3.25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  SEX_MALE       Prop          0.380                          0.49</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5     ECOG0       Prop          0.410                          0.35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6     SMOKE       Prop          0.320                          0.19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   external_trial sum_centered_IPD_with_weights</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          51.00                         0.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          49.00                         0.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3           3.25                        -0.004</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4           0.49                         0.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5           0.35                         0.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6           0.19                         0.000</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
