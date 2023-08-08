@@ -298,7 +298,6 @@ check_weights <- function(optimized, processed_agd) {
 #' @describeIn check_weights Print method for check_weights objects
 #' @export
 print.maicplus_check_weights <- function(x, mean_digits = 2, prop_digits = 2, sd_digits = 3, digits = getOption("digits"), ...) {
-
   round_digits <- c("Mean" = mean_digits, "Prop" = prop_digits, "SD" = sd_digits)[x$match_stat]
   round_digits[is.na(round_digits)] <- digits
 
@@ -311,7 +310,7 @@ print.maicplus_check_weights <- function(x, mean_digits = 2, prop_digits = 2, sd
   if (length(footer)) {
     cat("\n")
     for (f in seq_along(footer)) {
-      cat(paste0("[",f,"] ", footer[f]))
+      cat(paste0("[", f, "] ", footer[f]))
     }
   }
 }
