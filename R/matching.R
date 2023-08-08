@@ -158,17 +158,63 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' @param optimized object returned after calculating weights using \code{\link{estimate_weights}}
 #' @param processed_agd a data frame, object returned after using \code{\link{process_agd}} or
 #' aggregated data following the same naming convention
-#' @param mean_digits number of digits for rounding mean columns in the output
-#' @param prop_digits number of digits for rounding proportion columns in the output
-#' @param sd_digits number of digits for rounding mean columns in the output
-
 #'
 #' @import DescTools
 #'
 #' @return data.frame of weighted and unweighted covariate averages of the IPD
 #' @export
-
-check_weights <- function(optimized, processed_agd, mean_digits = 2, prop_digits = 2, sd_digits = 3) {
+#'
+#' @examples
+#' adsl <- read.csv(system.file("extdata", "adsl.csv",
+#'   package = "maicplus",
+#'   mustWork = TRUE
+#' ))
+#' adrs <- read.csv(system.file("extdata", "adrs.csv",
+#'   package = "maicplus",
+#'   mustWork = TRUE
+#' ))
+#' adtte <- read.csv(system.file("extdata", "adtte.csv",
+#'   package = "maicplus",
+#'   mustWork = TRUE
+#' ))
+#'
+#' ### AgD
+#' # Baseline aggregate data for the comparator population
+#' target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
+#'   package = "maicplus", mustWork = TRUE
+#' ))
+#' # target_pop2 <- read.csv(system.file("extdata", "aggregate_data_example_2.csv",
+#' #                                     package = "maicplus", mustWork = TRUE))
+#' # target_pop3 <- read.csv(system.file("extdata", "aggregate_data_example_3.csv",
+#' #                                     package = "maicplus", mustWork = TRUE))
+#'
+#' # for time-to-event endpoints, pseudo IPD from digitalized KM
+#' pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
+#'   package = "maicplus",
+#'   mustWork = TRUE
+#' ))
+#'
+#' #### prepare data ----------------------------------------------------------
+#' target_pop <- process_agd(target_pop)
+#' # target_pop2 <- process_agd(target_pop2) # demo of process_agd in different scenarios
+#' # target_pop3 <- process_agd(target_pop3) # demo of process_agd in different scenarios
+#' adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
+#' use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
+#'
+#' match_res <- estimate_weights(
+#'   data = use_adsl,
+#'   centered_colnames = grep("_CENTERED$", names(use_adsl)),
+#'   start_val = 0,
+#'   method = "BFGS"
+#' )
+#'
+#' check <- check_weights(
+#'   optimized = match_res,
+#'   processed_agd = target_pop
+#' )
+#'
+#' print(check)
+check_weights <- function(optimized, processed_agd) {
   ipd_with_weights <- optimized$data
   match_cov <- optimized$centered_colnames
 
@@ -196,9 +242,7 @@ check_weights <- function(optimized, processed_agd, mean_digits = 2, prop_digits
   outdata$covariate <- gsub("_MEDIAN|_SQUARED", "", outdata$covariate)
   # fill in corresponding agd data
   outdata$external_trial <- unlist(processed_agd[paste(outdata$covariate, toupper(outdata$match_stat), sep = "_")])
-  outdata$external_trial[outdata$match_stat == "Mean"] <- round(outdata$external_trial[outdata$match_stat == "Mean"], mean_digits)
-  outdata$external_trial[outdata$match_stat == "Prop"] <- round(outdata$external_trial[outdata$match_stat == "Prop"], prop_digits)
-  outdata$external_trial[outdata$match_stat == "SD"] <- round(outdata$external_trial[outdata$match_stat == "SD"], sd_digits)
+
   # fill in stat from unweighted and weighted IPD
   for (ii in 1:nrow(outdata)) {
     covname <- outdata$covariate[ii]
@@ -235,14 +279,38 @@ check_weights <- function(optimized, processed_agd, mean_digits = 2, prop_digits
       outdata$internal_trial_after_weighted[ii] <- sqrt(wm_squared - ms_agd)
     }
   }
-  # formating
 
-  outdata$internal_trial[outdata$match_stat == "Mean"] <- round(outdata$internal_trial[outdata$match_stat == "Mean"], mean_digits)
-  outdata$internal_trial[outdata$match_stat == "Prop"] <- round(outdata$internal_trial[outdata$match_stat == "Prop"], prop_digits)
-  outdata$internal_trial[outdata$match_stat == "SD"] <- round(outdata$internal_trial[outdata$match_stat == "SD"], sd_digits)
-  outdata$internal_trial_after_weighted[outdata$match_stat == "Mean"] <- round(outdata$internal_trial_after_weighted[outdata$match_stat == "Mean"], mean_digits)
-  outdata$internal_trial_after_weighted[outdata$match_stat == "Prop"] <- round(outdata$internal_trial_after_weighted[outdata$match_stat == "Prop"], prop_digits)
-  outdata$internal_trial_after_weighted[outdata$match_stat == "SD"] <- round(outdata$internal_trial_after_weighted[outdata$match_stat == "SD"], sd_digits)
   # output
+  class(outdata) <- c("maicplus_check_weights", "data.frame")
   outdata
+}
+
+
+#' Print method for Check Weights objects
+#'
+#' @param x object from [check_weights]
+#' @param mean_digits number of digits for rounding mean columns in the output
+#' @param prop_digits number of digits for rounding proportion columns in the output
+#' @param sd_digits number of digits for rounding mean columns in the output
+#' @param digits minimal number of significant digits, see [print.default].
+#' @param ... further arguments to [print.data.frame]
+#'
+#' @describeIn check_weights Print method for check_weights objects
+#' @export
+print.maicplus_check_weights <- function(x, mean_digits = 2, prop_digits = 2, sd_digits = 3, digits = getOption("digits"), ...) {
+  round_digits <- c("Mean" = mean_digits, "Prop" = prop_digits, "SD" = sd_digits)[x$match_stat]
+  round_digits[is.na(round_digits)] <- digits
+
+  x$external_trial <- round(x$external_trial, round_digits)
+  x$internal_trial <- round(x$internal_trial, round_digits)
+  x$internal_trial_after_weighted <- round(x$internal_trial_after_weighted, round_digits)
+
+  print.data.frame(x, ...)
+  footer <- unlist(attr(x, "footer"))
+  if (length(footer)) {
+    cat("\n")
+    for (f in seq_along(footer)) {
+      cat(paste0("[", f, "] ", footer[f]))
+    }
+  }
 }
