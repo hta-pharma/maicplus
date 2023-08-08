@@ -2,14 +2,18 @@
 % Please edit documentation in R/matching.R
 \name{check_weights}
 \alias{check_weights}
+\alias{print.maicplus_check_weights}
 \title{Check to see if weights are optimized correctly}
 \usage{
-check_weights(
-  optimized,
-  processed_agd,
+check_weights(optimized, processed_agd)
+
+\method{print}{maicplus_check_weights}(
+  x,
   mean_digits = 2,
   prop_digits = 2,
-  sd_digits = 3
+  sd_digits = 3,
+  digits = getOption("digits"),
+  ...
 )
 }
 \arguments{
@@ -18,11 +22,17 @@ check_weights(
 \item{processed_agd}{a data frame, object returned after using \code{\link{process_agd}} or
 aggregated data following the same naming convention}
 
+\item{x}{object from \link{check_weights}}
+
 \item{mean_digits}{number of digits for rounding mean columns in the output}
 
 \item{prop_digits}{number of digits for rounding proportion columns in the output}
 
 \item{sd_digits}{number of digits for rounding mean columns in the output}
+
+\item{digits}{minimal number of significant digits, see \link{print.default}.}
+
+\item{...}{further arguments to \link{print.data.frame}}
 }
 \value{
 data.frame of weighted and unweighted covariate averages of the IPD, and average of aggregate data
@@ -30,4 +40,60 @@ data.frame of weighted and unweighted covariate averages of the IPD, and average
 \description{
 This function checks to see if the optimization is done properly by checking the covariate averages
 before and after adjustment.
+}
+\section{Methods (by generic)}{
+\itemize{
+\item \code{print(maicplus_check_weights)}: Print method for check_weights objects
+
+}}
+\examples{
+adsl <- read.csv(system.file("extdata", "adsl.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
+adrs <- read.csv(system.file("extdata", "adrs.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
+adtte <- read.csv(system.file("extdata", "adtte.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
+
+### AgD
+# Baseline aggregate data for the comparator population
+target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
+  package = "maicplus", mustWork = TRUE
+))
+# target_pop2 <- read.csv(system.file("extdata", "aggregate_data_example_2.csv",
+#                                     package = "maicplus", mustWork = TRUE))
+# target_pop3 <- read.csv(system.file("extdata", "aggregate_data_example_3.csv",
+#                                     package = "maicplus", mustWork = TRUE))
+
+# for time-to-event endpoints, pseudo IPD from digitalized KM
+pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
+
+#### prepare data ----------------------------------------------------------
+target_pop <- process_agd(target_pop)
+# target_pop2 <- process_agd(target_pop2) # demo of process_agd in different scenarios
+# target_pop3 <- process_agd(target_pop3) # demo of process_agd in different scenarios
+adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
+use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
+
+match_res <- estimate_weights(
+  data = use_adsl,
+  centered_colnames = grep("_CENTERED$", names(use_adsl)),
+  start_val = 0,
+  method = "BFGS"
+)
+
+check <- check_weights(
+  optimized = match_res,
+  processed_agd = target_pop
+)
+
+print(check)
 }
