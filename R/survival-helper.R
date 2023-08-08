@@ -63,11 +63,12 @@ survfit_makeup <- function(km_fit) {
 #' @param endpoint_name a character string, name of the endpoint
 #'
 #' @return a KM plot
+
 km_plot2 <- function(combined_data, trt, trt_ext, trt_common = NULL,
                     endpoint_name = "") {
   
   # check if survminer package is installed
-  if(!"survminer" %in% rownames(installed.packages())){
+  if(requireNamespace("survminer", quietly = TRUE)){
     stop("survminer package is needed to run this function")
   }
   
@@ -76,26 +77,26 @@ km_plot2 <- function(combined_data, trt, trt_ext, trt_common = NULL,
   external <- combined_data[store_names[3] == trt_ext,]
   
   # Unweighted internal data
-  KM_internal <- survfit(Surv(store_names[1], store_names[2]==1) ~ 1,
+  km_internal <- survfit(Surv(store_names[1], store_names[2]==1) ~ 1,
                          data = internal,
                          conf.type = "log-log")
   # Weighted internal data
-  KM_internal_weighted <- survfit(Surv(store_names[1], store_names[2]==1) ~ 1,
+  km_internal_weighted <- survfit(Surv(store_names[1], store_names[2]==1) ~ 1,
                                   data = internal,
                                   weights = internal$weights,
                                   conf.type = "log-log")
   # Comparator data
-  KM_external <- survfit(Surv(Time, Event==1) ~ 1,
+  km_external <- survfit(Surv(Time, Event==1) ~ 1,
                          data = external,
                          conf.type = "log-log")
 
   # Combine the survfit objects ready for ggsurvplot
-  KM_list <- list(internal = KM_internal,
-                  internal_weighted = KM_internal_weighted,
-                  Comparator = KM_external)
+  km_list <- list(internal = km_internal,
+                  internal_weighted = km_internal_weighted,
+                  Comparator = km_external)
   
   #Produce the Kaplan-Meier plot
-  KM_plot <- survminer::ggsurvplot(KM_list,
+  survminer_plot <- survminer::ggsurvplot(km_list,
                         linetype = c(1,1,2),
                         censor.size= 3,
                         size = 0.2,
@@ -126,7 +127,7 @@ km_plot2 <- function(combined_data, trt, trt_ext, trt_common = NULL,
   # risk.table.caption = "source code: website.com",
   # risk.table.height = 0.45
   # )
-  KM_plot
+  survminer_plot
   
   
 }
