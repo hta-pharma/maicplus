@@ -149,8 +149,9 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
   abline(v = median(wt), lty = 2, col = vline_col, lwd = 2)
   legend("topright", bty = "n", lty = plot_lty, cex = 0.8, legend = plot_legend)
   mtext("According to a survey of NICE's technology appraisals in 2021 (https://onlinelibrary.wiley.com/doi/full/10.1002/jrsm.1511): 'In most applications, weighting considerably reduces the effective sample size from the original AC sample size. The median percentage reduction is 58% (range: 7.9%–94.1%; interquartile range: 42.2%–74.2%).
-The final effective sample sizes are also representative of those in the technology appraisals, which are also small (median: 80; range: 4.8–639; interquartile range: 37–174).' Therefore, an ESS reduction up to ~60% is not unexpected based on the 2021 survey, whereas a reduction of >75% is less common and it may be considered suboptimal."
-  , adj = 0, side=1, line=2, font=3, cex=0.7, col=blues9)
+The final effective sample sizes are also representative of those in the technology appraisals, which are also small (median: 80; range: 4.8–639; interquartile range: 37–174).' Therefore, an ESS reduction up to ~60% is not unexpected based on the 2021 survey, whereas a reduction of >75% is less common and it may be considered suboptimal.",
+    adj = 0, side = 1, line = 2, font = 3, cex = 0.7, col = blues9
+  )
 }
 
 #' Check to see if weights are optimized correctly
