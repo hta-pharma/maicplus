@@ -4,21 +4,30 @@
 \alias{km_plot2}
 \title{Function to plot Kaplan-Meier curves using survminer package}
 \usage{
-km_plot2(combined_data, trt, trt_ext, trt_common = NULL, endpoint_name = "")
+km_plot2(
+  combined_data,
+  trt,
+  trt_ext,
+  trt_common = NULL,
+  break.x.by = 60,
+  endpoint_name = "Overall survival"
+)
 }
 \arguments{
-\item{combined_data}{combined data}
+\item{combined_data}{combined data of internal IPD and psuedo IPD from aggregate data.}
 
-\item{trt}{a character string, name of the interested treatment in internal trial (real IPD)}
+\item{trt}{internal trial treatment}
 
-\item{trt_ext}{character string, name of the interested comparator in external trial used to subset \code{dat_ext} (pseudo IPD)}
+\item{trt_ext}{external trial treatment}
 
-\item{endpoint_name}{a character string, name of the endpoint}
+\item{trt_common}{treatment that is shared between internal and external trial. Only applies in anchored comparison.}
 
-\item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
+\item{break.x.by}{bin parameter for survminer}
+
+\item{endpoint_name}{a character name of the endpoint}
 }
 \value{
-a KM plot
+a Kaplan-Meier plot
 }
 \description{
 Function to plot Kaplan-Meier curves using survminer package

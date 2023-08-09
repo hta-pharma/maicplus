@@ -298,13 +298,12 @@ ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
 #' @param external pseudo comparator IPD. Should be a data frame. 
 #' For a time to event outcome, time, status(i.e. event=1), and ARM should be specified
 #' For a response outcome, response and ARM should be specified.
-#' ARM has to be in capital letters as in legal suffixes.
 #' @param internal internal IPD data that is returned from \code{\link{estimate_weights}}
 #' @param internal_time_name how the time variable is named in the internal IPD (for time to event outcome)
 #' @param internal_event_name how the event variable is named in the internal IPD (for time to event outcome)
 #' @param internal_response_name how the response variable is named in the internal IPD (for binary outcome)
 #' @return Merged dataset with time, event, ARM, and weights for time to event data and response, ARM, and weights for binary.
-#' external ARM is assigned to be the reference treatment in the unanchored case. common treatment is assigned to be reference
+#' External ARM is assigned to be the reference treatment in the unanchored case. common treatment is assigned to be reference
 #' treatment for the anchored case.
 
 merge_two_data <- function(external = NULL, internal = NULL, internal_time_name = NULL, internal_event_name = NULL, internal_response_name = NULL){
@@ -314,7 +313,7 @@ merge_two_data <- function(external = NULL, internal = NULL, internal_time_name 
   }
   
   if(is.null(external$ARM)){
-    stop("ARM (in capital) has to be specified in external")
+    stop("ARM has to be specified in external")
   }
   
   if(!is.null(internal_time_name) & !is.null(internal_event_name)){
@@ -354,9 +353,7 @@ merge_two_data <- function(external = NULL, internal = NULL, internal_time_name 
     colnames(external)[find_time_index] <- internal_time_name 
     
     external <- external[,c(internal_time_name, internal_event_name, "ARM")]
-  }
-  
-  if(response == "binary"){
+  } else if(response == "binary"){
     if(dim(external)[2] != 2){
       stop("external needs two columns: Response and ARM")
     }
