@@ -6,8 +6,6 @@
 #' @param ipd_matched internal IPD data with estimated weights that is returned from \code{\link{estimate_weights}}
 #' @param internal_time_name name of the time variable in ipd_matched (for time to event outcome)
 #' @param internal_event_name name of the event variable in ipd_matched (for time to event outcome)
-#' @param trt  a character string, name of the interested treatment in internal trial (real IPD)
-#' @param trt_ext character string, name of the interested comparator in external trial used to subset \code{dat_ext} (pseudo IPD)
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #' @param endpoint_name a character string, name of the endpoint
 #' @param transform a character string, pass to \code{\link[survival]{cox.zph}}
@@ -20,22 +18,20 @@
 #' }
 #'
 #' @return A list of KM plot, analysis table, and diagnostic plot
-#' @importFrom survival Surv survfit coxph cox.zph
-#' @importFrom graphics par axis lines points legend abline
 #' @export
 
-maic_tte_unanchored <- function(external = NULL, matched_ipd = NULL,
-                                        internal_time_name = NULL, 
-                                        internal_event_name = NULL,
-                                        time_scale = "month", endpoint_name = "OS",
-                                        transform = "log") {
+maic_tte_unanchored <- function(pseudo_ipd = NULL, ipd_matched = NULL,
+                                internal_time_name = NULL, internal_event_name = NULL,
+                                time_scale = "month", endpoint_name = "OS",
+                                transform = "log") {
+  
   timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
   
-  if(is.null(external$ARM)) stop("Need to specify ARM for external comparator data")
+  if(is.null(pseudo_ipd$ARM)) stop("Need to specify ARM for pseudo_ipd")
   
   if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
   
-  combined_data <- merge_two_data(external = external, internal = internal, internal_time_name = internal_time_name, internal_event_name = internal_event_name)
+  combined_data <- merge_two_data(pseudo_ipd = pseudo_ipd, ipd_matched = ipd_matched, internal_time_name = internal_time_name, internal_event_name = internal_event_name)
   colnames(combined_data) <- c("time", "status", "treatment", "weight")
   
   # baseline treatment is assumed to be external treatment

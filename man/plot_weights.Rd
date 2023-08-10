@@ -33,3 +33,12 @@ In other words, a scaled weight greater than 1 means that an individual carries 
 re-weighted population than the original data and a scaled weight less than 1 means that an individual carries
 less weight in the re-weighted population than the original data.
 }
+\examples{
+load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+wt <- match_res$data$weights
+wt_scaled <- match_res$data$scaled_weights
+par(mfrow = c(1, 2))
+plot_weights(wt, bin_col = "orange", vline_col = "darkblue")
+plot_weights(wt_scaled, main_title = "Scaled Individual Weights")
+
+}

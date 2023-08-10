@@ -16,10 +16,12 @@ Imports:
     stats,
     survival,
     DescTools,
-    MASS
+    MASS,
+    boot
 Suggests:
     knitr,
-    testthat (>= 2.0)
+    testthat (>= 2.0),
+    ggplot2
 VignetteBuilder:
     knitr
 biocViews:

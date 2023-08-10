@@ -401,9 +401,7 @@ fit_unanchored <- maic_tte_unanchored(pseudo_ipd = pseudo_ipd, ipd_matched = ipd
 names(fit_unanchored)
 ```
 
-# Binary outcome analysis
-
-## Analysis without wrapper
+# Binary outcome analysis (TODO)
 
 ```{r}
 # Simulate response data based on the known proportion of responders
@@ -460,11 +458,10 @@ names(OR_CI_robust2) <- c("Estimate", "Lower 95% CI", "Upper 95% CI")
 OR_CI_robust2
 ```
 
-# Things on the to-do list
 
-bootstrap, kaplan meier plots, anchored comparison example
 
 ```{r, eval = FALSE, echo = FALSE}
+# Anchored comparison example
 target_pop <- data.frame(
   STUDY = "Study_XXXX",
   ARM = "Total",

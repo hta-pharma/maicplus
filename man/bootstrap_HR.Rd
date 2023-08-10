@@ -2,7 +2,7 @@
 % Please edit documentation in R/bootstrap.R
 \name{bootstrap_HR}
 \alias{bootstrap_HR}
-\title{Bootstrapping for MAIC weighted hazard ratios}
+\title{Bootstrapping weighted hazard ratios to obtain confidence interval}
 \usage{
 bootstrap_HR(
   ipd_centered,
@@ -10,7 +10,7 @@ bootstrap_HR(
   centered_colnames,
   internal_time_name = "TIME",
   internal_event_name = "EVENT",
-  external,
+  pseudo_ipd = NULL,
   min_weight = 1e-04
 )
 }
@@ -32,19 +32,32 @@ in matching. These names must match the column names in internal dataset.}
 This value (default 0.0001) will replace weights estimated at 0 in a sample.}
 
 \item{psuedo_ipd}{A data frame containing pseudo individual patient data
-from the comparator study needed to derive the relative treatment effect.}
+from the comparator study needed to derive the relative treatment effect.
+Pseudo IPD is only used for unanchored case.}
 }
 \value{
-The HR as a numeric value.
+The HR bootstraps
 }
 \description{
-Bootstrapping for MAIC weighted hazard ratios
+This function uses \code{\link{boot}} to resample internal IPD data
+to obtain bootstrapped hazard ratio values which is used to form confidence
+interval. Note that due to lack of full IPD with covariates in the
+aggregate data, pseudo IPD will not be bootstrapped.
 }
-\details{
-This function is intended to be used in conjunction with the
-\code{\link{boot}} function to return the statistic to be
-bootstrapped. In this case by performing MAIC weighting using
-{\link{estimate_weights}} and returning a weighted hazard ratio (HR) from a
-Cox proportional hazards model. This is used as the 'statistic' argument in
-the boot function.
+\examples{
+# Unanchored example
+load(system.file("extdata","ipd_centered.rda", package = "maicplus", mustWork = TRUE))
+centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+centered_colnames <- paste0(centered_colnames, "_CENTERED")
+pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
+pseudo_ipd$ARM <- "B" #Need to specify ARM for pseudo ipd
+
+HR_bootstraps <- boot(data = ipd_centered,
+  statistic = bootstrap_HR, 
+  centered_colnames = centered_colnames, 
+  internal_time_name = "TIME", 
+  internal_event_name = "EVENT",
+  pseudo_ipd = pseudo_ipd,
+  R = 1000)
+
 }

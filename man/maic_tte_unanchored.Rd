@@ -5,8 +5,8 @@
 \title{Unanchored MAIC for time-to-event endpoint}
 \usage{
 maic_tte_unanchored(
-  external = NULL,
-  matched_ipd = NULL,
+  pseudo_ipd = NULL,
+  ipd_matched = NULL,
   internal_time_name = NULL,
   internal_event_name = NULL,
   time_scale = "month",
@@ -15,6 +15,12 @@ maic_tte_unanchored(
 )
 }
 \arguments{
+\item{pseudo_ipd}{pseudo comparator IPD. Should be a data frame.
+For a time to event outcome, time, status(i.e. event=1), and ARM should be specified
+For a response outcome, response and ARM should be specified.}
+
+\item{ipd_matched}{internal IPD data with estimated weights that is returned from \code{\link{estimate_weights}}}
+
 \item{internal_time_name}{name of the time variable in ipd_matched (for time to event outcome)}
 
 \item{internal_event_name}{name of the event variable in ipd_matched (for time to event outcome)}
@@ -24,16 +30,6 @@ maic_tte_unanchored(
 \item{endpoint_name}{a character string, name of the endpoint}
 
 \item{transform}{a character string, pass to \code{\link[survival]{cox.zph}}}
-
-\item{pseudo_ipd}{pseudo comparator IPD. Should be a data frame.
-For a time to event outcome, time, status(i.e. event=1), and ARM should be specified
-For a response outcome, response and ARM should be specified.}
-
-\item{ipd_matched}{internal IPD data with estimated weights that is returned from \code{\link{estimate_weights}}}
-
-\item{trt}{a character string, name of the interested treatment in internal trial (real IPD)}
-
-\item{trt_ext}{character string, name of the interested comparator in external trial used to subset \code{dat_ext} (pseudo IPD)}
 }
 \value{
 A list of KM plot, analysis table, and diagnostic plot

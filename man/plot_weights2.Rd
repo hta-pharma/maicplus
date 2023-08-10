@@ -32,10 +32,14 @@ a plot of unscaled and scaled weights
 \description{
 Generates a plot given the individuals weights with key summary in top right legend that includes
 median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the
-original sample size).
-There are two options of weights provided in \code{\link{estimate_weights}}: unscaled or scaled.
+original sample size). Scaled and unsclaed weights are plotted in a same plot.
 Scaled weights are relative to the original unit weights of each individual.
 In other words, a scaled weight greater than 1 means that an individual carries more weight in the
 re-weighted population than the original data and a scaled weight less than 1 means that an individual carries
 less weight in the re-weighted population than the original data.
+}
+\examples{
+load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+plot_weights2(match_res, print_caption = TRUE, caption_width = 80)
+
 }

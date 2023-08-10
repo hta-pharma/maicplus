@@ -33,6 +33,14 @@ modifiers}
 }
 \description{
 Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates
-(effect modifiers and/or prognostic variables) as input, and generates weights for each individual in IPD trial that
-matches the chosen statistics of those covariates in Aggregated Data (AgD) trial.
+(effect modifiers and/or prognostic variables) as input, and generates weights for each individual in IPD trial
+to match the covariates in aggregate data.
+}
+\examples{
+load(system.file("extdata","ipd_centered.rda", package = "maicplus", mustWork = TRUE))
+
+centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+centered_colnames <- paste0(centered_colnames, "_CENTERED")
+match_res <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
+
 }

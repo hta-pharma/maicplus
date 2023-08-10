@@ -5,8 +5,8 @@
 #' Derive individual weights in the matching step of MAIC
 #'
 #' Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates
-#' (effect modifiers and/or prognostic variables) as input, and generates weights for each individual in IPD trial that
-#' matches the chosen statistics of those covariates in Aggregated Data (AgD) trial.
+#' (effect modifiers and/or prognostic variables) as input, and generates weights for each individual in IPD trial
+#' to match the covariates in aggregate data.
 #'
 #' @param data a numeric matrix, centered covariates of IPD, no missing value in any cell is allowed
 #' @param centered_colnames a character or numeric vector (column indicators) of centered covariates
@@ -26,6 +26,14 @@
 #'   \item{ess}{effective sample size, square of sum divided by sum of squares}
 #'   \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
 #' }
+#' 
+#' @examples
+#' load(system.file("extdata","ipd_centered.rda", package = "maicplus", mustWork = TRUE))
+#' 
+#' centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+#' centered_colnames <- paste0(centered_colnames, "_CENTERED")
+#' match_res <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
+#' 
 #' @export
 
 estimate_weights <- function(data, centered_colnames, start_val = 0, method = "BFGS", ...) {
@@ -114,8 +122,15 @@ estimate_weights <- function(data, centered_colnames, start_val = 0, method = "B
 #' @param vline_col a string, color for the vertical line in the histogram
 #' @param main_title a character string, main title of the plot
 #'
+#' @examples
+#' load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+#' wt <- match_res$data$weights
+#' wt_scaled <- match_res$data$scaled_weights
+#' par(mfrow = c(1, 2))
+#' plot_weights(wt, bin_col = "orange", vline_col = "darkblue")
+#' plot_weights(wt_scaled, main_title = "Scaled Individual Weights")
+#' 
 #' @return a plot of unscaled or scaled weights
-#' @importFrom graphics hist
 #' @export
 
 plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_title = "Unscaled Individual Weights") {
@@ -154,8 +169,7 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #'
 #' Generates a plot given the individuals weights with key summary in top right legend that includes
 #' median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the
-#' original sample size).
-#' There are two options of weights provided in \code{\link{estimate_weights}}: unscaled or scaled.
+#' original sample size). Scaled and unsclaed weights are plotted in a same plot.
 #' Scaled weights are relative to the original unit weights of each individual.
 #' In other words, a scaled weight greater than 1 means that an individual carries more weight in the
 #' re-weighted population than the original data and a scaled weight less than 1 means that an individual carries
@@ -168,6 +182,10 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' @param print_caption print a footnote message related to ESS from the NICE survey 2021
 #' @param caption_width width that is passed onto str_wrap function
 #'
+#' @examples
+#' load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+#' plot_weights2(match_res, print_caption = TRUE, caption_width = 80)
+#' 
 #' @return a plot of unscaled and scaled weights
 #' @importFrom stringr str_wrap
 #' @export
@@ -218,7 +236,7 @@ plot_weights2 <- function(match_res, bin_col = "black", vline_col = "red", bins 
 #' This function checks to see if the optimization is done properly by checking the covariate averages
 #' before and after adjustment.
 #'
-#' @param optimized object returned after calculating weights using \code{\link{estimate_weights}}
+#' @param match_res object returned after calculating weights using \code{\link{estimate_weights}}
 #' @param processed_agd a data frame, object returned after using \code{\link{process_agd}} or
 #' aggregated data following the same naming convention
 #' @param mean_digits number of digits for rounding mean columns in the output
@@ -231,59 +249,15 @@ plot_weights2 <- function(match_res, bin_col = "black", vline_col = "red", bins 
 #' @export
 #'
 #' @examples
-#' adsl <- read.csv(system.file("extdata", "adsl.csv",
-#'   package = "maicplus",
-#'   mustWork = TRUE
-#' ))
-#' adrs <- read.csv(system.file("extdata", "adrs.csv",
-#'   package = "maicplus",
-#'   mustWork = TRUE
-#' ))
-#' adtte <- read.csv(system.file("extdata", "adtte.csv",
-#'   package = "maicplus",
-#'   mustWork = TRUE
-#' ))
+#' load(system.file("extdata","agd.rda", package = "maicplus", mustWork = TRUE))
+#' load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+#' outdata <- check_weights(match_res, processed_agd = agd)
+#' print(outdata)
 #'
-#' ### AgD
-#' # Baseline aggregate data for the comparator population
-#' target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
-#'   package = "maicplus", mustWork = TRUE
-#' ))
-#' # target_pop2 <- read.csv(system.file("extdata", "aggregate_data_example_2.csv",
-#' #                                     package = "maicplus", mustWork = TRUE))
-#' # target_pop3 <- read.csv(system.file("extdata", "aggregate_data_example_3.csv",
-#' #                                     package = "maicplus", mustWork = TRUE))
-#'
-#' # for time-to-event endpoints, pseudo IPD from digitalized KM
-#' pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
-#'   package = "maicplus",
-#'   mustWork = TRUE
-#' ))
-#'
-#' #### prepare data ----------------------------------------------------------
-#' target_pop <- process_agd(target_pop)
-#' # target_pop2 <- process_agd(target_pop2) # demo of process_agd in different scenarios
-#' # target_pop3 <- process_agd(target_pop3) # demo of process_agd in different scenarios
-#' adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
-#' use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
-#'
-#' match_res <- estimate_weights(
-#'   data = use_adsl,
-#'   centered_colnames = grep("_CENTERED$", names(use_adsl)),
-#'   start_val = 0,
-#'   method = "BFGS"
-#' )
-#'
-#' check <- check_weights(
-#'   optimized = match_res,
-#'   processed_agd = target_pop
-#' )
-#'
-#' print(check)
 
-check_weights <- function(optimized, processed_agd) {
-  ipd_with_weights <- optimized$data
-  match_cov <- optimized$centered_colnames
+check_weights <- function(match_res, processed_agd) {
+  ipd_with_weights <- match_res$data
+  match_cov <- match_res$centered_colnames
 
   # if algorithm is correct, all centered columns should have a weighted summation to a very small number around zero
   num_check <- ipd_with_weights$weights %*% as.matrix(ipd_with_weights[, match_cov, drop = FALSE])
@@ -362,7 +336,6 @@ check_weights <- function(optimized, processed_agd) {
 #' @param sd_digits number of digits for rounding mean columns in the output
 #' @param digits minimal number of significant digits, see [print.default].
 #' @param ... further arguments to [print.data.frame]
-#'
 #' @describeIn check_weights Print method for check_weights objects
 #' @export
 
@@ -400,80 +373,87 @@ print.maicplus_check_weights <- function(x, mean_digits = 2, prop_digits = 2, sd
 #' @param internal_time_name name of the time variable in ipd_matched (for time to event outcome)
 #' @param internal_event_name name of the event variable in ipd_matched (for time to event outcome)
 #' @param internal_response_name name of the response variable in ipd_matched (for binary outcome)
-#' @return Merged dataset with time, event, ARM, and weights for time to event data and response, ARM, and weights for binary.
-#' External ARM is assigned to be the reference treatment in the unanchored case. common treatment is assigned to be reference
+#' @examples 
+#' pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
+#' pseudo_ipd$ARM <- "B" #Need to specify ARM for pseudo ipd
+#' load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+#' ipd_matched <- match_res$data
+#' combined_data <- merge_two_data(pseudo_ipd, ipd_matched, internal_time_name = "TIME", internal_event_name = "EVENT")
+#' 
+#' @return Merged dataset with time, event, ARM, and weights for time to event outcome and response, ARM, and weights for binary outcome.
+#' Pseudo IPD ARM is assigned to be the reference treatment in the unanchored case. Common treatment is assigned to be reference
 #' treatment for the anchored case.
 
-merge_two_data <- function(external = NULL, internal = NULL, internal_time_name = NULL, internal_event_name = NULL, internal_response_name = NULL){
+merge_two_data <- function(pseudo_ipd = NULL, ipd_matched = NULL, internal_time_name = NULL, internal_event_name = NULL, internal_response_name = NULL){
   
-  if(is.null(external) || is.null(internal)){
-    stop("Both external and internal have to be specified")
+  if(is.null(pseudo_ipd) || is.null(ipd_matched)){
+    stop("Both psuedo_ipd and ipd_matched have to be specified")
   }
   
-  if(is.null(external$ARM)){
-    stop("ARM has to be specified in external")
+  if(is.null(pseudo_ipd$ARM)){
+    stop("ARM has to be specified in pseudo_ipd")
   }
   
   if(!is.null(internal_time_name) & !is.null(internal_event_name)){
     response <- "tte"
-    if(!internal_time_name %in% names(internal)){
-      stop("internal_time_name is not in internal")
+    if(!internal_time_name %in% names(ipd_matched)){
+      stop("internal_time_name is not in ipd_matched")
     }
-    if(!internal_event_name %in% names(internal)){
-      stop("internal_event_name is not in internal")
+    if(!internal_event_name %in% names(ipd_matched)){
+      stop("internal_event_name is not in ipd_matched")
     }
   } else if(!is.null(internal_response_name)){
     response <- "binary"
-    if(!internal_response_name %in% names(internal)){
-      stop("internal_response_name is not in internal")
+    if(!internal_response_name %in% names(ipd_matched)){
+      stop("internal_response_name is not in ipd_matched")
     }
   } else {
-    stop("Need to specify internal name parameters")
+    stop("Need to specify ipd_matched name parameters")
   }
   
-  if(!is.data.frame(external)){
-    stop("external is not a data frame")
+  if(!is.data.frame(pseudo_ipd)){
+    stop("pseudo_ipd is not a data frame")
   }
   
   if(response == "tte"){
     
-    if(dim(external)[2] != 3){
-      stop("external needs three columns: Time, Event, and ARM")
+    if(dim(pseudo_ipd)[2] != 3){
+      stop("pseudo_ipd needs three columns: Time, Event, and ARM")
     }
-    unique_length <- sapply(external, function(x) length(unique(x)))
+    unique_length <- sapply(pseudo_ipd, function(x) length(unique(x)))
     
     find_time_index <- which(unique_length > 2)
     find_event_index <- which(unique_length == 2)
     find_event_index <- find_event_index[names(find_event_index) != "ARM"]
     
-    # change external names to internal names
-    colnames(external)[find_event_index] <- internal_event_name
-    colnames(external)[find_time_index] <- internal_time_name 
+    # change pseudo_ipd names to ipd_matched names
+    colnames(pseudo_ipd)[find_event_index] <- internal_event_name
+    colnames(pseudo_ipd)[find_time_index] <- internal_time_name 
     
-    external <- external[,c(internal_time_name, internal_event_name, "ARM")]
+    pseudo_ipd <- pseudo_ipd[,c(internal_time_name, internal_event_name, "ARM")]
   } else if(response == "binary"){
-    if(dim(external)[2] != 2){
-      stop("external needs two columns: Response and ARM")
+    if(dim(pseudo_ipd)[2] != 2){
+      stop("pseudo_ipd needs two columns: Response and ARM")
     }
     
-    find_response_index <- which(colnames(external) != "ARM")
+    find_response_index <- which(colnames(pseudo_ipd) != "ARM")
     
-    # change external response name to internal response name
-    colnames(external)[find_response_index] <- internal_response_name
+    # change pseudo_ipd response name to internal response name
+    colnames(pseudo_ipd)[find_response_index] <- internal_response_name
   }
   
-  external[["weights"]] <- 1
+  pseudo_ipd[["weights"]] <- 1
   
-  internal_names <- colnames(external)
-  internal <- internal[,internal_names]
+  internal_names <- colnames(pseudo_ipd)
+  ipd_matched <- ipd_matched[,internal_names]
   
-  combined_data <- rbind(internal, external)
+  combined_data <- rbind(ipd_matched, pseudo_ipd)
   
-  if(length(intersect(internal$ARM, external$ARM)) == 1){
+  if(length(intersect(ipd_matched$ARM, pseudo_ipd$ARM)) == 1){
     # if there is a common treatment (i.e. anchored)
-    ref_treat <- intersect(internal$ARM, external$ARM)
+    ref_treat <- intersect(ipd_matched$ARM, pseudo_ipd$ARM)
   } else{
-    ref_treat <- external$ARM[1]
+    ref_treat <- pseudo_ipd$ARM[1]
   }
   combined_data$ARM <- relevel(as.factor(combined_data[["ARM"]]), ref = ref_treat)
   
