@@ -4,13 +4,7 @@
 \alias{estimate_weights}
 \title{Derive individual weights in the matching step of MAIC}
 \usage{
-estimate_weights(
-  data,
-  centered_colnames = NULL,
-  start_val = 0,
-  method = "BFGS",
-  ...
-)
+estimate_weights(data, centered_colnames, start_val = 0, method = "BFGS", ...)
 }
 \arguments{
 \item{data}{a numeric matrix, centered covariates of IPD, no missing value in any cell is allowed}

@@ -6,7 +6,7 @@
 \usage{
 maic_tte_unanchored(
   external = NULL,
-  internal = NULL,
+  matched_ipd = NULL,
   internal_time_name = NULL,
   internal_event_name = NULL,
   time_scale = "month",
@@ -15,22 +15,21 @@ maic_tte_unanchored(
 )
 }
 \arguments{
-\item{external}{pseudo comparator IPD. Should be a data frame.
-For a time to event outcome, time, status(i.e. event=1), and ARM should be specified
-For a response outcome, response and ARM should be specified.
-ARM has to be in capital letters as in legal suffixes.}
+\item{internal_time_name}{name of the time variable in ipd_matched (for time to event outcome)}
 
-\item{internal}{internal IPD data that is returned from \code{\link{estimate_weights}}}
-
-\item{internal_time_name}{how the time variable is named in the internal IPD (for time to event outcome)}
-
-\item{internal_event_name}{how the event variable is named in the internal IPD (for time to event outcome)}
+\item{internal_event_name}{name of the event variable in ipd_matched (for time to event outcome)}
 
 \item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
 
 \item{endpoint_name}{a character string, name of the endpoint}
 
 \item{transform}{a character string, pass to \code{\link[survival]{cox.zph}}}
+
+\item{pseudo_ipd}{pseudo comparator IPD. Should be a data frame.
+For a time to event outcome, time, status(i.e. event=1), and ARM should be specified
+For a response outcome, response and ARM should be specified.}
+
+\item{ipd_matched}{internal IPD data with estimated weights that is returned from \code{\link{estimate_weights}}}
 
 \item{trt}{a character string, name of the interested treatment in internal trial (real IPD)}
 

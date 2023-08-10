@@ -10,7 +10,9 @@ km_plot2(
   trt_ext,
   trt_common = NULL,
   break.x.by = 60,
-  endpoint_name = "Overall survival"
+  endpoint_name = "Overall survival",
+  censor = TRUE,
+  risk.table = TRUE
 )
 }
 \arguments{
@@ -25,6 +27,10 @@ km_plot2(
 \item{break.x.by}{bin parameter for survminer}
 
 \item{endpoint_name}{a character name of the endpoint}
+
+\item{censor}{indicator to include censor information}
+
+\item{risk.table}{indicator to include risk table}
 }
 \value{
 a Kaplan-Meier plot
