@@ -48,7 +48,6 @@ survfit_makeup <- function(km_fit) {
     cumhaz = km_fit$cumhaz
   )
   kmdat$treatment <- sapply(strsplit(names(km_fit$strata), "="), "[[", 2)[kmdat$treatment]
-  # gsub("treatment=", "", attr(km_fit$strata, "names"))[kmdat$treatment]
   split(kmdat, f = kmdat$treatment)
 }
 
@@ -61,13 +60,16 @@ survfit_makeup <- function(km_fit) {
 #' @param trt_common treatment that is shared between internal and external trial. Only applies in anchored comparison.
 #' @param break.x.by bin parameter for survminer
 #' @param endpoint_name a character name of the endpoint
+#' @param censor indicator to include censor information 
+#' @param risk.table indicator to include risk table
 #'
 #' @return a Kaplan-Meier plot
 
 km_plot2 <- function(combined_data, trt, trt_ext, trt_common = NULL,
-                    break.x.by = 60, endpoint_name = "Overall survival") {
+                    break.x.by = 60, endpoint_name = "Overall survival", 
+                    censor = TRUE, risk.table = TRUE) {
   
-  # check if survminer package is installed
+  # check if survminer package is available
   if(!requireNamespace("survminer", quietly = TRUE)){
     stop("survminer package is needed to run this function")
   }
@@ -99,20 +101,20 @@ km_plot2 <- function(combined_data, trt, trt_ext, trt_common = NULL,
   #Produce the Kaplan-Meier plot
   survminer_plot <- survminer::ggsurvplot(km_list,
                         linetype = c(1,1,2),
-                        censor.size= 3,
                         size = 0.2,
                         combine = TRUE,
-                        risk.table= TRUE, 
-                        break.x.by= break.x.by, 
-                        xlab= "Time",
-                        ylab= endpoint_name,
-                        censor=TRUE,
-                        legend.title = "Treatment",
-                        legend=c(0.85,0.82),
-                        title = paste0("Kaplan-Meier plot of ",  tolower(endpoint_name)),
-                        legend.labs=c("Internal IPD", "Internal IPD weighted", "External comparator"),
+                        risk.table = risk.table,
                         risk.table.y.text.col = T,
                         risk.table.y.text = FALSE,
+                        break.x.by = break.x.by, 
+                        censor = censor,
+                        censor.size = 2,
+                        xlab = "Time",
+                        ylab = endpoint_name,
+                        legend.title = "Treatment",
+                        legend = c(0.85,0.82),
+                        title = paste0("Kaplan-Meier plot of ",  tolower(endpoint_name)),
+                        legend.labs = c("Internal IPD", "Internal IPD weighted", "External comparator"),
                         tables.theme = theme_cleantable(),
                         ggtheme = theme_classic(base_size = 10),
                         fontsize = 3,

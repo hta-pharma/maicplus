@@ -15,8 +15,7 @@ merge_two_data(
 \arguments{
 \item{external}{pseudo comparator IPD. Should be a data frame.
 For a time to event outcome, time, status(i.e. event=1), and ARM should be specified
-For a response outcome, response and ARM should be specified.
-ARM has to be in capital letters as in legal suffixes.}
+For a response outcome, response and ARM should be specified.}
 
 \item{internal}{internal IPD data that is returned from \code{\link{estimate_weights}}}
 
@@ -28,7 +27,7 @@ ARM has to be in capital letters as in legal suffixes.}
 }
 \value{
 Merged dataset with time, event, ARM, and weights for time to event data and response, ARM, and weights for binary.
-external ARM is assigned to be the reference treatment in the unanchored case. common treatment is assigned to be reference
+External ARM is assigned to be the reference treatment in the unanchored case. common treatment is assigned to be reference
 treatment for the anchored case.
 }
 \description{

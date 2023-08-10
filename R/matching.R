@@ -28,7 +28,7 @@
 #' }
 #' @export
 
-estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, method = "BFGS", ...) {
+estimate_weights <- function(data, centered_colnames, start_val = 0, method = "BFGS", ...) {
   # pre check
   ch1 <- is.data.frame(data)
   if (!ch1) stop("'data' is not a data.frame")
@@ -166,13 +166,13 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' @param vline_col a string, color for the vertical line in the histogram
 #' @param bins number of bin parameter to use in the ggplot
 #' @param print_caption print a footnote message related to ESS from the NICE survey 2021
-#' @param width width that is passed onto str_wrap function
+#' @param caption_width width that is passed onto str_wrap function
 #'
 #' @return a plot of unscaled and scaled weights
 #' @importFrom stringr str_wrap
 #' @export
 
-plot_weights2 <- function(match_res, bin_col = "black", vline_col = "red", bins = 50, print_caption = FALSE, width = 80) {
+plot_weights2 <- function(match_res, bin_col = "black", vline_col = "red", bins = 50, print_caption = FALSE, caption_width = 80) {
   
   # check if survminer package is installed
   if(!requireNamespace("ggplot2", quietly = TRUE)){
@@ -194,7 +194,7 @@ plot_weights2 <- function(match_res, bin_col = "black", vline_col = "red", bins 
   hist_plot <- ggplot2::ggplot(wt_data) +
     ggplot2::geom_histogram(ggplot2::aes(values), bins = bins, color = bin_col, fill = bin_col) +
     ggplot2::geom_vline(aes(xintercept = median, color = "Median"),
-                        linetype = "dashed", size = 0.5) + theme_bw() +
+                        linetype = "dashed", linewidth = 0.5) + theme_bw() +
     ggplot2::scale_color_manual(name = "statistics", values = c(Median = vline_col)) +
     ggplot2::facet_wrap(~ind, ncol=1) + # gives the two plots (one on top of the other)
     ggplot2::geom_text(data = summ, aes(label = lab), x = Inf, y= Inf, hjust=1, vjust=1, size=3) +
@@ -205,7 +205,9 @@ plot_weights2 <- function(match_res, bin_col = "black", vline_col = "red", bins 
 
   if(print_caption == TRUE){
     print_text <- "In most applications, weighting considerably reduces the effective sample size from the original AC sample size. The median percentage reduction is 58% (range: 7.9%–94.1%; interquartile range: 42.2%–74.2%). The final effective sample sizes are also representative of those in the technology appraisals, which are also small (median: 80; range: 4.8–639; interquartile range: 37–174). Therefore, an ESS reduction up to ~60% is not unexpected based on the 2021 survey, whereas a reduction of >75% is less common and it may be considered suboptimal."
-    hist_plot <- hist_plot + ggplot2::labs(caption = stringr::str_wrap(print_text, width = width))
+    hist_plot <- hist_plot + ggplot2::labs(caption = stringr::str_wrap(print_text, width = caption_width)) +
+                             ggplot2::theme(plot.caption.position = "plot",
+                                            plot.caption = element_text(hjust = 0))
   }
   return(hist_plot)
 }

@@ -8,8 +8,9 @@ bootstrap_HR(
   internal,
   i,
   centered_colnames,
+  internal_time_name = "TIME",
+  internal_event_name = "EVENT",
   external,
-  model,
   min_weight = 1e-04
 )
 }
@@ -26,11 +27,11 @@ in matching. These names must match the column names in internal dataset.}
 from the comparator study needed to derive the relative treatment effect.
 The outcome variables names must match intervention_data.}
 
-\item{model}{A model formula in the form 'Surv(Time, Event==1) ~ ARM'.
-Variable names need to match the corresponding columns in intervention_data.}
-
 \item{min_weight}{A numeric value that defines the minimum weight allowed.
 This value (default 0.0001) will replace weights estimated at 0 in a sample.}
+
+\item{model}{A model formula in the form 'Surv(Time, Event==1) ~ ARM'.
+Variable names need to match the corresponding columns in intervention_data.}
 }
 \value{
 The HR as a numeric value.

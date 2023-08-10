@@ -9,7 +9,8 @@ plot_weights2(
   bin_col = "black",
   vline_col = "red",
   bins = 50,
-  print_caption = FALSE
+  print_caption = FALSE,
+  caption_width = 80
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ plot_weights2(
 \item{bins}{number of bin parameter to use in the ggplot}
 
 \item{print_caption}{print a footnote message related to ESS from the NICE survey 2021}
+
+\item{caption_width}{width that is passed onto str_wrap function}
 }
 \value{
 a plot of unscaled and scaled weights

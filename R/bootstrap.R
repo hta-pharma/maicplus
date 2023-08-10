@@ -1,16 +1,17 @@
 
 #' Bootstrapping for MAIC weighted hazard ratios
 #'
-#' @param internal A data frame containing individual patient data
-#'   from the internal IPD study.
+#' @param ipd_centered A data frame containing individual patient data
+#'   from the internal IPD study. This data frame should have already been
+#'   centered using [center_ipd] function
+#' @param i Index used to select a sample within \code{\link{boot}}.
 #' @param centered_colnames A character vector giving the names of the covariates to use
 #'   in matching. These names must match the column names in internal dataset.
-#' @param i Index used to select a sample within \code{\link{boot}}.
+#' @param internal_time_name name of the time variable in ipd_centered (for time to event outcome)
+#' @param internal_event_name how the event variable is named in the internal IPD (for time to event outcome)
 #' @param external A data frame containing pseudo individual patient data
 #'   from the comparator study needed to derive the relative treatment effect.
 #'   The outcome variables names must match intervention_data.
-#' @param model A model formula in the form 'Surv(Time, Event==1) ~ ARM'.
-#'   Variable names need to match the corresponding columns in intervention_data.
 #' @param min_weight A numeric value that defines the minimum weight allowed. 
 #'   This value (default 0.0001) will replace weights estimated at 0 in a sample.
 #'
@@ -24,16 +25,15 @@
 #' @return The HR as a numeric value.
 #' @export
 
-bootstrap_HR <- function(internal, i, centered_colnames, 
+bootstrap_HR <- function(ipd_centered, i, centered_colnames, 
                          internal_time_name = "TIME", internal_event_name = "EVENT",
                          external, min_weight = 0.0001){
   
-  # Resamples the internal IPD data
-  bootstrap_data <- internal[i,]
+  # Resamples the centered internal IPD data
+  bootstrap_data <- ipd_centered[i,]
   
   # Estimates weights
-  ipd_centered <- center_ipd(ipd = bootstrap_data, agd = external)
-  match_res <- estimate_weights(ipd_centered, 
+  match_res <- estimate_weights(data = bootstrap_data, 
                                 centered_colnames = centered_colnames)
 
   internal_matched <- match_res$data

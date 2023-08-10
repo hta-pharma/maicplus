@@ -3,8 +3,7 @@
 #' @param external pseudo comparator IPD. Should be a data frame. 
 #' For a time to event outcome, time, status(i.e. event=1), and ARM should be specified
 #' For a response outcome, response and ARM should be specified.
-#' ARM has to be in capital letters as in legal suffixes.
-#' @param internal internal IPD data that is returned from \code{\link{estimate_weights}}
+#' @param matched_ipd internal IPD data that  returned from \code{\link{estimate_weights}}
 #' @param internal_time_name how the time variable is named in the internal IPD (for time to event outcome)
 #' @param internal_event_name how the event variable is named in the internal IPD (for time to event outcome)
 #' @param trt  a character string, name of the interested treatment in internal trial (real IPD)
@@ -25,7 +24,7 @@
 #' @importFrom graphics par axis lines points legend abline
 #' @export
 
-maic_tte_unanchored <- function(external = NULL, internal = NULL,
+maic_tte_unanchored <- function(external = NULL, matched_ipd = NULL,
                                         internal_time_name = NULL, 
                                         internal_event_name = NULL,
                                         time_scale = "month", endpoint_name = "OS",
