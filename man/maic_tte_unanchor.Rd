@@ -7,6 +7,7 @@
 maic_tte_unanchor(
   useWt,
   dat,
+  dat_centered,
   dat_ext,
   trt,
   trt_ext,
@@ -19,6 +20,9 @@ maic_tte_unanchor(
 \item{useWt}{a numeric vector of individual MAIC weights, length should the same as \code{nrow(dat)}}
 
 \item{dat}{a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial}
+
+\item{dat_centered}{a data frame containing individual patient data from the internal IPD study including columns:
+treatment, time, status, centered baseline characteristics.}
 
 \item{dat_ext}{a data frame, pseudo IPD from digitized KM curve of external trial}
 
