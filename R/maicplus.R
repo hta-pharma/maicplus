@@ -6,8 +6,8 @@
 #'
 #' @docType package
 #' @name maicplus-package
-#' 
-#' 
+#'
+#'
 #' @importFrom graphics axis legend lines mtext plot points title abline curve text
 NULL
 

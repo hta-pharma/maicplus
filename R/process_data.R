@@ -85,13 +85,12 @@ process_agd <- function(raw_agd) {
 
   if (any(ind)) {
     for (i in which(ind)) {
-      
       # Check if _PROP also exists for this name and print a message it will be overwritten
       check_name <- gsub("_COUNT$", "_PROP", names(use_agd)[i])
-      if(check_name %in% names(use_agd)){
+      if (check_name %in% names(use_agd)) {
         warning(paste0(check_name, " will be ignored since count is specified"))
       }
-      
+
       tmp_prop <- use_agd[[i]] / use_agd$N
       # in case some count are not specified, but proportion are specified, copy over those proportions
       # this also means, in case count is specified, proportion is ignored even it is specified
@@ -102,7 +101,7 @@ process_agd <- function(raw_agd) {
       }
       use_agd[[i]] <- tmp_prop
     }
-    
+
     names(use_agd) <- gsub("_COUNT$", "_PROP", names(use_agd))
   }
   use_agd <- use_agd[, !grepl("_redundant$", names(use_agd))]
@@ -124,8 +123,8 @@ process_agd <- function(raw_agd) {
 #'
 #' @examples
 #' adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus", mustWork = TRUE))
-#' adsl <- dummize_ipd(adsl, dummize_cols=c("SEX"), dummize_ref_level=c("Female"))
-#' 
+#' adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
+#'
 #' @return ipd with dummized columns
 #' @export
 
@@ -159,10 +158,10 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level) {
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP). Note that COUNT suffix is no longer accepted.
 #' @examples
 #' ipd <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus", mustWork = TRUE))
-#' ipd <- dummize_ipd(ipd, dummize_cols=c("SEX"), dummize_ref_level=c("Female"))
-#' target_pop <- read.csv(system.file("extdata","aggregate_data_example_1.csv", package = "maicplus", mustWork = TRUE))
+#' ipd <- dummize_ipd(ipd, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
+#' target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv", package = "maicplus", mustWork = TRUE))
 #' agd <- process_agd(target_pop)
-#' 
+#'
 #' ipd_centered <- center_ipd(ipd = ipd, agd = agd)
 #'
 #' @return centered ipd using aggregate level data averages
@@ -280,4 +279,3 @@ ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
   if (!is.null(trt)) dd$treatment <- trt
   as.data.frame(dd)
 }
-

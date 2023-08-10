@@ -26,14 +26,14 @@
 #'   \item{ess}{effective sample size, square of sum divided by sum of squares}
 #'   \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
 #' }
-#' 
+#'
 #' @examples
-#' load(system.file("extdata","ipd_centered.rda", package = "maicplus", mustWork = TRUE))
-#' 
+#' load(system.file("extdata", "ipd_centered.rda", package = "maicplus", mustWork = TRUE))
+#'
 #' centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
 #' centered_colnames <- paste0(centered_colnames, "_CENTERED")
 #' match_res <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
-#' 
+#'
 #' @export
 
 estimate_weights <- function(data, centered_colnames, start_val = 0, method = "BFGS", ...) {
@@ -123,13 +123,13 @@ estimate_weights <- function(data, centered_colnames, start_val = 0, method = "B
 #' @param main_title a character string, main title of the plot
 #'
 #' @examples
-#' load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+#' load(system.file("extdata", "match_res.rda", package = "maicplus", mustWork = TRUE))
 #' wt <- match_res$data$weights
 #' wt_scaled <- match_res$data$scaled_weights
 #' par(mfrow = c(1, 2))
 #' plot_weights(wt, bin_col = "orange", vline_col = "darkblue")
 #' plot_weights(wt_scaled, main_title = "Scaled Individual Weights")
-#' 
+#'
 #' @return a plot of unscaled or scaled weights
 #' @export
 
@@ -183,49 +183,55 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' @param caption_width width that is passed onto str_wrap function
 #'
 #' @examples
-#' load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+#' load(system.file("extdata", "match_res.rda", package = "maicplus", mustWork = TRUE))
 #' plot_weights2(match_res, print_caption = TRUE, caption_width = 80)
-#' 
+#'
 #' @return a plot of unscaled and scaled weights
 #' @importFrom stringr str_wrap
 #' @export
 
 plot_weights2 <- function(match_res, bin_col = "black", vline_col = "red", bins = 50, print_caption = FALSE, caption_width = 80) {
-  
   # check if survminer package is installed
-  if(!requireNamespace("ggplot2", quietly = TRUE)){
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 package is needed to run this function")
   }
-  
-  wt_data0 <- match_res$data[,c("weights", "scaled_weights")]
+
+  wt_data0 <- match_res$data[, c("weights", "scaled_weights")]
   colnames(wt_data0) <- c("Weights", "Rescaled weights")
   wt_data <- stack(wt_data0)
-  wt_data$median <- ifelse(wt_data$ind == "Weights", median(wt_data0[,"Weights"]), median(wt_data0[,"Rescaled weights"]))
-  
+  wt_data$median <- ifelse(wt_data$ind == "Weights", median(wt_data0[, "Weights"]), median(wt_data0[, "Rescaled weights"]))
+
   summ <- aggregate(wt_data$values, list(wt_data$ind), median)
   colnames(summ) <- c("ind", "lab")
-  summ$lab <- paste0("Median = ", round(summ$lab, 4),
-                     "\nESS = ", round(match_res$ess, 2),
-                     "\nReduction% = ", round((1 - (match_res$ess / dim(match_res$data)[1])) * 100, 2)
-                     )
+  summ$lab <- paste0(
+    "Median = ", round(summ$lab, 4),
+    "\nESS = ", round(match_res$ess, 2),
+    "\nReduction% = ", round((1 - (match_res$ess / dim(match_res$data)[1])) * 100, 2)
+  )
 
   hist_plot <- ggplot2::ggplot(wt_data) +
     ggplot2::geom_histogram(ggplot2::aes(values), bins = bins, color = bin_col, fill = bin_col) +
     ggplot2::geom_vline(aes(xintercept = median, color = "Median"),
-                        linetype = "dashed", linewidth = 0.5) + theme_bw() +
+      linetype = "dashed", linewidth = 0.5
+    ) +
+    theme_bw() +
     ggplot2::scale_color_manual(name = "statistics", values = c(Median = vline_col)) +
-    ggplot2::facet_wrap(~ind, ncol=1) + # gives the two plots (one on top of the other)
-    ggplot2::geom_text(data = summ, aes(label = lab), x = Inf, y= Inf, hjust=1, vjust=1, size=3) +
-    ggplot2::theme(axis.title = ggplot2::element_text(size = 16),
-                  axis.text = ggplot2::element_text(size = 16)) + 
+    ggplot2::facet_wrap(~ind, ncol = 1) + # gives the two plots (one on top of the other)
+    ggplot2::geom_text(data = summ, aes(label = lab), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3) +
+    ggplot2::theme(
+      axis.title = ggplot2::element_text(size = 16),
+      axis.text = ggplot2::element_text(size = 16)
+    ) +
     ggplot2::ylab("Frequency") +
     ggplot2::xlab("Weight")
 
-  if(print_caption == TRUE){
+  if (print_caption == TRUE) {
     print_text <- "In most applications, weighting considerably reduces the effective sample size from the original AC sample size. The median percentage reduction is 58% (range: 7.9%–94.1%; interquartile range: 42.2%–74.2%). The final effective sample sizes are also representative of those in the technology appraisals, which are also small (median: 80; range: 4.8–639; interquartile range: 37–174). Therefore, an ESS reduction up to ~60% is not unexpected based on the 2021 survey, whereas a reduction of >75% is less common and it may be considered suboptimal."
     hist_plot <- hist_plot + ggplot2::labs(caption = stringr::str_wrap(print_text, width = caption_width)) +
-                             ggplot2::theme(plot.caption.position = "plot",
-                                            plot.caption = element_text(hjust = 0))
+      ggplot2::theme(
+        plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0)
+      )
   }
   return(hist_plot)
 }
@@ -249,12 +255,11 @@ plot_weights2 <- function(match_res, bin_col = "black", vline_col = "red", bins 
 #' @export
 #'
 #' @examples
-#' load(system.file("extdata","agd.rda", package = "maicplus", mustWork = TRUE))
-#' load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+#' load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
+#' load(system.file("extdata", "match_res.rda", package = "maicplus", mustWork = TRUE))
 #' outdata <- check_weights(match_res, processed_agd = agd)
 #' print(outdata)
 #'
-
 check_weights <- function(match_res, processed_agd) {
   ipd_with_weights <- match_res$data
   match_cov <- match_res$centered_colnames
@@ -360,102 +365,100 @@ print.maicplus_check_weights <- function(x, mean_digits = 2, prop_digits = 2, sd
 
 #' Function to merge matched IPD data and pseudo comparator IPD
 #'
-#' For a survival outcome, we can digitize Kaplan-Meier curves to obtain 
-#' pseudo IPD. For a binomial outcome, we can simulate response data based 
-#' on the known proportion of responders. This function merges the pseudo 
-#' comparator IPD and the internal IPD data. Merged data can be used to 
+#' For a survival outcome, we can digitize Kaplan-Meier curves to obtain
+#' pseudo IPD. For a binomial outcome, we can simulate response data based
+#' on the known proportion of responders. This function merges the pseudo
+#' comparator IPD and the internal IPD data. Merged data can be used to
 #' run a regression. For the pseudo IPD, a weight of 1 is assigned.
 #'
-#' @param pseudo_ipd data frame of pseudo comparator IPD. 
+#' @param pseudo_ipd data frame of pseudo comparator IPD.
 #' For a time to event outcome, time, event, and ARM should be specified.
 #' For a response outcome, response and ARM should be specified.
 #' @param ipd_matched internal IPD data with estimated weights that is returned from [estimate_weights]
 #' @param internal_time_name name of the time variable in ipd_matched (for time to event outcome)
 #' @param internal_event_name name of the event variable in ipd_matched (for time to event outcome)
 #' @param internal_response_name name of the response variable in ipd_matched (for binary outcome)
-#' @examples 
+#' @examples
 #' pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
-#' pseudo_ipd$ARM <- "B" #Need to specify ARM for pseudo ipd
-#' load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+#' pseudo_ipd$ARM <- "B" # Need to specify ARM for pseudo ipd
+#' load(system.file("extdata", "match_res.rda", package = "maicplus", mustWork = TRUE))
 #' ipd_matched <- match_res$data
 #' combined_data <- merge_two_data(pseudo_ipd, ipd_matched, internal_time_name = "TIME", internal_event_name = "EVENT")
-#' 
+#'
 #' @return Merged dataset with time, event, ARM, and weights for time to event outcome and response, ARM, and weights for binary outcome.
 #' Pseudo IPD ARM is assigned to be the reference treatment in the unanchored case. Common treatment is assigned to be reference
 #' treatment for the anchored case.
 
-merge_two_data <- function(pseudo_ipd = NULL, ipd_matched = NULL, internal_time_name = NULL, internal_event_name = NULL, internal_response_name = NULL){
-  
-  if(is.null(pseudo_ipd) || is.null(ipd_matched)){
+merge_two_data <- function(pseudo_ipd = NULL, ipd_matched = NULL, internal_time_name = NULL, internal_event_name = NULL, internal_response_name = NULL) {
+  if (is.null(pseudo_ipd) || is.null(ipd_matched)) {
     stop("Both psuedo_ipd and ipd_matched have to be specified")
   }
-  
-  if(is.null(pseudo_ipd$ARM)){
+
+  if (is.null(pseudo_ipd$ARM)) {
     stop("ARM has to be specified in pseudo_ipd")
   }
-  
-  if(!is.null(internal_time_name) & !is.null(internal_event_name)){
+
+  if (!is.null(internal_time_name) & !is.null(internal_event_name)) {
     response <- "tte"
-    if(!internal_time_name %in% names(ipd_matched)){
+    if (!internal_time_name %in% names(ipd_matched)) {
       stop("internal_time_name is not in ipd_matched")
     }
-    if(!internal_event_name %in% names(ipd_matched)){
+    if (!internal_event_name %in% names(ipd_matched)) {
       stop("internal_event_name is not in ipd_matched")
     }
-  } else if(!is.null(internal_response_name)){
+  } else if (!is.null(internal_response_name)) {
     response <- "binary"
-    if(!internal_response_name %in% names(ipd_matched)){
+    if (!internal_response_name %in% names(ipd_matched)) {
       stop("internal_response_name is not in ipd_matched")
     }
   } else {
     stop("Need to specify ipd_matched name parameters")
   }
-  
-  if(!is.data.frame(pseudo_ipd)){
+
+  if (!is.data.frame(pseudo_ipd)) {
     stop("pseudo_ipd is not a data frame")
   }
-  
-  if(response == "tte"){
-    
-    if(dim(pseudo_ipd)[2] != 3){
+
+  if (response == "tte") {
+    if (dim(pseudo_ipd)[2] != 3) {
       stop("pseudo_ipd needs three columns: Time, Event, and ARM")
     }
     unique_length <- sapply(pseudo_ipd, function(x) length(unique(x)))
-    
+
     find_time_index <- which(unique_length > 2)
     find_event_index <- which(unique_length == 2)
     find_event_index <- find_event_index[names(find_event_index) != "ARM"]
-    
+
     # change pseudo_ipd names to ipd_matched names
     colnames(pseudo_ipd)[find_event_index] <- internal_event_name
-    colnames(pseudo_ipd)[find_time_index] <- internal_time_name 
-    
-    pseudo_ipd <- pseudo_ipd[,c(internal_time_name, internal_event_name, "ARM")]
-  } else if(response == "binary"){
-    if(dim(pseudo_ipd)[2] != 2){
+    colnames(pseudo_ipd)[find_time_index] <- internal_time_name
+
+    pseudo_ipd <- pseudo_ipd[, c(internal_time_name, internal_event_name, "ARM")]
+  } else if (response == "binary") {
+    if (dim(pseudo_ipd)[2] != 2) {
       stop("pseudo_ipd needs two columns: Response and ARM")
     }
-    
+
     find_response_index <- which(colnames(pseudo_ipd) != "ARM")
-    
+
     # change pseudo_ipd response name to internal response name
     colnames(pseudo_ipd)[find_response_index] <- internal_response_name
   }
-  
+
   pseudo_ipd[["weights"]] <- 1
-  
+
   internal_names <- colnames(pseudo_ipd)
-  ipd_matched <- ipd_matched[,internal_names]
-  
+  ipd_matched <- ipd_matched[, internal_names]
+
   combined_data <- rbind(ipd_matched, pseudo_ipd)
-  
-  if(length(intersect(ipd_matched$ARM, pseudo_ipd$ARM)) == 1){
+
+  if (length(intersect(ipd_matched$ARM, pseudo_ipd$ARM)) == 1) {
     # if there is a common treatment (i.e. anchored)
     ref_treat <- intersect(ipd_matched$ARM, pseudo_ipd$ARM)
-  } else{
+  } else {
     ref_treat <- pseudo_ipd$ARM[1]
   }
   combined_data$ARM <- relevel(as.factor(combined_data[["ARM"]]), ref = ref_treat)
-  
+
   return(combined_data)
 }

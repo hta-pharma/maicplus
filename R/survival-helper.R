@@ -7,7 +7,7 @@
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #'
 #' @examples
-#' load(system.file("extdata","combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 #' medSurv <- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")
 #'
@@ -40,7 +40,7 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 #' @param km_fit returned object from \code{survival::survfit}
 #'
 #' @examples
-#' load(system.file("extdata","combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 #' survobj <- survfit_makeup(kmobj)
 #'
@@ -76,16 +76,15 @@ survfit_makeup <- function(km_fit) {
 #'
 #' @return a Kaplan-Meier plot
 #' @examples
-#' load(system.file("extdata","combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 #' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, weights = combined_data_tte$weight, conf.type = "log-log")
-#' par(cex.main=0.85)
+#' par(cex.main = 0.85)
 #' km_plot(kmobj, kmobj_adj, time_scale = "month", trt = "A", trt_ext = "B", endpoint_name = "OS")
 #' @export
 
-km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, 
-                    trt_ext, endpoint_name = "", line_col = c("#5450E4","#00857C","#6ECEB2")) {
-  
+km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt,
+                    trt_ext, endpoint_name = "", line_col = c("#5450E4", "#00857C", "#6ECEB2")) {
   timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
   if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
@@ -170,74 +169,79 @@ km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt,
 
 #' Function to plot Kaplan-Meier curves using survminer package
 #'
-#' @param combined_data combined data of internal IPD and psuedo IPD from aggregate data. 
+#' @param combined_data combined data of internal IPD and psuedo IPD from aggregate data.
 #' @param trt internal trial treatment
 #' @param trt_ext external trial treatment
 #' @param trt_common treatment that is shared between internal and external trial. Only applies in anchored comparison.
 #' @param break.x.by bin parameter for survminer
 #' @param endpoint_name a character name of the endpoint
-#' @param censor indicator to include censor information 
+#' @param censor indicator to include censor information
 #' @param risk.table indicator to include risk table
 #'
 #' @examples
-#' load(system.file("extdata","combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' km_plot2(combined_data_tte, trt = "A", trt_ext = "B", censor = TRUE, risk.table = TRUE)
 #' @return a Kaplan-Meier plot
 
 km_plot2 <- function(combined_data, trt, trt_ext, trt_common = NULL,
-                    break.x.by = 60, endpoint_name = "Overall survival", 
-                    censor = TRUE, risk.table = TRUE) {
-  
+                     break.x.by = 60, endpoint_name = "Overall survival",
+                     censor = TRUE, risk.table = TRUE) {
   # check if survminer package is available
-  if(!requireNamespace("survminer", quietly = TRUE)){
+  if (!requireNamespace("survminer", quietly = TRUE)) {
     stop("survminer package is needed to run this function")
   }
-  
+
   colnames(combined_data) <- c("TIME", "EVENT", "ARM", "weights")
-  
-  internal <- combined_data[combined_data$ARM == trt,]
-  external <- combined_data[combined_data$ARM == trt_ext,]
-  
+
+  internal <- combined_data[combined_data$ARM == trt, ]
+  external <- combined_data[combined_data$ARM == trt_ext, ]
+
   # Unweighted internal data
-  km_internal <- survfit(Surv(TIME, EVENT==1) ~ 1,
-                         data = internal,
-                         conf.type = "log-log")
+  km_internal <- survfit(Surv(TIME, EVENT == 1) ~ 1,
+    data = internal,
+    conf.type = "log-log"
+  )
   # Weighted internal data
-  km_internal_weighted <- survfit(Surv(TIME, EVENT==1) ~ 1,
-                                  data = internal,
-                                  weights = internal$weights,
-                                  conf.type = "log-log")
+  km_internal_weighted <- survfit(Surv(TIME, EVENT == 1) ~ 1,
+    data = internal,
+    weights = internal$weights,
+    conf.type = "log-log"
+  )
   # Comparator data
-  km_external <- survfit(Surv(TIME, EVENT==1) ~ 1,
-                         data = external,
-                         conf.type = "log-log")
+  km_external <- survfit(Surv(TIME, EVENT == 1) ~ 1,
+    data = external,
+    conf.type = "log-log"
+  )
 
   # Combine the survfit objects ready for ggsurvplot
-  km_list <- list(internal = km_internal,
-                  internal_weighted = km_internal_weighted,
-                  external = km_external)
-  
-  #Produce the Kaplan-Meier plot
+  km_list <- list(
+    internal = km_internal,
+    internal_weighted = km_internal_weighted,
+    external = km_external
+  )
+
+  # Produce the Kaplan-Meier plot
   survminer_plot <- survminer::ggsurvplot(km_list,
-                        linetype = c(1,1,2),
-                        size = 0.2,
-                        combine = TRUE,
-                        risk.table = risk.table,
-                        risk.table.y.text.col = T,
-                        risk.table.y.text = FALSE,
-                        break.x.by = break.x.by, 
-                        censor = censor,
-                        censor.size = 2,
-                        xlab = "Time",
-                        ylab = endpoint_name,
-                        legend.title = "Treatment",
-                        legend = c(0.85,0.82),
-                        title = paste0("Kaplan-Meier plot of ",  tolower(endpoint_name)),
-                        legend.labs = c("Internal IPD", "Internal IPD weighted", "External comparator"),
-                        tables.theme = theme_cleantable(),
-                        ggtheme = theme_classic(base_size = 10),
-                        fontsize = 3,
-                        conf.int = FALSE)
+    linetype = c(1, 1, 2),
+    size = 0.2,
+    combine = TRUE,
+    risk.table = risk.table,
+    risk.table.y.text.col = T,
+    risk.table.y.text = FALSE,
+    break.x.by = break.x.by,
+    censor = censor,
+    censor.size = 2,
+    xlab = "Time",
+    ylab = endpoint_name,
+    legend.title = "Treatment",
+    legend = c(0.85, 0.82),
+    title = paste0("Kaplan-Meier plot of ", tolower(endpoint_name)),
+    legend.labs = c("Internal IPD", "Internal IPD weighted", "External comparator"),
+    tables.theme = theme_cleantable(),
+    ggtheme = theme_classic(base_size = 10),
+    fontsize = 3,
+    conf.int = FALSE
+  )
   survminer_plot
 }
 
@@ -253,7 +257,7 @@ km_plot2 <- function(combined_data, trt, trt_ext, trt_common = NULL,
 #' @param subtitle a character string, subtitle of the plot
 #' @param exclude_censor logical, should censored data point be plotted
 #' @examples
-#' load(system.file("extdata","combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 #' log_cum_haz_plot(kmobj, time_scale = "month", log_time = TRUE, endpoint_name = "OS", subtitle = "(Before Matching)")
 #'
@@ -261,11 +265,11 @@ km_plot2 <- function(combined_data, trt, trt_ext, trt_common = NULL,
 #' @export
 log_cum_haz_plot <- function(km_fit, time_scale, log_time = TRUE, endpoint_name = "", subtitle = "", exclude_censor = TRUE) {
   timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
-  
+
   clldat <- survfit_makeup(km_fit)
-  
+
   if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
-  
+
   if (exclude_censor) {
     clldat <- lapply(clldat, function(xxt) xxt[xxt$censor == 0, , drop = FALSE])
   }
@@ -319,8 +323,8 @@ log_cum_haz_plot <- function(km_fit, time_scale, log_time = TRUE, endpoint_name 
 #' @param endpoint_name a character string, name of the endpoint
 #' @param subtitle a character string, subtitle of the plot
 #' @examples
-#' load(system.file("extdata","combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
-#' unweighted_cox <- coxph(Surv(TIME, EVENT==1) ~ ARM, data = combined_data_tte)
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
 #' resid_plot(unweighted_cox, time_scale = "month", log_time = TRUE, endpoint_name = "OS", subtitle = "(Before Matching)")
 #'
 #' @return a plot
