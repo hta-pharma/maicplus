@@ -29,24 +29,23 @@
 
 
 
-bootstrap_HR <- function(intervention_data, centered_colnames, i, model, comparator_data,  min_weight = 0.0001, trt_ext){
-
+bootstrap_HR <- function(intervention_data, centered_colnames, i, model, comparator_data, min_weight = 0.0001, trt_ext) {
   # create a visible binding for R CMD check
   wt <- NULL
 
   # Samples the data
-  bootstrap_data <- intervention_data[i,]
+  bootstrap_data <- intervention_data[i, ]
 
   # Estimates weights
-  perform_wt <- estimate_weights(data=bootstrap_data,  centered_colnames=centered_colnames)
+  perform_wt <- estimate_weights(data = bootstrap_data, centered_colnames = centered_colnames)
 
 
   # Give comparator data weights of 1
-  comparator_data_wts <- comparator_data %>% dplyr::mutate(weights=1, scaled_weights=1)
+  comparator_data_wts <- comparator_data %>% dplyr::mutate(weights = 1, scaled_weights = 1)
 
   # Add the comparator data
   combined_data <- dplyr::bind_rows(perform_wt$data, comparator_data_wts)
-  combined_data$treatment <- stats::relevel(as.factor(combined_data$treatment),ref=trt_ext)
+  combined_data$treatment <- stats::relevel(as.factor(combined_data$treatment), ref = trt_ext)
 
   # set weights that are below min_weight to min_weight to avoid issues with 0 values
   combined_data$wt <- ifelse(combined_data$weights < min_weight, min_weight, combined_data$weights)
@@ -55,6 +54,3 @@ bootstrap_HR <- function(intervention_data, centered_colnames, i, model, compara
   cox_model <- survival::coxph(model, data = combined_data, weights = wt)
   HR <- exp(cox_model$coefficients)
 }
-
-
-
