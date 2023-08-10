@@ -33,7 +33,7 @@ a plot
 a diagnosis plot for proportional hazard assumption, versus log-time (default) or time
 }
 \examples{
-load(system.file("extdata","combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 log_cum_haz_plot(kmobj, time_scale = "month", log_time = TRUE, endpoint_name = "OS", subtitle = "(Before Matching)")
 

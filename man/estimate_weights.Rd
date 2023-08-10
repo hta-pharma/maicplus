@@ -37,7 +37,7 @@ Assuming data is properly processed, this function takes individual patient data
 to match the covariates in aggregate data.
 }
 \examples{
-load(system.file("extdata","ipd_centered.rda", package = "maicplus", mustWork = TRUE))
+load(system.file("extdata", "ipd_centered.rda", package = "maicplus", mustWork = TRUE))
 
 centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
 centered_colnames <- paste0(centered_colnames, "_CENTERED")

@@ -25,8 +25,8 @@ IPD and aggregate data variable names should match.
 }
 \examples{
 ipd <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus", mustWork = TRUE))
-ipd <- dummize_ipd(ipd, dummize_cols=c("SEX"), dummize_ref_level=c("Female"))
-target_pop <- read.csv(system.file("extdata","aggregate_data_example_1.csv", package = "maicplus", mustWork = TRUE))
+ipd <- dummize_ipd(ipd, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
+target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv", package = "maicplus", mustWork = TRUE))
 agd <- process_agd(target_pop)
 
 ipd_centered <- center_ipd(ipd = ipd, agd = agd)

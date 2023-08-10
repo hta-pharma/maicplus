@@ -39,7 +39,7 @@ re-weighted population than the original data and a scaled weight less than 1 me
 less weight in the re-weighted population than the original data.
 }
 \examples{
-load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+load(system.file("extdata", "match_res.rda", package = "maicplus", mustWork = TRUE))
 plot_weights2(match_res, print_caption = TRUE, caption_width = 80)
 
 }

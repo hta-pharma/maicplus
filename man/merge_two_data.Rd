@@ -39,8 +39,8 @@ run a regression. For the pseudo IPD, a weight of 1 is assigned.
 }
 \examples{
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
-pseudo_ipd$ARM <- "B" #Need to specify ARM for pseudo ipd
-load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+pseudo_ipd$ARM <- "B" # Need to specify ARM for pseudo ipd
+load(system.file("extdata", "match_res.rda", package = "maicplus", mustWork = TRUE))
 ipd_matched <- match_res$data
 combined_data <- merge_two_data(pseudo_ipd, ipd_matched, internal_time_name = "TIME", internal_event_name = "EVENT")
 

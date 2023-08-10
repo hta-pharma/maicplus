@@ -47,8 +47,8 @@ before and after adjustment.
 
 }}
 \examples{
-load(system.file("extdata","agd.rda", package = "maicplus", mustWork = TRUE))
-load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
+load(system.file("extdata", "match_res.rda", package = "maicplus", mustWork = TRUE))
 outdata <- check_weights(match_res, processed_agd = agd)
 print(outdata)
 

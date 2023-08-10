@@ -46,18 +46,20 @@ aggregate data, pseudo IPD will not be bootstrapped.
 }
 \examples{
 # Unanchored example
-load(system.file("extdata","ipd_centered.rda", package = "maicplus", mustWork = TRUE))
+load(system.file("extdata", "ipd_centered.rda", package = "maicplus", mustWork = TRUE))
 centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
 centered_colnames <- paste0(centered_colnames, "_CENTERED")
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
-pseudo_ipd$ARM <- "B" #Need to specify ARM for pseudo ipd
+pseudo_ipd$ARM <- "B" # Need to specify ARM for pseudo ipd
 
-HR_bootstraps <- boot(data = ipd_centered,
-  statistic = bootstrap_HR, 
-  centered_colnames = centered_colnames, 
-  internal_time_name = "TIME", 
+HR_bootstraps <- boot(
+  data = ipd_centered,
+  statistic = bootstrap_HR,
+  centered_colnames = centered_colnames,
+  internal_time_name = "TIME",
   internal_event_name = "EVENT",
   pseudo_ipd = pseudo_ipd,
-  R = 1000)
+  R = 1000
+)
 
 }
