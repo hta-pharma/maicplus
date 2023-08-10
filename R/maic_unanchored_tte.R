@@ -2,6 +2,8 @@
 #'
 #' @param useWt a numeric vector of individual MAIC weights, length should the same as \code{nrow(dat)}
 #' @param dat a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial
+#' @param dat_centered a data frame containing individual patient data from the internal IPD study including columns:
+#' treatment, time, status, centered baseline characteristics.
 #' @param dat_ext a data frame, pseudo IPD from digitized KM curve of external trial
 #' @param trt  a character string, name of the interested treatment in internal trial (real IPD)
 #' @param trt_ext character string, name of the interested comparator in external trial used to subset \code{dat_ext} (pseudo IPD)
@@ -22,7 +24,7 @@
 #' @export
 #'
 #' @examples
-maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
+maic_tte_unanchor <- function(useWt, dat, dat_centered, dat_ext, trt, trt_ext,
                               time_scale = "month", endpoint_name = "OS",
                               transform = "log") {
   timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
@@ -31,6 +33,16 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
   if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
 
   res <- list()
+
+  # Bootstrap the confidence interval of the weighted HR
+
+  HR_bootstraps <- boot(data = dat_centered, # intervention data
+                        statistic = bootstrap_HR, # bootstrap the HR (defined in the maicplus package)
+                        R=1000, # number of bootstrap samples
+                        comparator_data = dat_ext, # comparator pseudo data
+                        centered_colnames = grep("_CENTERED$", names(dat_centered)), # matching variables
+                        model = Surv(time, status==1) ~ treatment # model to fit
+  )
 
   # set up IPD 'dat' with maic weights
   dat$weight <- useWt
@@ -128,6 +140,30 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
     endpoint_name = endpoint_name, subtitle = "(After Matching)"
   )
   res[["plot_resid_after"]] <- grDevices::recordPlot()
+
+
+
+  # ==> Report 4: Bootstrapping
+
+  ## Bootstrapping diagnostics
+  # Summarize bootstrap estimates in a histogram
+  # Vertical lines indicate the median and upper and lower CIs
+  hist(HR_bootstraps$t, main = "", xlab = "Boostrapped HR")
+  abline(v= quantile(HR_bootstraps$t, probs = c(0.025, 0.5, 0.975)), lty=2)
+
+  # Median of the bootstrap samples
+  HR_median <- median(HR_bootstraps$t)
+
+  # Bootstrap CI - Percentile CI
+  boot_ci_HR <- boot.ci(boot.out = HR_bootstraps, index=1, type="perc")
+
+  # Bootstrap CI - BCa CI
+  boot_ci_HR_BCA <- boot.ci(boot.out = HR_bootstraps, index=1, type="bca")
+
+  res[["boot_hist"]] <- grDevices::recordPlot()
+  res[["HR_median"]] <-  HR_median
+  res[["boot_ci_HR"]] <-  boot_ci_HR
+  res[["boot_ci_HR_BCA"]] <-  boot_ci_HR_BCA
 
   # output
   res
