@@ -18,7 +18,6 @@
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, COUNT, or PROP).
 #'
 #' @examples
-#' # example
 #' target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
 #'   package = "maicplus", mustWork = TRUE
 #' ))
@@ -32,20 +31,6 @@
 #' target_pop <- process_agd(target_pop)
 #' target_pop2 <- process_agd(target_pop2)
 #' target_pop3 <- process_agd(target_pop3)
-#'
-#' # another example
-#' target_pop <- data.frame(
-#'   STUDY = "Study_XXXX",
-#'   ARM = "Total",
-#'   N = 300,
-#'   AGE_MEAN = 51,
-#'   AGE_MEDIAN = 49,
-#'   AGE_SD = 3.25,
-#'   SEX_MALE_COUNT = 147,
-#'   ECOG0_COUNT = 105,
-#'   SMOKE_PROP = 58 / 290
-#' )
-#' process_agd(target_pop)
 #'
 #' @return pre-processed aggregate level data
 #' @export
@@ -137,6 +122,10 @@ process_agd <- function(raw_agd) {
 #' @param dummize_cols vector of column names to binarize
 #' @param dummize_ref_level vector of reference level of the variables to binarize
 #'
+#' @examples
+#' adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus", mustWork = TRUE))
+#' adsl <- dummize_ipd(adsl, dummize_cols=c("SEX"), dummize_ref_level=c("Female"))
+#' 
 #' @return ipd with dummized columns
 #' @export
 
@@ -168,6 +157,13 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level) {
 #' In this case, SEX_MALE should also be available in the aggregate data.
 #' @param agd pre-processed aggregate data which contain STUDY, ARM, and N. Variable names should be followed
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP). Note that COUNT suffix is no longer accepted.
+#' @examples
+#' ipd <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus", mustWork = TRUE))
+#' ipd <- dummize_ipd(ipd, dummize_cols=c("SEX"), dummize_ref_level=c("Female"))
+#' target_pop <- read.csv(system.file("extdata","aggregate_data_example_1.csv", package = "maicplus", mustWork = TRUE))
+#' agd <- process_agd(target_pop)
+#' 
+#' ipd_centered <- center_ipd(ipd = ipd, agd = agd)
 #'
 #' @return centered ipd using aggregate level data averages
 #' @export
@@ -256,13 +252,14 @@ complete_agd <- function(use_agd) {
 }
 
 
-#' helper function: transform TTE ADaM data to suitable input for survival R pkg
+#' helper function: transform TTE ADaM data to suitable input for survival R package
 #'
 #' @param dd data frame, ADTTE read via haven::read_sas
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #' @param trt values to include in treatment column
 #'
 #' @return a data frame that can be used as input to survival::Surv
+
 ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
   time_units <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
@@ -289,19 +286,17 @@ ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
 #'
 #' For a survival outcome, we can digitize Kaplan-Meier curves to obtain 
 #' pseudo IPD. For a binomial outcome, we can simulate response data based 
-#' on the known proportion of responders. For both types of outcomes, 
-#' we need to merge the pseudo comparator IPD with the internal IPD data
-#' to run the regression (i.e. cox regression). This function joins merges
-#' the two data into a single data. For the external pseudo IPD, a weight
-#' of 1 is assigned.
+#' on the known proportion of responders. This function merges the pseudo 
+#' comparator IPD and the internal IPD data. Merged data can be used to 
+#' run a regression. For the external pseudo IPD, a weight of 1 is assigned.
 #'
-#' @param external pseudo comparator IPD. Should be a data frame. 
+#' @param pseudo_ipd pseudo comparator IPD. Should be a data frame. 
 #' For a time to event outcome, time, status(i.e. event=1), and ARM should be specified
 #' For a response outcome, response and ARM should be specified.
-#' @param internal internal IPD data that is returned from \code{\link{estimate_weights}}
-#' @param internal_time_name how the time variable is named in the internal IPD (for time to event outcome)
-#' @param internal_event_name how the event variable is named in the internal IPD (for time to event outcome)
-#' @param internal_response_name how the response variable is named in the internal IPD (for binary outcome)
+#' @param ipd_matched internal IPD data with estimated weights that is returned from \code{\link{estimate_weights}}
+#' @param internal_time_name name of the time variable in ipd_matched (for time to event outcome)
+#' @param internal_event_name name of the event variable in ipd_matched (for time to event outcome)
+#' @param internal_response_name name of the response variable in ipd_matched (for binary outcome)
 #' @return Merged dataset with time, event, ARM, and weights for time to event data and response, ARM, and weights for binary.
 #' External ARM is assigned to be the reference treatment in the unanchored case. common treatment is assigned to be reference
 #' treatment for the anchored case.

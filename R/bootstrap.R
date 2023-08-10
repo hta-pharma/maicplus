@@ -8,10 +8,9 @@
 #' @param centered_colnames A character vector giving the names of the covariates to use
 #'   in matching. These names must match the column names in internal dataset.
 #' @param internal_time_name name of the time variable in ipd_centered (for time to event outcome)
-#' @param internal_event_name how the event variable is named in the internal IPD (for time to event outcome)
-#' @param external A data frame containing pseudo individual patient data
+#' @param internal_event_name name of the event variable in ipd_centered (for time to event outcome)
+#' @param psuedo_ipd A data frame containing pseudo individual patient data
 #'   from the comparator study needed to derive the relative treatment effect.
-#'   The outcome variables names must match intervention_data.
 #' @param min_weight A numeric value that defines the minimum weight allowed. 
 #'   This value (default 0.0001) will replace weights estimated at 0 in a sample.
 #'

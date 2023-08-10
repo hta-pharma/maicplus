@@ -276,9 +276,9 @@ We first need to combine internal IPD data with pseudo comparator IPD. To obtain
 ```{r}
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
 pseudo_ipd$ARM <- "B" #Need to specify ARM for pseudo ipd
-matched_ipd <- match_res$data
+ipd_matched <- match_res$data
 
-combined_data_tte <- merge_two_data(pseudo_ipd, matched_ipd, internal_time_name = "TIME", internal_event_name = "EVENT")
+combined_data_tte <- merge_two_data(pseudo_ipd, ipd_matched, internal_time_name = "TIME", internal_event_name = "EVENT")
 str(combined_data_tte)
 ```
 
@@ -324,12 +324,12 @@ rbind(
 
 ```{r, results = 'hide'}
 set.seed(1)
-HR_bootstraps <- boot(data = matched_ipd,
+HR_bootstraps <- boot(data = ipd_centered,
                       statistic = bootstrap_HR, 
                       centered_colnames = centered_colnames, 
                       internal_time_name = "TIME", 
                       internal_event_name = "EVENT",
-                      external = pseudo_ipd,
+                      pseudo_ipd = pseudo_ipd,
                       R = 1000)
 ```
 
@@ -394,7 +394,7 @@ resid_plot(weighted_cox,
 One can do all this analysis in a wrapper
 
 ```{r, results = 'hide', fig.show = 'hide'}
-fit_unanchored <- maic_tte_unanchored(external = pseudo_ipd, internal = matched_ipd, internal_time_name = "TIME", internal_event_name = "EVENT", time_scale = "month", endpoint_name = "OS", transform = "log")
+fit_unanchored <- maic_tte_unanchored(pseudo_ipd = pseudo_ipd, ipd_matched = ipd_matched, internal_time_name = "TIME", internal_event_name = "EVENT", time_scale = "month", endpoint_name = "OS", transform = "log")
 ```
 
 ```{r}
@@ -405,7 +405,7 @@ names(fit_unanchored)
 
 ## Analysis without wrapper
 
-```{r, eval = FALSE}
+```{r}
 # Simulate response data based on the known proportion of responders
 comparator_prop_events <- 0.4
 
@@ -413,9 +413,9 @@ comparator_prop_events <- 0.4
 n_with_event <- round(agd$N*comparator_prop_events, digits = 0)
 comparator_binary <- data.frame("RESPONSE"= c(rep(1, n_with_event), rep(0, agd$N - n_with_event)))
 comparator_binary$ARM <- "B" # need to specify ARM for comparator data
-matched_ipd <- match_res$data
+ipd_matched <- match_res$data
 
-combined_data_binary <- merge_two_data(comparator_binary, matched_ipd, internal_response_name = "RESPONSE")
+combined_data_binary <- merge_two_data(comparator_binary, ipd_matched, internal_response_name = "RESPONSE")
 
 unweighted_OR <- glm(formula = RESPONSE ~ ARM,
                      family = binomial(link="logit"),

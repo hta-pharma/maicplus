@@ -1,11 +1,11 @@
 #' Unanchored MAIC for time-to-event endpoint
 #'
-#' @param external pseudo comparator IPD. Should be a data frame. 
+#' @param pseudo_ipd pseudo comparator IPD. Should be a data frame. 
 #' For a time to event outcome, time, status(i.e. event=1), and ARM should be specified
 #' For a response outcome, response and ARM should be specified.
-#' @param matched_ipd internal IPD data that  returned from \code{\link{estimate_weights}}
-#' @param internal_time_name how the time variable is named in the internal IPD (for time to event outcome)
-#' @param internal_event_name how the event variable is named in the internal IPD (for time to event outcome)
+#' @param ipd_matched internal IPD data with estimated weights that is returned from \code{\link{estimate_weights}}
+#' @param internal_time_name name of the time variable in ipd_matched (for time to event outcome)
+#' @param internal_event_name name of the event variable in ipd_matched (for time to event outcome)
 #' @param trt  a character string, name of the interested treatment in internal trial (real IPD)
 #' @param trt_ext character string, name of the interested comparator in external trial used to subset \code{dat_ext} (pseudo IPD)
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
