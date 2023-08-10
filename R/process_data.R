@@ -18,7 +18,6 @@
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, COUNT, or PROP).
 #'
 #' @examples
-#' # example
 #' target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
 #'   package = "maicplus", mustWork = TRUE
 #' ))
@@ -32,20 +31,6 @@
 #' target_pop <- process_agd(target_pop)
 #' target_pop2 <- process_agd(target_pop2)
 #' target_pop3 <- process_agd(target_pop3)
-#'
-#' # another example
-#' target_pop <- data.frame(
-#'   STUDY = "Study_XXXX",
-#'   ARM = "Total",
-#'   N = 300,
-#'   AGE_MEAN = 51,
-#'   AGE_MEDIAN = 49,
-#'   AGE_SD = 3.25,
-#'   SEX_MALE_COUNT = 147,
-#'   ECOG0_COUNT = 105,
-#'   SMOKE_PROP = 58 / 290
-#' )
-#' process_agd(target_pop)
 #'
 #' @return pre-processed aggregate level data
 #' @export
@@ -97,8 +82,16 @@ process_agd <- function(raw_agd) {
 
   # calculate percentage columns
   ind <- grepl("_COUNT$", names(use_agd))
+
   if (any(ind)) {
     for (i in which(ind)) {
+      
+      # Check if _PROP also exists for this name and print a message it will be overwritten
+      check_name <- gsub("_COUNT$", "_PROP", names(use_agd)[i])
+      if(check_name %in% names(use_agd)){
+        warning(paste0(check_name, " will be ignored since count is specified"))
+      }
+      
       tmp_prop <- use_agd[[i]] / use_agd$N
       # in case some count are not specified, but proportion are specified, copy over those proportions
       # this also means, in case count is specified, proportion is ignored even it is specified
@@ -109,6 +102,7 @@ process_agd <- function(raw_agd) {
       }
       use_agd[[i]] <- tmp_prop
     }
+    
     names(use_agd) <- gsub("_COUNT$", "_PROP", names(use_agd))
   }
   use_agd <- use_agd[, !grepl("_redundant$", names(use_agd))]
@@ -128,6 +122,10 @@ process_agd <- function(raw_agd) {
 #' @param dummize_cols vector of column names to binarize
 #' @param dummize_ref_level vector of reference level of the variables to binarize
 #'
+#' @examples
+#' adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus", mustWork = TRUE))
+#' adsl <- dummize_ipd(adsl, dummize_cols=c("SEX"), dummize_ref_level=c("Female"))
+#' 
 #' @return ipd with dummized columns
 #' @export
 
@@ -155,10 +153,17 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level) {
 #'
 #' @param ipd IPD variable names should match the aggregate data names without the suffix.
 #' This would involve either changing the aggregate data name or the ipd name.
-#' For instance, if we binarize SEX variable with MALE as a reference, function names the new variable as SEX_MALE.
+#' For instance, if we binarize SEX variable with MALE as a reference using [dummize_ipd], function names the new variable as SEX_MALE.
 #' In this case, SEX_MALE should also be available in the aggregate data.
 #' @param agd pre-processed aggregate data which contain STUDY, ARM, and N. Variable names should be followed
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP). Note that COUNT suffix is no longer accepted.
+#' @examples
+#' ipd <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus", mustWork = TRUE))
+#' ipd <- dummize_ipd(ipd, dummize_cols=c("SEX"), dummize_ref_level=c("Female"))
+#' target_pop <- read.csv(system.file("extdata","aggregate_data_example_1.csv", package = "maicplus", mustWork = TRUE))
+#' agd <- process_agd(target_pop)
+#' 
+#' ipd_centered <- center_ipd(ipd = ipd, agd = agd)
 #'
 #' @return centered ipd using aggregate level data averages
 #' @export
@@ -247,13 +252,14 @@ complete_agd <- function(use_agd) {
 }
 
 
-#' helper function: transform TTE ADaM data to suitable input for survival R pkg
+#' helper function: transform TTE ADaM data to suitable input for survival R package
 #'
 #' @param dd data frame, ADTTE read via haven::read_sas
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #' @param trt values to include in treatment column
 #'
 #' @return a data frame that can be used as input to survival::Surv
+
 ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
   time_units <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
@@ -274,3 +280,4 @@ ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
   if (!is.null(trt)) dd$treatment <- trt
   as.data.frame(dd)
 }
+
