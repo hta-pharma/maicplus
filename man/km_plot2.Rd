@@ -38,3 +38,7 @@ a Kaplan-Meier plot
 \description{
 Function to plot Kaplan-Meier curves using survminer package
 }
+\examples{
+load(system.file("extdata","combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+km_plot2(combined_data_tte, trt = "A", trt_ext = "B", censor = TRUE, risk.table = TRUE)
+}

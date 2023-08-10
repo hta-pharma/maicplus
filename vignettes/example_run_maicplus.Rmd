@@ -95,8 +95,8 @@ We present an unanchored MAIC of two treatments in lung cancer. The two endpoint
 setwd("~/GitHub/maicplus")
 devtools::load_all()
 
-#devtools::install_github("hta-pharma/maicplus")
-#library(maicplus)
+# devtools::install_github("hta-pharma/maicplus")
+# library(maicplus)
 
 library(dplyr) # this is used for data merging/cleaning. Package itself does not depend on dplyr
 
@@ -399,6 +399,7 @@ fit_unanchored <- maic_tte_unanchored(pseudo_ipd = pseudo_ipd, ipd_matched = ipd
 
 ```{r}
 names(fit_unanchored)
+fit_unanchored[["plot_weights"]]
 ```
 
 # Binary outcome analysis (TODO)

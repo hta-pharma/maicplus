@@ -16,6 +16,12 @@
 #'   \item status - logical column, TRUE for censored/death, FALSE for otherwise
 #'   \item time - numeric column, observation time of the \code{status}; unit in days
 #' }
+#' @examples
+#' pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
+#' pseudo_ipd$ARM <- "B" #Need to specify ARM for pseudo ipd
+#' load(system.file("extdata","match_res.rda", package = "maicplus", mustWork = TRUE))
+#' ipd_matched <- match_res$data
+#' fit_unanchored <- maic_tte_unanchored(pseudo_ipd = pseudo_ipd, ipd_matched = ipd_matched, internal_time_name = "TIME", internal_event_name = "EVENT", time_scale = "month", endpoint_name = "OS", transform = "log")
 #'
 #' @return A list of KM plot, analysis table, and diagnostic plot
 #' @export
@@ -40,6 +46,15 @@ maic_tte_unanchored <- function(pseudo_ipd = NULL, ipd_matched = NULL,
   
   dat <- combined_data
   res <- list()
+  
+  # ==> Report 0: Weights plot
+  wt <- ipd_matched$weights
+  wt_scaled <- ipd_matched$scaled_weights
+  
+  par(mfrow = c(1, 2))
+  plot_weights(wt)
+  plot_weights(wt_scaled, main_title = "Scaled Individual Weights")
+  res[["plot_weights"]] <- grDevices::recordPlot()
   
   # ==> Report 1: KM plot
   

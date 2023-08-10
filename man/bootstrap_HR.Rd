@@ -41,7 +41,7 @@ The HR bootstraps
 \description{
 This function uses \code{\link{boot}} to resample internal IPD data
 to obtain bootstrapped hazard ratio values which is used to form confidence
-interval. Note that due to lack of full IPD with covariates in the
+interval. Note that due to lack of full IPD of covariates in the
 aggregate data, pseudo IPD will not be bootstrapped.
 }
 \examples{
