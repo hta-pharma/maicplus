@@ -3,7 +3,7 @@
 #' Derive individual weights in the matching step of MAIC
 #'
 #' This function takes individual patient data (IPD) with centered covariates
-#' (effect modifiers and/or prognostic variables) as input and generates 
+#' (effect modifiers and/or prognostic variables) as input and generates
 #' weights for each individual in IPD trial to match the covariates in aggregate data.
 #'
 #' @param data a numeric matrix, centered covariates of IPD, no missing value in any cell is allowed
