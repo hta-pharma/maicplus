@@ -38,7 +38,7 @@ modifiers}
 }
 }
 \description{
-Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates
-(effect modifiers and/or prognostic variables) as input, and generates weights for each individual in IPD trial that
-matches the chosen statistics of those covariates in Aggregated Data (AgD) trial.
+This function takes individual patient data (IPD) with centered covariates
+(effect modifiers and/or prognostic variables) as input and generates
+weights for each individual in IPD trial to match the covariates in aggregate data.
 }
