@@ -17,8 +17,6 @@
 #' }
 #'
 #' @return A list of KM plot, analysis table, and diagnostic plot
-#' @importFrom survival Surv survfit coxph cox.zph
-#' @importFrom graphics par axis lines points legend abline
 #' @export
 
 maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,

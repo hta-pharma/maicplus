@@ -113,7 +113,6 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
 #' @param main_title a character string, main title of the plot
 #'
 #' @return a plot of unscaled or scaled weights
-#' @importFrom graphics hist
 #' @export
 
 plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_title = "Unscaled Individual Weights") {
