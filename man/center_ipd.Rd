@@ -9,7 +9,7 @@ center_ipd(ipd, agd)
 \arguments{
 \item{ipd}{IPD variable names should match the aggregate data names without the suffix.
 This would involve either changing the aggregate data name or the ipd name.
-For instance, if we binarize SEX variable with MALE as a reference, function names the new variable as SEX_MALE.
+For instance, if we binarize SEX variable with MALE as a reference using \link{dummize_ipd}, function names the new variable as SEX_MALE.
 In this case, SEX_MALE should also be available in the aggregate data.}
 
 \item{agd}{pre-processed aggregate data which contain STUDY, ARM, and N. Variable names should be followed

@@ -24,9 +24,7 @@
 #'   \item{pval}{p-value of Z-test, with null hypothesis that \code{est} is zero}
 #' }
 #' @export
-#' @import stats
-#'
-#' @examples
+
 bucher <- function(trt, com, conf_lv = 0.95) {
   est <- trt$est - com$est
   se <- sqrt(trt$se^2 + com$se^2)

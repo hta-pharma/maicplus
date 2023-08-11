@@ -16,12 +16,9 @@
 #'   \item time - numeric column, observation time of the \code{status}; unit in days
 #' }
 #'
-#' @return
-#' @importFrom survival Surv survfit coxph cox.zph
-#' @importFrom graphics par axis lines points legend abline
+#' @return A list of KM plot, analysis table, and diagnostic plot
 #' @export
-#'
-#' @examples
+
 maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
                               time_scale = "month", endpoint_name = "OS",
                               transform = "log") {

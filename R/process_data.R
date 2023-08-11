@@ -18,7 +18,6 @@
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, COUNT, or PROP).
 #'
 #' @examples
-#' # example
 #' target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
 #'   package = "maicplus", mustWork = TRUE
 #' ))
@@ -32,20 +31,6 @@
 #' target_pop <- process_agd(target_pop)
 #' target_pop2 <- process_agd(target_pop2)
 #' target_pop3 <- process_agd(target_pop3)
-#'
-#' # another example
-#' target_pop <- data.frame(
-#'   STUDY = "Study_XXXX",
-#'   ARM = "Total",
-#'   N = 300,
-#'   AGE_MEAN = 51,
-#'   AGE_MEDIAN = 49,
-#'   AGE_SD = 3.25,
-#'   SEX_MALE_COUNT = 147,
-#'   ECOG0_COUNT = 105,
-#'   SMOKE_PROP = 58 / 290
-#' )
-#' process_agd(target_pop)
 #'
 #' @return pre-processed aggregate level data
 #' @export
@@ -155,7 +140,7 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level) {
 #'
 #' @param ipd IPD variable names should match the aggregate data names without the suffix.
 #' This would involve either changing the aggregate data name or the ipd name.
-#' For instance, if we binarize SEX variable with MALE as a reference, function names the new variable as SEX_MALE.
+#' For instance, if we binarize SEX variable with MALE as a reference using [dummize_ipd], function names the new variable as SEX_MALE.
 #' In this case, SEX_MALE should also be available in the aggregate data.
 #' @param agd pre-processed aggregate data which contain STUDY, ARM, and N. Variable names should be followed
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP). Note that COUNT suffix is no longer accepted.
@@ -247,13 +232,14 @@ complete_agd <- function(use_agd) {
 }
 
 
-#' helper function: transform TTE ADaM data to suitable input for survival R pkg
+#' helper function: transform TTE ADaM data to suitable input for survival R package
 #'
 #' @param dd data frame, ADTTE read via haven::read_sas
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #' @param trt values to include in treatment column
 #'
 #' @return a data frame that can be used as input to survival::Surv
+
 ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
   time_units <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
