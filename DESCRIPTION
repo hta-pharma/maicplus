@@ -1,6 +1,8 @@
-Type: Package
+Title: Matching adjusted indirect comparison
+Description: The maicplus package facilitates performing matching adjusted indirect comparison
+ (MAIC) analysis where the endpoint of interest is either time-to-event
+ (e.g. overall survival) or binary (e.g. objective tumor response).
 Package: maicplus
-Title: R Package Template
 Version: 0.1.0
 Date: 2023-03-03
 Authors@R:

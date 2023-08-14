@@ -113,6 +113,7 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
 #' @param main_title a character string, main title of the plot
 #'
 #' @return a plot of unscaled or scaled weights
+#' @examples
 #' @export
 
 plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_title = "Unscaled Individual Weights") {
@@ -210,9 +211,10 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' )
 #'
 #' print(check)
-check_weights <- function(match_res, processed_agd) {
-  ipd_with_weights <- optimized$data
-  match_cov <- optimized$centered_colnames
+#' 
+check_weights <- function(weighted_data, processed_agd) {
+  ipd_with_weights <- weighted_data$data
+  match_cov <- weighted_data$centered_colnames
 
   # if algorithm is correct, all centered columns should have a weighted summation to a very small number around zero
   num_check <- ipd_with_weights$weights %*% as.matrix(ipd_with_weights[, match_cov, drop = FALSE])

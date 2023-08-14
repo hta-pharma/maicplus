@@ -23,6 +23,7 @@
 #'   \item{ci_u}{a scalar, upper confidence limit of a two-sided CI with prescribed nominal level by \code{conf_lv}}
 #'   \item{pval}{p-value of Z-test, with null hypothesis that \code{est} is zero}
 #' }
+#' @examples
 #' @export
 
 bucher <- function(trt, com, conf_lv = 0.95) {

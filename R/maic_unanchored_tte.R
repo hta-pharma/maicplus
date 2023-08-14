@@ -50,7 +50,7 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
   kmobj_adj <- survfit(Surv(time, status) ~ treatment, dat, weights = dat$weight, conf.type = "log-log")
 
   par(cex.main = 0.85)
-  km_makeup(kmobj, kmobj_adj,
+  km_plot(kmobj, kmobj_adj,
     time_scale = time_scale,
     trt = trt, trt_ext = trt_ext,
     endpoint_name = endpoint_name
