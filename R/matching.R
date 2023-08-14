@@ -211,7 +211,7 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' )
 #'
 #' print(check)
-#' 
+#'
 check_weights <- function(weighted_data, processed_agd) {
   ipd_with_weights <- weighted_data$data
   match_cov <- weighted_data$centered_colnames
