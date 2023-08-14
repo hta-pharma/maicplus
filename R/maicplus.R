@@ -1,13 +1,11 @@
-#' maicplus: open source R package for MAIC
-#'
-#' A package for running matching adjusted indirect comparison
-#'
-#' This package facilitates performing matching adjusted indirect comparison
-#' (MAIC) analysis where the endpoint of interest is either time-to-event
-#' (e.g. overall survival) or binary (e.g. objective tumor response).
-#'
-#' @docType package
-#' @name maicplus-package
+#' @keywords internal
+"_PACKAGE"
+
+# The following block is used by usethis to automatically manage
+# roxygen namespace tags. Modify with care!
+## usethis namespace: start
+## usethis namespace: end
+NULL
 #'
 #'
 
