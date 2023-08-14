@@ -152,7 +152,7 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' This function checks to see if the optimization is done properly by checking the covariate averages
 #' before and after adjustment.
 #'
-#' @param match_res object returned after calculating weights using \code{\link{estimate_weights}}
+#' @param weighted_data object returned after calculating weights using \code{\link{estimate_weights}}
 #' @param processed_agd a data frame, object returned after using \code{\link{process_agd}} or
 #' aggregated data following the same naming convention
 #'
