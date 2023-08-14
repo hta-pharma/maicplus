@@ -30,13 +30,12 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 
 
 
-#' helper function: makeup `survival::survfit` object for km plot
+#' Helper function to select a set of variables used for Kaplan-Meier plot
 #'
 #' @param km_fit returned object from \code{survival::survfit}
-#'
+#' @return a list of data frames of variables from \code{survival::survfit}. Data frames are divided by treatment.
 #' @export
-#'
-#' @return a list of data frames, one element per treatment
+
 survfit_makeup <- function(km_fit) {
   kmdat <- data.frame(
     time = km_fit$time,
@@ -64,7 +63,7 @@ survfit_makeup <- function(km_fit) {
 #' @param endpoint_name a character string, name of the endpoint
 #'
 #' @return a KM plot
-km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext, endpoint_name = "") {
+km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext, endpoint_name = "") {
   timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
   if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
@@ -84,7 +83,7 @@ km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_e
   # base plot
   par(mfrow = c(1, 1), bty = "n", tcl = -0.15, mgp = c(2.3, 0.5, 0))
   plot(0, 0,
-    type = "n", xlab = paste0("Time in", time_scale), ylab = "Survival Probability",
+    type = "n", xlab = paste0("Time in ", time_scale), ylab = "Survival Probability",
     ylim = c(0, 1), xlim = t_range, yaxt = "n",
     main = paste0(
       "Kaplan-Meier Curves of Comparator ", ifelse(!is.null(km_fit_after), "(AgD) ", ""),
@@ -94,7 +93,7 @@ km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_e
   )
   axis(2, las = 1)
 
-  # add km lines from external trail
+  # add km lines from external trial
   lines(
     y = pd_be[[trt_ext]]$surv,
     x = (pd_be[[trt_ext]]$time / timeUnit[[time_scale]]), col = "#5450E4",
@@ -142,7 +141,7 @@ km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_e
     legend = c(
       paste0("Comparator: ", trt_ext),
       paste0("Treatment: ", trt),
-      paste0("Treatment: ", trt, "(with weights)")
+      paste0("Treatment: ", trt, " (with weights)")
     )[use_leg]
   )
 }
@@ -233,7 +232,7 @@ resid_plot <- function(coxobj, time_scale = "month", log_time = TRUE, endpoint_n
     cex = 0.9, col = "navyblue", yaxt = "n",
     ylab = "Unscaled Schoenfeld Residual", xlab = paste0(ifelse(log_time, "Log-", ""), "Time in ", time_scale),
     main = paste0(
-      "Diagnosis Plot: Unscaled Schoenfeld Residual\nEndpoint: ", endpoint_name,
+      "Diagnostic Plot: Unscaled Schoenfeld Residual\nEndpoint: ", endpoint_name,
       ifelse(subtitle == "", "", "\n"), subtitle
     )
   )

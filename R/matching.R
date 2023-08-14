@@ -1,12 +1,10 @@
 # Functions for matching step: estimation of individual weights
 
-# functions to be exported ---------------------------------------
-
 #' Derive individual weights in the matching step of MAIC
 #'
-#' Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates
-#' (effect modifiers and/or prognostic variables) as input, and generates weights for each individual in IPD trial that
-#' matches the chosen statistics of those covariates in Aggregated Data (AgD) trial.
+#' This function takes individual patient data (IPD) with centered covariates
+#' (effect modifiers and/or prognostic variables) as input and generates
+#' weights for each individual in IPD trial to match the covariates in aggregate data.
 #'
 #' @param data a numeric matrix, centered covariates of IPD, no missing value in any cell is allowed
 #' @param centered_colnames a character or numeric vector (column indicators) of centered covariates
@@ -27,8 +25,7 @@
 #'   \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
 #' }
 #' @export
-#'
-#' @examples
+
 estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, method = "BFGS", ...) {
   # pre check
   ch1 <- is.data.frame(data)
@@ -116,7 +113,7 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
 #' @param main_title a character string, main title of the plot
 #'
 #' @return a plot of unscaled or scaled weights
-#' @importFrom graphics hist
+#' @examples
 #' @export
 
 plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_title = "Unscaled Individual Weights") {
@@ -155,13 +152,13 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' This function checks to see if the optimization is done properly by checking the covariate averages
 #' before and after adjustment.
 #'
-#' @param optimized object returned after calculating weights using \code{\link{estimate_weights}}
+#' @param match_res object returned after calculating weights using \code{\link{estimate_weights}}
 #' @param processed_agd a data frame, object returned after using \code{\link{process_agd}} or
 #' aggregated data following the same naming convention
 #'
 #' @import DescTools
 #'
-#' @return data.frame of weighted and unweighted covariate averages of the IPD
+#' @return data.frame of weighted and unweighted covariate averages of the IPD, and average of aggregate data
 #' @export
 #'
 #' @examples
@@ -214,9 +211,10 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' )
 #'
 #' print(check)
-check_weights <- function(optimized, processed_agd) {
-  ipd_with_weights <- optimized$data
-  match_cov <- optimized$centered_colnames
+#' 
+check_weights <- function(weighted_data, processed_agd) {
+  ipd_with_weights <- weighted_data$data
+  match_cov <- weighted_data$centered_colnames
 
   # if algorithm is correct, all centered columns should have a weighted summation to a very small number around zero
   num_check <- ipd_with_weights$weights %*% as.matrix(ipd_with_weights[, match_cov, drop = FALSE])

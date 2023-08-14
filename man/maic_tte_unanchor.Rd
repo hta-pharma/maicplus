@@ -32,6 +32,9 @@ maic_tte_unanchor(
 
 \item{transform}{a character string, pass to \code{\link[survival]{cox.zph}}}
 }
+\value{
+A list of KM plot, analysis table, and diagnostic plot
+}
 \description{
 Unanchored MAIC for time-to-event endpoint
 }
