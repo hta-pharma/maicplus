@@ -101,7 +101,7 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
 
 #' Plot MAIC weights in a histogram with key statistics in legend
 #'
-#' Generates a base R histogram of weights
+#' Generates a base R histogram of weights. Default is to plot either unscaled or scaled weights and not both.
 #'
 #' @param weighted_data object returned after calculating weights using \code{\link{estimate_weights}}
 #' @param bin_col a string, color for the bins of histogram
