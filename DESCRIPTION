@@ -1,11 +1,12 @@
-Type: Package
+Title: Matching adjusted indirect comparison
 Package: maicplus
-Title: R Package Template
 Version: 0.1.0
 Date: 2023-03-03
 Authors@R:
     person("hta-pharma", , , "hta-pharma@example.com", role = c("aut", "cre"))
-Description: R package template with GitHub Actions workflows included.
+Description: The maicplus package facilitates performing matching adjusted indirect comparison
+ (MAIC) analysis where the endpoint of interest is either time-to-event
+ (e.g. overall survival) or binary (e.g. objective tumor response).
 License: Apache License 2.0
 URL: https://github.com/hta-pharma/maicplus/
 BugReports: https://github.com/hta-pharma/maicplus/issues
@@ -16,10 +17,12 @@ Imports:
     stats,
     survival,
     DescTools,
-    MASS
+    MASS,
+    boot
 Suggests:
     knitr,
-    testthat (>= 2.0)
+    testthat (>= 2.0),
+    ggplot2
 VignetteBuilder:
     knitr
 biocViews:

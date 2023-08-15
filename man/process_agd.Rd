@@ -25,7 +25,6 @@ sample size differs for each variable, one option is to specify proportion direc
 _PROP.
 }
 \examples{
-# example
 target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
   package = "maicplus", mustWork = TRUE
 ))
@@ -39,19 +38,5 @@ target_pop3 <- read.csv(system.file("extdata", "aggregate_data_example_3.csv",
 target_pop <- process_agd(target_pop)
 target_pop2 <- process_agd(target_pop2)
 target_pop3 <- process_agd(target_pop3)
-
-# another example
-target_pop <- data.frame(
-  STUDY = "Study_XXXX",
-  ARM = "Total",
-  N = 300,
-  AGE_MEAN = 51,
-  AGE_MEDIAN = 49,
-  AGE_SD = 3.25,
-  SEX_MALE_COUNT = 147,
-  ECOG0_COUNT = 105,
-  SMOKE_PROP = 58 / 290
-)
-process_agd(target_pop)
 
 }

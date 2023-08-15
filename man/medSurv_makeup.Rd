@@ -17,5 +17,5 @@ medSurv_makeup(km_fit, legend = "before matching", time_scale)
 a data frame with a index column 'type', median survival time and confidence interval
 }
 \description{
-extract and display median survival time with confidence interval
+Extract and display median survival time with confidence interval
 }

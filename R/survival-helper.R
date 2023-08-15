@@ -1,6 +1,6 @@
 #' helper function: makeup to get median survival time from a `survival::survfit` object
 #'
-#' extract and display median survival time with confidence interval
+#' Extract and display median survival time with confidence interval
 #'
 #' @param km_fit returned object from \code{survival::survfit}
 #' @param legend a character string, name used in 'type' column in returned data frame
@@ -9,13 +9,13 @@
 #' @return a data frame with a index column 'type', median survival time and confidence interval
 #' @export
 medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
-  timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
+  time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
-  if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
+  if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
 
   # km_fit is the returned object from survival::survfit
   km_fit <- summary(km_fit)$table
-  km_fit[, 5:ncol(km_fit)] <- km_fit[, 5:ncol(km_fit)] / timeUnit[[time_scale]]
+  km_fit[, 5:ncol(km_fit)] <- km_fit[, 5:ncol(km_fit)] / time_unit[[time_scale]]
 
   toyadd <- data.frame(
     treatment = gsub("treatment=", "", rownames(km_fit)),
@@ -30,13 +30,12 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 
 
 
-#' helper function: makeup `survival::survfit` object for km plot
+#' Helper function to select a set of variables used for Kaplan-Meier plot
 #'
 #' @param km_fit returned object from \code{survival::survfit}
-#'
+#' @return a list of data frames of variables from \code{survival::survfit}. Data frames are divided by treatment.
 #' @export
-#'
-#' @return a list of data frames, one element per treatment
+
 survfit_makeup <- function(km_fit) {
   kmdat <- data.frame(
     time = km_fit$time,
@@ -60,14 +59,15 @@ survfit_makeup <- function(km_fit) {
 #' @param km_fit_after returned object from \code{survival::survfit} after adjustment
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #' @param trt  a character string, name of the interested treatment in internal trial (real IPD)
-#' @param trt_ext character string, name of the interested comparator in external trial used to subset \code{dat_ext} (pseudo IPD)
+#' @param trt_ext character string, name of the interested comparator in external trial used to
+#' subset \code{dat_ext} (pseudo IPD)
 #' @param endpoint_name a character string, name of the endpoint
 #'
 #' @return a KM plot
-km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext, endpoint_name = "") {
-  timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
+km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext, endpoint_name = "") {
+  time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
-  if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
+  if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
 
   # prepare data for plot
   pd_be <- survfit_makeup(km_fit_before)
@@ -79,12 +79,12 @@ km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_e
   } else {
     max_t <- max(km_fit_before$time)
   }
-  t_range <- c(0, (max_t / timeUnit[[time_scale]]) * 1.07)
+  t_range <- c(0, (max_t / time_unit[[time_scale]]) * 1.07)
 
   # base plot
   par(mfrow = c(1, 1), bty = "n", tcl = -0.15, mgp = c(2.3, 0.5, 0))
   plot(0, 0,
-    type = "n", xlab = paste0("Time in", time_scale), ylab = "Survival Probability",
+    type = "n", xlab = paste0("Time in ", time_scale), ylab = "Survival Probability",
     ylim = c(0, 1), xlim = t_range, yaxt = "n",
     main = paste0(
       "Kaplan-Meier Curves of Comparator ", ifelse(!is.null(km_fit_after), "(AgD) ", ""),
@@ -94,29 +94,29 @@ km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_e
   )
   axis(2, las = 1)
 
-  # add km lines from external trail
+  # add km lines from external trial
   lines(
     y = pd_be[[trt_ext]]$surv,
-    x = (pd_be[[trt_ext]]$time / timeUnit[[time_scale]]), col = "#5450E4",
+    x = (pd_be[[trt_ext]]$time / time_unit[[time_scale]]), col = "#5450E4",
     type = "s"
   )
   tmpid <- pd_be[[trt_ext]]$censor == 1
   points(
     y = pd_be[[trt_ext]]$surv[tmpid],
-    x = (pd_be[[trt_ext]]$time[tmpid] / timeUnit[[time_scale]]),
+    x = (pd_be[[trt_ext]]$time[tmpid] / time_unit[[time_scale]]),
     col = "#5450E4", pch = 3, cex = 0.7
   )
 
   # add km lines from internal trial before adjustment
   lines(
     y = pd_be[[trt]]$surv,
-    x = (pd_be[[trt]]$time / timeUnit[[time_scale]]), col = "#00857C",
+    x = (pd_be[[trt]]$time / time_unit[[time_scale]]), col = "#00857C",
     type = "s"
   )
   tmpid <- pd_be[[trt]]$censor == 1
   points(
     y = pd_be[[trt]]$surv[tmpid],
-    x = (pd_be[[trt]]$time[tmpid] / timeUnit[[time_scale]]),
+    x = (pd_be[[trt]]$time[tmpid] / time_unit[[time_scale]]),
     col = "#00857C", pch = 3, cex = 0.7
   )
 
@@ -124,13 +124,13 @@ km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_e
   if (!is.null(km_fit_after)) {
     lines(
       y = pd_af[[trt]]$surv,
-      x = (pd_af[[trt]]$time / timeUnit[[time_scale]]), col = "#6ECEB2", lty = 2,
+      x = (pd_af[[trt]]$time / time_unit[[time_scale]]), col = "#6ECEB2", lty = 2,
       type = "s"
     )
     tmpid <- pd_af[[trt]]$censor == 1
     points(
       y = pd_af[[trt]]$surv[tmpid],
-      x = (pd_af[[trt]]$time[tmpid] / timeUnit[[time_scale]]),
+      x = (pd_af[[trt]]$time[tmpid] / time_unit[[time_scale]]),
       col = "#6ECEB2", pch = 3, cex = 0.7
     )
   }
@@ -142,7 +142,7 @@ km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_e
     legend = c(
       paste0("Comparator: ", trt_ext),
       paste0("Treatment: ", trt),
-      paste0("Treatment: ", trt, "(with weights)")
+      paste0("Treatment: ", trt, " (with weights)")
     )[use_leg]
   )
 }
@@ -161,15 +161,20 @@ km_makeup <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_e
 #'
 #' @return a plot
 #' @export
-log_cum_haz_plot <- function(clldat, time_scale, log_time = TRUE, endpoint_name = "", subtitle = "", exclude_censor = TRUE) {
-  timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
-  if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
+log_cum_haz_plot <- function(clldat,
+                             time_scale,
+                             log_time = TRUE,
+                             endpoint_name = "",
+                             subtitle = "",
+                             exclude_censor = TRUE) {
+  time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
+  if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
 
   if (exclude_censor) {
     clldat <- lapply(clldat, function(xxt) xxt[xxt$censor == 0, , drop = FALSE])
   }
 
-  all.times <- do.call(rbind, clldat)$time / timeUnit[[time_scale]]
+  all.times <- do.call(rbind, clldat)$time / time_unit[[time_scale]]
   if (log_time) all.times <- log(all.times)
   t_range <- range(all.times)
   y_range <- range(log(do.call(rbind, clldat)$cumhaz))
@@ -190,7 +195,7 @@ log_cum_haz_plot <- function(clldat, time_scale, log_time = TRUE, endpoint_name 
   cols <- c("dodgerblue3", "firebrick3")
   pchs <- c(1, 4)
   for (i in seq_along(clldat)) {
-    use_x <- (clldat[[i]]$time / timeUnit[[time_scale]])
+    use_x <- (clldat[[i]]$time / time_unit[[time_scale]])
     if (log_time) use_x <- log(use_x)
 
     lines(
@@ -222,18 +227,18 @@ log_cum_haz_plot <- function(clldat, time_scale, log_time = TRUE, endpoint_name 
 #' @export
 
 resid_plot <- function(coxobj, time_scale = "month", log_time = TRUE, endpoint_name = "", subtitle = "") {
-  timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
-  if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
+  time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
+  if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
 
   schresid <- residuals(coxobj, type = "schoenfeld")
-  plotX <- as.numeric(names(schresid)) / timeUnit[[time_scale]]
-  if (log_time) plotX <- log(plotX)
+  plot_x <- as.numeric(names(schresid)) / time_unit[[time_scale]]
+  if (log_time) plot_x <- log(plot_x)
   par(mfrow = c(1, 1), bty = "n", tcl = -0.15, mgp = c(2.3, 0.5, 0))
   plot(schresid ~ plotX,
     cex = 0.9, col = "navyblue", yaxt = "n",
     ylab = "Unscaled Schoenfeld Residual", xlab = paste0(ifelse(log_time, "Log-", ""), "Time in ", time_scale),
     main = paste0(
-      "Diagnosis Plot: Unscaled Schoenfeld Residual\nEndpoint: ", endpoint_name,
+      "Diagnostic Plot: Unscaled Schoenfeld Residual\nEndpoint: ", endpoint_name,
       ifelse(subtitle == "", "", "\n"), subtitle
     )
   )
