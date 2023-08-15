@@ -2,6 +2,7 @@
 % Please edit documentation in R/matching.R
 \name{estimate_weights}
 \alias{estimate_weights}
+\alias{plot.maicplus_estimate_weights}
 \title{Derive individual weights in the matching step of MAIC}
 \usage{
 estimate_weights(
@@ -10,6 +11,18 @@ estimate_weights(
   start_val = 0,
   method = "BFGS",
   ...
+)
+
+\method{plot}{maicplus_estimate_weights}(
+  x,
+  ggplot = FALSE,
+  bin_col = NULL,
+  vline_col = NULL,
+  main_title = NULL,
+  scaled_weights = TRUE,
+  bins = 50,
+  print_caption = FALSE,
+  caption_width = 80
 )
 }
 \arguments{
@@ -23,6 +36,24 @@ estimate_weights(
 The default is \code{"BFGS"}, other options are \code{"Nelder-Mead"}, \code{"CG"}, \code{"L-BFGS-B"}, \code{"SANN"}, and \code{"Brent"}}
 
 \item{...}{all other arguments from \code{base::optim()}}
+
+\item{x}{object from \link{estimate_weights}}
+
+\item{ggplot}{indicator to print base weights plot or ggplot weights plot}
+
+\item{bin_col}{a string, color for the bins of histogram}
+
+\item{vline_col}{a string, color for the vertical line in the histogram}
+
+\item{main_title}{title of the plot. For ggplot, name of scaled weights plot and unscaled weights plot, respectively.}
+
+\item{scaled_weights}{(base plot only) an indicator for using scaled weights instead of regular weights}
+
+\item{bins}{(ggplot only) number of bin parameter to use}
+
+\item{print_caption}{(ggplot only) print a footnote message related to ESS from the NICE survey 2021}
+
+\item{caption_width}{(ggplot only) width that is passed onto str_wrap function}
 }
 \value{
 a list with the following 4 elements,
@@ -41,4 +72,15 @@ modifiers}
 This function takes individual patient data (IPD) with centered covariates
 (effect modifiers and/or prognostic variables) as input and generates
 weights for each individual in IPD trial to match the covariates in aggregate data.
+
+The plot function displays individuals weights with key summary in top right legend that includes
+median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the
+original sample size). There are two options of plotting: base R plot and ggplot. The default
+for base R plot is to plot unscaled and scaled separately. The default
+for ggplot is to plot unscaled and scaled weights on a same plot.
 }
+\section{Methods (by generic)}{
+\itemize{
+\item \code{plot(maicplus_estimate_weights)}: Plot method for estimate_weights objects
+
+}}
