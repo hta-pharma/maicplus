@@ -206,7 +206,7 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' )
 #'
 #' check <- check_weights(
-#'   optimized = match_res,
+#'   weighted_data = match_res,
 #'   processed_agd = target_pop
 #' )
 #'

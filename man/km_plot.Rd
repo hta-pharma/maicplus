@@ -22,7 +22,8 @@ km_plot(
 
 \item{trt}{a character string, name of the interested treatment in internal trial (real IPD)}
 
-\item{trt_ext}{character string, name of the interested comparator in external trial used to subset \code{dat_ext} (pseudo IPD)}
+\item{trt_ext}{character string, name of the interested comparator in external trial used to
+subset \code{dat_ext} (pseudo IPD)}
 
 \item{endpoint_name}{a character string, name of the endpoint}
 }
