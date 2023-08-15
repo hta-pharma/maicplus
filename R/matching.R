@@ -147,6 +147,52 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
   legend("topright", bty = "n", lty = plot_lty, cex = 0.8, legend = plot_legend)
 }
 
+
+#' Print plot_weights() together with footnote about ESS
+#'
+#' @param layout layout matrix to define the boundaries of each region.
+#' The matrix will consist of four columns. These columns represent x1 (left edge), x2 (right edge),
+#' y1 (bottom edge), and y2 (top edge). The matrix will then have one row for each section that you want to create.
+#' @param wt a numeric vector of individual MAIC weights (derived using \code{\link{estimate_weights}})
+#' @param main_title a character string, main title of the plot
+#' @param txt vector with the text to be displayed as footnote
+#' @param x	numeric vector of coordinates in text {graphics} where the text label should be written.
+#' @param y numeric vector of coordinates in text {graphics} where the text label should be written.
+#' @param cex numeric character for character size
+#' @param font type (1=plain, 2=bold, 3=italic, 4=bold-italic)
+
+
+
+# layout <- matrix(c(0, 1, 0.2, 1,            # top half
+#                    0, 1, 0, 0.2),           # bottom half
+#                    ncol = 4, byrow = TRUE)
+# wt=match_res$data$weights
+# main_title = "Unscaled Individual Weigths"
+# txt<-"An ESS reduction up to ~60% is not unexpected based on the 2021 survey of NICE's technology appraisals (https://onlinelibrary.wiley.com/doi/full/10.1002/jrsm.1511), \n
+# whereas a reduction of >75% is less common and it may be considered sub optimal."
+# ess_footnote(layout, wt, main_title, txt,  x=0.5, y=0.7, cex=0.7, font=3)
+
+
+ess_footnote<-function (layout, wt, main_title, txt,  x, y, cex, font) {
+
+  # tell the system to use the layout matrix to split the screen
+  split.screen(layout)
+
+  # screen(#) tells the system to put the upcoming output in section #
+
+  screen(1)
+  plot_weights(wt, main_title)
+
+  screen(2)
+  text(txt, x=x, y=y, cex=cex, font=font)
+
+
+  close.screen(all = TRUE)
+
+}
+
+
+
 #' Check to see if weights are optimized correctly
 #'
 #' This function checks to see if the optimization is done properly by checking the covariate averages
