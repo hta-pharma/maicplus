@@ -31,3 +31,8 @@ Given two estimated treatment effects of A vs. C and B vs. C
 derive the adjusted treatment of A vs. B using Bucher method,
 with two-sided confidence limits and Z-test p-value
 }
+\examples{
+trt <- list(est = 1.1, se = 0.2)
+com <- list(est = 1.3, se = 0.18)
+bucher(trt, com, conf_lv = 0.9)
+}

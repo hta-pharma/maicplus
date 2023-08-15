@@ -5,7 +5,7 @@
 \alias{print.maicplus_check_weights}
 \title{Check to see if weights are optimized correctly}
 \usage{
-check_weights(optimized, processed_agd)
+check_weights(weighted_data, processed_agd)
 
 \method{print}{maicplus_check_weights}(
   x,
@@ -17,7 +17,7 @@ check_weights(optimized, processed_agd)
 )
 }
 \arguments{
-\item{optimized}{object returned after calculating weights using \code{\link{estimate_weights}}}
+\item{weighted_data}{object returned after calculating weights using \code{\link{estimate_weights}}}
 
 \item{processed_agd}{a data frame, object returned after using \code{\link{process_agd}} or
 aggregated data following the same naming convention}
@@ -35,7 +35,7 @@ aggregated data following the same naming convention}
 \item{...}{further arguments to \link{print.data.frame}}
 }
 \value{
-data.frame of weighted and unweighted covariate averages of the IPD
+data.frame of weighted and unweighted covariate averages of the IPD, and average of aggregate data
 }
 \description{
 This function checks to see if the optimization is done properly by checking the covariate averages
@@ -91,9 +91,10 @@ match_res <- estimate_weights(
 )
 
 check <- check_weights(
-  optimized = match_res,
+  weighted_data = match_res,
   processed_agd = target_pop
 )
 
 print(check)
+
 }

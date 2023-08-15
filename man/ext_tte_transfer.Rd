@@ -2,7 +2,7 @@
 % Please edit documentation in R/process_data.R
 \name{ext_tte_transfer}
 \alias{ext_tte_transfer}
-\title{helper function: transform TTE ADaM data to suitable input for survival R pkg}
+\title{helper function: transform TTE ADaM data to suitable input for survival R package}
 \usage{
 ext_tte_transfer(dd, time_scale = "month", trt = NULL)
 }
@@ -17,5 +17,5 @@ ext_tte_transfer(dd, time_scale = "month", trt = NULL)
 a data frame that can be used as input to survival::Surv
 }
 \description{
-helper function: transform TTE ADaM data to suitable input for survival R pkg
+helper function: transform TTE ADaM data to suitable input for survival R package
 }
