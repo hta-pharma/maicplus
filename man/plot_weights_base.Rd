@@ -13,7 +13,7 @@ plot_weights_base(
 )
 }
 \arguments{
-\item{weighted_data}{object returned after calculating weights using \code{\link{estimate_weights}}}
+\item{weighted_data}{object returned after calculating weights using \link{estimate_weights}}
 
 \item{bin_col}{a string, color for the bins of histogram}
 
@@ -27,5 +27,5 @@ plot_weights_base(
 a plot of unscaled or scaled weights
 }
 \description{
-Generates a base R histogram of weights
+Generates a base R histogram of weights. Default is to plot either unscaled or scaled weights and not both.
 }

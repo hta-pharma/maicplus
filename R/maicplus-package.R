@@ -13,5 +13,5 @@ NULL
 #' @import DescTools
 #' @import MASS
 #' @import boot
-#' @importFrom stringr str_wrap
+#' @import stringr
 NULL
