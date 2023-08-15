@@ -27,5 +27,5 @@ plot_weights_base(
 a plot of unscaled or scaled weights
 }
 \description{
-Generates a base R histogram of weights
+Generates a base R histogram of weights. Default is to plot either unscaled or scaled weights and not both.
 }
