@@ -4,7 +4,7 @@
 \name{maicplus-package}
 \alias{maicplus}
 \alias{maicplus-package}
-\title{maicplus: Matching adjusted indirect comparison}
+\title{maicplus: Matching Adjusted Indirect Comparison}
 \description{
 The maicplus package facilitates performing matching adjusted indirect comparison (MAIC) analysis where the endpoint of interest is either time-to-event (e.g. overall survival) or binary (e.g. objective tumor response).
 }
