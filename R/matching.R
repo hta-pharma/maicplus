@@ -173,8 +173,7 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 # ess_footnote(layout, wt, main_title, txt,  x=0.5, y=0.7, cex=0.7, font=3)
 
 
-ess_footnote<-function (layout, wt, main_title, txt,  x, y, cex, font) {
-
+ess_footnote <- function(layout, wt, main_title, txt, x, y, cex, font) {
   # tell the system to use the layout matrix to split the screen
   split.screen(layout)
 
@@ -184,11 +183,10 @@ ess_footnote<-function (layout, wt, main_title, txt,  x, y, cex, font) {
   plot_weights(wt, main_title)
 
   screen(2)
-  text(txt, x=x, y=y, cex=cex, font=font)
+  text(txt, x = x, y = y, cex = cex, font = font)
 
 
   close.screen(all = TRUE)
-
 }
 
 
