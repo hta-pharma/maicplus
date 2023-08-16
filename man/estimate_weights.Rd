@@ -16,13 +16,13 @@ estimate_weights(
 \method{plot}{maicplus_estimate_weights}(
   x,
   ggplot = FALSE,
-  bin_col = NULL,
-  vline_col = NULL,
+  bin_col = "#6ECEB2",
+  vline_col = "#688CE8",
   main_title = NULL,
-  scaled_weights = TRUE,
-  bins = 50,
   print_caption = FALSE,
-  caption_width = 80
+  caption_width = 0.9 * getOption("width"),
+  scaled_weights = TRUE,
+  bins = 50
 )
 }
 \arguments{
@@ -47,13 +47,13 @@ The default is \code{"BFGS"}, other options are \code{"Nelder-Mead"}, \code{"CG"
 
 \item{main_title}{title of the plot. For ggplot, name of scaled weights plot and unscaled weights plot, respectively.}
 
-\item{scaled_weights}{(base plot only) an indicator for using scaled weights instead of regular weights}
-
-\item{bins}{(ggplot only) number of bin parameter to use}
-
 \item{print_caption}{(ggplot only) print a footnote message related to ESS from the NICE survey 2021}
 
 \item{caption_width}{(ggplot only) width that is passed onto str_wrap function}
+
+\item{scaled_weights}{(base plot only) an indicator for using scaled weights instead of regular weights}
+
+\item{bins}{(ggplot only) number of bin parameter to use}
 }
 \value{
 a list with the following 4 elements,

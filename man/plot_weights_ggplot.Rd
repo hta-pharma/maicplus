@@ -9,9 +9,9 @@ plot_weights_ggplot(
   bin_col,
   vline_col,
   main_title,
-  bins,
   print_caption,
-  caption_width
+  caption_width,
+  bins
 )
 }
 \arguments{
@@ -23,11 +23,11 @@ plot_weights_ggplot(
 
 \item{main_title}{Name of scaled weights plot and unscaled weights plot, respectively.}
 
-\item{bins}{number of bin parameter to use}
-
 \item{print_caption}{print a footnote message related to ESS from the NICE survey 2021}
 
 \item{caption_width}{width that is passed onto str_wrap function}
+
+\item{bins}{number of bin parameter to use}
 }
 \value{
 a plot of unscaled and scaled weights

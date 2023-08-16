@@ -114,6 +114,7 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
 
 plot_weights_base <- function(weighted_data,
                               bin_col, vline_col, main_title,
+                              print_caption, caption_width,
                               scaled_weights) {
   if (scaled_weights) {
     wt <- weighted_data$data$scaled_weights
@@ -149,6 +150,9 @@ plot_weights_base <- function(weighted_data,
   axis(2, las = 1)
   abline(v = median(wt), lty = 2, col = vline_col, lwd = 2)
   legend("topright", bty = "n", lty = plot_lty, cex = 0.8, legend = plot_legend)
+  if (isTRUE(print_caption)){
+    mtext(ess_footnote_text(width = caption_width))  
+  }
 }
 
 #' Plot MAIC weights in a histogram with key statistics in legend using ggplot
@@ -159,15 +163,17 @@ plot_weights_base <- function(weighted_data,
 #' @param bin_col a string, color for the bins of histogram
 #' @param vline_col a string, color for the vertical line in the histogram
 #' @param main_title Name of scaled weights plot and unscaled weights plot, respectively.
-#' @param bins number of bin parameter to use
 #' @param print_caption print a footnote message related to ESS from the NICE survey 2021
 #' @param caption_width width that is passed onto str_wrap function
+#' @param bins number of bin parameter to use
 #'
 #' @return a plot of unscaled and scaled weights
 #' @export
 
 plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
-                                main_title, bins, print_caption, caption_width) {
+                                main_title,  
+                                print_caption, caption_width,
+                                bins) {
   # check if survminer package is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 package is needed to run this function")
@@ -190,8 +196,7 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
     ggplot2::geom_histogram(ggplot2::aes(values), bins = bins, color = bin_col, fill = bin_col) +
     ggplot2::geom_vline(aes(xintercept = median),
       color = vline_col,
-      linetype = "dashed", linewidth = 0.5
-    ) +
+      linetype = "dashed") +
     theme_bw() +
     ggplot2::facet_wrap(~ind, ncol = 1) + # gives the two plots (one on top of the other)
     ggplot2::geom_text(data = summ, aes(label = lab), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3) +
@@ -202,9 +207,9 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
     ggplot2::ylab("Frequency") +
     ggplot2::xlab("Weight")
 
-  if (print_caption == TRUE) {
-    print_text <- "In most applications, weighting considerably reduces the effective sample size from the original AC sample size. The median percentage reduction is 58% (range: 7.9%–94.1%; interquartile range: 42.2%–74.2%). The final effective sample sizes are also representative of those in the technology appraisals, which are also small (median: 80; range: 4.8–639; interquartile range: 37–174). Therefore, an ESS reduction up to ~60% is not unexpected based on the 2021 survey, whereas a reduction of >75% is less common and it may be considered suboptimal."
-    hist_plot <- hist_plot + ggplot2::labs(caption = stringr::str_wrap(print_text, width = caption_width)) +
+  if (isTRUE(print_caption)) {
+    hist_plot <- hist_plot + 
+      ggplot2::labs(caption = ess_footnote_text(width = caption_width)) +
       ggplot2::theme(
         plot.caption.position = "plot",
         plot.caption = element_text(hjust = 0)
@@ -227,34 +232,28 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
 #' @param bin_col a string, color for the bins of histogram
 #' @param vline_col a string, color for the vertical line in the histogram
 #' @param main_title title of the plot. For ggplot, name of scaled weights plot and unscaled weights plot, respectively.
-#' @param scaled_weights (base plot only) an indicator for using scaled weights instead of regular weights
-#' @param bins (ggplot only) number of bin parameter to use
 #' @param print_caption (ggplot only) print a footnote message related to ESS from the NICE survey 2021
 #' @param caption_width (ggplot only) width that is passed onto str_wrap function
+#' @param scaled_weights (base plot only) an indicator for using scaled weights instead of regular weights
+#' @param bins (ggplot only) number of bin parameter to use
 #'
 #' @examples
 #' @describeIn estimate_weights Plot method for estimate_weights objects
 #' @export
 
 plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
-                                           bin_col = NULL, vline_col = NULL,
-                                           main_title = NULL, scaled_weights = TRUE,
-                                           bins = 50, print_caption = FALSE,
-                                           caption_width = 80) {
-  if (!ggplot) {
-    if (is.null(main_title)) main_title <- "Scaled Individual Weights"
-    if (is.null(bin_col)) bin_col <- "#6ECEB2"
-    if (is.null(vline_col)) vline_col <- "#688CE8"
-  } else {
-    if (is.null(main_title)) main_title <- c("Scaled Individual Weights", "Unscaled Individual Weights")
-    if (is.null(bin_col)) bin_col <- "black"
-    if (is.null(vline_col)) vline_col <- "red"
-  }
+                                           bin_col = "#6ECEB2", vline_col = "#688CE8",
+                                           main_title = NULL, 
+                                           print_caption = FALSE, caption_width = 0.9 * getOption("width"),
+                                           scaled_weights = TRUE,
+                                           bins = 50) {
 
-  if (!ggplot) {
-    plot_weights_base(x, bin_col, vline_col, main_title, scaled_weights)
-  } else {
+  if(isTRUE(ggplot)){
+    if (is.null(main_title)) main_title <- c("Scaled Individual Weights", "Unscaled Individual Weights")
     plot_weights_ggplot(x, bin_col, vline_col, main_title, bins, print_caption, caption_width)
+  } else{
+    if (is.null(main_title)) main_title <- "Scaled Individual Weights"
+    plot_weights_base(x, bin_col, vline_col, main_title, scaled_weights)
   }
 }
 

@@ -9,6 +9,8 @@ plot_weights_base(
   bin_col,
   vline_col,
   main_title,
+  print_caption,
+  caption_width,
   scaled_weights
 )
 }
