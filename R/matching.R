@@ -312,3 +312,19 @@ print.maicplus_check_weights <- function(x, mean_digits = 2, prop_digits = 2, sd
     }
   }
 }
+
+#' Prints Note on Expected Sample Size Reduction
+#'
+#' @param width Number of characters to break string into new lines (`\n`).
+#'
+#' @return A character string
+#' @export
+#'
+#' @examples
+#' ess_footnote_text(width = 80)
+ess_footnote_text <- function(width = 0.9 * getOption("width")) {
+  text <- "An ESS reduction up to ~60% is not unexpected based on the 2021 survey of NICE's technology appraisals
+(https://onlinelibrary.wiley.com/doi/full/10.1002/jrsm.1511), whereas a reduction of >75% is less common
+and it may be considered sub optimal."
+  paste0(strwrap(text, width = width), collapse = "\n")
+}
