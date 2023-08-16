@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.026" branch-rate="0" lines-covered="13" lines-valid="500" branches-covered="0" branches-valid="0" complexity="0" version="3.6.2" timestamp="2023-08-15 07:47:59.062176">
+<coverage line-rate="0.0337301587301587" branch-rate="0" lines-covered="17" lines-valid="504" branches-covered="0" branches-valid="0" complexity="0" version="3.6.2" timestamp="2023-08-16 10:24:53.035365">
   <sources>
     <source>/__w/maicplus/maicplus/maicplus</source>
   </sources>
   <packages>
-    <package name="maicplus" line-rate="0.026" branch-rate="0" complexity="0">
+    <package name="maicplus" line-rate="0.0337301587301587" branch-rate="0" complexity="0">
       <classes>
         <class name="bucher.R" filename="R/bucher.R" line-rate="0.590909090909091" branch-rate="0" complexity="0">
           <methods>
@@ -299,7 +299,7 @@
             <line number="164" hits="0" branch="false"/>
           </lines>
         </class>
-        <class name="matching.R" filename="R/matching.R" line-rate="0" branch-rate="0" complexity="0">
+        <class name="matching.R" filename="R/matching.R" line-rate="0.0291970802919708" branch-rate="0" complexity="0">
           <methods>
             <method name="estimate_weights" signature="" line-rate="0" branch-rate="0" complexity="0">
               <lines>
@@ -450,6 +450,14 @@
                 <line number="311" hits="0" branch="false"/>
               </lines>
             </method>
+            <method name="ess_footnote_text" signature="" line-rate="1" branch-rate="0" complexity="0">
+              <lines>
+                <line number="326" hits="1" branch="false"/>
+                <line number="327" hits="1" branch="false"/>
+                <line number="328" hits="1" branch="false"/>
+                <line number="329" hits="1" branch="false"/>
+              </lines>
+            </method>
           </methods>
           <lines>
             <line number="31" hits="0" branch="false"/>
@@ -585,6 +593,10 @@
             <line number="309" hits="0" branch="false"/>
             <line number="310" hits="0" branch="false"/>
             <line number="311" hits="0" branch="false"/>
+            <line number="326" hits="1" branch="false"/>
+            <line number="327" hits="1" branch="false"/>
+            <line number="328" hits="1" branch="false"/>
+            <line number="329" hits="1" branch="false"/>
           </lines>
         </class>
         <class name="process_data.R" filename="R/process_data.R" line-rate="0" branch-rate="0" complexity="0">
