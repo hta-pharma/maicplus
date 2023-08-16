@@ -150,8 +150,9 @@ plot_weights_base <- function(weighted_data,
   axis(2, las = 1)
   abline(v = median(wt), lty = 2, col = vline_col, lwd = 2)
   legend("topright", bty = "n", lty = plot_lty, cex = 0.8, legend = plot_legend)
-  if (isTRUE(print_caption)){
-    mtext(ess_footnote_text(width = caption_width))  
+  if (print_caption){
+    text <- ess_footnote_text(width = caption_width)
+    mtext(text, adj = 0, side = 1, line = str_count(text, "\n") + 1, font = 3, cex = 0.7, col = blues9)  
   }
 }
 
@@ -207,11 +208,11 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
     ggplot2::ylab("Frequency") +
     ggplot2::xlab("Weight")
 
-  if (isTRUE(print_caption)) {
+  if (print_caption) {
     hist_plot <- hist_plot + 
       ggplot2::labs(caption = ess_footnote_text(width = caption_width)) +
       ggplot2::theme(
-        plot.caption.position = "plot",
+        plot.caption.position = "panel",
         plot.caption = element_text(hjust = 0)
       )
   }
@@ -248,11 +249,13 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
                                            scaled_weights = TRUE,
                                            bins = 50) {
 
-  if(isTRUE(ggplot)){
+  if(ggplot){
     if (is.null(main_title)) main_title <- c("Scaled Individual Weights", "Unscaled Individual Weights")
     plot_weights_ggplot(x, bin_col, vline_col, main_title, print_caption, caption_width, bins)
   } else{
-    if (is.null(main_title)) main_title <- "Scaled Individual Weights"
+    if (is.null(main_title)) {
+      main_title <- ifelse(scaled_weights, "Scaled Individual Weights", "Unscaled Individual Weights")
+    }   
     plot_weights_base(x, bin_col, vline_col, main_title, print_caption, caption_width, scaled_weights)
   }
 }
@@ -436,6 +439,6 @@ print.maicplus_check_weights <- function(x, mean_digits = 2, prop_digits = 2, sd
 ess_footnote_text <- function(width = 0.9 * getOption("width")) {
   text <- "An ESS reduction up to ~60% is not unexpected based on the 2021 survey of NICE's technology appraisals
 (https://onlinelibrary.wiley.com/doi/full/10.1002/jrsm.1511), whereas a reduction of >75% is less common
-and it may be considered sub optimal."
+and it may be considered suboptimal."
   paste0(strwrap(text, width = width), collapse = "\n")
 }
