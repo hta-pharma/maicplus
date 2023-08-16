@@ -250,10 +250,10 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
 
   if(isTRUE(ggplot)){
     if (is.null(main_title)) main_title <- c("Scaled Individual Weights", "Unscaled Individual Weights")
-    plot_weights_ggplot(x, bin_col, vline_col, main_title, bins, print_caption, caption_width)
+    plot_weights_ggplot(x, bin_col, vline_col, main_title, print_caption, caption_width, bins)
   } else{
     if (is.null(main_title)) main_title <- "Scaled Individual Weights"
-    plot_weights_base(x, bin_col, vline_col, main_title, scaled_weights)
+    plot_weights_base(x, bin_col, vline_col, main_title, print_caption, caption_width, scaled_weights)
   }
 }
 
