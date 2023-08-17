@@ -101,6 +101,42 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
 
 #' Plot MAIC weights in a histogram with key statistics in legend
 #'
+#' Calculates ESS reduction and median weights which is used to create legend for weights plot
+#'
+#' @param weighted_data object returned after calculating weights using [estimate_weights]
+#'
+#' @return list of ESS, ESS reduction, median value of scaled and unscaled weights, and missing count
+#' @examples
+#' load(system.file("extdata","weighted_data.rda", package = "maicplus", mustWork = TRUE))
+#' calculate_weights_legend(weighted_data)
+#' @export
+
+calculate_weights_legend <- function(weighted_data){
+
+  ess <- weighted_data$ess
+  wt <- weighted_data$data$weights
+  wt_scaled <- weighted_data$data$scaled_weights
+
+  # calculate sample size and exclude NA from wt
+  nr_na <- sum(is.na(wt))
+  n <- length(wt) - nr_na
+  wt <- na.omit(wt)
+  wt_scaled <- na.omit(wt_scaled)
+
+  # calculate ess reduction and median weights
+  ess_reduction <- (1 - (ess / n)) * 100
+  wt_median <- median(wt)
+  wt_scaled_median <- median(wt_scaled)
+
+  list(ess = round(ess, 2),
+       ess_reduction = round(ess_reduction, 2),
+       wt_median = round(wt_median, 4),
+       wt_scaled_median = round(wt_scaled_median, 4),
+       nr_na = nr_na)
+}
+
+#' Plot MAIC weights in a histogram with key statistics in legend
+#'
 #' Generates a base R histogram of weights. Default is to plot either unscaled or scaled weights and not both.
 #'
 #' @param weighted_data object returned after calculating weights using [estimate_weights]
@@ -116,31 +152,27 @@ plot_weights_base <- function(weighted_data,
                               bin_col, vline_col, main_title,
                               print_caption, caption_width,
                               scaled_weights) {
+
+  weights_stat <- calculate_weights_legend(weighted_data)
+
   if (scaled_weights) {
     wt <- weighted_data$data$scaled_weights
+    median_wt <- weights_stat$wt_scaled_median
   } else {
     wt <- weighted_data$data$weights
+    median_wt <- weights_stat$wt_median
   }
-
-  # calculate sample size and exclude NA from wt
-  nr_na <- sum(is.na(wt))
-  n <- length(wt) - nr_na
-  wt <- na.omit(wt)
-
-  # calculate effective sample size (ESS) and reduction of original sample
-  ess <- (sum(wt)^2) / sum(wt^2)
-  ess_reduct <- round((1 - (ess / n)) * 100, 2)
 
   # prepare legend
   plot_legend <- c(
-    paste0("Median = ", round(median(wt), 4)),
-    paste0("ESS = ", round(ess, 2)),
-    paste0("Reduction% = ", ess_reduct)
+    paste0("Median = ", median_wt),
+    paste0("ESS = ", weights_stat$ess),
+    paste0("Reduction% = ", weights_stat$ess_reduct)
   )
   plot_lty <- c(2, NA, NA)
 
-  if (nr_na > 0) {
-    plot_legend <- c(plot_legend, paste0("#Missing Weights = ", nr_na))
+  if (weights_stat$nr_na > 0) {
+    plot_legend <- c(plot_legend, paste0("#Missing Weights = ", weights_stat$nr_na))
     plot_lty <- c(plot_lty, NA)
   }
 
@@ -152,7 +184,7 @@ plot_weights_base <- function(weighted_data,
   legend("topright", bty = "n", lty = plot_lty, cex = 0.8, legend = plot_legend)
   if (print_caption){
     text <- ess_footnote_text(width = caption_width)
-    mtext(text, adj = 0, side = 1, line = str_count(text, "\n") + 1, font = 3, cex = 0.7, col = blues9)  
+    mtext(text, adj = 0, side = 1, line = str_count(text, "\n") + 1, font = 3, cex = 0.7, col = blues9)
   }
 }
 
@@ -172,26 +204,31 @@ plot_weights_base <- function(weighted_data,
 #' @export
 
 plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
-                                main_title,  
+                                main_title,
                                 print_caption, caption_width,
                                 bins) {
-  # check if survminer package is installed
+  # check if ggplot2 package is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 package is needed to run this function")
   }
 
-  wt_data0 <- weighted_data$data[, c("weights", "scaled_weights")]
-  colnames(wt_data0) <- c(main_title[1], main_title[2])
-  wt_data <- stack(wt_data0)
-  wt_data$median <- ifelse(wt_data$ind == main_title[1], median(wt_data0[, main_title[1]]), median(wt_data0[, main_title[2]]))
+  weights_stat <- calculate_weights_legend(weighted_data)
 
-  summ <- aggregate(wt_data$values, list(wt_data$ind), median)
-  colnames(summ) <- c("ind", "lab")
-  summ$lab <- paste0(
-    "Median = ", round(summ$lab, 4),
-    "\nESS = ", round(weighted_data$ess, 2),
-    "\nReduction% = ", round((1 - (weighted_data$ess / dim(weighted_data$data)[1])) * 100, 2)
-  )
+  # prepare dataset to use in ggplot
+  wt_data0 <- weighted_data$data[, c("weights", "scaled_weights")]
+  colnames(wt_data0) <- main_title
+  wt_data <- stack(wt_data0)
+  wt_data$median <- ifelse(wt_data$ind == main_title[1],
+                           weights_stat$wt_median, weights_stat$wt_scaled_median)
+
+  # create legend data
+  lab <- with(weights_stat,{
+    lab <- c(paste0("Median = ", wt_median), paste0("Median = ", wt_scaled_median))
+    lab <- paste0(lab, "\nESS = ", ess, "\nReduction% = ", ess_reduction)
+    if(nr_na > 0) lab <- paste0(lab, "\n#Missing Weights = ", nr_na)
+    lab
+  })
+  legend_data <- data.frame(ind = main_title, lab = lab)
 
   hist_plot <- ggplot2::ggplot(wt_data) +
     ggplot2::geom_histogram(ggplot2::aes(values), bins = bins, color = bin_col, fill = bin_col) +
@@ -199,17 +236,17 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
       color = vline_col,
       linetype = "dashed") +
     theme_bw() +
-    ggplot2::facet_wrap(~ind, ncol = 1) + # gives the two plots (one on top of the other)
-    ggplot2::geom_text(data = summ, aes(label = lab), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3) +
+    ggplot2::facet_wrap(~ind, nrow = 1) +
+    ggplot2::geom_text(data = legend_data, aes(label = lab), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3) +
     ggplot2::theme(
-      axis.title = ggplot2::element_text(size = 16),
-      axis.text = ggplot2::element_text(size = 16)
+      axis.title = ggplot2::element_text(size = 12),
+      axis.text = ggplot2::element_text(size = 12)
     ) +
     ggplot2::ylab("Frequency") +
     ggplot2::xlab("Weight")
 
   if (print_caption) {
-    hist_plot <- hist_plot + 
+    hist_plot <- hist_plot +
       ggplot2::labs(caption = ess_footnote_text(width = caption_width)) +
       ggplot2::theme(
         plot.caption.position = "panel",
@@ -233,19 +270,24 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
 #' @param bin_col a string, color for the bins of histogram
 #' @param vline_col a string, color for the vertical line in the histogram
 #' @param main_title title of the plot. For ggplot, name of scaled weights plot and unscaled weights plot, respectively.
-#' @param print_caption (ggplot only) print a footnote message related to ESS from the NICE survey 2021
-#' @param caption_width (ggplot only) width that is passed onto str_wrap function
+#' @param print_caption print a footnote message related to ESS from the NICE survey 2021
+#' @param caption_width width that is passed onto str_wrap function
 #' @param scaled_weights (base plot only) an indicator for using scaled weights instead of regular weights
 #' @param bins (ggplot only) number of bin parameter to use
 #'
 #' @examples
+#' load(system.file("extdata","weighted_data.rda", package = "maicplus", mustWork = TRUE))
+#' plot(weighted_data)
+#'
+#' library(ggplot2)
+#' plot(weighted_data, ggplot = TRUE)
 #' @describeIn estimate_weights Plot method for estimate_weights objects
 #' @export
 
 plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
                                            bin_col = "#6ECEB2", vline_col = "#688CE8",
-                                           main_title = NULL, 
-                                           print_caption = FALSE, caption_width = 0.9 * getOption("width"),
+                                           main_title = NULL,
+                                           print_caption = TRUE, caption_width = 0.9 * getOption("width"),
                                            scaled_weights = TRUE,
                                            bins = 50) {
 
@@ -255,7 +297,7 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
   } else{
     if (is.null(main_title)) {
       main_title <- ifelse(scaled_weights, "Scaled Individual Weights", "Unscaled Individual Weights")
-    }   
+    }
     plot_weights_base(x, bin_col, vline_col, main_title, print_caption, caption_width, scaled_weights)
   }
 }

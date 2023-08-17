@@ -3,6 +3,7 @@
 S3method(plot,maicplus_estimate_weights)
 S3method(print,maicplus_check_weights)
 export(bucher)
+export(calculate_weights_legend)
 export(center_ipd)
 export(check_weights)
 export(dummize_ipd)
