@@ -18,7 +18,8 @@ Imports:
     survival,
     DescTools,
     MASS,
-    boot
+    boot,
+    stringr
 Suggests:
     knitr,
     testthat (>= 2.0),
