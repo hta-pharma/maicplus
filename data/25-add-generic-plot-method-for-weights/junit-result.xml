@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="bucher" timestamp="2023-08-15T16:07:15Z" hostname="c2236e37fae1" tests="1" skipped="0" failures="0" errors="0" time="0.016">
-    <testcase time="0.016" classname="bucher" name="bucher_works_as_expected"/>
+  <testsuite name="bucher" timestamp="2023-08-17T12:03:32Z" hostname="13cdb7a150d8" tests="1" skipped="0" failures="0" errors="0" time="0.011">
+    <testcase time="0.0109999999999999" classname="bucher" name="bucher_works_as_expected"/>
+  </testsuite>
+  <testsuite name="matching" timestamp="2023-08-17T12:03:32Z" hostname="13cdb7a150d8" tests="1" skipped="0" failures="1" errors="0" time="0.056">
+    <testcase time="0.056" classname="matching" name="ess_footnote_text_works">
+      <failure type="failure" message="ess_footnote_text(width = 100) not equal to paste0(...). ('test-matching.R:2:3')">ess_footnote_text(width = 100) not equal to paste0(...).
+1/1 mismatches
+x[1]: "An ESS reduction up to ~60% is not unexpected based on the 2021 survey of
+x[1]:  NICE's technology\nappraisals (https://onlinelibrary.wiley.com/doi/full/1
+x[1]: 0.1002/jrsm.1511), whereas a reduction of\n&gt;75% is less common and it may 
+x[1]: be considered suboptimal."
+y[1]: "An ESS reduction up to ~60% is not unexpected based on the 2021 survey of
+y[1]:  NICE's technology\nappraisals (https://onlinelibrary.wiley.com/doi/full/1
+y[1]: 0.1002/jrsm.1511), whereas a reduction of\n&gt;75% is less common and it may 
+y[1]: be considered sub optimal."</failure>
+    </testcase>
   </testsuite>
 </testsuites>
