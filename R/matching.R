@@ -107,12 +107,11 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
 #'
 #' @return list of ESS, ESS reduction, median value of scaled and unscaled weights, and missing count
 #' @examples
-#' load(system.file("extdata","weighted_data.rda", package = "maicplus", mustWork = TRUE))
+#' load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
 #' calculate_weights_legend(weighted_data)
 #' @export
 
-calculate_weights_legend <- function(weighted_data){
-
+calculate_weights_legend <- function(weighted_data) {
   ess <- weighted_data$ess
   wt <- weighted_data$data$weights
   wt_scaled <- weighted_data$data$scaled_weights
@@ -128,11 +127,13 @@ calculate_weights_legend <- function(weighted_data){
   wt_median <- median(wt)
   wt_scaled_median <- median(wt_scaled)
 
-  list(ess = round(ess, 2),
-       ess_reduction = round(ess_reduction, 2),
-       wt_median = round(wt_median, 4),
-       wt_scaled_median = round(wt_scaled_median, 4),
-       nr_na = nr_na)
+  list(
+    ess = round(ess, 2),
+    ess_reduction = round(ess_reduction, 2),
+    wt_median = round(wt_median, 4),
+    wt_scaled_median = round(wt_scaled_median, 4),
+    nr_na = nr_na
+  )
 }
 
 #' Plot MAIC weights in a histogram with key statistics in legend
@@ -152,7 +153,6 @@ plot_weights_base <- function(weighted_data,
                               bin_col, vline_col, main_title,
                               print_caption, caption_width,
                               scaled_weights) {
-
   weights_stat <- calculate_weights_legend(weighted_data)
 
   if (scaled_weights) {
@@ -182,7 +182,7 @@ plot_weights_base <- function(weighted_data,
   axis(2, las = 1)
   abline(v = median(wt), lty = 2, col = vline_col, lwd = 2)
   legend("topright", bty = "n", lty = plot_lty, cex = 0.8, legend = plot_legend)
-  if (print_caption){
+  if (print_caption) {
     text <- ess_footnote_text(width = caption_width)
     mtext(text, adj = 0, side = 1, line = str_count(text, "\n") + 1, font = 3, cex = 0.7, col = blues9)
   }
@@ -219,13 +219,14 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
   colnames(wt_data0) <- main_title
   wt_data <- stack(wt_data0)
   wt_data$median <- ifelse(wt_data$ind == main_title[1],
-                           weights_stat$wt_median, weights_stat$wt_scaled_median)
+    weights_stat$wt_median, weights_stat$wt_scaled_median
+  )
 
   # create legend data
-  lab <- with(weights_stat,{
+  lab <- with(weights_stat, {
     lab <- c(paste0("Median = ", wt_median), paste0("Median = ", wt_scaled_median))
     lab <- paste0(lab, "\nESS = ", ess, "\nReduction% = ", ess_reduction)
-    if(nr_na > 0) lab <- paste0(lab, "\n#Missing Weights = ", nr_na)
+    if (nr_na > 0) lab <- paste0(lab, "\n#Missing Weights = ", nr_na)
     lab
   })
   legend_data <- data.frame(ind = main_title, lab = lab)
@@ -234,7 +235,8 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
     ggplot2::geom_histogram(ggplot2::aes(values), bins = bins, color = bin_col, fill = bin_col) +
     ggplot2::geom_vline(aes(xintercept = median),
       color = vline_col,
-      linetype = "dashed") +
+      linetype = "dashed"
+    ) +
     theme_bw() +
     ggplot2::facet_wrap(~ind, nrow = 1) +
     ggplot2::geom_text(data = legend_data, aes(label = lab), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3) +
@@ -276,7 +278,7 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
 #' @param bins (ggplot only) number of bin parameter to use
 #'
 #' @examples
-#' load(system.file("extdata","weighted_data.rda", package = "maicplus", mustWork = TRUE))
+#' load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
 #' plot(weighted_data)
 #'
 #' library(ggplot2)
@@ -290,11 +292,10 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
                                            print_caption = TRUE, caption_width = 0.9 * getOption("width"),
                                            scaled_weights = TRUE,
                                            bins = 50) {
-
-  if(ggplot){
+  if (ggplot) {
     if (is.null(main_title)) main_title <- c("Scaled Individual Weights", "Unscaled Individual Weights")
     plot_weights_ggplot(x, bin_col, vline_col, main_title, print_caption, caption_width, bins)
-  } else{
+  } else {
     if (is.null(main_title)) {
       main_title <- ifelse(scaled_weights, "Scaled Individual Weights", "Unscaled Individual Weights")
     }
