@@ -18,18 +18,26 @@ km_plot(
 
 \item{km_fit_after}{returned object from \code{survival::survfit} after adjustment}
 
-\item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
+\item{time_scale}{time unit of median survival time, taking a value of 'year', 'month', 'week' or 'day'}
 
-\item{trt}{a character string, name of the interested treatment in internal trial (real IPD)}
+\item{trt}{internal trial treatment}
 
-\item{trt_ext}{character string, name of the interested comparator in external trial used to
-subset \code{dat_ext} (pseudo IPD)}
+\item{trt_ext}{external trial treatment}
 
-\item{endpoint_name}{a character string, name of the endpoint}
+\item{endpoint_name}{name of the endpoint}
+
+\item{line_col}{color of the line curves with the order of external, internal unadjusted, and internal adjusted}
 }
 \value{
-a KM plot
+a Kaplan-Meier plot
 }
 \description{
 helper function: KM plot with unadjusted and adjusted KM
+}
+\examples{
+load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, weights = combined_data_tte$weight, conf.type = "log-log")
+par(cex.main = 0.85)
+km_plot(kmobj, kmobj_adj, time_scale = "month", trt = "A", trt_ext = "B", endpoint_name = "OS")
 }

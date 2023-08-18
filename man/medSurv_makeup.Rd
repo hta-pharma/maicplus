@@ -17,5 +17,11 @@ medSurv_makeup(km_fit, legend = "before matching", time_scale)
 a data frame with a index column 'type', median survival time and confidence interval
 }
 \description{
-Extract and display median survival time with confidence interval
+extract and display median survival time with confidence interval
+}
+\examples{
+load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+medSurv <- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")
+
 }

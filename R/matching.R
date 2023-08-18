@@ -1,10 +1,12 @@
 # Functions for matching step: estimation of individual weights
 
+# functions to be exported ---------------------------------------
+
 #' Derive individual weights in the matching step of MAIC
 #'
-#' This function takes individual patient data (IPD) with centered covariates
-#' (effect modifiers and/or prognostic variables) as input and generates
-#' weights for each individual in IPD trial to match the covariates in aggregate data.
+#' Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates
+#' (effect modifiers and/or prognostic variables) as input, and generates weights for each individual in IPD trial
+#' to match the covariates in aggregate data.
 #'
 #' @param data a numeric matrix, centered covariates of IPD, no missing value in any cell is allowed
 #' @param centered_colnames a character or numeric vector (column indicators) of centered covariates
@@ -24,6 +26,14 @@
 #'   \item{ess}{effective sample size, square of sum divided by sum of squares}
 #'   \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
 #' }
+#'
+#' @examples
+#' load(system.file("extdata", "ipd_centered.rda", package = "maicplus", mustWork = TRUE))
+#'
+#' centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+#' centered_colnames <- paste0(centered_colnames, "_CENTERED")
+#' match_res <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
+#'
 #' @export
 
 estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, method = "BFGS", ...) {
@@ -112,8 +122,15 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
 #' @param vline_col a string, color for the vertical line in the histogram
 #' @param main_title a character string, main title of the plot
 #'
-#' @return a plot of unscaled or scaled weights
 #' @examples
+#' load(system.file("extdata", "match_res.rda", package = "maicplus", mustWork = TRUE))
+#' wt <- match_res$data$weights
+#' wt_scaled <- match_res$data$scaled_weights
+#' par(mfrow = c(1, 2))
+#' plot_weights(wt, bin_col = "orange", vline_col = "darkblue")
+#' plot_weights(wt_scaled, main_title = "Scaled Individual Weights")
+#'
+#' @return a plot of unscaled or scaled weights
 #' @export
 
 plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_title = "Unscaled Individual Weights") {
@@ -152,66 +169,25 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
 #' This function checks to see if the optimization is done properly by checking the covariate averages
 #' before and after adjustment.
 #'
-#' @param weighted_data object returned after calculating weights using \code{\link{estimate_weights}}
+#' @param match_res object returned after calculating weights using \code{\link{estimate_weights}}
 #' @param processed_agd a data frame, object returned after using \code{\link{process_agd}} or
 #' aggregated data following the same naming convention
+#' @param mean_digits number of digits for rounding mean columns in the output
+#' @param prop_digits number of digits for rounding proportion columns in the output
+#' @param sd_digits number of digits for rounding mean columns in the output
+#'
+#' @examples
+#' load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
+#' load(system.file("extdata", "match_res.rda", package = "maicplus", mustWork = TRUE))
+#' outdata <- check_weights(match_res, processed_agd = agd)
+#' print(outdata)
 #'
 #' @import DescTools
 #'
 #' @return data.frame of weighted and unweighted covariate averages of the IPD, and average of aggregate data
 #' @export
-#'
-#' @examples
-#' adsl <- read.csv(system.file("extdata", "adsl.csv",
-#'   package = "maicplus",
-#'   mustWork = TRUE
-#' ))
-#' adrs <- read.csv(system.file("extdata", "adrs.csv",
-#'   package = "maicplus",
-#'   mustWork = TRUE
-#' ))
-#' adtte <- read.csv(system.file("extdata", "adtte.csv",
-#'   package = "maicplus",
-#'   mustWork = TRUE
-#' ))
-#'
-#' ### AgD
-#' # Baseline aggregate data for the comparator population
-#' target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
-#'   package = "maicplus", mustWork = TRUE
-#' ))
-#' # target_pop2 <- read.csv(system.file("extdata", "aggregate_data_example_2.csv",
-#' #                                     package = "maicplus", mustWork = TRUE))
-#' # target_pop3 <- read.csv(system.file("extdata", "aggregate_data_example_3.csv",
-#' #                                     package = "maicplus", mustWork = TRUE))
-#'
-#' # for time-to-event endpoints, pseudo IPD from digitalized KM
-#' pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
-#'   package = "maicplus",
-#'   mustWork = TRUE
-#' ))
-#'
-#' #### prepare data ----------------------------------------------------------
-#' target_pop <- process_agd(target_pop)
-#' # target_pop2 <- process_agd(target_pop2) # demo of process_agd in different scenarios
-#' # target_pop3 <- process_agd(target_pop3) # demo of process_agd in different scenarios
-#' adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
-#' use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
-#'
-#' match_res <- estimate_weights(
-#'   data = use_adsl,
-#'   centered_colnames = grep("_CENTERED$", names(use_adsl)),
-#'   start_val = 0,
-#'   method = "BFGS"
-#' )
-#'
-#' check <- check_weights(
-#'   weighted_data = match_res,
-#'   processed_agd = target_pop
-#' )
-#'
-#' print(check)
-#'
+
+
 check_weights <- function(weighted_data, processed_agd) {
   ipd_with_weights <- weighted_data$data
   match_cov <- weighted_data$centered_colnames
@@ -292,9 +268,9 @@ check_weights <- function(weighted_data, processed_agd) {
 #' @param sd_digits number of digits for rounding mean columns in the output
 #' @param digits minimal number of significant digits, see [print.default].
 #' @param ... further arguments to [print.data.frame]
-#'
 #' @describeIn check_weights Print method for check_weights objects
 #' @export
+
 print.maicplus_check_weights <- function(x, mean_digits = 2, prop_digits = 2, sd_digits = 3, digits = getOption("digits"), ...) {
   round_digits <- c("Mean" = mean_digits, "Prop" = prop_digits, "SD" = sd_digits)[x$match_stat]
   round_digits[is.na(round_digits)] <- digits
@@ -313,15 +289,12 @@ print.maicplus_check_weights <- function(x, mean_digits = 2, prop_digits = 2, sd
   }
 }
 
-#' Prints Note on Expected Sample Size Reduction
+#' Note on Expected Sample Size Reduction
 #'
 #' @param width Number of characters to break string into new lines (`\n`).
 #'
 #' @return A character string
-#' @export
-#'
-#' @examples
-#' ess_footnote_text(width = 80)
+
 ess_footnote_text <- function(width = 0.9 * getOption("width")) {
   text <- "An ESS reduction up to ~60% is not unexpected based on the 2021 survey of NICE's technology appraisals
 (https://onlinelibrary.wiley.com/doi/full/10.1002/jrsm.1511), whereas a reduction of >75% is less common
