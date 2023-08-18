@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="bucher" timestamp="2023-08-18T17:11:44Z" hostname="35854f1d5d3a" tests="1" skipped="0" failures="0" errors="0" time="0.208">
+    <testcase time="0.208" classname="bucher" name="bucher_works_as_expected"/>
+  </testsuite>
+  <testsuite name="matching" timestamp="2023-08-18T17:11:44Z" hostname="35854f1d5d3a" tests="1" skipped="0" failures="0" errors="0" time="0.123">
+    <testcase time="0.123" classname="matching" name="ess_footnote_text_works"/>
+  </testsuite>
+</testsuites>
