@@ -14,4 +14,5 @@ NULL
 #' @import MASS
 #' @import boot
 #' @import stringr
+#' @importFrom utils stack
 NULL

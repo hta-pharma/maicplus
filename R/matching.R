@@ -151,7 +151,6 @@ calculate_weights_legend <- function(weighted_data) {
 
 plot_weights_base <- function(weighted_data,
                               bin_col, vline_col, main_title,
-                              print_caption, caption_width,
                               scaled_weights) {
   weights_stat <- calculate_weights_legend(weighted_data)
 
@@ -182,10 +181,6 @@ plot_weights_base <- function(weighted_data,
   axis(2, las = 1)
   abline(v = median(wt), lty = 2, col = vline_col, lwd = 2)
   legend("topright", bty = "n", lty = plot_lty, cex = 0.8, legend = plot_legend)
-  if (print_caption) {
-    text <- ess_footnote_text(width = caption_width)
-    mtext(text, adj = 0, side = 1, line = str_count(text, "\n") + 1, font = 3, cex = 0.7, col = blues9)
-  }
 }
 
 #' Plot MAIC weights in a histogram with key statistics in legend using ggplot
@@ -196,8 +191,6 @@ plot_weights_base <- function(weighted_data,
 #' @param bin_col a string, color for the bins of histogram
 #' @param vline_col a string, color for the vertical line in the histogram
 #' @param main_title Name of scaled weights plot and unscaled weights plot, respectively.
-#' @param print_caption print a footnote message related to ESS from the NICE survey 2021
-#' @param caption_width width that is passed onto str_wrap function
 #' @param bins number of bin parameter to use
 #'
 #' @return a plot of unscaled and scaled weights
@@ -205,7 +198,6 @@ plot_weights_base <- function(weighted_data,
 
 plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
                                 main_title,
-                                print_caption, caption_width,
                                 bins) {
   # check if ggplot2 package is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
@@ -232,14 +224,14 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
   legend_data <- data.frame(ind = main_title, lab = lab)
 
   hist_plot <- ggplot2::ggplot(wt_data) +
-    ggplot2::geom_histogram(ggplot2::aes(values), bins = bins, color = bin_col, fill = bin_col) +
-    ggplot2::geom_vline(aes(xintercept = median),
+    ggplot2::geom_histogram(ggplot2::aes_string(x = "values"), bins = bins, color = bin_col, fill = bin_col) +
+    ggplot2::geom_vline(ggplot2::aes_string(xintercept = "median"),
       color = vline_col,
       linetype = "dashed"
     ) +
-    theme_bw() +
+    ggplot2::theme_bw() +
     ggplot2::facet_wrap(~ind, nrow = 1) +
-    ggplot2::geom_text(data = legend_data, aes(label = lab), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3) +
+    ggplot2::geom_text(data = legend_data, ggplot2::aes_string(label = "lab"), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3) +
     ggplot2::theme(
       axis.title = ggplot2::element_text(size = 12),
       axis.text = ggplot2::element_text(size = 12)
@@ -247,14 +239,6 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
     ggplot2::ylab("Frequency") +
     ggplot2::xlab("Weight")
 
-  if (print_caption) {
-    hist_plot <- hist_plot +
-      ggplot2::labs(caption = ess_footnote_text(width = caption_width)) +
-      ggplot2::theme(
-        plot.caption.position = "panel",
-        plot.caption = element_text(hjust = 0)
-      )
-  }
   return(hist_plot)
 }
 
@@ -272,8 +256,6 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
 #' @param bin_col a string, color for the bins of histogram
 #' @param vline_col a string, color for the vertical line in the histogram
 #' @param main_title title of the plot. For ggplot, name of scaled weights plot and unscaled weights plot, respectively.
-#' @param print_caption print a footnote message related to ESS from the NICE survey 2021
-#' @param caption_width width that is passed onto str_wrap function
 #' @param scaled_weights (base plot only) an indicator for using scaled weights instead of regular weights
 #' @param bins (ggplot only) number of bin parameter to use
 #'
@@ -289,17 +271,16 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
 plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
                                            bin_col = "#6ECEB2", vline_col = "#688CE8",
                                            main_title = NULL,
-                                           print_caption = TRUE, caption_width = 0.9 * getOption("width"),
                                            scaled_weights = TRUE,
-                                           bins = 50) {
+                                           bins = 50, ...) {
   if (ggplot) {
     if (is.null(main_title)) main_title <- c("Scaled Individual Weights", "Unscaled Individual Weights")
-    plot_weights_ggplot(x, bin_col, vline_col, main_title, print_caption, caption_width, bins)
+    plot_weights_ggplot(x, bin_col, vline_col, main_title, bins)
   } else {
     if (is.null(main_title)) {
       main_title <- ifelse(scaled_weights, "Scaled Individual Weights", "Unscaled Individual Weights")
     }
-    plot_weights_base(x, bin_col, vline_col, main_title, print_caption, caption_width, scaled_weights)
+    plot_weights_base(x, bin_col, vline_col, main_title, scaled_weights)
   }
 }
 

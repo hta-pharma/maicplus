@@ -19,10 +19,9 @@ estimate_weights(
   bin_col = "#6ECEB2",
   vline_col = "#688CE8",
   main_title = NULL,
-  print_caption = TRUE,
-  caption_width = 0.9 * getOption("width"),
   scaled_weights = TRUE,
-  bins = 50
+  bins = 50,
+  ...
 )
 }
 \arguments{
@@ -46,10 +45,6 @@ The default is \code{"BFGS"}, other options are \code{"Nelder-Mead"}, \code{"CG"
 \item{vline_col}{a string, color for the vertical line in the histogram}
 
 \item{main_title}{title of the plot. For ggplot, name of scaled weights plot and unscaled weights plot, respectively.}
-
-\item{print_caption}{print a footnote message related to ESS from the NICE survey 2021}
-
-\item{caption_width}{width that is passed onto str_wrap function}
 
 \item{scaled_weights}{(base plot only) an indicator for using scaled weights instead of regular weights}
 
@@ -85,7 +80,7 @@ for ggplot is to plot unscaled and scaled weights on a same plot.
 
 }}
 \examples{
-load(system.file("extdata","weighted_data.rda", package = "maicplus", mustWork = TRUE))
+load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
 plot(weighted_data)
 
 library(ggplot2)

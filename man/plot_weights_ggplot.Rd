@@ -4,15 +4,7 @@
 \alias{plot_weights_ggplot}
 \title{Plot MAIC weights in a histogram with key statistics in legend using ggplot}
 \usage{
-plot_weights_ggplot(
-  weighted_data,
-  bin_col,
-  vline_col,
-  main_title,
-  print_caption,
-  caption_width,
-  bins
-)
+plot_weights_ggplot(weighted_data, bin_col, vline_col, main_title, bins)
 }
 \arguments{
 \item{weighted_data}{object returned after calculating weights using \link{estimate_weights}}
@@ -22,10 +14,6 @@ plot_weights_ggplot(
 \item{vline_col}{a string, color for the vertical line in the histogram}
 
 \item{main_title}{Name of scaled weights plot and unscaled weights plot, respectively.}
-
-\item{print_caption}{print a footnote message related to ESS from the NICE survey 2021}
-
-\item{caption_width}{width that is passed onto str_wrap function}
 
 \item{bins}{number of bin parameter to use}
 }
