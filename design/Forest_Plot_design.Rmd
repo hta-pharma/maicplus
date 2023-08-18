@@ -1,0 +1,346 @@
+---
+title: "Forest Plot design to present unadjusted and adjusted results"
+output:
+  html_document:
+    code_folding: hide
+    theme: spacelab 
+    toc: true
+    number_sections: true
+---
+
+  
+<style type="text/css">
+  
+body{ /* Normal  */
+      font-size: 14px;
+  }
+td {  /* Table  */
+    font-size: 14px;
+}
+h1.title {
+  font-size: 28px;
+  color: DarkRed;
+}
+h1 { /* Header 1 */
+    font-size: 22px;
+  color: DarkBlue;
+}
+h2 { /* Header 2 */
+    font-size: 18px;
+  color: DarkBlue;
+}
+h3 { /* Header 3 */
+    font-size: 18px;
+  color: DarkBlue;
+}
+
+h4 { /* Header 4 */
+    font-size: 18px;
+  color: DarkBlue;
+}
+
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+  
+  
+  
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 10,
+  fig.height = 6
+)
+``` 
+
+
+# Load libraries
+```{r}
+library(gridExtra)
+library(ggplot2)
+```
+
+# Background 
+
+Design forest plot to visualize the direction and magnitude of the unadjusted and adjusted results for each category of endpoints.
+We would have a separate forest plot including all the time to event endpoints, binary endpoints etc.
+
+In this example I have used the overall survival and more endpoints could be added (e.g. PFS etc.) in the same plot.
+An error bar with a diamond will be presented to indicate the point estimate with the corresponding 95% confidence interval for the OS unadjusted and adjusted results. Next to the forest plot and in the same line with the error bars we will present two columns that will show the coresponding HR [95% CI] and corresponding p-value. 
+
+
+# Steps
+
+- Load data 
+- Modify the report_table function in the matching_unanchored_tte.R file to get the results with a separate column for the HR and the 95% CI
+- In the maic_tte_unanchor function of the matching_unanchored_tte.R file, call the modified report_table so that the modified results are printed
+- Run the modified maic_tte_unanchor function to get the unadjusted and adjusted results 
+- Use the results to create a forest plot 
+
+
+## Load Data
+```{r}
+devtools::load_all()
+#### load data ----------------------------------------------------------
+
+### IPD
+# Read in relevant ADaM data and rename variables of interest
+adsl <- read.csv(system.file("extdata", "adsl.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
+adrs <- read.csv(system.file("extdata", "adrs.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
+adtte <- read.csv(system.file("extdata", "adtte.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
+
+### AgD
+# Baseline aggregate data for the comparator population
+target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
+  package = "maicplus", mustWork = TRUE
+))
+
+
+# for time-to-event endpoints, pseudo IPD from digitalized KM
+pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
+
+#### prepare data ----------------------------------------------------------
+target_pop <- process_agd(target_pop)
+adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
+use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
+
+match_res <- estimate_weights(
+  data = use_adsl,
+  centered_colnames = grep("_CENTERED$", names(use_adsl)),
+  start_val = 0,
+  method = "BFGS"
+)
+
+
+```
+
+
+
+## Add report_table_ff in the matching_unanchored_tte.R file to separate HR from CI 
+```{r}
+
+
+##### ADDED
+report_table_ff <- function(coxobj, medSurvobj, tag = NULL) {
+  hr_res <- format(round(summary(coxobj)$conf.int[-2], 2), nsmall = 2)
+ # hr_res <- paste0(hr_res[1], "[", hr_res[2], ";", hr_res[3], "]")      #### DELETED 
+  hr_pval <- format(round(summary(coxobj)$waldtest[3], 3), nsmall = 3)
+  if (hr_pval == "0.000") hr_pval <- "<0.001"
+  
+  meds_report <- format(round(medSurvobj[, c("median", "0.95LCL", "0.95UCL")], 1), nsmall = 1)
+  meds_report <- apply(meds_report, 1, function(xx) paste0(xx[1], "[", xx[2], ";", xx[3], "]"))
+  
+  desc_res <- cbind(medSurvobj[, "treatment", drop = F],
+                    data.frame(N = round(medSurvobj$n.max, 1)),
+                    "n.events(%)" = paste0(
+                      round(medSurvobj$events, 1), "(",
+                      format(round(medSurvobj$events * 100 / medSurvobj$n.max, 1), nsmall = 1), ")"
+                    ),
+                    "median[95% CI]" = meds_report
+  )
+  
+  desc_res <- cbind(desc_res[c(2, 1), ], "HR" = hr_res[1]  , "lowerCI"= hr_res[2], "upperCI"=hr_res[3], "WaldTest" = c(hr_pval, ""))  #### CHANGED
+  
+  if (!is.null(tag)) desc_res <- cbind(data.frame(Matching = rep(tag, nrow(desc_res))), desc_res)
+  desc_res
+}
+
+
+
+
+maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
+                              time_scale = "month", endpoint_name = "OS",
+                              transform = "log") {
+  timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
+
+  if (length(useWt) != nrow(dat)) stop("length of useWt should be the same as nrow(dat)")
+  if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
+
+  res <- list()
+
+  # set up IPD 'dat' with maic weights
+  dat$weight <- useWt
+  dat <- dat[, c("treatment", "time", "status", "weight")]
+
+  # set up pseudo IPD 'dat_ext' with universal weight of 1
+  dat_ext <- dat_ext[dat_ext$treatment == trt_ext, ]
+  dat_ext$treatment <- trt_ext
+  dat_ext$weight <- 1
+  dat_ext <- dat_ext[, names(dat)]
+
+  # merge pseudo IPD and real ipd
+  dat <- rbind(dat, dat_ext)
+  dat$treatment <- factor(dat$treatment, levels = c(trt_ext, trt))
+
+  # ==> Report 1: KM plot
+
+  # derive km w and w/o weights
+  kmobj <- survfit(Surv(time, status) ~ treatment, dat, conf.type = "log-log")
+  kmobj_adj <- survfit(Surv(time, status) ~ treatment, dat, weights = dat$weight, conf.type = "log-log")
+
+  par(cex.main = 0.85)
+  km_plot(kmobj, kmobj_adj,
+    time_scale = time_scale,
+    trt = trt, trt_ext = trt_ext,
+    endpoint_name = endpoint_name
+  )
+  res[["plot_km"]] <- grDevices::recordPlot()
+
+  res[["fit_km_data_before"]] <- survfit_makeup(kmobj)
+  res[["fit_km_data_after"]] <- survfit_makeup(kmobj_adj)
+
+  # ==> Report 2: Analysis table (Cox model) before and after matching, incl Median Survival Time
+
+  # derive median survival time
+  medSurv <- medSurv_makeup(kmobj, legend = "before matching", time_scale = time_scale)
+  medSurv_adj <- medSurv_makeup(kmobj_adj, legend = "after matching", time_scale = time_scale)
+  medSurv_out <- rbind(medSurv, medSurv_adj)
+
+  res[["report_median_surv"]] <- medSurv_out
+
+  # fit PH Cox regression model
+  coxobj <- coxph(Surv(time, status) ~ treatment, dat, robust = T)
+  coxobj_adj <- coxph(Surv(time, status) ~ treatment, dat, weights = dat$weight, robust = T)
+
+  res[["fit_cox_model_before"]] <- coxobj
+  res[["fit_cox_model_after"]] <- coxobj_adj
+
+  res[["report_overall"]] <- rbind(
+    report_table(coxobj, medSurv, tag = paste0("Before/", endpoint_name)),
+    report_table(coxobj_adj, medSurv_adj, tag = paste0("After/", endpoint_name))
+  )
+  
+########### ADDED 
+res[["report_overall_ff"]] <- rbind(                                       
+  report_table_ff(coxobj, medSurv, tag = paste0("Before/", endpoint_name)),
+  report_table_ff(coxobj_adj, medSurv_adj, tag = paste0("After/", endpoint_name))
+) 
+  
+
+  # output
+  res
+}
+
+
+```
+
+
+
+## Run maic_tte_unanchor example and get the data frame with the results
+```{r, fig.show='hide' }
+
+useWt<- as.vector(match_res$data[,'weights'])
+adtte$weight<-useWt
+dat<-adtte[,c("ARM", 'AVAL', 'EVNT')]
+dat_centered<-cbind(dat, match_res$data[,match_res$centered_colnames])
+colnames(dat) <-c("treatment", "time", "status")
+dat_ext<-pseudo_ipd
+dat_ext$ARM<-"B"
+dat_ext<-dat_ext[,c('ARM', 'Time', 'Event')]
+colnames(dat_ext) <-c("treatment", "time", "status")
+trt<-"A"
+trt_ext<-"B"
+
+
+tte_unanchor<-maic_tte_unanchor(useWt, dat, dat_ext, trt, trt_ext, time_scale = "month", endpoint_name = "OS",transform = "log")
+
+
+d<-tte_unanchor$report_overall_ff [c(1,3),c(1,6,7,8,9)] 
+  
+
+```
+
+
+
+## Create forest plot
+
+```{r}
+# Create forest plot
+
+d$Index<-1:dim(d)[1]
+
+# Transform HR and CIs to number values
+d$HR=as.numeric(d$HR)
+d$lowerCI=as.numeric(d$lowerCI)
+d$upperCI=as.numeric(d$upperCI)
+
+plot1 <- ggplot(d, aes(y = Index , x = HR)) +
+  geom_point(shape = 18, size = 4) +  
+  geom_errorbarh(aes(xmin = lowerCI, xmax = upperCI), height = 0.1) +
+  geom_vline(xintercept = 1, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
+  coord_cartesian( xlim=c(0,1.5), ylim=c(0, 5) ) +
+  scale_y_continuous(name = "", breaks=1:2, labels = d$Matching, trans = "reverse") +
+  xlab("Hazard Ratio (95% CI)") + 
+  ylab(" ") + 
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        axis.text.y = element_text(size = 12, colour = "black"),
+        axis.text.x.bottom = element_text(size = 12, colour = "black"),
+        axis.title.x = element_text(size = 12, colour = "black"))
+
+# Create the table-base pallete
+table_base <- ggplot(d, aes(y=Matching)) +
+  coord_cartesian( xlim=c(-10,10), ylim=c(0, 5)) +
+  ylab(NULL) + xlab("  ") + 
+  theme(plot.title = element_text(hjust = 0.5, size=12), 
+        axis.text.x = element_text(color="white", hjust = -3, size = 25), ## This is used to help with alignment
+        axis.line = element_blank(),
+        axis.text.y = element_blank(), 
+        axis.ticks = element_blank(),
+        axis.title.y = element_blank(), 
+        legend.position = "none",
+        panel.background = element_blank(), 
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        plot.background = element_blank())
+
+
+
+
+## HR 95% CI table
+tab1 <- table_base +
+  geom_text(aes(y = rev(Index), x = 1, label = paste0(d[,2], "[", d[,3], ";", d[,4], "]")), size = 4) + 
+  ggtitle("HR[95% CI]")
+
+## pvalue table 
+tab2 <- table_base +
+  geom_text(aes(y = rev(Index), x = 1, label = WaldTest), size = 4) + 
+  ggtitle("pvalue")
+
+## Merge tables with plot
+lay <-  matrix(c(1,1,1,2,3), nrow = 1)
+grid.arrange(plot1, tab1, tab2, layout_matrix = lay)
+
+
+```
+
+
+
+## Alternative Forest Plot 
+
+Another example: Figure 4 of [this publication](https://pubmed.ncbi.nlm.nih.gov/35764490/)
+
+
+
