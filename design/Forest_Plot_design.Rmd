@@ -127,37 +127,33 @@ match_res <- estimate_weights(
   start_val = 0,
   method = "BFGS"
 )
-
-
 ```
 
 
 
 ## Add report_table_ff in the matching_unanchored_tte.R file to separate HR from CI 
 ```{r}
-
-
 ##### ADDED
 report_table_ff <- function(coxobj, medSurvobj, tag = NULL) {
   hr_res <- format(round(summary(coxobj)$conf.int[-2], 2), nsmall = 2)
- # hr_res <- paste0(hr_res[1], "[", hr_res[2], ";", hr_res[3], "]")      #### DELETED 
+  # hr_res <- paste0(hr_res[1], "[", hr_res[2], ";", hr_res[3], "]")      #### DELETED
   hr_pval <- format(round(summary(coxobj)$waldtest[3], 3), nsmall = 3)
   if (hr_pval == "0.000") hr_pval <- "<0.001"
-  
+
   meds_report <- format(round(medSurvobj[, c("median", "0.95LCL", "0.95UCL")], 1), nsmall = 1)
   meds_report <- apply(meds_report, 1, function(xx) paste0(xx[1], "[", xx[2], ";", xx[3], "]"))
-  
+
   desc_res <- cbind(medSurvobj[, "treatment", drop = F],
-                    data.frame(N = round(medSurvobj$n.max, 1)),
-                    "n.events(%)" = paste0(
-                      round(medSurvobj$events, 1), "(",
-                      format(round(medSurvobj$events * 100 / medSurvobj$n.max, 1), nsmall = 1), ")"
-                    ),
-                    "median[95% CI]" = meds_report
+    data.frame(N = round(medSurvobj$n.max, 1)),
+    "n.events(%)" = paste0(
+      round(medSurvobj$events, 1), "(",
+      format(round(medSurvobj$events * 100 / medSurvobj$n.max, 1), nsmall = 1), ")"
+    ),
+    "median[95% CI]" = meds_report
   )
-  
-  desc_res <- cbind(desc_res[c(2, 1), ], "HR" = hr_res[1]  , "lowerCI"= hr_res[2], "upperCI"=hr_res[3], "WaldTest" = c(hr_pval, ""))  #### CHANGED
-  
+
+  desc_res <- cbind(desc_res[c(2, 1), ], "HR" = hr_res[1], "lowerCI" = hr_res[2], "upperCI" = hr_res[3], "WaldTest" = c(hr_pval, "")) #### CHANGED
+
   if (!is.null(tag)) desc_res <- cbind(data.frame(Matching = rep(tag, nrow(desc_res))), desc_res)
   desc_res
 }
@@ -226,45 +222,40 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
     report_table(coxobj, medSurv, tag = paste0("Before/", endpoint_name)),
     report_table(coxobj_adj, medSurv_adj, tag = paste0("After/", endpoint_name))
   )
-  
-########### ADDED 
-res[["report_overall_ff"]] <- rbind(                                       
-  report_table_ff(coxobj, medSurv, tag = paste0("Before/", endpoint_name)),
-  report_table_ff(coxobj_adj, medSurv_adj, tag = paste0("After/", endpoint_name))
-) 
-  
+
+  ########### ADDED
+  res[["report_overall_ff"]] <- rbind(
+    report_table_ff(coxobj, medSurv, tag = paste0("Before/", endpoint_name)),
+    report_table_ff(coxobj_adj, medSurv_adj, tag = paste0("After/", endpoint_name))
+  )
+
 
   # output
   res
 }
-
-
 ```
 
 
 
 ## Run maic_tte_unanchor example and get the data frame with the results
 ```{r, fig.show='hide' }
-
-useWt<- as.vector(match_res$data[,'weights'])
-adtte$weight<-useWt
-dat<-adtte[,c("ARM", 'AVAL', 'EVNT')]
-dat_centered<-cbind(dat, match_res$data[,match_res$centered_colnames])
-colnames(dat) <-c("treatment", "time", "status")
-dat_ext<-pseudo_ipd
-dat_ext$ARM<-"B"
-dat_ext<-dat_ext[,c('ARM', 'Time', 'Event')]
-colnames(dat_ext) <-c("treatment", "time", "status")
-trt<-"A"
-trt_ext<-"B"
-
-
-tte_unanchor<-maic_tte_unanchor(useWt, dat, dat_ext, trt, trt_ext, time_scale = "month", endpoint_name = "OS",transform = "log")
+useWt <- as.vector(match_res$data[, "weights"])
+adtte$weight <- useWt
+dat <- adtte[, c("ARM", "AVAL", "EVNT")]
+dat_centered <- cbind(dat, match_res$data[, match_res$centered_colnames])
+colnames(dat) <- c("treatment", "time", "status")
+dat_ext <- pseudo_ipd
+dat_ext$ARM <- "B"
+dat_ext <- dat_ext[, c("ARM", "Time", "Event")]
+colnames(dat_ext) <- c("treatment", "time", "status")
+trt <- "A"
+trt_ext <- "B"
 
 
-d<-tte_unanchor$report_overall_ff [c(1,3),c(1,6,7,8,9)] 
-  
+tte_unanchor <- maic_tte_unanchor(useWt, dat, dat_ext, trt, trt_ext, time_scale = "month", endpoint_name = "OS", transform = "log")
 
+
+d <- tte_unanchor$report_overall_ff[c(1, 3), c(1, 6, 7, 8, 9)]
 ```
 
 
@@ -274,66 +265,69 @@ d<-tte_unanchor$report_overall_ff [c(1,3),c(1,6,7,8,9)]
 ```{r}
 # Create forest plot
 
-d$Index<-1:dim(d)[1]
+d$Index <- 1:dim(d)[1]
 
 # Transform HR and CIs to number values
-d$HR=as.numeric(d$HR)
-d$lowerCI=as.numeric(d$lowerCI)
-d$upperCI=as.numeric(d$upperCI)
+d$HR <- as.numeric(d$HR)
+d$lowerCI <- as.numeric(d$lowerCI)
+d$upperCI <- as.numeric(d$upperCI)
 
-plot1 <- ggplot(d, aes(y = Index , x = HR)) +
-  geom_point(shape = 18, size = 4) +  
+plot1 <- ggplot(d, aes(y = Index, x = HR)) +
+  geom_point(shape = 18, size = 4) +
   geom_errorbarh(aes(xmin = lowerCI, xmax = upperCI), height = 0.1) +
   geom_vline(xintercept = 1, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
-  coord_cartesian( xlim=c(0,1.5), ylim=c(0, 5) ) +
-  scale_y_continuous(name = "", breaks=1:2, labels = d$Matching, trans = "reverse") +
-  xlab("Hazard Ratio (95% CI)") + 
-  ylab(" ") + 
+  coord_cartesian(xlim = c(0, 1.5), ylim = c(0, 5)) +
+  scale_y_continuous(name = "", breaks = 1:2, labels = d$Matching, trans = "reverse") +
+  xlab("Hazard Ratio (95% CI)") +
+  ylab(" ") +
   theme_bw() +
-  theme(panel.border = element_blank(),
-        panel.background = element_blank(),
-        panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(), 
-        axis.line = element_line(colour = "black"),
-        axis.text.y = element_text(size = 12, colour = "black"),
-        axis.text.x.bottom = element_text(size = 12, colour = "black"),
-        axis.title.x = element_text(size = 12, colour = "black"))
+  theme(
+    panel.border = element_blank(),
+    panel.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black"),
+    axis.text.y = element_text(size = 12, colour = "black"),
+    axis.text.x.bottom = element_text(size = 12, colour = "black"),
+    axis.title.x = element_text(size = 12, colour = "black")
+  )
 
 # Create the table-base pallete
-table_base <- ggplot(d, aes(y=Matching)) +
-  coord_cartesian( xlim=c(-10,10), ylim=c(0, 5)) +
-  ylab(NULL) + xlab("  ") + 
-  theme(plot.title = element_text(hjust = 0.5, size=12), 
-        axis.text.x = element_text(color="white", hjust = -3, size = 25), ## This is used to help with alignment
-        axis.line = element_blank(),
-        axis.text.y = element_blank(), 
-        axis.ticks = element_blank(),
-        axis.title.y = element_blank(), 
-        legend.position = "none",
-        panel.background = element_blank(), 
-        panel.border = element_blank(), 
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), 
-        plot.background = element_blank())
+table_base <- ggplot(d, aes(y = Matching)) +
+  coord_cartesian(xlim = c(-10, 10), ylim = c(0, 5)) +
+  ylab(NULL) +
+  xlab("  ") +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12),
+    axis.text.x = element_text(color = "white", hjust = -3, size = 25), ## This is used to help with alignment
+    axis.line = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title.y = element_blank(),
+    legend.position = "none",
+    panel.background = element_blank(),
+    panel.border = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.background = element_blank()
+  )
 
 
 
 
 ## HR 95% CI table
 tab1 <- table_base +
-  geom_text(aes(y = rev(Index), x = 1, label = paste0(d[,2], "[", d[,3], ";", d[,4], "]")), size = 4) + 
+  geom_text(aes(y = rev(Index), x = 1, label = paste0(d[, 2], "[", d[, 3], ";", d[, 4], "]")), size = 4) +
   ggtitle("HR[95% CI]")
 
-## pvalue table 
+## pvalue table
 tab2 <- table_base +
-  geom_text(aes(y = rev(Index), x = 1, label = WaldTest), size = 4) + 
+  geom_text(aes(y = rev(Index), x = 1, label = WaldTest), size = 4) +
   ggtitle("pvalue")
 
 ## Merge tables with plot
-lay <-  matrix(c(1,1,1,2,3), nrow = 1)
+lay <- matrix(c(1, 1, 1, 2, 3), nrow = 1)
 grid.arrange(plot1, tab1, tab2, layout_matrix = lay)
-
-
 ```
 
 
