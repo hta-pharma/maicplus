@@ -13,4 +13,6 @@ NULL
 #' @import DescTools
 #' @import MASS
 #' @import boot
+#' @import stringr
+#' @importFrom utils stack
 NULL
