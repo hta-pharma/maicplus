@@ -2,6 +2,7 @@
 % Please edit documentation in R/matching.R
 \name{estimate_weights}
 \alias{estimate_weights}
+\alias{plot.maicplus_estimate_weights}
 \title{Derive individual weights in the matching step of MAIC}
 \usage{
 estimate_weights(
@@ -9,6 +10,17 @@ estimate_weights(
   centered_colnames = NULL,
   start_val = 0,
   method = "BFGS",
+  ...
+)
+
+\method{plot}{maicplus_estimate_weights}(
+  x,
+  ggplot = FALSE,
+  bin_col = "#6ECEB2",
+  vline_col = "#688CE8",
+  main_title = NULL,
+  scaled_weights = TRUE,
+  bins = 50,
   ...
 )
 }
@@ -23,6 +35,20 @@ estimate_weights(
 The default is \code{"BFGS"}, other options are \code{"Nelder-Mead"}, \code{"CG"}, \code{"L-BFGS-B"}, \code{"SANN"}, and \code{"Brent"}}
 
 \item{...}{all other arguments from \code{base::optim()}}
+
+\item{x}{object from \link{estimate_weights}}
+
+\item{ggplot}{indicator to print base weights plot or ggplot weights plot}
+
+\item{bin_col}{a string, color for the bins of histogram}
+
+\item{vline_col}{a string, color for the vertical line in the histogram}
+
+\item{main_title}{title of the plot. For ggplot, name of scaled weights plot and unscaled weights plot, respectively.}
+
+\item{scaled_weights}{(base plot only) an indicator for using scaled weights instead of regular weights}
+
+\item{bins}{(ggplot only) number of bin parameter to use}
 }
 \value{
 a list with the following 4 elements,
@@ -41,4 +67,22 @@ modifiers}
 This function takes individual patient data (IPD) with centered covariates
 (effect modifiers and/or prognostic variables) as input and generates
 weights for each individual in IPD trial to match the covariates in aggregate data.
+
+The plot function displays individuals weights with key summary in top right legend that includes
+median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the
+original sample size). There are two options of plotting: base R plot and ggplot. The default
+for base R plot is to plot unscaled and scaled separately. The default
+for ggplot is to plot unscaled and scaled weights on a same plot.
+}
+\section{Methods (by generic)}{
+\itemize{
+\item \code{plot(maicplus_estimate_weights)}: Plot method for estimate_weights objects
+
+}}
+\examples{
+load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
+plot(weighted_data)
+
+library(ggplot2)
+plot(weighted_data, ggplot = TRUE)
 }

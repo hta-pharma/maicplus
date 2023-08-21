@@ -86,56 +86,92 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
   if (is.numeric(centered_colnames)) centered_colnames <- names(data)[centered_colnames]
 
   # Output
-  list(
+  outdata <- list(
     data = data,
     centered_colnames = centered_colnames,
     nr_missing = nr_missing,
     ess = sum(wt)^2 / sum(wt^2),
     opt = opt1
   )
+
+  class(outdata) <- c("maicplus_estimate_weights", "list")
+  outdata
 }
 
 
 #' Plot MAIC weights in a histogram with key statistics in legend
 #'
-#' Generates a plot given the individuals weights with key summary in top right legend that includes
-#' median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the
-#' original sample size).
-#' There are two options of weights provided in \code{\link{estimate_weights}}: unscaled or scaled.
-#' Scaled weights are relative to the original unit weights of each individual.
-#' In other words, a scaled weight greater than 1 means that an individual carries more weight in the
-#' re-weighted population than the original data and a scaled weight less than 1 means that an individual carries
-#' less weight in the re-weighted population than the original data.
+#' Calculates ESS reduction and median weights which is used to create legend for weights plot
 #'
-#' @param wt a numeric vector of individual MAIC weights (derived using \code{\link{estimate_weights}})
-#' @param bin_col a string, color for the bins of histogram
-#' @param vline_col a string, color for the vertical line in the histogram
-#' @param main_title a character string, main title of the plot
+#' @param weighted_data object returned after calculating weights using [estimate_weights]
 #'
-#' @return a plot of unscaled or scaled weights
+#' @return list of ESS, ESS reduction, median value of scaled and unscaled weights, and missing count
 #' @examples
+#' load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
+#' calculate_weights_legend(weighted_data)
 #' @export
 
-plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_title = "Unscaled Individual Weights") {
+calculate_weights_legend <- function(weighted_data) {
+  ess <- weighted_data$ess
+  wt <- weighted_data$data$weights
+  wt_scaled <- weighted_data$data$scaled_weights
+
   # calculate sample size and exclude NA from wt
   nr_na <- sum(is.na(wt))
   n <- length(wt) - nr_na
   wt <- na.omit(wt)
+  wt_scaled <- na.omit(wt_scaled)
 
-  # calculate effective sample size (ESS) and reduction of original sample
-  ess <- (sum(wt)^2) / sum(wt^2)
-  ess_reduct <- round((1 - (ess / n)) * 100, 2)
+  # calculate ess reduction and median weights
+  ess_reduction <- (1 - (ess / n)) * 100
+  wt_median <- median(wt)
+  wt_scaled_median <- median(wt_scaled)
+
+  list(
+    ess = round(ess, 2),
+    ess_reduction = round(ess_reduction, 2),
+    wt_median = round(wt_median, 4),
+    wt_scaled_median = round(wt_scaled_median, 4),
+    nr_na = nr_na
+  )
+}
+
+#' Plot MAIC weights in a histogram with key statistics in legend
+#'
+#' Generates a base R histogram of weights. Default is to plot either unscaled or scaled weights and not both.
+#'
+#' @param weighted_data object returned after calculating weights using [estimate_weights]
+#' @param bin_col a string, color for the bins of histogram
+#' @param vline_col a string, color for the vertical line in the histogram
+#' @param main_title title of the plot
+#' @param scaled_weights an indicator for using scaled weights instead of regular weights
+#'
+#' @return a plot of unscaled or scaled weights
+#' @export
+
+plot_weights_base <- function(weighted_data,
+                              bin_col, vline_col, main_title,
+                              scaled_weights) {
+  weights_stat <- calculate_weights_legend(weighted_data)
+
+  if (scaled_weights) {
+    wt <- weighted_data$data$scaled_weights
+    median_wt <- weights_stat$wt_scaled_median
+  } else {
+    wt <- weighted_data$data$weights
+    median_wt <- weights_stat$wt_median
+  }
 
   # prepare legend
   plot_legend <- c(
-    paste0("Median = ", round(median(wt), 4)),
-    paste0("ESS = ", round(ess, 2)),
-    paste0("Reduction% = ", ess_reduct)
+    paste0("Median = ", median_wt),
+    paste0("ESS = ", weights_stat$ess),
+    paste0("Reduction% = ", weights_stat$ess_reduct)
   )
   plot_lty <- c(2, NA, NA)
 
-  if (nr_na > 0) {
-    plot_legend <- c(plot_legend, paste0("#Missing Weights = ", nr_na))
+  if (weights_stat$nr_na > 0) {
+    plot_legend <- c(plot_legend, paste0("#Missing Weights = ", weights_stat$nr_na))
     plot_lty <- c(plot_lty, NA)
   }
 
@@ -146,6 +182,108 @@ plot_weights <- function(wt, bin_col = "#6ECEB2", vline_col = "#688CE8", main_ti
   abline(v = median(wt), lty = 2, col = vline_col, lwd = 2)
   legend("topright", bty = "n", lty = plot_lty, cex = 0.8, legend = plot_legend)
 }
+
+#' Plot MAIC weights in a histogram with key statistics in legend using ggplot
+#'
+#' Generates a ggplot histogram of weights. Default is to plot both unscaled and scaled weights on a same graph.
+#'
+#' @param weighted_data object returned after calculating weights using [estimate_weights]
+#' @param bin_col a string, color for the bins of histogram
+#' @param vline_col a string, color for the vertical line in the histogram
+#' @param main_title Name of scaled weights plot and unscaled weights plot, respectively.
+#' @param bins number of bin parameter to use
+#'
+#' @return a plot of unscaled and scaled weights
+#' @export
+
+plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
+                                main_title,
+                                bins) {
+  # check if ggplot2 package is installed
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop("ggplot2 package is needed to run this function")
+  }
+
+  weights_stat <- calculate_weights_legend(weighted_data)
+
+  # prepare dataset to use in ggplot
+  wt_data0 <- weighted_data$data[, c("weights", "scaled_weights")]
+  colnames(wt_data0) <- main_title
+  wt_data <- stack(wt_data0)
+  wt_data$median <- ifelse(wt_data$ind == main_title[1],
+    weights_stat$wt_median, weights_stat$wt_scaled_median
+  )
+
+  # create legend data
+  lab <- with(weights_stat, {
+    lab <- c(paste0("Median = ", wt_median), paste0("Median = ", wt_scaled_median))
+    lab <- paste0(lab, "\nESS = ", ess, "\nReduction% = ", ess_reduction)
+    if (nr_na > 0) lab <- paste0(lab, "\n#Missing Weights = ", nr_na)
+    lab
+  })
+  legend_data <- data.frame(ind = main_title, lab = lab)
+
+  hist_plot <- ggplot2::ggplot(wt_data) +
+    ggplot2::geom_histogram(ggplot2::aes_string(x = "values"), bins = bins, color = bin_col, fill = bin_col) +
+    ggplot2::geom_vline(ggplot2::aes_string(xintercept = "median"),
+      color = vline_col,
+      linetype = "dashed"
+    ) +
+    ggplot2::theme_bw() +
+    ggplot2::facet_wrap(~ind, nrow = 1) +
+    ggplot2::geom_text(data = legend_data, ggplot2::aes_string(label = "lab"), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3) +
+    ggplot2::theme(
+      axis.title = ggplot2::element_text(size = 12),
+      axis.text = ggplot2::element_text(size = 12)
+    ) +
+    ggplot2::ylab("Frequency") +
+    ggplot2::xlab("Weight")
+
+  return(hist_plot)
+}
+
+
+#' Plot method for Estimate Weights objects
+#'
+#' The plot function displays individuals weights with key summary in top right legend that includes
+#' median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the
+#' original sample size). There are two options of plotting: base R plot and ggplot. The default
+#' for base R plot is to plot unscaled and scaled separately. The default
+#' for ggplot is to plot unscaled and scaled weights on a same plot.
+#'
+#' @param x object from [estimate_weights]
+#' @param ggplot indicator to print base weights plot or ggplot weights plot
+#' @param bin_col a string, color for the bins of histogram
+#' @param vline_col a string, color for the vertical line in the histogram
+#' @param main_title title of the plot. For ggplot, name of scaled weights plot and unscaled weights plot, respectively.
+#' @param scaled_weights (base plot only) an indicator for using scaled weights instead of regular weights
+#' @param bins (ggplot only) number of bin parameter to use
+#'
+#' @examples
+#' load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
+#' plot(weighted_data)
+#'
+#' library(ggplot2)
+#' plot(weighted_data, ggplot = TRUE)
+#' @describeIn estimate_weights Plot method for estimate_weights objects
+#' @export
+
+plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
+                                           bin_col = "#6ECEB2", vline_col = "#688CE8",
+                                           main_title = NULL,
+                                           scaled_weights = TRUE,
+                                           bins = 50, ...) {
+  if (ggplot) {
+    if (is.null(main_title)) main_title <- c("Scaled Individual Weights", "Unscaled Individual Weights")
+    plot_weights_ggplot(x, bin_col, vline_col, main_title, bins)
+  } else {
+    if (is.null(main_title)) {
+      main_title <- ifelse(scaled_weights, "Scaled Individual Weights", "Unscaled Individual Weights")
+    }
+    plot_weights_base(x, bin_col, vline_col, main_title, scaled_weights)
+  }
+}
+
 
 #' Check to see if weights are optimized correctly
 #'
@@ -325,6 +463,6 @@ print.maicplus_check_weights <- function(x, mean_digits = 2, prop_digits = 2, sd
 ess_footnote_text <- function(width = 0.9 * getOption("width")) {
   text <- "An ESS reduction up to ~60% is not unexpected based on the 2021 survey of NICE's technology appraisals
 (https://onlinelibrary.wiley.com/doi/full/10.1002/jrsm.1511), whereas a reduction of >75% is less common
-and it may be considered sub optimal."
+and it may be considered suboptimal."
   paste0(strwrap(text, width = width), collapse = "\n")
 }
