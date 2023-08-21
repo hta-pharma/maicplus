@@ -21,3 +21,4 @@ images
 ^maicplus.*\.tar\.gz$
 ^maicplus.*\.tgz$
 ^inst/dev/MAIC/MAIC-main/.Rbuildignore
+^data-raw$
