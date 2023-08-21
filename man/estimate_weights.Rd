@@ -64,22 +64,9 @@ modifiers}
 }
 }
 \description{
-<<<<<<< HEAD
 Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates
 (effect modifiers and/or prognostic variables) as input, and generates weights for each individual in IPD trial
 to match the covariates in aggregate data.
-}
-\examples{
-load(system.file("extdata", "ipd_centered.rda", package = "maicplus", mustWork = TRUE))
-
-centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
-centered_colnames <- paste0(centered_colnames, "_CENTERED")
-match_res <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
-
-=======
-This function takes individual patient data (IPD) with centered covariates
-(effect modifiers and/or prognostic variables) as input and generates
-weights for each individual in IPD trial to match the covariates in aggregate data.
 
 The plot function displays individuals weights with key summary in top right legend that includes
 median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the
@@ -93,10 +80,15 @@ for ggplot is to plot unscaled and scaled weights on a same plot.
 
 }}
 \examples{
+load(system.file("extdata", "ipd_centered.rda", package = "maicplus", mustWork = TRUE))
+
+centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+centered_colnames <- paste0(centered_colnames, "_CENTERED")
+match_res <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
+
 load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
 plot(weighted_data)
 
 library(ggplot2)
 plot(weighted_data, ggplot = TRUE)
->>>>>>> main
 }
