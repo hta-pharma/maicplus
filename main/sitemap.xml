@@ -16,6 +16,9 @@
     <loc>https://hta-pharma.github.io/maicplus/reference/bucher.html</loc>
   </url>
   <url>
+    <loc>https://hta-pharma.github.io/maicplus/reference/calculate_weights_legend.html</loc>
+  </url>
+  <url>
     <loc>https://hta-pharma.github.io/maicplus/reference/center_ipd.html</loc>
   </url>
   <url>
@@ -58,7 +61,10 @@
     <loc>https://hta-pharma.github.io/maicplus/reference/medSurv_makeup.html</loc>
   </url>
   <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/plot_weights.html</loc>
+    <loc>https://hta-pharma.github.io/maicplus/reference/plot_weights_base.html</loc>
+  </url>
+  <url>
+    <loc>https://hta-pharma.github.io/maicplus/reference/plot_weights_ggplot.html</loc>
   </url>
   <url>
     <loc>https://hta-pharma.github.io/maicplus/reference/print_bucher.html</loc>
