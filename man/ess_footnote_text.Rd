@@ -15,3 +15,4 @@ A character string
 \description{
 Note on Expected Sample Size Reduction
 }
+\keyword{internal}

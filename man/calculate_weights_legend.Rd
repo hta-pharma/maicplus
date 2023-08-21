@@ -2,7 +2,7 @@
 % Please edit documentation in R/matching.R
 \name{calculate_weights_legend}
 \alias{calculate_weights_legend}
-\title{Plot MAIC weights in a histogram with key statistics in legend}
+\title{Calculate Statistics for Weight Plot Legend}
 \usage{
 calculate_weights_legend(weighted_data)
 }
@@ -16,6 +16,9 @@ list of ESS, ESS reduction, median value of scaled and unscaled weights, and mis
 Calculates ESS reduction and median weights which is used to create legend for weights plot
 }
 \examples{
+\dontrun{
 load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
 calculate_weights_legend(weighted_data)
 }
+}
+\keyword{internal}

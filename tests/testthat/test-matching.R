@@ -8,3 +8,18 @@ test_that("ess_footnote_text works", {
     )
   )
 })
+
+test_that("calculate_weights_legend works", {
+  load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
+  result <- calculate_weights_legend(weighted_data)
+  expect_equal(
+    result,
+    expected = list(
+      ess = 166.37,
+      ess_reduction = 66.73,
+      wt_median = 0.0594,
+      wt_scaled_median = 0.1486,
+      nr_na = 0L
+    )
+  )
+})
