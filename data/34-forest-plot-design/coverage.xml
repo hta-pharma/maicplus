@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.0302491103202847" branch-rate="0" lines-covered="17" lines-valid="562" branches-covered="0" branches-valid="0" complexity="0" version="3.6.2" timestamp="2023-08-21 15:42:19.515155">
+<coverage line-rate="0.0302491103202847" branch-rate="0" lines-covered="17" lines-valid="562" branches-covered="0" branches-valid="0" complexity="0" version="3.6.2" timestamp="2023-08-22 08:51:43.868564">
   <sources>
     <source>/__w/maicplus/maicplus/maicplus</source>
   </sources>
