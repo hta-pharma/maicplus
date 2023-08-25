@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="bucher" timestamp="2023-08-21T13:38:34Z" hostname="12126a07c720" tests="1" skipped="0" failures="0" errors="0" time="0.154">
-    <testcase time="0.154" classname="bucher" name="bucher_works_as_expected"/>
+  <testsuite name="bucher" timestamp="2023-08-25T19:24:57Z" hostname="c93e2e78a239" tests="1" skipped="0" failures="0" errors="0" time="0.196">
+    <testcase time="0.196" classname="bucher" name="bucher_works_as_expected"/>
   </testsuite>
-  <testsuite name="matching" timestamp="2023-08-21T13:38:34Z" hostname="12126a07c720" tests="1" skipped="0" failures="0" errors="0" time="0.081">
-    <testcase time="0.081" classname="matching" name="ess_footnote_text_works"/>
+  <testsuite name="matching" timestamp="2023-08-25T19:24:57Z" hostname="c93e2e78a239" tests="1" skipped="0" failures="0" errors="0" time="0.113">
+    <testcase time="0.113" classname="matching" name="ess_footnote_text_works"/>
   </testsuite>
 </testsuites>
