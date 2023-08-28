@@ -94,7 +94,7 @@ From the bootstrap_HR() function we will export the HR as a numeric value.
 
 ### Example code 
 
-```{r}
+```{r}`r ''`
 bootstrap_HR <- function(intervention_data, centered_colnames, i, model, comparator_data, min_weight = 0.0001, trt_ext) {
   # create a visible binding for R CMD check
   wt <- NULL
@@ -138,7 +138,7 @@ The boot() function will include the following in the same format as defined in 
   
 ### Example code
 
-```{r}
+```{r}`r ''`
 HR_bootstraps <- boot(
     data = dat_centered, # intervention data
     statistic = bootstrap_HR, # bootstrap the HR 
@@ -171,7 +171,7 @@ Add section 'Report 4: Bootstrapping' in the maic_tte_unanchor() function of the
 
 ### Example code
 
-```{r}
+```{r}`r ''`
   
   # ==> Report 4: Bootstrapping
   
@@ -193,12 +193,18 @@ Add section 'Report 4: Bootstrapping' in the maic_tte_unanchor() function of the
   res[["boot_hist"]] <- grDevices::recordPlot()
   res[["HR_median"]] <- HR_median
   res[["boot_ci_HR"]] <- boot_ci_HR
-  res[["boot_ci_HR_BCA"]] <- boot_ci_HR_BCA`
+  res[["boot_ci_HR_BCA"]] <- boot_ci_HR_BCA
 
 ```
 
 
 # Another way
+
+- Changed the old names to the names we are using in maicplus to i.e. intervention_data is no longer used
+- We removed dplyr dependence. So, we can no longer use dplyr::bind_rows and dplyr::mutate
+- I think the function can be reused for anchored setting. In anchored setting, we might not need to merge the pseudo data i.e. if we use HR from the reported comparator study. This should be discussed more thoroughly though.
+- Added couple stop statements for heuristic checks.
+
 
 ```{r}
 #' Bootstrapping weighted hazard ratios to obtain confidence interval
@@ -273,7 +279,7 @@ library(dplyr)
 library(boot)
 
 #set directory
-setwd("~/GitHub/maicplus")
+#setwd("~/GitHub/maicplus")
 devtools::load_all()
 
 adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus",
