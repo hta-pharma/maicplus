@@ -1,0 +1,364 @@
+---
+title: "Bootstrap design"
+output:
+  html_document:
+    code_folding: hide
+    theme: spacelab 
+    toc: true
+    number_sections: true
+---
+
+
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 14px;
+  }
+td {  /* Table  */
+    font-size: 14px;
+}
+h1.title {
+  font-size: 28px;
+  color: DarkRed;
+}
+h1 { /* Header 1 */
+    font-size: 22px;
+  color: DarkBlue;
+}
+h2 { /* Header 2 */
+    font-size: 18px;
+  color: DarkBlue;
+}
+h3 { /* Header 3 */
+    font-size: 18px;
+  color: DarkBlue;
+}
+
+h4 { /* Header 4 */
+    font-size: 18px;
+  color: DarkBlue;
+}
+
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
+
+
+# Method 1 
+
+## Steps
+- Create bootstrap_HR() function to get the bootstrap weighted hazard ratios.
+- The bootstrap weighted hazard ratios will then be used as an input of the standard boot() function in order to obtain the
+bootstrap confidence interval of the weighted HR. 
+- The boot() function will be included in the maic_tte_unanchor() function of the maic_tte_unanchored.R file so that we can get 
+the results of all the different approaches (i.e., sandwich estimator, non-parametric bootstrap, posson approximation) for the unanchored cases
+of time to event endpoints. 
+- Add additional input parameter in the maic_tte_unanchor() function to meet the requirements for the boot() function
+- Report bootstrap results 
+
+
+
+## Bootstrapping for MAIC weighted hazard ratios 
+  
+The bootstrap_HR() function will be created to get the bootstrap weighted hazard ratios.
+This function will include the following input parameters:
+  
+- *intervention_data:* A data frame containing individual patient data from the internal IPD study including
+columns (treatment, time, status, centered baseline characteristics)
+- *centered_colnames:* A character vector giving the names of the covariates to use in matching. 
+These names must match the column names in intervention_data.
+- *i:* Index used to select a sample within the boot() function.
+- *model:* A model formula in the form 'Surv(time, status == 1) ~ treatment '. 
+Variable names need to match the corresponding columns in intervention_data.
+- *comparator_data:* A data frame containing pseudo individual patient data
+from the comparator study needed to derive the relative treatment effect
+including columns (time, event, weight=1, scaled_weight=1).
+The outcome variables names must match intervention_data.
+- *min_weight:* A numeric value that defines the minimum weight allowed.
+This value (default 0.0001) will replace weights estimated at 0 in a sample.
+- *trt_ext:* A character giving the name of the comparator treatment to be used as reference
+
+
+Note: The bootstrap_HR() is intended to be used in conjunction with the boot() function to return the statistic 
+to be bootstrapped. In this case by performing MAIC weighting using estimate_weights() function and returning a 
+weighted hazard ratio (HR) from a Cox proportional hazards model. This is used as the 'statistic' argument in
+the boot function.
+
+From the bootstrap_HR() function we will export the HR as a numeric value.  
+
+
+### Example code 
+
+```{r}`r ''`
+bootstrap_HR <- function(intervention_data, centered_colnames, i, model, comparator_data, min_weight = 0.0001, trt_ext) {
+  # create a visible binding for R CMD check
+  wt <- NULL
+  
+  # Samples the data
+  bootstrap_data <- intervention_data[i, ]
+  
+  # Estimates weights
+  perform_wt <- estimate_weights(data = bootstrap_data, centered_colnames = centered_colnames)
+  
+  
+  # Give comparator data weights of 1
+  comparator_data_wts <- comparator_data %>% dplyr::mutate(weights = 1, scaled_weights = 1)
+  
+  # Add the comparator data
+  combined_data <- dplyr::bind_rows(perform_wt$data, comparator_data_wts)
+  combined_data$treatment <- stats::relevel(as.factor(combined_data$treatment), ref = trt_ext)
+  
+  # set weights that are below min_weight to min_weight to avoid issues with 0 values
+  combined_data$wt <- ifelse(combined_data$weights < min_weight, min_weight, combined_data$weights)
+  
+  # survival data stat
+  cox_model <- survival::coxph(model, data = combined_data, weights = wt)
+  HR <- exp(cox_model$coefficients)
+} 
+  
+```
+
+## Bootstrap the confidence interval of the weighted HR 
+  
+The boot() function will include the following in the same format as defined in the bootstrap_HR() function: 
+
+- Intervention data
+- The statistic to be bootsrapped; i.e. bootstap_HR
+- Number of bootstrap sampes
+- Comparator pseudo data
+- Matching variables
+- Model to fit 
+
+
+  
+### Example code
+
+```{r}`r ''`
+HR_bootstraps <- boot(
+    data = dat_centered, # intervention data
+    statistic = bootstrap_HR, # bootstrap the HR 
+    R = 1000, # number of bootstrap samples
+    comparator_data = dat_ext, # comparator pseudo data
+    centered_colnames = grep("_CENTERED$", names(dat_centered)), # matching variables
+    model = Surv(time, status == 1) ~ treatment # model to fit
+  )
+
+```
+
+
+## Additional input parameter in the maic_tte_unanchor() function
+
+In the maic_tte_unanchor() function of the maic_tte_unanchored.R file we need to add an additional input parameter as this function will
+use the boot() function. Specifically, the dat_centered which is the intervention data as defined in the bootstrap_HR() function will be added. 
+
+
+## Reporting bootstrap results 
+
+Report the following: 
+
+- Summarize bootstrap estimates in a histogram
+- Median of the bootstrap samples
+- Percentile CIs (This method takes the 2.5th and 97.5th percentiles)
+- Bias-corrected and accelerated (BCa) CI (This method attempts to correct for any bias and skewness in the distribution of bootstrap estimates)
+
+Add section 'Report 4: Bootstrapping' in the maic_tte_unanchor() function of the maic_tte_unanchored.R file
+
+
+### Example code
+
+```{r}`r ''`
+  
+  # ==> Report 4: Bootstrapping
+  
+  ## Bootstrapping diagnostics
+  # Summarize bootstrap estimates in a histogram
+  # Vertical lines indicate the median and upper and lower CIs
+  hist(HR_bootstraps$t, main = "", xlab = "Boostrapped HR")
+  abline(v = quantile(HR_bootstraps$t, probs = c(0.025, 0.5, 0.975)), lty = 2)
+
+  # Median of the bootstrap samples
+  HR_median <- median(HR_bootstraps$t)
+
+  # Bootstrap CI - Percentile CI
+  boot_ci_HR <- boot.ci(boot.out = HR_bootstraps, index = 1, type = "perc")
+
+  # Bootstrap CI - BCa CI
+  boot_ci_HR_BCA <- boot.ci(boot.out = HR_bootstraps, index = 1, type = "bca")
+
+  res[["boot_hist"]] <- grDevices::recordPlot()
+  res[["HR_median"]] <- HR_median
+  res[["boot_ci_HR"]] <- boot_ci_HR
+  res[["boot_ci_HR_BCA"]] <- boot_ci_HR_BCA
+
+```
+
+
+# Another way
+
+- Changed the old names to the names we are using in maicplus to i.e. intervention_data is no longer used
+- We removed dplyr dependence. So, we can no longer use dplyr::bind_rows and dplyr::mutate
+- I think the function can be reused for anchored setting. In anchored setting, we might not need to merge the pseudo data i.e. if we use HR from the reported comparator study. This should be discussed more thoroughly though.
+- Added couple stop statements for heuristic checks.
+
+
+```{r}
+#' Bootstrapping weighted hazard ratios to obtain confidence interval
+#'
+#' This function uses [\code{\link{boot}}] to resample internal IPD data
+#' to obtain bootstrapped hazard ratio values which is used to form confidence
+#' interval. Note that due to lack of full IPD of covariates in the 
+#' aggregate data, pseudo IPD will not be bootstrapped.
+#' 
+#' @param ipd_centered A data frame containing individual patient data
+#'   from the internal IPD study. This data frame should have already been
+#'   centered using [center_ipd] function
+#' @param i Index used to select a sample within \code{\link{boot}}.
+#' @param centered_colnames A character vector giving the names of the covariates to use in matching. These names must match the column names in internal dataset.
+#' @param psuedo_ipd A data frame containing pseudo individual patient data
+#'   from the comparator study needed to derive the relative treatment effect.
+#'   Pseudo IPD is only used for unanchored case. pseudo_ipd should have time, event,
+#'   and ARM variable with a same name and order as that of ipd_centered
+#' @param model Survival model to run to calculate HR with correct time, event, and #'   ARM names
+#' @param ref_treat Reference treatment for the survival model
+#' @param min_weight A numeric value that defines the minimum weight allowed. 
+#'   This value (default 0.0001) will replace weights estimated at 0 in a sample.
+#'
+#' @return The HR bootstraps
+#' @export
+
+bootstrap_HR <- function(ipd_centered, i, centered_colnames, 
+                         pseudo_ipd = NULL, model,
+                         min_weight = 0.0001, ref_treat = NULL){
+  
+  # Resamples the centered internal IPD data
+  bootstrap_data <- ipd_centered[i,]
+  
+  # Estimates weights
+  weighted_data <- estimate_weights(data = bootstrap_data, 
+                                centered_colnames = centered_colnames)
+  ipd_matched <- weighted_data$data
+  
+  if(length(unique(ipd_matched$ARM)) == 2){ #this is the anchored case
+    combined_data <- ipd_matched
+  } else if(length(unique(ipd_matched$ARM)) == 1){ #this is the unanchored case
+    
+    if(is.null(pseudo_ipd)) stop("For unanchored case pseudo_ipd needs to be specified")
+    if(is.null(pseudo_ipd$ARM)) stop("external data should have an ARM column")
+    
+    # Assign weight of 1 for pseudo_ipd if it not defined already
+    pseudo_ipd$weights <- 1
+
+    combined_data <- rbind(ipd_matched[,colnames(pseudo_ipd)],
+                          pseudo_ipd)
+  } else {
+    stop("ipd_matched ARM should have 1 or 2 treatments")
+  }
+    
+  # set the base treatment
+  if(is.null(ref_treat)) stop("Need to specify a value for ref_treat")
+  combined_data$ARM <- stats::relevel(as.factor(combined_data$ARM), ref = ref_treat)
+  
+  # set weights that are below min_weight to min_weight to avoid issues with 0 values
+  combined_data$weights <- ifelse(combined_data$weights < min_weight, min_weight, combined_data$weights)
+
+  cox_model <- survival::coxph(model, data = combined_data, weights = weights, robust = TRUE)
+  HR <- exp(cox_model$coefficients)
+
+  return(HR)
+}
+```
+
+
+```{r}
+library(dplyr)
+library(boot)
+
+#set directory
+#setwd("~/GitHub/maicplus")
+devtools::load_all()
+
+adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus",
+                             mustWork = TRUE))
+adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus",
+                             mustWork = TRUE))
+adtte <- read.csv(system.file("extdata", "adtte.csv", package = "maicplus", mustWork = TRUE))
+
+# Data containing the matching variables
+adsl <- adsl %>%
+  mutate(SEX_MALE = ifelse(SEX=="Male", 1, 0)) %>%
+  mutate(AGE_SQUARED = AGE^2)
+
+# Could use built-in function for dummizing variables 
+# adsl <- dummize_ipd(adsl, dummize_cols=c("SEX"), dummize_ref_level=c("Female"))
+
+# Response data  
+adrs <- adrs %>%
+  transmute(USUBJID, ARM, RESPONSE=AVAL)
+
+# Time to event data (overall survival)
+adtte <- adtte %>% 
+  mutate(EVENT = 1-CNSR) %>% 
+  transmute(USUBJID, ARM, TIME = AVAL, EVENT)
+
+# Combine all ipd data
+ipd <- adsl %>%
+  full_join(adrs, by = c("USUBJID", "ARM")) %>%
+  full_join(adtte, by = c("USUBJID", "ARM"))
+head(ipd)
+
+agd <- data.frame(
+  STUDY = "Lung study",
+  ARM = "Total",
+  N = 300,
+  AGE_MEAN = 51,
+  AGE_MEDIAN = 49,
+  AGE_SD = 3.25,
+  SEX_MALE_PROP = 147/300,
+  ECOG0_PROP = 0.40,
+  SMOKE_PROP = 58/(300-5),
+  N_PR_THER_MEDIAN = 2
+)
+
+#### prepare data
+ipd_centered <- center_ipd(ipd = ipd, agd = agd)
+head(ipd_centered)
+
+centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+centered_colnames <- paste0(centered_colnames, "_CENTERED")
+weighted_data <- estimate_weights(data = ipd_centered, 
+                              centered_colnames = centered_colnames)
+
+pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
+ipd_matched <- weighted_data$data
+pseudo_ipd$ARM <- "B"
+
+# Need to ensure pseudo_ipd and ipd_matched have same names
+colnames(pseudo_ipd) <- c("TIME", "EVENT", "ARM")
+
+HR_bootstraps <- boot(data = ipd_matched,
+  statistic = bootstrap_HR, 
+  centered_colnames = centered_colnames, 
+  pseudo_ipd = pseudo_ipd,
+  model = Surv(TIME, EVENT==1) ~ ARM,
+  ref_treat = "B",
+  R = 1000)
+
+# Median of the bootstrap samples
+HR_median <- median(HR_bootstraps$t)
+
+# Bootstrap CI - Percentile CI
+boot_ci_HR <- boot.ci(boot.out = HR_bootstraps, index=1, type="perc")
+
+# Bootstrap CI - BCa CI
+boot_ci_HR_BCA <- boot.ci(boot.out = HR_bootstraps, index=1, type="bca")
+
+HR_median
+boot_ci_HR
+boot_ci_HR_BCA
+```
+
