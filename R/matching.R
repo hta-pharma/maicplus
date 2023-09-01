@@ -312,10 +312,6 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
 #' aggregated data following the same naming convention
 #'
 #' @examples
-#' load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
-#' load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
-#' outdata <- check_weights(match_res, processed_agd = agd)
-#' print(outdata)
 #'
 #' @import DescTools
 #'
