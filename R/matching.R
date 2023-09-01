@@ -28,12 +28,6 @@
 #' }
 #'
 #' @examples
-#' load(system.file("extdata", "ipd_centered.rda", package = "maicplus", mustWork = TRUE))
-#'
-#' centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
-#' centered_colnames <- paste0(centered_colnames, "_CENTERED")
-#' match_res <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
-#'
 #' @export
 
 estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, method = "BFGS", ...) {
