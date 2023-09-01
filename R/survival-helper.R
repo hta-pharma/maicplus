@@ -10,7 +10,7 @@
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 #' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, weights = combined_data_tte$weights, conf.type = "log-log")
-#' 
+#'
 #' # Derive median survival time
 #' medSurv <- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")
 #' medSurv_adj <- medSurv_makeup(kmobj_adj, legend = "after matching", time_scale = "day")
@@ -85,7 +85,7 @@ survfit_makeup <- function(km_fit) {
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 #' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, weights = combined_data_tte$weights, conf.type = "log-log")
-#' par(cex.main=0.85)
+#' par(cex.main = 0.85)
 #' km_plot(kmobj, kmobj_adj, time_scale = "month", trt = "A", trt_ext = "B", endpoint_name = "OS")
 #' @export
 
@@ -188,8 +188,9 @@ km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 #' log_cum_haz_plot(kmobj,
-#' time_scale = "month", log_time = TRUE,
-#' endpoint_name = "OS", subtitle = "(Before Matching)")
+#'   time_scale = "month", log_time = TRUE,
+#'   endpoint_name = "OS", subtitle = "(Before Matching)"
+#' )
 #' @return a plot of log cumulative hazard rate
 #' @export
 
@@ -258,10 +259,11 @@ log_cum_haz_plot <- function(km_fit,
 #' @param subtitle a character string, subtitle of the plot
 #' @examples
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
-#' unweighted_cox <- coxph(Surv(TIME, EVENT==1) ~ ARM, data = combined_data_tte)
+#' unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
 #' resid_plot(unweighted_cox,
 #'   time_scale = "month", log_time = TRUE,
-#'   endpoint_name = "OS", subtitle = "(Before Matching)")
+#'   endpoint_name = "OS", subtitle = "(Before Matching)"
+#' )
 #' @return a plot of Schoenfel residuals
 #' @export
 

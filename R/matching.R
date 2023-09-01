@@ -31,11 +31,11 @@
 #' load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
 #' load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
 #' ipd_centered <- center_ipd(ipd = ipd, agd = agd)
-#' 
+#'
 #' centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
 #' centered_colnames <- paste0(centered_colnames, "_CENTERED")
 #' weighted_data <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
-#' 
+#'
 #' @export
 
 estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, method = "BFGS", ...) {
@@ -318,7 +318,7 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
 #' load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
 #' load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
 #' check_weights(weighted_data, agd)
-#' 
+#'
 #' @import DescTools
 #'
 #' @return data.frame of weighted and unweighted covariate averages of the IPD,

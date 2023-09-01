@@ -24,7 +24,7 @@
 #' load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
 #' load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
 #' ipd_centered <- center_ipd(ipd = adsl, agd = agd)
-#' 
+#'
 #' pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
 #' pseudo_ipd$ARM <- "B" # Need to specify ARM for pseudo ipd
 #'
@@ -38,7 +38,8 @@
 #'   pseudo_ipd = pseudo_ipd,
 #'   model = Surv(TIME, EVENT == 1) ~ ARM,
 #'   ref_treat = "B",
-#'   R = 1000)
+#'   R = 1000
+#' )
 #' }
 #' @return The HR bootstraps
 #' @export
@@ -46,23 +47,22 @@
 bootstrap_HR <- function(ipd_centered, i, centered_colnames,
                          pseudo_ipd = NULL, model,
                          min_weight = 0.0001, ref_treat = NULL) {
-  
   # Resamples the centered internal IPD data
   bootstrap_data <- ipd_centered[i, ]
-  
+
   # Estimates weights
   weighted_data <- estimate_weights(
     data = bootstrap_data,
     centered_colnames = centered_colnames
   )
-  
+
   ipd_matched <- weighted_data$data
   if (length(unique(ipd_matched$ARM)) == 2) { # this is the anchored case
     combined_data <- ipd_matched
   } else if (length(unique(ipd_matched$ARM)) == 1) { # this is the unanchored case
     if (is.null(pseudo_ipd)) stop("For unanchored case pseudo_ipd needs to be specified")
     if (is.null(pseudo_ipd$ARM)) stop("external data should have an ARM column")
-    
+
     # Assign weight of 1 for pseudo_ipd if it not defined already
     pseudo_ipd$weights <- 1
     combined_data <- rbind(
@@ -72,15 +72,15 @@ bootstrap_HR <- function(ipd_centered, i, centered_colnames,
   } else {
     stop("ipd_matched ARM should have 1 or 2 treatments")
   }
-  
+
   # set the base treatment
   if (is.null(ref_treat)) stop("Need to specify a value for ref_treat")
   combined_data$ARM <- stats::relevel(as.factor(combined_data$ARM), ref = ref_treat)
-  
+
   # set weights that are below min_weight to min_weight to avoid issues with 0 values
   combined_data$weights <- ifelse(combined_data$weights < min_weight, min_weight, combined_data$weights)
   cox_model <- survival::coxph(model, data = combined_data, weights = weights, robust = TRUE)
   HR <- exp(cox_model$coefficients)
-  
+
   return(HR)
 }
