@@ -63,6 +63,7 @@ HR_bootstraps <- boot(
   pseudo_ipd = pseudo_ipd,
   model = Surv(TIME, EVENT == 1) ~ ARM,
   ref_treat = "B",
-  R = 1000)
+  R = 1000
+)
 }
 }
