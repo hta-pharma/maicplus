@@ -5,7 +5,7 @@
 \title{Plot Log Cumulative Hazard Rate}
 \usage{
 log_cum_haz_plot(
-  clldat,
+  km_fit,
   time_scale,
   log_time = TRUE,
   endpoint_name = "",
@@ -14,7 +14,7 @@ log_cum_haz_plot(
 )
 }
 \arguments{
-\item{clldat}{object returned from \code{\link{survfit_makeup}}}
+\item{km_fit}{returned object from \code{survival::survfit}}
 
 \item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
 

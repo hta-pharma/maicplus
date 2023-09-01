@@ -2,7 +2,7 @@
 % Please edit documentation in R/matching.R
 \name{ess_footnote_text}
 \alias{ess_footnote_text}
-\title{Prints Note on Expected Sample Size Reduction}
+\title{Note on Expected Sample Size Reduction}
 \usage{
 ess_footnote_text(width = 0.9 * getOption("width"))
 }
@@ -13,8 +13,6 @@ ess_footnote_text(width = 0.9 * getOption("width"))
 A character string
 }
 \description{
-Prints Note on Expected Sample Size Reduction
+Note on Expected Sample Size Reduction
 }
-\examples{
-ess_footnote_text(width = 80)
-}
+\keyword{internal}
