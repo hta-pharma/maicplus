@@ -343,7 +343,7 @@ check_weights <- function(weighted_data, processed_agd) {
   outdata$external_trial <- unlist(processed_agd[paste(outdata$covariate, toupper(outdata$match_stat), sep = "_")])
 
   # fill in stat from unweighted and weighted IPD
-  for (ii in 1:nrow(outdata)) {
+  for (ii in seq_len(nrow(outdata))) {
     covname <- outdata$covariate[ii]
     if (outdata$match_stat[ii] %in% c("Mean", "Prop")) {
       outdata$internal_trial[ii] <- mean(ipd_with_weights[[covname]], na.rm = TRUE)
