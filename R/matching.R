@@ -306,7 +306,6 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
 #' aggregated data following the same naming convention
 #'
 #' @examples
-#'
 #' @import DescTools
 #'
 #' @return data.frame of weighted and unweighted covariate averages of the IPD, and average of aggregate data

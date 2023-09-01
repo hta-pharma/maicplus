@@ -166,7 +166,6 @@ km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext
 #' @param subtitle a character string, subtitle of the plot
 #' @param exclude_censor logical, should censored data point be plotted
 #' @examples
-#'
 #' @return a plot
 #' @export
 
