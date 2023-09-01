@@ -1,6 +1,6 @@
-#' helper function: makeup to get median survival time from a `survival::survfit` object
+#' Helper function: makeup to get median survival time from a `survival::survfit` object
 #'
-#' extract and display median survival time with confidence interval
+#' Extract and display median survival time with confidence interval
 #'
 #' @param km_fit returned object from \code{survival::survfit}
 #' @param legend a character string, name used in 'type' column in returned data frame
