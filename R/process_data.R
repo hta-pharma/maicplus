@@ -144,14 +144,17 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level) {
 #'
 #' @param ipd IPD variable names should match the aggregate data names without the suffix.
 #' This would involve either changing the aggregate data name or the ipd name.
-#' For instance, if we binarize SEX variable with MALE as a reference using [dummize_ipd], function names the new variable as SEX_MALE.
+#' For instance, if we binarize SEX variable with MALE as a reference using [dummize_ipd],
+#' function names the new variable as SEX_MALE.
 #' In this case, SEX_MALE should also be available in the aggregate data.
 #' @param agd pre-processed aggregate data which contain STUDY, ARM, and N. Variable names should be followed
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP). Note that COUNT suffix is no longer accepted.
 #' @examples
 #' ipd <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus", mustWork = TRUE))
 #' ipd <- dummize_ipd(ipd, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
-#' target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv", package = "maicplus", mustWork = TRUE))
+#' target_pop <- read.csv(
+#'   system.file("extdata", "aggregate_data_example_1.csv", package = "maicplus", mustWork = TRUE)
+#' )
 #' agd <- process_agd(target_pop)
 #'
 #' ipd_centered <- center_ipd(ipd = ipd, agd = agd)

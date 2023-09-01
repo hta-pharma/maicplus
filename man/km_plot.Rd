@@ -10,7 +10,8 @@ km_plot(
   time_scale,
   trt,
   trt_ext,
-  endpoint_name = ""
+  endpoint_name = "",
+  line_col = c("#5450E4", "#00857C", "#6ECEB2")
 )
 }
 \arguments{
@@ -37,7 +38,12 @@ helper function: KM plot with unadjusted and adjusted KM
 \examples{
 load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
-kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, weights = combined_data_tte$weight, conf.type = "log-log")
+kmobj_adj <- survfit(
+  Surv(TIME, EVENT) ~ ARM,
+  combined_data_tte,
+  weights = combined_data_tte$weight,
+  conf.type = "log-log"
+ )
 par(cex.main = 0.85)
 km_plot(kmobj, kmobj_adj, time_scale = "month", trt = "A", trt_ext = "B", endpoint_name = "OS")
 }

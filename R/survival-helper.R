@@ -78,12 +78,18 @@ survfit_makeup <- function(km_fit) {
 #' @examples
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
-#' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, weights = combined_data_tte$weight, conf.type = "log-log")
+#' kmobj_adj <- survfit(
+#'   Surv(TIME, EVENT) ~ ARM,
+#'   combined_data_tte,
+#'   weights = combined_data_tte$weight,
+#'   conf.type = "log-log"
+#'  )
 #' par(cex.main = 0.85)
 #' km_plot(kmobj, kmobj_adj, time_scale = "month", trt = "A", trt_ext = "B", endpoint_name = "OS")
 #' @export
 
-km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext, endpoint_name = "") {
+km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext, endpoint_name = "",
+                    line_col = c("#5450E4", "#00857C", "#6ECEB2")) {
   time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
   if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
@@ -116,48 +122,48 @@ km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext
   # add km lines from external trial
   lines(
     y = pd_be[[trt_ext]]$surv,
-    x = (pd_be[[trt_ext]]$time / time_unit[[time_scale]]), col = "#5450E4",
+    x = (pd_be[[trt_ext]]$time / time_unit[[time_scale]]), col = line_col[1],
     type = "s"
   )
   tmpid <- pd_be[[trt_ext]]$censor == 1
   points(
     y = pd_be[[trt_ext]]$surv[tmpid],
     x = (pd_be[[trt_ext]]$time[tmpid] / time_unit[[time_scale]]),
-    col = "#5450E4", pch = 3, cex = 0.7
+    col = line_col[1], pch = 3, cex = 0.7
   )
 
   # add km lines from internal trial before adjustment
   lines(
     y = pd_be[[trt]]$surv,
-    x = (pd_be[[trt]]$time / time_unit[[time_scale]]), col = "#00857C",
+    x = (pd_be[[trt]]$time / time_unit[[time_scale]]), col = line_col[2],
     type = "s"
   )
   tmpid <- pd_be[[trt]]$censor == 1
   points(
     y = pd_be[[trt]]$surv[tmpid],
     x = (pd_be[[trt]]$time[tmpid] / time_unit[[time_scale]]),
-    col = "#00857C", pch = 3, cex = 0.7
+    col = line_col[2], pch = 3, cex = 0.7
   )
 
   # add km lines from internal trial after adjustment
   if (!is.null(km_fit_after)) {
     lines(
       y = pd_af[[trt]]$surv,
-      x = (pd_af[[trt]]$time / time_unit[[time_scale]]), col = "#6ECEB2", lty = 2,
+      x = (pd_af[[trt]]$time / time_unit[[time_scale]]), col = line_col[3], lty = 2,
       type = "s"
     )
     tmpid <- pd_af[[trt]]$censor == 1
     points(
       y = pd_af[[trt]]$surv[tmpid],
       x = (pd_af[[trt]]$time[tmpid] / time_unit[[time_scale]]),
-      col = "#6ECEB2", pch = 3, cex = 0.7
+      col = line_col[3], pch = 3, cex = 0.7
     )
   }
 
   use_leg <- 1:ifelse(is.null(km_fit_after), 2, 3)
   # add legend
   legend("topright",
-    bty = "n", lty = c(1, 1, 2)[use_leg], cex = 0.8, col = c("#5450E4", "#00857C", "#6ECEB2")[use_leg],
+    bty = "n", lty = c(1, 1, 2)[use_leg], cex = 0.8, col = line_col[use_leg],
     legend = c(
       paste0("Comparator: ", trt_ext),
       paste0("Treatment: ", trt),
@@ -180,7 +186,8 @@ km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext
 #' @examples
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
-#' log_cum_haz_plot(kmobj, time_scale = "month", log_time = TRUE, endpoint_name = "OS", subtitle = "(Before Matching)")
+#' log_cum_haz_plot(kmobj, time_scale = "month", log_time = TRUE,
+#'  endpoint_name = "OS", subtitle = "(Before Matching)")
 #'
 #' @return a plot
 #' @export
@@ -195,13 +202,6 @@ log_cum_haz_plot <- function(km_fit,
   if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
 
   clldat <- survfit_makeup(km_fit)
-                             time_scale,
-                             log_time = TRUE,
-                             endpoint_name = "",
-                             subtitle = "",
-                             exclude_censor = TRUE) {
-  time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
-  if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
 
   if (exclude_censor) {
     clldat <- lapply(clldat, function(xxt) xxt[xxt$censor == 0, , drop = FALSE])
@@ -258,7 +258,13 @@ log_cum_haz_plot <- function(km_fit,
 #' @examples
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
-#' resid_plot(unweighted_cox, time_scale = "month", log_time = TRUE, endpoint_name = "OS", subtitle = "(Before Matching)")
+#' resid_plot(
+#'   unweighted_cox,
+#'   time_scale = "month",
+#'   log_time = TRUE,
+#'   endpoint_name = "OS",
+#'   subtitle = "(Before Matching)"
+#'  )
 #'
 #' @return a plot
 #' @export

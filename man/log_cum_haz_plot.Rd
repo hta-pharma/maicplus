@@ -5,7 +5,7 @@
 \title{Plot Log Cumulative Hazard Rate}
 \usage{
 log_cum_haz_plot(
-  clldat,
+  km_fit,
   time_scale,
   log_time = TRUE,
   endpoint_name = "",
@@ -14,6 +14,8 @@ log_cum_haz_plot(
 )
 }
 \arguments{
+\item{km_fit}{returned object from \code{survival::survfit}}
+
 \item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
 
 \item{log_time}{logical, TRUE (default) or FALSE}
@@ -23,8 +25,6 @@ log_cum_haz_plot(
 \item{subtitle}{a character string, subtitle of the plot}
 
 \item{exclude_censor}{logical, should censored data point be plotted}
-
-\item{km_fit}{returned object from \code{survival::survfit}}
 }
 \value{
 a plot
@@ -35,6 +35,7 @@ a diagnosis plot for proportional hazard assumption, versus log-time (default) o
 \examples{
 load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
-log_cum_haz_plot(kmobj, time_scale = "month", log_time = TRUE, endpoint_name = "OS", subtitle = "(Before Matching)")
+log_cum_haz_plot(kmobj, time_scale = "month", log_time = TRUE,
+ endpoint_name = "OS", subtitle = "(Before Matching)")
 
 }

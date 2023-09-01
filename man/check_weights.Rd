@@ -46,10 +46,3 @@ before and after adjustment.
 \item \code{print(maicplus_check_weights)}: Print method for check_weights objects
 
 }}
-\examples{
-load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
-load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
-outdata <- check_weights(match_res, processed_agd = agd)
-print(outdata)
-
-}
