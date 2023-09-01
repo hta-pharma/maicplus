@@ -15,3 +15,10 @@ a list of data frames of variables from survfit. Data frame is divided by treatm
 \description{
 Helper function to select set of variables used for Kaplan-Meier plot
 }
+\examples{
+\dontrun{
+load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+survfit_makeup(kmobj)
+}
+}

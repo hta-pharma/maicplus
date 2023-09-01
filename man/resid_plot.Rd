@@ -24,8 +24,15 @@ resid_plot(
 \item{subtitle}{a character string, subtitle of the plot}
 }
 \value{
-a plot
+a plot of Schoenfel residuals
 }
 \description{
 Plot Schoenfeld residuals for a Cox model fit
+}
+\examples{
+load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+unweighted_cox <- coxph(Surv(TIME, EVENT==1) ~ ARM, data = combined_data_tte)
+resid_plot(unweighted_cox,
+  time_scale = "month", log_time = TRUE,
+  endpoint_name = "OS", subtitle = "(Before Matching)")
 }
