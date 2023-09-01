@@ -185,7 +185,16 @@ km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext
 #' @return a plot
 #' @export
 
-log_cum_haz_plot <- function(clldat,
+log_cum_haz_plot <- function(km_fit,
+                             time_scale,
+                             log_time = TRUE,
+                             endpoint_name = "",
+                             subtitle = "",
+                             exclude_censor = TRUE) {
+  time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
+  if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
+
+  clldat <- survfit_makeup(km_fit)
                              time_scale,
                              log_time = TRUE,
                              endpoint_name = "",
