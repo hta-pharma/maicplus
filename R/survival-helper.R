@@ -7,6 +7,15 @@
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #'
 #' @examples
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+#' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, weights = combined_data_tte$weights, conf.type = "log-log")
+#' 
+#' # Derive median survival time
+#' medSurv <- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")
+#' medSurv_adj <- medSurv_makeup(kmobj_adj, legend = "after matching", time_scale = "day")
+#' medSurv_out <- rbind(medSurv, medSurv_adj)
+#' medSurv_out
 #' @return a data frame with a index column 'type', median survival time and confidence interval
 #' @export
 
@@ -36,6 +45,11 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 #' @param km_fit returned object from \code{survival::survfit}
 #'
 #' @examples
+#' \dontrun{
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+#' survfit_makeup(kmobj)
+#' }
 #' @return a list of data frames of variables from survfit. Data frame is divided by treatment.
 #' @export
 
@@ -51,7 +65,7 @@ survfit_makeup <- function(km_fit) {
     upper = km_fit$upper,
     cumhaz = km_fit$cumhaz
   )
-  kmdat$treatment <- gsub("treatment=", "", attr(km_fit$strata, "names"))[kmdat$treatment]
+  kmdat$treatment <- sapply(strsplit(names(km_fit$strata), "="), "[[", 2)[kmdat$treatment]
   split(kmdat, f = kmdat$treatment)
 }
 
@@ -68,6 +82,11 @@ survfit_makeup <- function(km_fit) {
 #'
 #' @return a Kaplan-Meier plot
 #' @examples
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+#' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, weights = combined_data_tte$weights, conf.type = "log-log")
+#' par(cex.main=0.85)
+#' km_plot(kmobj, kmobj_adj, time_scale = "month", trt = "A", trt_ext = "B", endpoint_name = "OS")
 #' @export
 
 km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext, endpoint_name = "",
@@ -166,6 +185,11 @@ km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext
 #' @param subtitle a character string, subtitle of the plot
 #' @param exclude_censor logical, should censored data point be plotted
 #' @examples
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+#' log_cum_haz_plot(kmobj,
+#' time_scale = "month", log_time = TRUE,
+#' endpoint_name = "OS", subtitle = "(Before Matching)")
 #' @return a plot
 #' @export
 
@@ -233,6 +257,11 @@ log_cum_haz_plot <- function(km_fit,
 #' @param endpoint_name a character string, name of the endpoint
 #' @param subtitle a character string, subtitle of the plot
 #' @examples
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' unweighted_cox <- coxph(Surv(TIME, EVENT==1) ~ ARM, data = combined_data_tte)
+#' resid_plot(unweighted_cox,
+#'   time_scale = "month", log_time = TRUE,
+#'   endpoint_name = "OS", subtitle = "(Before Matching)")
 #' @return a plot
 #' @export
 
@@ -244,7 +273,7 @@ resid_plot <- function(coxobj, time_scale = "month", log_time = TRUE, endpoint_n
   plot_x <- as.numeric(names(schresid)) / time_unit[[time_scale]]
   if (log_time) plot_x <- log(plot_x)
   par(mfrow = c(1, 1), bty = "n", tcl = -0.15, mgp = c(2.3, 0.5, 0))
-  plot(schresid ~ plotX,
+  plot(schresid ~ plot_x,
     cex = 0.9, col = "navyblue", yaxt = "n",
     ylab = "Unscaled Schoenfeld Residual", xlab = paste0(ifelse(log_time, "Log-", ""), "Time in ", time_scale),
     main = paste0(
