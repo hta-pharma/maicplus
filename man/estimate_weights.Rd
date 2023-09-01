@@ -64,9 +64,9 @@ modifiers}
 }
 }
 \description{
-This function takes individual patient data (IPD) with centered covariates
-(effect modifiers and/or prognostic variables) as input and generates
-weights for each individual in IPD trial to match the covariates in aggregate data.
+Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates
+(effect modifiers and/or prognostic variables) as input, and generates weights for each individual in IPD trial
+to match the covariates in aggregate data.
 
 The plot function displays individuals weights with key summary in top right legend that includes
 median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the

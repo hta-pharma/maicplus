@@ -2,7 +2,7 @@
 % Please edit documentation in R/survival-helper.R
 \name{survfit_makeup}
 \alias{survfit_makeup}
-\title{Helper function to select a set of variables used for Kaplan-Meier plot}
+\title{Helper function to select set of variables used for Kaplan-Meier plot}
 \usage{
 survfit_makeup(km_fit)
 }
@@ -10,8 +10,8 @@ survfit_makeup(km_fit)
 \item{km_fit}{returned object from \code{survival::survfit}}
 }
 \value{
-a list of data frames of variables from \code{survival::survfit}. Data frames are divided by treatment.
+a list of data frames of variables from survfit. Data frame is divided by treatment.
 }
 \description{
-Helper function to select a set of variables used for Kaplan-Meier plot
+Helper function to select set of variables used for Kaplan-Meier plot
 }

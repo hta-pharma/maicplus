@@ -1,4 +1,4 @@
-#' helper function: makeup to get median survival time from a `survival::survfit` object
+#' Helper function: makeup to get median survival time from a `survival::survfit` object
 #'
 #' Extract and display median survival time with confidence interval
 #'
@@ -6,8 +6,10 @@
 #' @param legend a character string, name used in 'type' column in returned data frame
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #'
+#' @examples
 #' @return a data frame with a index column 'type', median survival time and confidence interval
 #' @export
+
 medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
   time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
@@ -29,11 +31,12 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 }
 
 
-
-#' Helper function to select a set of variables used for Kaplan-Meier plot
+#' Helper function to select set of variables used for Kaplan-Meier plot
 #'
 #' @param km_fit returned object from \code{survival::survfit}
-#' @return a list of data frames of variables from \code{survival::survfit}. Data frames are divided by treatment.
+#'
+#' @examples
+#' @return a list of data frames of variables from survfit. Data frame is divided by treatment.
 #' @export
 
 survfit_makeup <- function(km_fit) {
@@ -57,14 +60,18 @@ survfit_makeup <- function(km_fit) {
 #'
 #' @param km_fit_before returned object from \code{survival::survfit} before adjustment
 #' @param km_fit_after returned object from \code{survival::survfit} after adjustment
-#' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
-#' @param trt  a character string, name of the interested treatment in internal trial (real IPD)
-#' @param trt_ext character string, name of the interested comparator in external trial used to
-#' subset \code{dat_ext} (pseudo IPD)
-#' @param endpoint_name a character string, name of the endpoint
+#' @param time_scale time unit of median survival time, taking a value of 'year', 'month', 'week' or 'day'
+#' @param trt internal trial treatment
+#' @param trt_ext external trial treatment
+#' @param endpoint_name name of the endpoint
+#' @param line_col color of the line curves with the order of external, internal unadjusted, and internal adjusted
 #'
-#' @return a KM plot
-km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext, endpoint_name = "") {
+#' @return a Kaplan-Meier plot
+#' @examples
+#' @export
+
+km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext, endpoint_name = "",
+                    line_col = c("#5450E4", "#00857C", "#6ECEB2")) {
   time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
   if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
@@ -97,48 +104,48 @@ km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext
   # add km lines from external trial
   lines(
     y = pd_be[[trt_ext]]$surv,
-    x = (pd_be[[trt_ext]]$time / time_unit[[time_scale]]), col = "#5450E4",
+    x = (pd_be[[trt_ext]]$time / time_unit[[time_scale]]), col = line_col[1],
     type = "s"
   )
   tmpid <- pd_be[[trt_ext]]$censor == 1
   points(
     y = pd_be[[trt_ext]]$surv[tmpid],
     x = (pd_be[[trt_ext]]$time[tmpid] / time_unit[[time_scale]]),
-    col = "#5450E4", pch = 3, cex = 0.7
+    col = line_col[1], pch = 3, cex = 0.7
   )
 
   # add km lines from internal trial before adjustment
   lines(
     y = pd_be[[trt]]$surv,
-    x = (pd_be[[trt]]$time / time_unit[[time_scale]]), col = "#00857C",
+    x = (pd_be[[trt]]$time / time_unit[[time_scale]]), col = line_col[2],
     type = "s"
   )
   tmpid <- pd_be[[trt]]$censor == 1
   points(
     y = pd_be[[trt]]$surv[tmpid],
     x = (pd_be[[trt]]$time[tmpid] / time_unit[[time_scale]]),
-    col = "#00857C", pch = 3, cex = 0.7
+    col = line_col[2], pch = 3, cex = 0.7
   )
 
   # add km lines from internal trial after adjustment
   if (!is.null(km_fit_after)) {
     lines(
       y = pd_af[[trt]]$surv,
-      x = (pd_af[[trt]]$time / time_unit[[time_scale]]), col = "#6ECEB2", lty = 2,
+      x = (pd_af[[trt]]$time / time_unit[[time_scale]]), col = line_col[3], lty = 2,
       type = "s"
     )
     tmpid <- pd_af[[trt]]$censor == 1
     points(
       y = pd_af[[trt]]$surv[tmpid],
       x = (pd_af[[trt]]$time[tmpid] / time_unit[[time_scale]]),
-      col = "#6ECEB2", pch = 3, cex = 0.7
+      col = line_col[3], pch = 3, cex = 0.7
     )
   }
 
   use_leg <- 1:ifelse(is.null(km_fit_after), 2, 3)
   # add legend
   legend("topright",
-    bty = "n", lty = c(1, 1, 2)[use_leg], cex = 0.8, col = c("#5450E4", "#00857C", "#6ECEB2")[use_leg],
+    bty = "n", lty = c(1, 1, 2)[use_leg], cex = 0.8, col = line_col[use_leg],
     legend = c(
       paste0("Comparator: ", trt_ext),
       paste0("Treatment: ", trt),
@@ -152,16 +159,17 @@ km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext
 #'
 #' a diagnosis plot for proportional hazard assumption, versus log-time (default) or time
 #'
-#' @param clldat object returned from \code{\link{survfit_makeup}}
+#' @param km_fit returned object from \code{survival::survfit}
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #' @param log_time logical, TRUE (default) or FALSE
 #' @param endpoint_name a character string, name of the endpoint
 #' @param subtitle a character string, subtitle of the plot
 #' @param exclude_censor logical, should censored data point be plotted
-#'
+#' @examples
 #' @return a plot
 #' @export
-log_cum_haz_plot <- function(clldat,
+
+log_cum_haz_plot <- function(km_fit,
                              time_scale,
                              log_time = TRUE,
                              endpoint_name = "",
@@ -169,6 +177,8 @@ log_cum_haz_plot <- function(clldat,
                              exclude_censor = TRUE) {
   time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
   if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
+
+  clldat <- survfit_makeup(km_fit)
 
   if (exclude_censor) {
     clldat <- lapply(clldat, function(xxt) xxt[xxt$censor == 0, , drop = FALSE])
@@ -222,7 +232,7 @@ log_cum_haz_plot <- function(clldat,
 #' @param log_time logical, TRUE (default) or FALSE
 #' @param endpoint_name a character string, name of the endpoint
 #' @param subtitle a character string, subtitle of the plot
-#'
+#' @examples
 #' @return a plot
 #' @export
 
