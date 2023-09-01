@@ -22,3 +22,4 @@ images
 ^maicplus.*\.tgz$
 ^inst/dev/MAIC/MAIC-main/.Rbuildignore
 ^data-raw$
+^design$
