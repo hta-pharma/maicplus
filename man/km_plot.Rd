@@ -2,7 +2,7 @@
 % Please edit documentation in R/survival-helper.R
 \name{km_plot}
 \alias{km_plot}
-\title{helper function: KM plot with unadjusted and adjusted KM}
+\title{Kaplan-Meier plot of before and after adjustments}
 \usage{
 km_plot(
   km_fit_before,
@@ -30,10 +30,10 @@ km_plot(
 \item{line_col}{color of the line curves with the order of external, internal unadjusted, and internal adjusted}
 }
 \value{
-a Kaplan-Meier plot
+a Kaplan-Meier plot of before and after adjustments
 }
 \description{
-helper function: KM plot with unadjusted and adjusted KM
+Kaplan-Meier plot of before and after adjustments
 }
 \examples{
 load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))

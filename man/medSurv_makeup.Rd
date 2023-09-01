@@ -2,7 +2,7 @@
 % Please edit documentation in R/survival-helper.R
 \name{medSurv_makeup}
 \alias{medSurv_makeup}
-\title{Helper function: makeup to get median survival time from a \code{survival::survfit} object}
+\title{Helper function to retrieve median survival time from a \code{survival::survfit} object}
 \usage{
 medSurv_makeup(km_fit, legend = "before matching", time_scale)
 }

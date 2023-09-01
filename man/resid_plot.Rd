@@ -24,7 +24,7 @@ resid_plot(
 \item{subtitle}{a character string, subtitle of the plot}
 }
 \value{
-a plot
+a plot of Schoenfel residuals
 }
 \description{
 Plot Schoenfeld residuals for a Cox model fit

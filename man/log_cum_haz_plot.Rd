@@ -2,7 +2,7 @@
 % Please edit documentation in R/survival-helper.R
 \name{log_cum_haz_plot}
 \alias{log_cum_haz_plot}
-\title{Plot Log Cumulative Hazard Rate}
+\title{Plot of Log Cumulative Hazard Rate}
 \usage{
 log_cum_haz_plot(
   km_fit,
@@ -27,7 +27,7 @@ log_cum_haz_plot(
 \item{exclude_censor}{logical, should censored data point be plotted}
 }
 \value{
-a plot
+a plot of log cumulative hazard rate
 }
 \description{
 a diagnosis plot for proportional hazard assumption, versus log-time (default) or time

@@ -1,4 +1,4 @@
-#' Helper function: makeup to get median survival time from a `survival::survfit` object
+#' Helper function to retrieve median survival time from a `survival::survfit` object
 #'
 #' Extract and display median survival time with confidence interval
 #'
@@ -70,7 +70,7 @@ survfit_makeup <- function(km_fit) {
 }
 
 
-#' helper function: KM plot with unadjusted and adjusted KM
+#' Kaplan-Meier plot of before and after adjustments
 #'
 #' @param km_fit_before returned object from \code{survival::survfit} before adjustment
 #' @param km_fit_after returned object from \code{survival::survfit} after adjustment
@@ -80,7 +80,7 @@ survfit_makeup <- function(km_fit) {
 #' @param endpoint_name name of the endpoint
 #' @param line_col color of the line curves with the order of external, internal unadjusted, and internal adjusted
 #'
-#' @return a Kaplan-Meier plot
+#' @return a Kaplan-Meier plot of before and after adjustments
 #' @examples
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
@@ -174,7 +174,7 @@ km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext
 }
 
 
-#' Plot Log Cumulative Hazard Rate
+#' Plot of Log Cumulative Hazard Rate
 #'
 #' a diagnosis plot for proportional hazard assumption, versus log-time (default) or time
 #'
@@ -190,7 +190,7 @@ km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext
 #' log_cum_haz_plot(kmobj,
 #' time_scale = "month", log_time = TRUE,
 #' endpoint_name = "OS", subtitle = "(Before Matching)")
-#' @return a plot
+#' @return a plot of log cumulative hazard rate
 #' @export
 
 log_cum_haz_plot <- function(km_fit,
@@ -262,7 +262,7 @@ log_cum_haz_plot <- function(km_fit,
 #' resid_plot(unweighted_cox,
 #'   time_scale = "month", log_time = TRUE,
 #'   endpoint_name = "OS", subtitle = "(Before Matching)")
-#' @return a plot
+#' @return a plot of Schoenfel residuals
 #' @export
 
 resid_plot <- function(coxobj, time_scale = "month", log_time = TRUE, endpoint_name = "", subtitle = "") {
