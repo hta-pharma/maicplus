@@ -17,6 +17,8 @@ check_weights(weighted_data, processed_agd)
 )
 }
 \arguments{
+\item{weighted_data}{object returned after calculating weights using \code{\link{estimate_weights}}}
+
 \item{processed_agd}{a data frame, object returned after using \code{\link{process_agd}} or
 aggregated data following the same naming convention}
 
@@ -31,8 +33,6 @@ aggregated data following the same naming convention}
 \item{digits}{minimal number of significant digits, see \link{print.default}.}
 
 \item{...}{further arguments to \link{print.data.frame}}
-
-\item{match_res}{object returned after calculating weights using \code{\link{estimate_weights}}}
 }
 \value{
 data.frame of weighted and unweighted covariate averages of the IPD, and average of aggregate data
