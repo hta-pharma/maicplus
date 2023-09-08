@@ -1,14 +1,19 @@
 ---
-title: "Example run maicplus"
-output:
-  pdf_document: default
-  html_document: default
-  word_document: default
+title: "Using maicplus"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using maicplus}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-```{r, echo= FALSE} 
-knitr::opts_chunk$set(warning = FALSE, message = FALSE, tidy = TRUE)
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 ```
+
 
 # Introduction
 
@@ -89,25 +94,23 @@ We present an unanchored MAIC of two treatments in lung cancer. The two endpoint
 
 # Preprocessing
 
-## Package load
+```{r setup}
+library(maicplus)
+```
 
+Additional suggested packages for this vignette:
 ```{r}
-# change directory
-setwd("~/GitHub/maicplus")
-devtools::load_all()
-
-# devtools::install_github("hta-pharma/maicplus")
-# library(maicplus)
-
 library(dplyr) # this is used for data merging/cleaning. Package itself does not depend on dplyr
 
 library(clubSandwich) # For robust standard error in logistic regression
 library(sandwich)
 
+library(survival)
 library(survminer) # for ggsurvplot
 library(ggplot2) # for ggplot functions
 library(boot) # for bootstrapping
 ```
+
 
 ## Preprocessing IPD
 
@@ -245,7 +248,8 @@ combined_data_tte <- rbind(
   ipd_matched[, colnames(pseudo_ipd)],
   pseudo_ipd
 )
-combined_data_tte
+
+head(combined_data_tte)
 ```
 
 ## Report 1: Kaplan-Meier plot
@@ -456,5 +460,3 @@ A_trial <- AC_trial[AC_trial$treat == 1, ]
 BC_trial <- generate_survival_data(N = 600, marginal_X_mean = 0.45)
 B_trial <- BC_trial[BC_trial$treat == 1, ]
 ```
-
-

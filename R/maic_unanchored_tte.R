@@ -139,6 +139,8 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
 #'
 #' @return a data frame with sample size, incidence rate, median survival time with 95% CI, hazard ratio estimate with
 #' 95% CI and Wald test of hazard ratio
+#'
+#' @export
 
 report_table <- function(coxobj, medSurvobj, tag = NULL) {
   hr_res <- format(round(summary(coxobj)$conf.int[-2], 2), nsmall = 2)
