@@ -23,7 +23,7 @@
 #' # Unanchored example
 #' load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
 #' load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
-#' ipd_centered <- center_ipd(ipd = adsl, agd = agd)
+#' ipd_centered <- center_ipd(ipd = ipd, agd = agd)
 #'
 #' pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
 #' pseudo_ipd$ARM <- "B" # Need to specify ARM for pseudo ipd
