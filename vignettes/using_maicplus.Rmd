@@ -256,7 +256,10 @@ head(combined_data_tte)
 
 ```{r}
 kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
-kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, weights = combined_data_tte$weights, conf.type = "log-log")
+kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM,
+  combined_data_tte,
+  weights = combined_data_tte$weights, conf.type = "log-log"
+)
 
 par(cex.main = 0.85)
 km_plot(kmobj, kmobj_adj, time_scale = "month", trt = "A", trt_ext = "B", endpoint_name = "OS")
@@ -276,7 +279,8 @@ Along with the hazard ratios, we can also find median survival time using `medSu
 ```{r}
 # Fit a Cox model with/without weights to estimate the HR
 unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
-weighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte, weights = combined_data_tte$weights, robust = TRUE)
+weighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, 
+                      data = combined_data_tte, weights = combined_data_tte$weights, robust = TRUE)
 
 # Derive median survival time
 medSurv <- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")
@@ -325,8 +329,8 @@ boot_ci_HR_BCA
 
 ```{r}
 # grambsch & theaneu ph test
-coxdiag <- cox.zph(unweighted_cox, global = F, transform = "log")
-coxdiag_adj <- cox.zph(weighted_cox, global = F, transform = "log")
+coxdiag <- cox.zph(unweighted_cox, global = FALSE, transform = "log")
+coxdiag_adj <- cox.zph(weighted_cox, global = FALSE, transform = "log")
 
 coxdiag
 par(mfrow = c(1, 1), tcl = -0.15)
@@ -375,7 +379,8 @@ One can do all this analysis in a wrapper
 # Simulate response data based on the known proportion of responders
 comparator_prop_events <- 0.4
 
-# Calculate number with event. Use round() to ensure we end up with a whole number of people. number without an event = Total N - number with event to ensure we keep the same number of patients
+# Calculate number with event. Use round() to ensure we end up with a whole number of people.
+# number without an event = Total N - number with event to ensure we keep the same number of patients
 n_with_event <- round(agd$N * comparator_prop_events, digits = 0)
 comparator_binary <- data.frame("RESPONSE" = c(rep(1, n_with_event), rep(0, agd$N - n_with_event)))
 comparator_binary$ARM <- "B" # need to specify ARM for comparator data
@@ -414,7 +419,7 @@ names(OR_CI_wtd) <- c("OR", "OR_low_CI", "OR_upp_CI")
 OR_CI_wtd
 
 # Robust standard error
-vmod <- clubSandwich::vcovCR(weighted_OR, cluster = 1:dim(combined_data_binary)[1], type = "CR2")
+vmod <- clubSandwich::vcovCR(weighted_OR, cluster = seq_len(dim(combined_data_binary)[1]), type = "CR2")
 coef_res <- clubSandwich::conf_int(weighted_OR, vmod, coef = 2)
 
 OR_CI_robust <- exp(with(coef_res, c(beta, CI_L, CI_U)))
