@@ -279,8 +279,9 @@ Along with the hazard ratios, we can also find median survival time using `medSu
 ```{r}
 # Fit a Cox model with/without weights to estimate the HR
 unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
-weighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, 
-                      data = combined_data_tte, weights = combined_data_tte$weights, robust = TRUE)
+weighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM,
+  data = combined_data_tte, weights = combined_data_tte$weights, robust = TRUE
+)
 
 # Derive median survival time
 medSurv <- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")

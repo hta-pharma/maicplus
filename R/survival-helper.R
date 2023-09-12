@@ -11,7 +11,8 @@
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 #' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte,
-#'  weights = combined_data_tte$weights, conf.type = "log-log")
+#'   weights = combined_data_tte$weights, conf.type = "log-log"
+#' )
 #'
 #' # Derive median survival time
 #' medSurv <- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")
@@ -88,7 +89,8 @@ survfit_makeup <- function(km_fit) {
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 #' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte,
-#'   weights = combined_data_tte$weights, conf.type = "log-log")
+#'   weights = combined_data_tte$weights, conf.type = "log-log"
+#' )
 #' par(cex.main = 0.85)
 #' km_plot(kmobj, kmobj_adj, time_scale = "month", trt = "A", trt_ext = "B", endpoint_name = "OS")
 #' @export

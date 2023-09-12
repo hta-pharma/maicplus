@@ -27,8 +27,8 @@
 #' ipd_centered <- center_ipd(ipd = ipd, agd = agd)
 #'
 #' pseudo_ipd <- read.csv(
-#'  system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE)
-#'  )
+#'   system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE)
+#' )
 #' pseudo_ipd$ARM <- "B" # Need to specify ARM for pseudo ipd
 #'
 #' # Need to ensure pseudo_ipd and ipd_matched have same names
