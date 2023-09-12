@@ -4,7 +4,8 @@
 #' @param dat a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial
 #' @param dat_ext a data frame, pseudo IPD from digitized KM curve of external trial
 #' @param trt  a character string, name of the interested treatment in internal trial (real IPD)
-#' @param trt_ext character string, name of the interested comparator in external trial used to subset \code{dat_ext} (pseudo IPD)
+#' @param trt_ext character string, name of the interested comparator in external trial used to subset
+#' \code{dat_ext} (pseudo IPD)
 #' @param endpoint_name a character string, name of the endpoint
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #' @param transform a character string, pass to \code{\link[survival]{cox.zph}}
@@ -70,8 +71,8 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
   res[["report_median_surv"]] <- medSurv_out
 
   # fit PH Cox regression model
-  coxobj <- coxph(Surv(time, status) ~ treatment, dat, robust = T)
-  coxobj_adj <- coxph(Surv(time, status) ~ treatment, dat, weights = dat$weight, robust = T)
+  coxobj <- coxph(Surv(time, status) ~ treatment, dat, robust = TRUE)
+  coxobj_adj <- coxph(Surv(time, status) ~ treatment, dat, weights = dat$weight, robust = TRUE)
 
   res[["fit_cox_model_before"]] <- coxobj
   res[["fit_cox_model_after"]] <- coxobj_adj
@@ -84,8 +85,8 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
   # ==> Report 3: Diagnosis Plot
 
   # grambsch & theaneu ph test
-  coxdiag <- cox.zph(coxobj, global = F, transform = transform)
-  coxdiag_adj <- cox.zph(coxobj_adj, global = F, transform = transform)
+  coxdiag <- cox.zph(coxobj, global = FALSE, transform = transform)
+  coxdiag_adj <- cox.zph(coxobj_adj, global = FALSE, transform = transform)
 
   res[["fit_GT_test_before"]] <- coxdiag
   par(mfrow = c(1, 1), tcl = -0.15)
@@ -139,6 +140,8 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
 #'
 #' @return a data frame with sample size, incidence rate, median survival time with 95% CI, hazard ratio estimate with
 #' 95% CI and Wald test of hazard ratio
+#'
+#' @export
 
 report_table <- function(coxobj, medSurvobj, tag = NULL) {
   hr_res <- format(round(summary(coxobj)$conf.int[-2], 2), nsmall = 2)
@@ -149,7 +152,7 @@ report_table <- function(coxobj, medSurvobj, tag = NULL) {
   meds_report <- format(round(medSurvobj[, c("median", "0.95LCL", "0.95UCL")], 1), nsmall = 1)
   meds_report <- apply(meds_report, 1, function(xx) paste0(xx[1], "[", xx[2], ";", xx[3], "]"))
 
-  desc_res <- cbind(medSurvobj[, "treatment", drop = F],
+  desc_res <- cbind(medSurvobj[, "treatment", drop = FALSE],
     data.frame(N = round(medSurvobj$n.max, 1)),
     "n.events(%)" = paste0(
       round(medSurvobj$events, 1), "(",

@@ -80,6 +80,14 @@ for ggplot is to plot unscaled and scaled weights on a same plot.
 
 }}
 \examples{
+load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
+load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
+ipd_centered <- center_ipd(ipd = ipd, agd = agd)
+
+centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+centered_colnames <- paste0(centered_colnames, "_CENTERED")
+weighted_data <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
+
 load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
 plot(weighted_data)
 

@@ -35,7 +35,8 @@ aggregated data following the same naming convention}
 \item{...}{further arguments to \link{print.data.frame}}
 }
 \value{
-data.frame of weighted and unweighted covariate averages of the IPD, and average of aggregate data
+data.frame of weighted and unweighted covariate averages of the IPD,
+average of aggregate data, and sum of inner products of covariate \eqn{x_i} and the weights (\eqn{exp(x_i\beta)})
 }
 \description{
 This function checks to see if the optimization is done properly by checking the covariate averages
@@ -46,3 +47,9 @@ before and after adjustment.
 \item \code{print(maicplus_check_weights)}: Print method for check_weights objects
 
 }}
+\examples{
+load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
+load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
+check_weights(weighted_data, agd)
+
+}

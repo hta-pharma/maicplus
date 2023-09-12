@@ -34,3 +34,4 @@ package.json
 maicplus.Rcheck/
 maicplus*.tar.gz
 maicplus*.tgz
+inst/doc
