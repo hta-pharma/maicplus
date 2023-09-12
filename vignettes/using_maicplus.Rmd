@@ -17,54 +17,82 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-This package describes the steps required to perform a matching-adjusted indirect comparison (MAIC) analysis using the `maicplus` package in R where the endpoint of interest is either time-to-event (e.g. overall survival) or binary (e.g. objective tumor response).
+This package describes the steps required to perform a matching-adjusted indirect comparison (MAIC) analysis using the
+`maicplus` package in R where the endpoint of interest is either time-to-event (e.g. overall survival) or binary
+(e.g. objective tumor response).
 
-The methods described in this document are based on those originally described by Signorovitch et al. 2010 and described in the National Institute for Health and Care Excellence (NICE) Decision Support Unit (DSU) Technical Support Document (TSD) 18. [signorovitch2010; phillippo2016a]
+The methods described in this document are based on those originally described by Signorovitch et al. 2010 and
+described in the National Institute for Health and Care Excellence (NICE) Decision Support Unit (DSU) Technical Support
+Document (TSD) 18. [signorovitch2010; phillippo2016a]
 
 MAIC methods are often required when: 
 
-* There is no common comparator treatment to link a clinical trial of a new intervention to clinical trials of other treatments in a given disease area. For example if the only study of a new intervention is a single arm trial with no control group. This is commonly referred to as an unanchored MAIC.
-* A common comparator is available to link a clinical trial of a new intervention to a clinical trial of one other treatment in a given disease area but there are substantial differences in patient demographic or disease characteristics that are believed to be treatment effect modifiers. This is commonly referred to as an anchored MAIC.
+* There is no common comparator treatment to link a clinical trial of a new intervention to clinical trials of other
+treatments in a given disease area. For example if the only study of a new intervention is a single arm trial with no
+control group. This is commonly referred to as an unanchored MAIC.
+* A common comparator is available to link a clinical trial of a new intervention to a clinical trial of one other
+treatment in a given disease area but there are substantial differences in patient demographic or disease
+characteristics that are believed to be treatment effect modifiers. This is commonly referred to as an anchored MAIC.
 
-The premise of MAIC methods is to adjust for between-trial differences in patient demographic or disease characteristics at baseline. When a common treatment comparator or ‘linked network’ are unavailable, a MAIC assumes that differences between absolute outcomes that would be observed in each trial are entirely explained by imbalances in prognostic variables and treatment effect
-modifiers. Prognostic variables are those that are predictive of disease outcomes, independent of the treatment received. For example, older patients may have increased risk of death compared to younger patients. Treatment effect modifiers are those variables that influence the relative effect of one treatment compared to another. For example patients with a better performance status may experience a larger treatment benefit than those with a worse performance status. Under this assumption, every prognostic variable and every treatment effect modifier that is imbalanced between the two studies must be available. This assumption is generally considered very difficult to
-meet. [phillippo2016a] There are several ways of identifying prognostic variables/treatment effect modifiers to be used in the MAIC analyses, some of which include:
+The premise of MAIC methods is to adjust for between-trial differences in patient demographic or disease characteristics
+at baseline. When a common treatment comparator or 'linked network' are unavailable, a MAIC assumes that differences
+between absolute outcomes that would be observed in each trial are entirely explained by imbalances in prognostic
+variables and treatment effect modifiers. Prognostic variables are those that are predictive of disease outcomes,
+independent of the treatment received. For example, older patients may have increased risk of death compared to younger
+patients. Treatment effect modifiers are those variables that influence the relative effect of one treatment compared
+to another. For example patients with a better performance status may experience a larger treatment benefit than those
+with a worse performance status. Under this assumption, every prognostic variable and every treatment effect modifier
+that is imbalanced between the two studies must be available. This assumption is generally considered very difficult to
+meet. [phillippo2016a] There are several ways of identifying prognostic variables/treatment effect modifiers to be 
+used in the MAIC analyses, some of which include:
 
 * Clinical expertise (when available to a project)
 * Published papers/previous submissions (what has been identified in the disease area previously)
 * Univariable/multivariable regression analyses to identify which covariates have a significant effect on the outcome
-* Subgroup analyses of clinical trials may identify interactions between patient characteristics and the relative treatment effect
+* Subgroup analyses of clinical trials may identify interactions between patient characteristics and the relative
+treatment effect
 
 
 # Theory behind MAIC
 
 We will briefly go over the theory behind MAIC. For detailed information, see Signorovitch et al. 2010. 
 
-Let us define $t_i$ to be the treatment patient $i$ received. We assume $t_i=0$ if the patient received intervention (IPD) and $t_i=1$ if the patient received comparator treatment. The causal effect of treatment $T=0$ vs $T=1$ on the mean of the outcome $Y$ can be estimated as below
+Let us define $t_i$ to be the treatment patient $i$ received. We assume $t_i=0$ if the patient received intervention
+(IPD) and $t_i=1$ if the patient received comparator treatment. The causal effect of treatment $T=0$ vs $T=1$ on the
+mean of the outcome $Y$ can be estimated as below
 
 \[
 \frac{\sum_{i=1}^{n}y_{i}(1-t_{i})w_{i}}{\sum_{i=1}^{n}(1-t_{i})w_{i}}-\bar{y}_{1}
 \]
 
-where $w_i=\frac{Pr(T_i=1\mid x_i)}{Pr(T_i=0\mid x_i)}$ is the odds that patient $i$ received treatment $T=1$ vs $T=0$ (i.e. enrolls in aggregate data study vs IPD study) given baseline characteristics $x_i$. Thus, the patients receiving $T=0$ are re-weighted to match the distribution of patients receiving $T=1$. Note that this causal effect would be the case when the outcome $Y$ is continuous. If the outcome is binary, $Y$ would be a proportion and we would use a link function such as logit to give us the causal effect in an odds ratio scale. As in propensity score methods, we may assume $w_i$ to follow logistic regression form
+where $w_i=\frac{Pr(T_i=1\mid x_i)}{Pr(T_i=0\mid x_i)}$ is the odds that patient $i$ received treatment $T=1$ vs $T=0$
+(i.e. enrolls in aggregate data study vs IPD study) given baseline characteristics $x_i$. Thus, the patients receiving
+$T=0$ are re-weighted to match the distribution of patients receiving $T=1$. Note that this causal effect would be the
+case when the outcome $Y$ is continuous. If the outcome is binary, $Y$ would be a proportion and we would use a link
+function such as logit to give us the causal effect in an odds ratio scale. As in propensity score methods, we may
+assume $w_i$ to follow logistic regression form
 
 \[
 w_{i}=exp(x_i^{T}\beta)
 \]
 
-However, in order to estimate $\beta$, we cannot use maximum likelihood approach because we do not have IPD for both trials. Instead, we use method of moments. We estimate $\beta$ such that the weighted averages of the covariates in the IPD exactly matches the aggregate data averages. Mathematically speaking, we want to estimate $\beta$ such that:
+However, in order to estimate $\beta$, we cannot use maximum likelihood approach because we do not have IPD for both
+trials. Instead, we use method of moments. We estimate $\beta$ such that the weighted averages of the covariates in the
+IPD exactly matches the aggregate data averages. Mathematically speaking, we want to estimate $\beta$ such that:
 
 \[
 0=\frac{\sum_{i=1}^{n}x_{i}exp(x_i^{T}\hat{\beta})}{\sum_{i=1}^{n}exp(x_i^{T}\hat{\beta})}-\bar{x}_{agg}
 \]
 
-If the $x_i$ contains all confounders and the logistic regression for $w_i$ is correctly specified, we obtain a consistent estimate of the causal effect of intervention vs comparator treatment. Above equation is equivalent to
+If the $x_i$ contains all confounders and the logistic regression for $w_i$ is correctly specified, we obtain a
+consistent estimate of the causal effect of intervention vs comparator treatment. Above equation is equivalent to
 
 \[
 0=\sum_{i=1}^{n}(x_{i}-\bar{x}_{agg})exp(x_{i}^{T}\hat{\beta})
 \]
 
-We could transform transform IPD by subtracting the aggregate data means (this is why centering is needed when preprocessing). 
+We could transform transform IPD by subtracting the aggregate data means (this is why centering is needed when
+preprocessing). 
 
 \[
 0=\sum_{i=1}^{n}x_{i}exp(x_{i}^{T}\hat{\beta})
@@ -82,15 +110,19 @@ which has second derivative
 Q''(\beta)=\sum_{i=1}^{n}x_ix_i^Texp(x_{i}^{T}\hat{\beta})
 \]
 
-Since $Q''(\beta)$ is positive-definite for all $\beta$, $Q(\beta)$ is convex and any finite solution from the equation is unique and corresponds to the global minimum of $Q(\beta)$. Thus, we can use optimization methods to calculate $\beta$.
+Since $Q''(\beta)$ is positive-definite for all $\beta$, $Q(\beta)$ is convex and any finite solution from
+the equation is unique and corresponds to the global minimum of $Q(\beta)$. Thus, we can use optimization 
+methods to calculate $\beta$.
 
 # Example scenario
 
-We present an unanchored MAIC of two treatments in lung cancer. The two endpoints being compared are overall survival (a time to event outcome) and objective response (a binary outcome). The data available are:
+We present an unanchored MAIC of two treatments in lung cancer. The two endpoints being compared are overall survival
+(a time to event outcome) and objective response (a binary outcome). The data available are:
 
 * Individual patient data from a single arm study
 * Aggregate summary data for the comparator study
-* Psuedo patient data from the comparator study. This is not required for the matching process but is needed to derive the relative treatment effects between the internal treatment and comparator treatment.
+* Pseudo patient data from the comparator study. This is not required for the matching process but is needed to derive
+the relative treatment effects between the internal treatment and comparator treatment.
 
 # Preprocessing
 
@@ -114,9 +146,11 @@ library(boot) # for bootstrapping
 
 ## Preprocessing IPD
 
-In this example scenario, age, sex, the Eastern Cooperative Oncology Group (ECOG) performance status, smoking status, and number of previous treatments have been identified as imbalanced prognostic variables/treatment effect modifiers.
+In this example scenario, age, sex, the Eastern Cooperative Oncology Group (ECOG) performance status, smoking status,
+and number of previous treatments have been identified as imbalanced prognostic variables/treatment effect modifiers.
 
-This example reads in and combines data from three standard simulated data sets (adsl, adrs and adtte) which are saved as '.csv' files.
+This example reads in and combines data from three standard simulated data sets (adsl, adrs and adtte) which are saved
+as '.csv' files.
 
 ```{r}
 adsl <- read.csv(system.file("extdata", "adsl.csv",
@@ -157,11 +191,16 @@ head(ipd)
 
 ## Preprocessing aggregate data
 
-There are two ways of specifying aggregate data. One approach is to read in aggregate data using an excel spreadsheet. In the spreadsheet, possible variable types include mean, median, or standard deviation for continuous variables and count or proportion for binary variables. The naming should be followed by these suffixes accordingly: _COUNT, _MEAN, _MEDIAN, _SD, _PROP. Then, `process_agd` will convert the count into proportions.
+There are two ways of specifying aggregate data. One approach is to read in aggregate data using an excel spreadsheet.
+In the spreadsheet, possible variable types include mean, median, or standard deviation for continuous variables and
+count or proportion for binary variables. The naming should be followed by these suffixes accordingly: _COUNT, _MEAN,
+_MEDIAN, _SD, _PROP. Then, `process_agd` will convert the count into proportions.
 
-Other way is to define data frame of aggregate data in R. If you do it this way, _COUNT prefix should not be specified and only proportion is allowed for binary variables. Other suffix names would be the same as the first approach.
+Other way is to define data frame of aggregate data in R. If you do it this way, _COUNT prefix should not be specified
+and only proportion is allowed for binary variables. Other suffix names would be the same as the first approach.
 
-Possible missingness in the binary variables should be accounted for by subtracting the denominator by the missing count i.e. proportion = count / (N - missing).
+Possible missingness in the binary variables should be accounted for by subtracting the denominator by the missing
+count i.e. proportion = count / (N - missing).
 
 ```{r}
 # Through excel spreadsheet
@@ -193,11 +232,18 @@ head(ipd_centered)
 
 ### How to handle standard deviation aggregate summary
 
-As described by Phillippo et al. 2016, balancing on both mean and standard deviation for continuous variables (where possible) may be considered in some cases. If a standard deviation is provided in the comparator population, preprocessing is done so that in the target population, $E(X^2)$ is calculated using the variance formula $Var(X)=E(X^{2})-E(X)^{2}$. This $E(X^2)$ in the target population is matched with the IPD level data, which is why $X^{2}$ was calculated during the preprocessing stage of IPD.
+As described by Phillippo et al. 2016, balancing on both mean and standard deviation for continuous variables (where
+possible) may be considered in some cases. If a standard deviation is provided in the comparator population, 
+preprocessing is done so that in the target population, $E(X^2)$ is calculated using the variance formula 
+$Var(X)=E(X^{2})-E(X)^{2}$. This $E(X^2)$ in the target population is matched with the IPD level data, which is why 
+$X^{2}$ was calculated during the preprocessing stage of IPD.
 
 ### How to handle median aggregate summary
 
-If a median is provided, IPD is preprocessed to categorize the variable into a binary variable. All the values in the IPD that are higher than the comparator population median is assigned a value of 1. Conversely, all values that are lower are assigned a value of 0. Comparator population median is replaced by 0.5 to adjust to the categorization in the IPD data. The newly created IPD binary variable is matched so that the proportion is 0.5.
+If a median is provided, IPD is preprocessed to categorize the variable into a binary variable. All the values in the
+IPD that are higher than the comparator population median is assigned a value of 1. Conversely, all values that are
+lower are assigned a value of 0. Comparator population median is replaced by 0.5 to adjust to the categorization in
+the IPD data. The newly created IPD binary variable is matched so that the proportion is 0.5.
 
 # Calculating weights
 
@@ -219,7 +265,8 @@ plot(weighted_data)
 plot(weighted_data, ggplot = TRUE)
 ```
 
-Another check after the weights are calculated is to look at how the weighted covariates match with the aggregate data summary.
+Another check after the weights are calculated is to look at how the weighted covariates match with the aggregate data 
+summary.
 
 ```{r}
 outdata <- check_weights(weighted_data, agd)
@@ -229,7 +276,8 @@ outdata
 
 # Time to event analysis
 
-We first need to combine internal IPD data with pseudo comparator IPD. To obtain pseudo comparator IPD, we would digitize Kaplan Meier curves from the comparator study.
+We first need to combine internal IPD data with pseudo comparator IPD. To obtain pseudo comparator IPD, we would 
+digitize Kaplan Meier curves from the comparator study.
 
 ```{r}
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
@@ -265,7 +313,7 @@ par(cex.main = 0.85)
 km_plot(kmobj, kmobj_adj, time_scale = "month", trt = "A", trt_ext = "B", endpoint_name = "OS")
 ```
 
-There is also a ggplot option for Kaplan-Meier curves using `survminer` R package.
+There is also a `"ggplot"` option for Kaplan-Meier curves using `survminer` R package.
 
 ```{r}
 # km_plot2(combined_data_tte, trt = "A", trt_ext = "B", censor = TRUE, risk.table = TRUE)
@@ -273,13 +321,15 @@ There is also a ggplot option for Kaplan-Meier curves using `survminer` R packag
 
 ## Report 2: Analysis table (Cox model) before and after matching, incl Median Survival Time
 
-We can then fit a cox regression model using the combined dataset. For the weight adjusted cox regression, we fit the model with robust standard errors.
-Along with the hazard ratios, we can also find median survival time using `medSurv_makeup` function. Then, `report_table` function nicely combines the information together and create a result table.
+We can then fit a cox regression model using the combined dataset. For the weight adjusted cox regression, we fit the
+model with robust standard errors.
+Along with the hazard ratios, we can also find median survival time using `medSurv_makeup` function. Then, 
+`report_table` function nicely combines the information together and create a result table.
 
 ```{r}
 # Fit a Cox model with/without weights to estimate the HR
 unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
-weighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, 
+weighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM,
                       data = combined_data_tte, weights = combined_data_tte$weights, robust = TRUE)
 
 # Derive median survival time
