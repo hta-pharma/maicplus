@@ -9,8 +9,9 @@
 #'   from the internal IPD study. This data frame should have already been
 #'   centered using [center_ipd] function
 #' @param i Index used to select a sample within \code{\link{boot}}.
-#' @param centered_colnames A character vector giving the names of the covariates to use in matching. These names must match the column names in internal dataset.
-#' @param psuedo_ipd A data frame containing pseudo individual patient data
+#' @param centered_colnames A character vector giving the names of the covariates to use in matching.
+#'  These names must match the column names in internal dataset.
+#' @param pseudo_ipd A data frame containing pseudo individual patient data
 #'   from the comparator study needed to derive the relative treatment effect.
 #'   Pseudo IPD is only used for unanchored case. pseudo_ipd should have time, event,
 #'   and ARM variable with a same name and order as that of ipd_centered
@@ -25,7 +26,9 @@
 #' load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
 #' ipd_centered <- center_ipd(ipd = ipd, agd = agd)
 #'
-#' pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
+#' pseudo_ipd <- read.csv(
+#'  system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE)
+#'  )
 #' pseudo_ipd$ARM <- "B" # Need to specify ARM for pseudo ipd
 #'
 #' # Need to ensure pseudo_ipd and ipd_matched have same names

@@ -33,6 +33,7 @@ a plot of log cumulative hazard rate
 a diagnosis plot for proportional hazard assumption, versus log-time (default) or time
 }
 \examples{
+library(survival)
 load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 log_cum_haz_plot(kmobj,

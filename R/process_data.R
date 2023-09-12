@@ -147,12 +147,13 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level) {
 #' For instance, if we binarize SEX variable with MALE as a reference using [dummize_ipd],
 #' function names the new variable as SEX_MALE.
 #' In this case, SEX_MALE should also be available in the aggregate data.
-#' @param agd pre-processed aggregate data which contain STUDY, ARM, and N. Variable names should be followed
-#' by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP). Note that COUNT suffix is no longer accepted.
+#' @param agd pre-processed aggregate data which contain STUDY, ARM, and N. Variable names
+#' should be followed by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP). Note that COUNT
+#' suffix is no longer accepted.
 #' @examples
 #' # load in IPD
 #' adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus", mustWork = TRUE))
-#' adsl <- dummize_ipd(ipd, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
+#' adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
 #'
 #' # Reading aggregate data by Excel
 #' target_pop <- read.csv(

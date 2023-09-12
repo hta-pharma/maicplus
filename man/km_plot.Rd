@@ -36,9 +36,11 @@ a Kaplan-Meier plot of before and after adjustments
 Kaplan-Meier plot of before and after adjustments
 }
 \examples{
+library(survival)
 load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
-kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, weights = combined_data_tte$weights, conf.type = "log-log")
+kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte,
+  weights = combined_data_tte$weights, conf.type = "log-log")
 par(cex.main = 0.85)
 km_plot(kmobj, kmobj_adj, time_scale = "month", trt = "A", trt_ext = "B", endpoint_name = "OS")
 }

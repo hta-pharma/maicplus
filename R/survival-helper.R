@@ -7,9 +7,11 @@
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #'
 #' @examples
+#' library(survival)
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
-#' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, weights = combined_data_tte$weights, conf.type = "log-log")
+#' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte,
+#'  weights = combined_data_tte$weights, conf.type = "log-log")
 #'
 #' # Derive median survival time
 #' medSurv <- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")
@@ -82,9 +84,11 @@ survfit_makeup <- function(km_fit) {
 #'
 #' @return a Kaplan-Meier plot of before and after adjustments
 #' @examples
+#' library(survival)
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
-#' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, weights = combined_data_tte$weights, conf.type = "log-log")
+#' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte,
+#'   weights = combined_data_tte$weights, conf.type = "log-log")
 #' par(cex.main = 0.85)
 #' km_plot(kmobj, kmobj_adj, time_scale = "month", trt = "A", trt_ext = "B", endpoint_name = "OS")
 #' @export
@@ -185,6 +189,7 @@ km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext
 #' @param subtitle a character string, subtitle of the plot
 #' @param exclude_censor logical, should censored data point be plotted
 #' @examples
+#' library(survival)
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 #' log_cum_haz_plot(kmobj,
@@ -258,6 +263,7 @@ log_cum_haz_plot <- function(km_fit,
 #' @param endpoint_name a character string, name of the endpoint
 #' @param subtitle a character string, subtitle of the plot
 #' @examples
+#' library(survival)
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
 #' resid_plot(unweighted_cox,

@@ -30,6 +30,7 @@ a plot of Schoenfel residuals
 Plot Schoenfeld residuals for a Cox model fit
 }
 \examples{
+library(survival)
 load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
 resid_plot(unweighted_cox,

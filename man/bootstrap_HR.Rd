@@ -21,7 +21,13 @@ centered using \link{center_ipd} function}
 
 \item{i}{Index used to select a sample within \code{\link{boot}}.}
 
-\item{centered_colnames}{A character vector giving the names of the covariates to use in matching. These names must match the column names in internal dataset.}
+\item{centered_colnames}{A character vector giving the names of the covariates to use in matching.
+These names must match the column names in internal dataset.}
+
+\item{pseudo_ipd}{A data frame containing pseudo individual patient data
+from the comparator study needed to derive the relative treatment effect.
+Pseudo IPD is only used for unanchored case. pseudo_ipd should have time, event,
+and ARM variable with a same name and order as that of ipd_centered}
 
 \item{model}{Survival model to run to calculate HR with correct time, event, and #'   ARM names}
 
@@ -29,11 +35,6 @@ centered using \link{center_ipd} function}
 This value (default 0.0001) will replace weights estimated at 0 in a sample.}
 
 \item{ref_treat}{Reference treatment for the survival model}
-
-\item{psuedo_ipd}{A data frame containing pseudo individual patient data
-from the comparator study needed to derive the relative treatment effect.
-Pseudo IPD is only used for unanchored case. pseudo_ipd should have time, event,
-and ARM variable with a same name and order as that of ipd_centered}
 }
 \value{
 The HR bootstraps
@@ -50,7 +51,9 @@ load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
 load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
 ipd_centered <- center_ipd(ipd = ipd, agd = agd)
 
-pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
+pseudo_ipd <- read.csv(
+ system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE)
+ )
 pseudo_ipd$ARM <- "B" # Need to specify ARM for pseudo ipd
 
 # Need to ensure pseudo_ipd and ipd_matched have same names
