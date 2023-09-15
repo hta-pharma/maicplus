@@ -2,7 +2,7 @@
 % Please edit documentation in R/survival-helper.R
 \name{log_cum_haz_plot}
 \alias{log_cum_haz_plot}
-\title{Plot Log Cumulative Hazard Rate}
+\title{Plot of Log Cumulative Hazard Rate}
 \usage{
 log_cum_haz_plot(
   km_fit,
@@ -27,8 +27,17 @@ log_cum_haz_plot(
 \item{exclude_censor}{logical, should censored data point be plotted}
 }
 \value{
-a plot
+a plot of log cumulative hazard rate
 }
 \description{
 a diagnosis plot for proportional hazard assumption, versus log-time (default) or time
+}
+\examples{
+library(survival)
+load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+log_cum_haz_plot(kmobj,
+  time_scale = "month", log_time = TRUE,
+  endpoint_name = "OS", subtitle = "(Before Matching)"
+)
 }
