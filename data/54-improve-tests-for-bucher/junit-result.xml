@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="bucher" timestamp="2023-09-19T09:51:18Z" hostname="fc6943cfb5f1" tests="2" skipped="0" failures="1" errors="0" time="0.058">
+    <testcase time="0.012" classname="bucher" name="bucher_works_as_expected"/>
+    <testcase time="0.046" classname="bucher" name="bucher_works_when_difference_in_trt_effects_is_positive">
+      <failure type="failure" message="`result` not equal to `expected`. ('test-bucher.R:31:3')">`result` not equal to `expected`.
+Component "est": Mean relative difference: 2
+Component "se": Mean relative difference: 0.2155355
+Component "ci_l": Mean relative difference: 28.86361
+Component "ci_u": Mean relative difference: 1.136449
+Component "pval": Mean relative difference: 0.680807</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="matching" timestamp="2023-09-19T09:51:18Z" hostname="fc6943cfb5f1" tests="2" skipped="0" failures="0" errors="0" time="0.068">
+    <testcase time="0.0599999999999998" classname="matching" name="ess_footnote_text_works"/>
+    <testcase time="0.00800000000000001" classname="matching" name="calculate_weights_legend_works"/>
+  </testsuite>
+</testsuites>
