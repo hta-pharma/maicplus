@@ -14,3 +14,19 @@ test_that("bucher works as expected", {
   )
   expect_equal(result, expected)
 })
+test_that("bucher works when difference in trt effects is positive", {
+  result <- bucher(
+    trt = list(est = 1.4, se = 0.09),
+    com = list(est = 1.2, se = 0.07),
+    conf_lv = 0.9
+  )
+
+  expected <- list(
+    est = -0.2,
+    se = 0.0894427190999916,
+    ci_l = -0.347120180916023,
+    ci_u = -0.0528798190839771,
+    pval = 0.0253473186774683
+  )
+  expect_equal(result, expected)
+})
