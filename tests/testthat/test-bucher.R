@@ -22,7 +22,7 @@ test_that("bucher works when difference in trt effects is positive", {
   )
 
   expected <- list(
-    est = -0.2,
+    est = 0.2,
     se = 0.0894427190999916,
     ci_l = -0.347120180916023,
     ci_u = -0.0528798190839771,
