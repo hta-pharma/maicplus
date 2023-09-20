@@ -127,7 +127,9 @@ the relative treatment effects between the internal treatment and comparator tre
 # Preprocessing
 
 ```{r setup}
-library(maicplus)
+#devtools::install_github("hta-pharma/maicplus", ref = "main")
+#library(maicplus)
+devtools::load_all() # for development purposes
 ```
 
 Additional suggested packages for this vignette:
@@ -276,8 +278,7 @@ outdata
 
 # Time to event analysis
 
-We first need to combine internal IPD data with pseudo comparator IPD. To obtain pseudo comparator IPD, we would 
-digitize Kaplan Meier curves from the comparator study.
+We first need to combine internal IPD data with pseudo comparator IPD. To obtain pseudo comparator IPD, we would digitize Kaplan Meier curves from the comparator study.
 
 ```{r}
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
@@ -316,7 +317,7 @@ km_plot(kmobj, kmobj_adj, time_scale = "month", trt = "A", trt_ext = "B", endpoi
 There is also a `"ggplot"` option for Kaplan-Meier curves using `survminer` R package.
 
 ```{r}
-# km_plot2(combined_data_tte, trt = "A", trt_ext = "B", censor = TRUE, risk.table = TRUE)
+km_plot2(combined_data_tte, trt = "A", trt_ext = "B", censor = TRUE, risk.table = TRUE)
 ```
 
 ## Report 2: Analysis table (Cox model) before and after matching, incl Median Survival Time
