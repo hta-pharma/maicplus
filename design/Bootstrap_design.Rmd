@@ -49,7 +49,7 @@ pre { /* Code block - determines code spacing between lines */
 
 
 
-# Method 1 
+# Approach 1 
 
 ## Steps
 - Create bootstrap_HR() function to get the bootstrap weighted hazard ratios.
@@ -198,7 +198,7 @@ Add section 'Report 4: Bootstrapping' in the maic_tte_unanchor() function of the
 ```
 
 
-# Another way
+# Approach 2
 
 - Changed the old names to the names we are using in maicplus to i.e. intervention_data is no longer used
 - We removed dplyr dependence. So, we can no longer use dplyr::bind_rows and dplyr::mutate
@@ -372,4 +372,14 @@ HR_median
 boot_ci_HR
 boot_ci_HR_BCA
 ```
+
+
+# Decision
+
+1. The function feed into boot can be separately written, then bootstrap_XX function can be feed into maic_unanchored/maic_anchored function later
+
+2. Separate function for anchored and unanchored for bootstrapping? This is resolved by using the design in item (1)
+
+3. Issue 23, add vignette for using pkg, merge the pull request and then proceed to work on bootstrap design issue
+
 
