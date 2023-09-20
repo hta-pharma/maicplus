@@ -127,8 +127,8 @@ the relative treatment effects between the internal treatment and comparator tre
 # Preprocessing
 
 ```{r setup}
-#devtools::install_github("hta-pharma/maicplus", ref = "main")
-#library(maicplus)
+# devtools::install_github("hta-pharma/maicplus", ref = "main")
+# library(maicplus)
 devtools::load_all() # for development purposes
 ```
 
