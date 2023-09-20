@@ -1,6 +1,7 @@
 ---
 title: "Using maicplus"
-output: rmarkdown::html_vignette
+output: 
+  word_document: default
 vignette: >
   %\VignetteIndexEntry{Using maicplus}
   %\VignetteEngine{knitr::rmarkdown}
