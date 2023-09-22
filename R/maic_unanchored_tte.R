@@ -17,6 +17,7 @@
 #' }
 #'
 #' @return A list of KM plot, analysis table, and diagnostic plot
+#' @importFrom grDevices recordPlot
 #' @export
 
 maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
