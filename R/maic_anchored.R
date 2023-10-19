@@ -5,8 +5,8 @@
 #' @param useWt a numeric vector of individual MAIC weights, length should the same as \code{nrow(dat_igd)}
 #' @param dat_ipd a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial
 #' @param dat_pseudo a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or from contingency table (for binary endpoint)
-#' @param trt_ipd  a character string, name of the interested investigation treatment in internal trial \code{dat_igd} (real IPD)
-#' @param trt_agd a character string, name of the interested investigation treatment in external trial \code{dat_pseudo} (pseudo IPD)
+#' @param trt_ipd  a character string, name of the interested investigational arm in internal trial \code{dat_igd} (real IPD)
+#' @param trt_agd a character string, name of the interested investigational arm in external trial \code{dat_pseudo} (pseudo IPD)
 #' @param trt_common a character string, name of the common comparator in internal and external trial
 #' @param binary logical, if FALSE, the endpoint is a time-to-event outcome
 #' @param eff_measure a character string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.
@@ -17,7 +17,7 @@
 #'
 #' @details Format requirements for input \code{dat_ipd} and \code{dat_pseudo} are to have the following columns
 #' \itemize{
-#'   \item treatment - character or factor column
+#'   \item arm - character or factor column
 #'   \item status - logical column, TRUE for censored/death, FALSE for otherwise
 #'   \item time - numeric column, observation time of the \code{status}; unit in days
 #' }
@@ -40,8 +40,9 @@ maic_anchored <- function(useWt,
                           full_output = TRUE,
                           # time to event specific args
                           time_scale = "month",
+                          km_plot_type = c("basic","ggplot"),
                           km_conf_type = "log-log",
-                          km_layout = c("all","by_trial","by_treatment"),
+                          km_layout = c("all","by_trial","by_arm"),
                           transform = "log"
                           ) {
 
@@ -49,34 +50,35 @@ maic_anchored <- function(useWt,
 
   # setup
   if (length(eff_measure)>1) eff_measure <- NULL
-  if (length(km_layout)>1) km_layout <- km_layout[1]
   if (is.null(eff_measure)) eff_measure <- ifelse(binary, "OR", "HR")
-  if(!ipd_trt_var %in% names(dat_ipd)) stop("cannot find treatment indicator column ipd_trt_var in dat_ipd")
-  if(!pseudo_trt_var %in% names(dat_agd)) stop("cannot find treatment indicator column pseudo_trt_var in dat_pseudo")
-  dat_ipd$treatment <- dat_ipd[[ipd_trt_var]]
-  dat_pseudo$treatment <- dat_pseudo[[pseudo_trt_var]]
+  km_layout <- match.arg(km_layout)
+  if(!ipd_trt_var %in% names(dat_ipd)) stop("cannot find arm indicator column ipd_trt_var in dat_ipd")
+  if(!pseudo_trt_var %in% names(dat_agd)) stop("cannot find arm indicator column pseudo_trt_var in dat_pseudo")
+  dat_ipd$arm <- dat_ipd[[ipd_trt_var]]
+  dat_pseudo$arm <- dat_pseudo[[pseudo_trt_var]]
   names(dat_ipd) <- tolower(names(dat_ipd))
   names(dat_pseudo) <- tolower(names(dat_pseudo))
   names(useWt) <- tolower(names(useWt))
-
 
   # pre-checks
   if (length(useWt) != nrow(dat_ipd)) stop("length of useWt should be the same as nrow(dat)")
   if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
   if (binary) {
-    if (any(!c("treatment", "value", "weight") %in% names(dat_ipd))) stop("dat_ipd should have 'treatment','value','weight' columns at minimum")
+    if (any(!c("value", "weight") %in% names(dat_ipd))) stop("dat_ipd should have 'value','weight' columns at minimum")
+    eff_measure <- match.arg(eff_measure, choices = c("OR","RD","RR"), several.ok = FALSE)
   } else {
-    if (any(!c("treatment", "time", "status", "weight") %in% names(dat_ipd))) stop("dat_ipd should have 'treatment','time','status','weight' columns at minimum")
+    if (any(!c("time", "status", "weight") %in% names(dat_ipd))) stop("dat_ipd should have 'time','status','weight' columns at minimum")
+    eff_measure <- match.arg(eff_measure, choices = c("HR"), several.ok = FALSE)
   }
   if ("usubjid" %in% names(dat_ipd)) stop("dat_ipd should contain USUBJID column, it is used to find the right weights from useWt")
   if ("usubjid" %in% names(useWt)) stop("useWt should contain USUBJID column, it is used to find the right weights for dat_ipd")
   if (any(duplicated(dat_ipd$usubjid))) stop("check your dat_ipd, it has duplicated usubjid, this indicates, it might contain multiple endpoints for each subject")
-  if (!trt_ipd %in% dat_ipd$treatment) stop("trt_ipd does not exist in dat_ipd$treatment")
-  if (!trt_agd %in% dat_pseudo$treatment) stop("trt_agd does not exist in dat_pseudo$treatment")
-  if (!trt_common %in% dat_ipd$treatment) stop("trt_common does not exist in dat_ipd$treatment")
-  if (!trt_common %in% dat_pseudo$treatment) stop("trt_common does not exist in dat_pseudo$treatment")
-  arms_in_dat_ipd <- unique(dat_ipd$treatment)
-  arms_in_dat_pseudo <- unique(dat_ipd$treatment)
+  if (!trt_ipd %in% dat_ipd$arm) stop("trt_ipd does not exist in dat_ipd$arm")
+  if (!trt_agd %in% dat_pseudo$arm) stop("trt_agd does not exist in dat_pseudo$arm")
+  if (!trt_common %in% dat_ipd$arm) stop("trt_common does not exist in dat_ipd$arm")
+  if (!trt_common %in% dat_pseudo$arm) stop("trt_common does not exist in dat_pseudo$arm")
+  arms_in_dat_ipd <- unique(dat_ipd$arm)
+  arms_in_dat_pseudo <- unique(dat_ipd$arm)
   if (length(arms_in_dat_ipd) != 2) stop(paste("In anchored case, there should be two arms in dat_ipd, but you have:", paste(arms_in_dat_ipd, collapse = ",")))
   if (length(arms_in_dat_pseudo) != 2) stop(paste("In anchored case, there should be two arms in dat_pseudo, but you have:", paste(arms_in_dat_pseudo, collapse = ",")))
 
@@ -96,34 +98,34 @@ maic_anchored <- function(useWt,
     )
   }
   if (binary) {
-    dat_ipd <- dat_ipd[, c("treatment", "value", "weight")]
+    dat_ipd <- dat_ipd[, c("arm", "value", "weight")]
   } else {
-    dat_ipd <- dat_ipd[, c("treatment", "time", "status", "weight")]
+    dat_ipd <- dat_ipd[, c("arm", "time", "status", "weight")]
   }
-  dat_ipd <- dat_ipd[dat_ipd$treatment %in% c(trt_ipd, trt_common), , drop = FALSE]
-  dat_ipd$treatment <- as.character(dat_ipd$treatment) # just to avoid potential error when merging
+  dat_ipd <- dat_ipd[dat_ipd$arm %in% c(trt_ipd, trt_common), , drop = FALSE]
+  dat_ipd$arm <- as.character(dat_ipd$arm) # just to avoid potential error when merging
 
   # set up pseudo IPD 'dat_pseudo' with universal weight of 1
-  dat_pseudo <- dat_pseudo[dat_pseudo$treatment %in% c(trt_agd, trt_common), , drop = FALSE]
+  dat_pseudo <- dat_pseudo[dat_pseudo$arm %in% c(trt_agd, trt_common), , drop = FALSE]
   dat_pseudo$weight <- 1
   if (binary) {
-    dat_pseudo <- dat_pseudo[, c("treatment", "value", "weight")]
+    dat_pseudo <- dat_pseudo[, c("arm", "value", "weight")]
   } else {
-    dat_pseudo <- dat_pseudo[, c("treatment", "time", "status", "weight")]
+    dat_pseudo <- dat_pseudo[, c("arm", "time", "status", "weight")]
   }
-  dat_pseudo$treatment <- as.character(dat_pseudo$treatment) # just to avoid potential error when merging
+  dat_pseudo$arm <- as.character(dat_pseudo$arm) # just to avoid potential error when merging
 
   # merge pseudo IPD and real ipd
   dat <- rbind(dat_ipd, dat_pseudo)
-  dat$treatment <- factor(dat$treatment, levels = c(trt_common, trt_agd, trt_ipd))
+  dat$arm <- factor(dat$arm, levels = c(trt_common, trt_agd, trt_ipd))
 
   # ==> Descriptive output ------------------------------------------
   if(full_output){
     # ** KM plot
     # derive km w and w/o weights
-    kmobj_ipd <- survfit(Surv(time, status) ~ treatment, dat_ipd, conf.type = km_conf_type)
-    kmobj_ipd_adj <- survfit(Surv(time, status) ~ treatment, dat_ipd, weights = dat_ipd$weight, conf.type = km_conf_type)
-    kmobj_pseudo <- survfit(Surv(time, status) ~ treatment, dat_pseudo, conf.type = km_conf_type)
+    kmobj_ipd <- survfit(Surv(time, status) ~ arm, dat_ipd, conf.type = km_conf_type)
+    kmobj_ipd_adj <- survfit(Surv(time, status) ~ arm, dat_ipd, weights = dat_ipd$weight, conf.type = km_conf_type)
+    kmobj_pseudo <- survfit(Surv(time, status) ~ arm, dat_pseudo, conf.type = km_conf_type)
     # plotting
     par(cex.main = 0.85)
     km_plot(kmobj, kmobj_adj,
@@ -150,8 +152,8 @@ maic_anchored <- function(useWt,
   res[["report_median_surv"]] <- medSurv_out
 
   # fit PH Cox regression model
-  coxobj <- coxph(Surv(time, status) ~ treatment, dat, robust = T)
-  coxobj_adj <- coxph(Surv(time, status) ~ treatment, dat, weights = dat$weight, robust = T)
+  coxobj <- coxph(Surv(time, status) ~ arm, dat, robust = T)
+  coxobj_adj <- coxph(Surv(time, status) ~ arm, dat, weights = dat$weight, robust = T)
 
   res[["fit_cox_model_before"]] <- coxobj
   res[["fit_cox_model_after"]] <- coxobj_adj
