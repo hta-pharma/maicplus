@@ -23,7 +23,12 @@ Imports:
 Suggests:
     knitr,
     testthat (>= 2.0),
-    ggplot2
+    ggplot2,
+    rmarkdown,
+    clubSandwich, 
+    dplyr,
+    sandwich,
+    survminer
 VignetteBuilder:
     knitr
 biocViews:

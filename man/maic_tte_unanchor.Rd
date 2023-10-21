@@ -24,7 +24,8 @@ maic_tte_unanchor(
 
 \item{trt}{a character string, name of the interested treatment in internal trial (real IPD)}
 
-\item{trt_ext}{character string, name of the interested comparator in external trial used to subset \code{dat_ext} (pseudo IPD)}
+\item{trt_ext}{character string, name of the interested comparator in external trial used to subset
+\code{dat_ext} (pseudo IPD)}
 
 \item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
 

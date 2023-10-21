@@ -1,4 +1,4 @@
-#' Helper function: makeup to get median survival time from a `survival::survfit` object
+#' Helper function to retrieve median survival time from a `survival::survfit` object
 #'
 #' Extract and display median survival time with confidence interval
 #'
@@ -7,6 +7,18 @@
 #' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
 #'
 #' @examples
+#' library(survival)
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+#' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte,
+#'   weights = combined_data_tte$weights, conf.type = "log-log"
+#' )
+#'
+#' # Derive median survival time
+#' medSurv <- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")
+#' medSurv_adj <- medSurv_makeup(kmobj_adj, legend = "after matching", time_scale = "day")
+#' medSurv_out <- rbind(medSurv, medSurv_adj)
+#' medSurv_out
 #' @return a data frame with a index column 'type', median survival time and confidence interval
 #' @export
 
@@ -36,6 +48,11 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 #' @param km_fit returned object from \code{survival::survfit}
 #'
 #' @examples
+#' \dontrun{
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+#' survfit_makeup(kmobj)
+#' }
 #' @return a list of data frames of variables from survfit. Data frame is divided by treatment.
 #' @export
 
@@ -51,111 +68,14 @@ survfit_makeup <- function(km_fit) {
     upper = km_fit$upper,
     cumhaz = km_fit$cumhaz
   )
-  kmdat$treatment <- gsub("treatment=", "", attr(km_fit$strata, "names"))[kmdat$treatment]
+  kmdat$treatment <- sapply(strsplit(names(km_fit$strata), "="), "[[", 2)[kmdat$treatment]
   split(kmdat, f = kmdat$treatment)
 }
 
 
-#' helper function: KM plot with unadjusted and adjusted KM
-#'
-#' @param km_fit_before returned object from \code{survival::survfit} before adjustment
-#' @param km_fit_after returned object from \code{survival::survfit} after adjustment
-#' @param time_scale time unit of median survival time, taking a value of 'year', 'month', 'week' or 'day'
-#' @param trt internal trial treatment
-#' @param trt_ext external trial treatment
-#' @param endpoint_name name of the endpoint
-#' @param line_col color of the line curves with the order of external, internal unadjusted, and internal adjusted
-#'
-#' @return a Kaplan-Meier plot
-#' @examples
-#' @export
-
-km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext, endpoint_name = "",
-                    line_col = c("#5450E4", "#00857C", "#6ECEB2")) {
-  time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
-
-  if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
-
-  # prepare data for plot
-  pd_be <- survfit_makeup(km_fit_before)
-  if (!is.null(km_fit_after)) pd_af <- survfit_makeup(km_fit_after)
-
-  # set up x axis (time)
-  if (!is.null(km_fit_after)) {
-    max_t <- max(km_fit_before$time, km_fit_after$time)
-  } else {
-    max_t <- max(km_fit_before$time)
-  }
-  t_range <- c(0, (max_t / time_unit[[time_scale]]) * 1.07)
-
-  # base plot
-  par(mfrow = c(1, 1), bty = "n", tcl = -0.15, mgp = c(2.3, 0.5, 0))
-  plot(0, 0,
-    type = "n", xlab = paste0("Time in ", time_scale), ylab = "Survival Probability",
-    ylim = c(0, 1), xlim = t_range, yaxt = "n",
-    main = paste0(
-      "Kaplan-Meier Curves of Comparator ", ifelse(!is.null(km_fit_after), "(AgD) ", ""),
-      "and Treatment ", ifelse(!is.null(km_fit_after), "(IPD)", ""),
-      "\nEndpoint: ", endpoint_name
-    )
-  )
-  axis(2, las = 1)
-
-  # add km lines from external trial
-  lines(
-    y = pd_be[[trt_ext]]$surv,
-    x = (pd_be[[trt_ext]]$time / time_unit[[time_scale]]), col = line_col[1],
-    type = "s"
-  )
-  tmpid <- pd_be[[trt_ext]]$censor == 1
-  points(
-    y = pd_be[[trt_ext]]$surv[tmpid],
-    x = (pd_be[[trt_ext]]$time[tmpid] / time_unit[[time_scale]]),
-    col = line_col[1], pch = 3, cex = 0.7
-  )
-
-  # add km lines from internal trial before adjustment
-  lines(
-    y = pd_be[[trt]]$surv,
-    x = (pd_be[[trt]]$time / time_unit[[time_scale]]), col = line_col[2],
-    type = "s"
-  )
-  tmpid <- pd_be[[trt]]$censor == 1
-  points(
-    y = pd_be[[trt]]$surv[tmpid],
-    x = (pd_be[[trt]]$time[tmpid] / time_unit[[time_scale]]),
-    col = line_col[2], pch = 3, cex = 0.7
-  )
-
-  # add km lines from internal trial after adjustment
-  if (!is.null(km_fit_after)) {
-    lines(
-      y = pd_af[[trt]]$surv,
-      x = (pd_af[[trt]]$time / time_unit[[time_scale]]), col = line_col[3], lty = 2,
-      type = "s"
-    )
-    tmpid <- pd_af[[trt]]$censor == 1
-    points(
-      y = pd_af[[trt]]$surv[tmpid],
-      x = (pd_af[[trt]]$time[tmpid] / time_unit[[time_scale]]),
-      col = line_col[3], pch = 3, cex = 0.7
-    )
-  }
-
-  use_leg <- 1:ifelse(is.null(km_fit_after), 2, 3)
-  # add legend
-  legend("topright",
-    bty = "n", lty = c(1, 1, 2)[use_leg], cex = 0.8, col = line_col[use_leg],
-    legend = c(
-      paste0("Comparator: ", trt_ext),
-      paste0("Treatment: ", trt),
-      paste0("Treatment: ", trt, " (with weights)")
-    )[use_leg]
-  )
-}
 
 
-#' Plot Log Cumulative Hazard Rate
+#' Plot of Log Cumulative Hazard Rate
 #'
 #' a diagnosis plot for proportional hazard assumption, versus log-time (default) or time
 #'
@@ -166,7 +86,14 @@ km_plot <- function(km_fit_before, km_fit_after = NULL, time_scale, trt, trt_ext
 #' @param subtitle a character string, subtitle of the plot
 #' @param exclude_censor logical, should censored data point be plotted
 #' @examples
-#' @return a plot
+#' library(survival)
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+#' log_cum_haz_plot(kmobj,
+#'   time_scale = "month", log_time = TRUE,
+#'   endpoint_name = "OS", subtitle = "(Before Matching)"
+#' )
+#' @return a plot of log cumulative hazard rate
 #' @export
 
 log_cum_haz_plot <- function(km_fit,
@@ -233,7 +160,14 @@ log_cum_haz_plot <- function(km_fit,
 #' @param endpoint_name a character string, name of the endpoint
 #' @param subtitle a character string, subtitle of the plot
 #' @examples
-#' @return a plot
+#' library(survival)
+#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+#' unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
+#' resid_plot(unweighted_cox,
+#'   time_scale = "month", log_time = TRUE,
+#'   endpoint_name = "OS", subtitle = "(Before Matching)"
+#' )
+#' @return a plot of Schoenfel residuals
 #' @export
 
 resid_plot <- function(coxobj, time_scale = "month", log_time = TRUE, endpoint_name = "", subtitle = "") {
@@ -244,7 +178,7 @@ resid_plot <- function(coxobj, time_scale = "month", log_time = TRUE, endpoint_n
   plot_x <- as.numeric(names(schresid)) / time_unit[[time_scale]]
   if (log_time) plot_x <- log(plot_x)
   par(mfrow = c(1, 1), bty = "n", tcl = -0.15, mgp = c(2.3, 0.5, 0))
-  plot(schresid ~ plotX,
+  plot(schresid ~ plot_x,
     cex = 0.9, col = "navyblue", yaxt = "n",
     ylab = "Unscaled Schoenfeld Residual", xlab = paste0(ifelse(log_time, "Log-", ""), "Time in ", time_scale),
     main = paste0(
