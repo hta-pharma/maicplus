@@ -1,35 +1,173 @@
+maicplus_kmplot <- function(ipd_weights,
+                            tte_dat_ipd,
+                            ipd_trt_var = "ARM",
+                            tte_dat_pseudo,
+                            pseudo_trt_var = "ARM",
+                            trt_ipd,
+                            trt_agd,
+                            trt_common = NULL,
+                            km_conf_type = "log-log",
+                            km_layout = c("all","by_trial","by_arm"), ...){
+
+  names(tte_dat_ipd) <- toupper(names(tte_dat_ipd))
+  names(tte_dat_pseudo) <- toupper(names(tte_dat_pseudo))
+  ipd_trt_var <- toupper(ipd_trt_var)
+  pseudo_trt_var <- toupper(pseudo_trt_var)
+
+  # pre check
+  if(!all(c("USUBJID","TIME", "EVENT", ipd_trt_var) %in% names(tte_dat_ipd))) stop(paste("tte_dat_ipd needs to include at least USUBJID, TIME, EVENT,", ipd_trt_var))
+  if(!all(c("TIME", "EVENT", pseudo_trt_var) %in% names(tte_dat_pseudo))) stop(paste("tte_dat_ipd needs to include at least TIME, EVENT,", pseudo_trt_var))
+  km_layout <- match.arg(km_layout, choices = c("all","by_trial","by_arm"), several.ok = FALSE)
+
+  # preparing data
+  is_anchored <- ifelse(is.null(trt_common), FALSE, TRUE)
+  tte_dat_ipd <- tte_dat_ipd[tte_dat_ipd[[ipd_trt_var]]%in%c(trt_ipd,trt_common),,drop=TRUE]
+  tte_dat_pseudo <- tte_dat_pseudo[tte_dat_pseudo[[pseudo_trt_var]]%in%c(trt_agd,trt_common),,drop=TRUE]
+  tte_dat_ipd$weights <- ipd_weights$data$weights[match(ipd_weights$data$USUBJID,tte_dat_ipd$USUBJID)]
+  tte_dat_pseudo$weights <- 1
+
+  # generate plot
+  if(!is_anchored){
+
+    ## unanchored case
+    kmobj_B <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", pseudo_trt_var)),
+                       data = tte_dat_pseudo,
+                       conf.type = km_conf_type)
+    kmobj_A <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", ipd_trt_var)),
+                       data = tte_dat_ipd,
+                       conf.type = km_conf_type)
+    kmobj_A_adj <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", ipd_trt_var)),
+                           data = tte_dat_ipd,
+                           conf.type = km_conf_type,
+                           weights = weights)
+
+    kmdat <- do.call(rbind,
+                     c(survfit_makeup(kmobj_B, trt_agd),
+                       survfit_makeup(kmobj_A, trt_ipd),
+                       survfit_makeup(kmobj_A_adj, paste(trt_ipd,"(weighted)")))
+    )
+    kmdat$treatment <- factor(kmdat$treatment, levels = unique(kmdat$treatment))
+
+    basic_kmplot(kmdat,
+                 show_risk_set = TRUE,
+                 main_title = "Kaplan-Meier Curves",
+                 subplot_heights = NULL,
+                 suppress_plot_layout = FALSE,
+                 ...)
+
+  }else{
+
+    # anchored case
+    # - agd trial km data
+    kmobj_C_S1 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", pseudo_trt_var)),
+                          data = tte_dat_pseudo,
+                          conf.type = km_conf_type,
+                          subset = eval(parse( text = paste0("(tte_dat_pseudo$",pseudo_trt_var," == '",trt_common,"')") ))
+                  )
+    kmobj_B_S1 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", pseudo_trt_var)),
+                       data = tte_dat_pseudo,
+                       conf.type = km_conf_type,
+                       subset = eval(parse( text = paste0("(tte_dat_pseudo$",pseudo_trt_var," == '",trt_agd,"')") ))
+                  )
+    # - ipd trial km data
+    kmobj_C_S2 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", ipd_trt_var)),
+                          data = tte_dat_ipd,
+                          conf.type = km_conf_type,
+                          subset = eval(parse( text = paste0("(tte_dat_ipd$",ipd_trt_var," == '",trt_common,"')") ))
+                  )
+    kmobj_A_S2 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", ipd_trt_var)),
+                          data = tte_dat_ipd,
+                          conf.type = km_conf_type,
+                          subset = eval(parse( text = paste0("(tte_dat_ipd$",ipd_trt_var," == '",trt_ipd,"')") ))
+                  )
+    # - ipd trial km data with weights
+    kmobj_Cadj_S2 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", ipd_trt_var)),
+                             data = tte_dat_ipd,
+                             conf.type = km_conf_type,
+                             weights = weights,
+                             subset = eval(parse( text = paste0("(tte_dat_ipd$",ipd_trt_var," == '",trt_common,"')") ))
+                     )
+    kmobj_Aadj_S2 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", ipd_trt_var)),
+                             data = tte_dat_ipd,
+                             conf.type = km_conf_type,
+                             weights = weights,
+                             subset = eval(parse( text = paste0("(tte_dat_ipd$",ipd_trt_var," == '",trt_ipd,"')") ))
+                     )
+    # make plot depending on the layout
+    if(km_layout == "by_trial"){
+      kmdat_s2 <- do.call(rbind,
+                          c(survfit_makeup(kmobj_C_S2, trt_common),
+                            survfit_makeup(kmobj_A_S2, trt_ipd),
+                            survfit_makeup(kmobj_Aadj_S2, paste(trt_ipd,"(weighted)")),
+                            survfit_makeup(kmobj_Cadj_S2, paste(trt_common,"(weighted)")))
+                  )
+      kmdat_s2$treatment <- factor(kmdat_s2$treatment, levels = unique(kmdat_s2$treatment))
+      kmdat_s1 <- do.call(rbind,
+                          c(survfit_makeup(kmobj_C_S1, trt_common),
+                            survfit_makeup(kmobj_B_S1, trt_agd))
+      )
+      kmdat_s1$treatment <- factor(kmdat_s1$treatment, levels = unique(kmdat_s1$treatment))
+
+      subplot_heights <- c(7, 0.7 + 2 * 0.7, 0.8)
+      layout_mat <- matrix(1:4, ncol = 2)
+      layout(layout_mat, heights = subplot_heights)
+
+      basic_kmplot(kmdat_s2,
+                   main_title = paste0("Kaplan-Meier Curves \n(",trt_ipd," vs ", trt_common, ") in the IPD trial"),
+                   suppress_plot_layout = TRUE, ...)
+
+      basic_kmplot(kmdat_s1,
+                   main_title = paste0("Kaplan-Meier Curves \n(",trt_agd," vs ", trt_common, ") in the AgD trial"),
+                   suppress_plot_layout = TRUE, ...)
+
+    }else if(km_layout == "by_arm"){
+
+    }else{
+
+    }
+  }
+}
+
+
 #' Basic Kaplan Meier (KM) plot function
 #'
 #' This function can generate a basic KM plot with or without risk set table appended at the bottom.
-#' In a single plot, it can include up to 3 KM curves. This depends on number of levels in 'treatment' column in the input data.frame \code{kmdat}
+#' In a single plot, it can include up to 4 KM curves. This depends on number of levels in 'treatment' column in the input data.frame \code{kmdat}
 #'
 #' @param kmdat a data.frame, must consist 'treatment', 'time' (unit in days), 'n.risk', 'censor', 'surv', similar to an output from \code{maicplus:::survfit_makeup}
 #' @param time_scale a string, time unit of median survival time, taking a value of 'year', 'month', 'week' or 'day'
+#' @param time_grid a numeric vector in the unit of \code{time_scale}, risk set table and x axis of the km plot will be defined based on this time grid
 #' @param show_risk_set logical, show risk set table or not, TRUE by default
 #' @param main_title a string, main title of the KM plot
 #' @param subplot_heights a numeric vector, heights argument to \code{graphic::layout()},NULL by default which means user will use the default setting
 #' @param suppress_plot_layout logical, suppress the layout setting in this function so that user can specify layout outside of the function, FALSE by default
-#' @param use_colors a character vector of length up to 3, colors to the KM curves, it will be passed to 'col' of \code{lines()}
-#' @param use_line_types a numeric vector of length up to 3, line type to the KM curves, it will be passed to 'lty' of \code{lines()}
+#' @param use_colors a character vector of length up to 4, colors to the KM curves, it will be passed to 'col' of \code{lines()}
+#' @param use_line_types a numeric vector of length up to 4, line type to the KM curves, it will be passed to 'lty' of \code{lines()}
+#' @param use_pch_cex a scalar between 0 and 1, point size to indicate censored individuals on the KM curves, it will be passed to 'cex' of \code{points()}
+#' @param use_pch_alpha a scalar between 0 and 255, degree of color transparency of points to indicate censored individuals on the KM curves, it will be passed to 'cex' of \code{points()}
 #'
 #' @example basic_kmplot_ex.R
 #'
-#' @return a KM plot with or without risk set table appended at the bottom, with up to 3 KM curves
+#' @return a KM plot with or without risk set table appended at the bottom, with up to 4 KM curves
 #' @export
 
-basic_kmplot <- function(kmdat, time_scale, show_risk_set = TRUE,
+basic_kmplot <- function(kmdat, time_scale,
+                         time_grid,
+                         show_risk_set = TRUE,
                          main_title = "Kaplan-Meier Curves",
                          subplot_heights = NULL,
                          suppress_plot_layout = FALSE,
                          use_colors = NULL,
-                         use_line_types = NULL) {
+                         use_line_types = NULL,
+                         use_pch_cex = 0.65,
+                         use_pch_alpha = 100) {
 
   time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
 
   # precheck
   if (!length(subplot_heights) %in% c(0, (1 + show_risk_set))) stop(paste("length of subplot_heights should be", (1 + show_risk_set)))
   if (!is.factor(kmdat$treatment)) stop("kmdat$treatment needs to be a factor, its levels will be used in legend and title, first level is comparator")
-  if (nlevels(kmdat$treatment) > 3) stop("kmdat$treatment cannot have more than 3 levels")
+  if (nlevels(kmdat$treatment) > 4) stop("kmdat$treatment cannot have more than 4 levels")
   if (is.null(time_grid) & show_risk_set) stop("please provide a numeric vector as time_grid to show risk set table")
 
   # set up x axis (time)
@@ -50,18 +188,20 @@ basic_kmplot <- function(kmdat, time_scale, show_risk_set = TRUE,
 
   # plot cosmetic setup
   if (is.null(use_line_types)) {
-    use_lty <- c(1, 1, 2)
-    use_lwd <- c(1.2, 2, 1.2)
+    use_lty <- c(1, 1, 2, 2)
+    use_lwd <- c(1.5, 1.5, 1.2, 1.2)
   } else {
     use_lty <- use_line_types
-    use_lwd <- c(1.2, 2, 1.2)
+    use_lwd <- c(1.5, 1.5, 1.2, 1.2)
   }
 
   if (is.null(use_colors)) {
-    use_col <- c("#5450E4", "#00857C", "#6ECEB2")
+    use_col <- c("#5450E4", "#00857C", "#6ECEB2", "#7B68EE")
   } else {
     use_col <- use_colors
   }
+  use_col2 <- col2rgb(use_col) # preparing semi-transparent colors
+  use_col2 <- rgb(use_col2[1,], use_col2[2,], use_col2[3,], alpha = use_pch_alpha, maxColorValue = 255)
 
   ## : first subplot: KM curve -------------------
   # base plot
@@ -89,13 +229,13 @@ basic_kmplot <- function(kmdat, time_scale, show_risk_set = TRUE,
       lwd = use_lwd[ii],
       type = "s"
     )
-    tmpid <- tmpkmdat$censor == 1
+    tmpid <- (tmpkmdat$censor != 0) # cannot just ==1, anticipating weighted case
     points(
       y = tmpkmdat$surv[tmpid],
       x = (tmpkmdat$time[tmpid] / time_unit[[time_scale]]),
-      col = use_col[ii],
+      col = use_col2[ii],
       pch = 3,
-      cex = 0.65
+      cex = use_pch_cex
     )
   }
 
@@ -136,7 +276,7 @@ basic_kmplot <- function(kmdat, time_scale, show_risk_set = TRUE,
             tmpid <- NULL
           }
         }
-        tout <- ifelse(is.null(tmpid), "n/a", tmpkmdat$n.risk[tmpid])
+        tout <- ifelse(is.null(tmpid), "n/a", round(tmpkmdat$n.risk[tmpid],1))
       })
       text(0, 0, labels = "Number at risk", pos = 4, cex = 0.8, offset = -0.8)
       text(
@@ -163,3 +303,4 @@ basic_kmplot <- function(kmdat, time_scale, show_risk_set = TRUE,
     )
   }
 }
+

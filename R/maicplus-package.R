@@ -14,5 +14,6 @@ NULL
 #' @import MASS
 #' @import boot
 #' @import stringr
+#' @import ggplot2
 #' @importFrom utils stack
 NULL
