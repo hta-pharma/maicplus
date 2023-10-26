@@ -1,13 +1,32 @@
-maicplus_kmplot <- function(ipd_weights,
-                            tte_dat_ipd,
-                            ipd_trt_var = "ARM",
-                            tte_dat_pseudo,
-                            pseudo_trt_var = "ARM",
-                            trt_ipd,
-                            trt_agd,
-                            trt_common = NULL,
-                            km_conf_type = "log-log",
-                            km_layout = c("all","by_trial","by_arm"), ...){
+#' Title
+#'
+#' @param ipd_weights
+#' @param tte_dat_ipd
+#' @param ipd_trt_var
+#' @param tte_dat_pseudo
+#' @param pseudo_trt_var
+#' @param trt_ipd
+#' @param trt_agd
+#' @param trt_common
+#' @param km_conf_type
+#' @param km_layout
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+kmplot <- function(ipd_weights,
+                   tte_dat_ipd,
+                   ipd_trt_var = "ARM",
+                   tte_dat_pseudo,
+                   pseudo_trt_var = "ARM",
+                   trt_ipd,
+                   trt_agd,
+                   trt_common = NULL,
+                   km_conf_type = "log-log",
+                   km_layout = c("all","by_trial","by_arm"),
+                   ...){
 
   names(tte_dat_ipd) <- toupper(names(tte_dat_ipd))
   names(tte_dat_pseudo) <- toupper(names(tte_dat_pseudo))
@@ -93,21 +112,38 @@ maicplus_kmplot <- function(ipd_weights,
                              weights = weights,
                              subset = eval(parse( text = paste0("(tte_dat_ipd$",ipd_trt_var," == '",trt_ipd,"')") ))
                      )
+    # - plotdat for layout by trial
+    kmdat_s2 <- do.call(rbind,
+                        c(survfit_makeup(kmobj_C_S2, trt_common),
+                          survfit_makeup(kmobj_A_S2, trt_ipd),
+                          survfit_makeup(kmobj_Aadj_S2, paste(trt_ipd,"(weighted)")),
+                          survfit_makeup(kmobj_Cadj_S2, paste(trt_common,"(weighted)")))
+    )
+    kmdat_s2$treatment <- factor(kmdat_s2$treatment, levels = unique(kmdat_s2$treatment))
+    kmdat_s1 <- do.call(rbind,
+                        c(survfit_makeup(kmobj_C_S1, trt_common),
+                          survfit_makeup(kmobj_B_S1, trt_agd))
+    )
+    kmdat_s1$treatment <- factor(kmdat_s1$treatment, levels = unique(kmdat_s1$treatment))
+    # - plotdat for layout by arm
+    kmdat_a2 <- do.call(rbind,
+                        c(survfit_makeup(kmobj_B_S1, trt_agd),
+                          survfit_makeup(kmobj_A_S2, trt_ipd),
+                          survfit_makeup(kmobj_Aadj_S2, paste(trt_ipd,"(weighted)")))
+    )
+    kmdat_a2$treatment <- factor(kmdat_a2$treatment, levels = unique(kmdat_a2$treatment))
+    kmdat_a1 <- do.call(rbind,
+                        c(survfit_makeup(kmobj_C_S1, paste(trt_common, "(AgD)")),
+                          survfit_makeup(kmobj_C_S2, paste(trt_common, "(IPD)")),
+                          survfit_makeup(kmobj_Cadj_S2, paste(trt_common,"(IPD,weighted)")))
+    )
+    kmdat_a1$treatment <- factor(kmdat_a1$treatment, levels = unique(kmdat_a1$treatment))
+
+
     # make plot depending on the layout
     if(km_layout == "by_trial"){
-      kmdat_s2 <- do.call(rbind,
-                          c(survfit_makeup(kmobj_C_S2, trt_common),
-                            survfit_makeup(kmobj_A_S2, trt_ipd),
-                            survfit_makeup(kmobj_Aadj_S2, paste(trt_ipd,"(weighted)")),
-                            survfit_makeup(kmobj_Cadj_S2, paste(trt_common,"(weighted)")))
-                  )
-      kmdat_s2$treatment <- factor(kmdat_s2$treatment, levels = unique(kmdat_s2$treatment))
-      kmdat_s1 <- do.call(rbind,
-                          c(survfit_makeup(kmobj_C_S1, trt_common),
-                            survfit_makeup(kmobj_B_S1, trt_agd))
-      )
-      kmdat_s1$treatment <- factor(kmdat_s1$treatment, levels = unique(kmdat_s1$treatment))
 
+      # 1 by 2 plot, each plot is per trial
       subplot_heights <- c(7, 0.7 + 2 * 0.7, 0.8)
       layout_mat <- matrix(1:4, ncol = 2)
       layout(layout_mat, heights = subplot_heights)
@@ -122,7 +158,44 @@ maicplus_kmplot <- function(ipd_weights,
 
     }else if(km_layout == "by_arm"){
 
+      # 1 by 2 plot, by 1 is for investigational arm, the other is for common comparator
+      subplot_heights <- c(7, 0.7 + 2 * 0.7, 0.8)
+      layout_mat <- matrix(1:4, ncol = 2)
+      layout(layout_mat, heights = subplot_heights)
+
+      basic_kmplot(kmdat_a2,
+                   main_title = paste0("Kaplan-Meier Curves \n(",trt_ipd," vs ", trt_agd, ")"),
+                   suppress_plot_layout = TRUE, ...)
+
+      basic_kmplot(kmdat_a1,
+                   main_title = paste0("Kaplan-Meier Curves of Common Comparator \n",trt_common,"(IPD vs AgD Trial)"),
+                   suppress_plot_layout = TRUE, ...)
+
     }else{
+
+      # 2 by 2 plot, combine by trial and by arm
+      layout_mat <- matrix(1:4, ncol = 2, byrow = TRUE)
+      layout(layout_mat)
+
+      basic_kmplot(kmdat_s2,
+                   main_title = paste0("Kaplan-Meier Curves \n(",trt_ipd," vs ", trt_common, ") in the IPD trial"),
+                   show_risk_set = FALSE,
+                   suppress_plot_layout = TRUE, ...)
+
+      basic_kmplot(kmdat_s1,
+                   main_title = paste0("Kaplan-Meier Curves \n(",trt_agd," vs ", trt_common, ") in the AgD trial"),
+                   show_risk_set = FALSE,
+                   suppress_plot_layout = TRUE, ...)
+
+      basic_kmplot(kmdat_a2,
+                   main_title = paste0("Kaplan-Meier Curves \n(",trt_ipd," vs ", trt_agd, ")"),
+                   show_risk_set = FALSE,
+                   suppress_plot_layout = TRUE, ...)
+
+      basic_kmplot(kmdat_a1,
+                   main_title = paste0("Kaplan-Meier Curves of Common Comparator \n",trt_common,"(IPD vs AgD Trial)"),
+                   show_risk_set = FALSE,
+                   suppress_plot_layout = TRUE, ...)
 
     }
   }
