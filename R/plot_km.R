@@ -1,21 +1,31 @@
-#' Title
+#' Kaplan Meier (KM) plot function for anchored and unanchored cases
 #'
-#' @param ipd_weights
-#' @param tte_dat_ipd
-#' @param ipd_trt_var
-#' @param tte_dat_pseudo
-#' @param pseudo_trt_var
-#' @param trt_ipd
-#' @param trt_agd
-#' @param trt_common
-#' @param km_conf_type
-#' @param km_layout
-#' @param ...
+#' It is wrapper function of \code{basic_kmplot}.
+#' The argument setting is similar to \code{maic_anchored} and \code{maic_unanchored},
+#' and it is used in those two functions.
+#'
+#' @param ipd_weights an object returned by \code{estimate_weight}
+#' @param tte_dat_ipd a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT", "TIME" columns and a column indicating treatment assignment
+#' @param ipd_trt_var a string, column name in \code{dat_ipd} that contains the treatment assignment
+#' @param tte_dat_pseudo a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least "EVENT", "TIME"
+#' @param pseudo_trt_var a string, column name in \code{dat_ipd} that contains the treatment assignment
+#' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)
+#' @param trt_agd a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)
+#' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL, indicating unanchored case
+#' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
+#' @param km_layout a string, only applicable for unachored case (\code{trt_common = NULL}), indicated the desired layout of output KM curve.
+#' @param ... other arguments in \code{basic_kmplot}
 #'
 #' @return
+#' In unanchored case, a KM plot with risk set table. In anchored case, depending on \code{km_layout},
+#' \itemize{
+#'   \item if "by_trial", 2 by 1 plot, first all KM curves (incl. weighted) in IPD trial, and then KM curves in AgD trial, with risk set table.
+#'   \item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights), and then KM cuvers of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is appended.
+#'   \item if "all", 2 by 2 plot, all plots in "by_trial" and "by_arm" without risk set table appended.
+#' }
+#' @example kmplot_ex.R
 #' @export
-#'
-#' @examples
+
 kmplot <- function(ipd_weights,
                    tte_dat_ipd,
                    ipd_trt_var = "ARM",
