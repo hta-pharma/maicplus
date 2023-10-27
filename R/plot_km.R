@@ -23,7 +23,7 @@
 #'   \item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights), and then KM cuvers of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is appended.
 #'   \item if "all", 2 by 2 plot, all plots in "by_trial" and "by_arm" without risk set table appended.
 #' }
-#' @example kmplot_ex.R
+#' @example kmplot_anchored_ex.R. kmplot_unanchored_ex.R
 #' @export
 
 kmplot <- function(ipd_weights,
