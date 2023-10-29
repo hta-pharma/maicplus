@@ -61,7 +61,7 @@ bucher <- function(trt, com, conf_lv = 0.95) {
 
 print_bucher <- function(output, ci_digits = 2, pval_digits = 3) {
   res <- paste0(
-    format(round(output$est, ci_digits), nsmall = ci_digits), " [",
+    format(round(output$est, ci_digits), nsmall = ci_digits), "[",
     format(round(output$ci_l, ci_digits), nsmall = ci_digits), ";",
     format(round(output$ci_u, ci_digits), nsmall = ci_digits), "]"
   )

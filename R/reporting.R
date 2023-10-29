@@ -12,7 +12,7 @@
 
 report_table <- function(coxobj, medSurvobj, tag = NULL) {
   hr_res <- format(round(summary(coxobj)$conf.int[-2], 2), nsmall = 2)
-  hr_res <- paste0(hr_res[1], " [", hr_res[2], ";", hr_res[3], "]")
+  hr_res <- paste0(hr_res[1], "[", hr_res[2], ";", hr_res[3], "]")
   hr_pval <- format(round(summary(coxobj)$waldtest[3], 3), nsmall = 3)
   if (hr_pval == "0.000") hr_pval <- "<0.001"
 
