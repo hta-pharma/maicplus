@@ -16,12 +16,14 @@ basic_kmplot(
   use_line_types = NULL,
   use_pch_cex = 0.65,
   use_pch_alpha = 100
+
 )
 }
 \arguments{
 \item{kmdat}{a data.frame, must consist 'treatment', 'time' (unit in days), 'n.risk', 'censor', 'surv', similar to an output from \code{maicplus:::survfit_makeup}}
 
 \item{time_scale}{a string, time unit of median survival time, taking a value of 'year', 'month', 'week' or 'day'}
+
 
 \item{time_grid}{a numeric vector in the unit of \code{time_scale}, risk set table and x axis of the km plot will be defined based on this time grid}
 
@@ -32,6 +34,7 @@ basic_kmplot(
 \item{subplot_heights}{a numeric vector, heights argument to \code{graphic::layout()},NULL by default which means user will use the default setting}
 
 \item{suppress_plot_layout}{logical, suppress the layout setting in this function so that user can specify layout outside of the function, FALSE by default}
+
 
 \item{use_colors}{a character vector of length up to 4, colors to the KM curves, it will be passed to 'col' of \code{lines()}}
 
@@ -47,4 +50,5 @@ a KM plot with or without risk set table appended at the bottom, with up to 4 KM
 \description{
 This function can generate a basic KM plot with or without risk set table appended at the bottom.
 In a single plot, it can include up to 4 KM curves. This depends on number of levels in 'treatment' column in the input data.frame \code{kmdat}
+
 }
