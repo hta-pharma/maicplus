@@ -1,4 +1,4 @@
-# unanchored example using maicplus_kmplot
+# unanchored example using ph_diagplot
 
 devtools::load_all()
 ### IPD
@@ -39,23 +39,20 @@ match_res <- estimate_weights(
   method = "BFGS"
 )
 
-# plot
-kmplot( ipd_weights = match_res,
-        tte_dat_ipd = adtte,
-        ipd_trt_var = "ARM",
-        tte_dat_pseudo = pseudo_ipd,
-        pseudo_trt_var = "ARM",
-        endpoint_name = "Overall Survival",
-        trt_ipd = "A",
-        trt_agd = "B",
-        trt_common = NULL,
-        km_conf_type = "log-log",
-        time_scale="month",
-        time_grid = seq(0, 20, by =2),
-        use_colors = NULL,
-        use_line_types = NULL,
-        use_pch_cex = 0.65,
-        use_pch_alpha = 100)
+
+ph_diagplot(ipd_weights = match_res,
+            tte_dat_ipd = adtte,
+            ipd_trt_var = "ARM",
+            tte_dat_pseudo = pseudo_ipd,
+            pseudo_trt_var = "ARM",
+            trt_ipd = "A",
+            trt_agd = "B",
+            trt_common = NULL,
+            endpoint_name = "Overall Survival",
+            time_scale="week",
+            zph_transform = "log",
+            zph_log_hazard = TRUE)
+
 
 
 

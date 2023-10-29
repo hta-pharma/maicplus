@@ -5,7 +5,7 @@
 \title{Anchored MAIC for continuous, binary and time-to-event endpoint}
 \usage{
 maic_anchored(
-  useWt,
+  ipd_weights,
   dat_ipd,
   ipd_trt_var = "arm",
   dat_pseudo,
@@ -25,7 +25,7 @@ maic_anchored(
 )
 }
 \arguments{
-\item{useWt}{a numeric vector of individual MAIC weights, length should the same as \code{nrow(dat_igd)}}
+\item{ipd_weights}{an object returned by \code{estimate_weight}}
 
 \item{dat_ipd}{a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial}
 
@@ -35,9 +35,9 @@ maic_anchored(
 
 \item{pseudo_trt_var}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
 
-\item{trt_ipd}{a string, name of the interested investigational arm in internal trial \code{dat_igd} (real IPD)}
+\item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)}
 
-\item{trt_agd}{a string, name of the interested investigational arm in external trial \code{dat_pseudo} (pseudo IPD)}
+\item{trt_agd}{a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)}
 
 \item{trt_common}{a string, name of the common comparator in internal and external trial}
 

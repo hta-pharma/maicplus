@@ -4,7 +4,7 @@
 \alias{survfit_makeup}
 \title{Helper function to select set of variables used for Kaplan-Meier plot}
 \usage{
-survfit_makeup(km_fit)
+survfit_makeup(km_fit, single_trt_name = "treatment")
 }
 \arguments{
 \item{km_fit}{returned object from \code{survival::survfit}}

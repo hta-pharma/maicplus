@@ -1,4 +1,4 @@
-# unanchored example using maicplus_kmplot
+# anchored example using ph_diagplot
 
 devtools::load_all()
 ### IPD
@@ -13,6 +13,10 @@ adtte <- read.csv(system.file("extdata", "adtte.csv",
 ))
 adtte$TIME <- adtte$AVAL
 adtte$EVENT <- adtte$EVNT
+adtte2 <- adtte
+adtte2$ARM <- "C"
+adtte2$TIME <- adtte2$TIME + 7
+adtte <- rbind(adtte, adtte2)
 
 ### AgD
 # Baseline aggregate data for the comparator population
@@ -25,6 +29,10 @@ pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
                                    mustWork = TRUE
 ))
 pseudo_ipd$ARM <- "B"
+pseudo_ipd2 <- pseudo_ipd
+pseudo_ipd2$ARM <- "C"
+pseudo_ipd2$Time <- pseudo_ipd2$Time +5
+pseudo_ipd <- rbind(pseudo_ipd, pseudo_ipd2)
 
 #### prepare data
 target_pop <- process_agd(target_pop)
@@ -39,25 +47,17 @@ match_res <- estimate_weights(
   method = "BFGS"
 )
 
-# plot
-kmplot( ipd_weights = match_res,
-        tte_dat_ipd = adtte,
-        ipd_trt_var = "ARM",
-        tte_dat_pseudo = pseudo_ipd,
-        pseudo_trt_var = "ARM",
-        endpoint_name = "Overall Survival",
-        trt_ipd = "A",
-        trt_agd = "B",
-        trt_common = NULL,
-        km_conf_type = "log-log",
-        time_scale="month",
-        time_grid = seq(0, 20, by =2),
-        use_colors = NULL,
-        use_line_types = NULL,
-        use_pch_cex = 0.65,
-        use_pch_alpha = 100)
 
-
-
-
+ph_diagplot(ipd_weights = match_res,
+            tte_dat_ipd = adtte,
+            ipd_trt_var = "ARM",
+            tte_dat_pseudo = pseudo_ipd,
+            pseudo_trt_var = "ARM",
+            trt_ipd = "A",
+            trt_agd = "B",
+            trt_common = "C",
+            endpoint_name = "Overall Survival",
+            time_scale="week",
+            zph_transform = "log",
+            zph_log_hazard = TRUE)
 

@@ -16,6 +16,7 @@ Imports:
     graphics,
     stats,
     survival,
+    lubridate,
     DescTools,
     MASS,
     boot,

@@ -15,5 +15,6 @@ NULL
 #' @import boot
 #' @import stringr
 #' @import ggplot2
+#' @import lubridate
 #' @importFrom utils stack
 NULL
