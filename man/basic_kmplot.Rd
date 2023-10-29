@@ -7,18 +7,25 @@
 basic_kmplot(
   kmdat,
   time_scale,
+  time_grid,
   show_risk_set = TRUE,
   main_title = "Kaplan-Meier Curves",
   subplot_heights = NULL,
   suppress_plot_layout = FALSE,
   use_colors = NULL,
-  use_line_types = NULL
+  use_line_types = NULL,
+  use_pch_cex = 0.65,
+  use_pch_alpha = 100
+
 )
 }
 \arguments{
 \item{kmdat}{a data.frame, must consist 'treatment', 'time' (unit in days), 'n.risk', 'censor', 'surv', similar to an output from \code{maicplus:::survfit_makeup}}
 
 \item{time_scale}{a string, time unit of median survival time, taking a value of 'year', 'month', 'week' or 'day'}
+
+
+\item{time_grid}{a numeric vector in the unit of \code{time_scale}, risk set table and x axis of the km plot will be defined based on this time grid}
 
 \item{show_risk_set}{logical, show risk set table or not, TRUE by default}
 
@@ -28,14 +35,20 @@ basic_kmplot(
 
 \item{suppress_plot_layout}{logical, suppress the layout setting in this function so that user can specify layout outside of the function, FALSE by default}
 
-\item{use_colors}{a character vector of length up to 3, colors to the KM curves, it will be passed to 'col' of \code{lines()}}
 
-\item{use_line_types}{a numeric vector of length up to 3, line type to the KM curves, it will be passed to 'lty' of \code{lines()}}
+\item{use_colors}{a character vector of length up to 4, colors to the KM curves, it will be passed to 'col' of \code{lines()}}
+
+\item{use_line_types}{a numeric vector of length up to 4, line type to the KM curves, it will be passed to 'lty' of \code{lines()}}
+
+\item{use_pch_cex}{a scalar between 0 and 1, point size to indicate censored individuals on the KM curves, it will be passed to 'cex' of \code{points()}}
+
+\item{use_pch_alpha}{a scalar between 0 and 255, degree of color transparency of points to indicate censored individuals on the KM curves, it will be passed to 'cex' of \code{points()}}
 }
 \value{
-a KM plot with or without risk set table appended at the bottom, with up to 3 KM curves
+a KM plot with or without risk set table appended at the bottom, with up to 4 KM curves
 }
 \description{
 This function can generate a basic KM plot with or without risk set table appended at the bottom.
-In a single plot, it can include up to 3 KM curves. This depends on number of levels in 'treatment' column in the input data.frame \code{kmdat}
+In a single plot, it can include up to 4 KM curves. This depends on number of levels in 'treatment' column in the input data.frame \code{kmdat}
+
 }
