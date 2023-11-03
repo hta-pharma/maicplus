@@ -7,7 +7,7 @@
 #' @param trt_ext character string, name of the interested comparator in external trial used to subset
 #' \code{dat_ext} (pseudo IPD)
 #' @param endpoint_name a character string, name of the endpoint
-#' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
+#' @param time_scale a character string, 'years', 'months', 'weeks' or 'days', time unit of median survival time
 #' @param transform a character string, pass to \code{\link[survival]{cox.zph}}
 #'
 #' @details Format requirements for input \code{dat} and \code{dat_ext} are to have the following columns
@@ -22,12 +22,10 @@
 #' @export
 
 maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
-                              time_scale = "month", endpoint_name = "OS",
+                              time_scale = "months", endpoint_name = "OS",
                               transform = "log") {
-  timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
-
   if (length(useWt) != nrow(dat)) stop("length of useWt should be the same as nrow(dat)")
-  if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
+  time_scale <- match.arg(arg = time_scale, choices = c("days", "weeks", "months", "years"))
 
   res <- list()
 
@@ -103,27 +101,27 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
   res[["plot_GT_after"]] <- grDevices::recordPlot()
 
   # log-cumulative hazard plot
-  log_cum_haz_plot(res[["fit_km_data_before"]],
-    time_scale = "month", log_time = TRUE,
+  ph_diagplot_lch(res[["fit_km_data_before"]],
+    time_scale = time_scale, log_time = TRUE,
     endpoint_name = endpoint_name, subtitle = "(Before Matching)"
   )
   res[["plot_logCH_before"]] <- grDevices::recordPlot()
 
-  log_cum_haz_plot(res[["fit_km_data_after"]],
-    time_scale = "month", log_time = TRUE,
+  ph_diagplot_lch(res[["fit_km_data_after"]],
+    time_scale = time_scale, log_time = TRUE,
     endpoint_name = endpoint_name, subtitle = "(After Matching)"
   )
   res[["plot_logCH_after"]] <- grDevices::recordPlot()
 
   # schoenfeld residual plot
-  resid_plot(coxobj,
-    time_scale = "month", log_time = TRUE,
+  ph_diagplot_schoenfeld(coxobj,
+    time_scale = time_scale, log_time = TRUE,
     endpoint_name = endpoint_name, subtitle = "(Before Matching)"
   )
   res[["plot_resid_before"]] <- grDevices::recordPlot()
 
-  resid_plot(coxobj_adj,
-    time_scale = "month", log_time = TRUE,
+  ph_diagplot_schoenfeld(coxobj_adj,
+    time_scale = time_scale, log_time = TRUE,
     endpoint_name = endpoint_name, subtitle = "(After Matching)"
   )
   res[["plot_resid_after"]] <- grDevices::recordPlot()

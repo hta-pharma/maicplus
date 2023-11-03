@@ -6,6 +6,7 @@
 \usage{
 basic_kmplot(
   kmdat,
+  endpoint_name = "Time to Event Endpoint",
   time_scale,
   time_grid,
   show_risk_set = TRUE,
@@ -16,14 +17,14 @@ basic_kmplot(
   use_line_types = NULL,
   use_pch_cex = 0.65,
   use_pch_alpha = 100
-
 )
 }
 \arguments{
 \item{kmdat}{a data.frame, must consist 'treatment', 'time' (unit in days), 'n.risk', 'censor', 'surv', similar to an output from \code{maicplus:::survfit_makeup}}
 
-\item{time_scale}{a string, time unit of median survival time, taking a value of 'year', 'month', 'week' or 'day'}
+\item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
 
+\item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'}
 
 \item{time_grid}{a numeric vector in the unit of \code{time_scale}, risk set table and x axis of the km plot will be defined based on this time grid}
 
@@ -34,7 +35,6 @@ basic_kmplot(
 \item{subplot_heights}{a numeric vector, heights argument to \code{graphic::layout()},NULL by default which means user will use the default setting}
 
 \item{suppress_plot_layout}{logical, suppress the layout setting in this function so that user can specify layout outside of the function, FALSE by default}
-
 
 \item{use_colors}{a character vector of length up to 4, colors to the KM curves, it will be passed to 'col' of \code{lines()}}
 
@@ -50,5 +50,31 @@ a KM plot with or without risk set table appended at the bottom, with up to 4 KM
 \description{
 This function can generate a basic KM plot with or without risk set table appended at the bottom.
 In a single plot, it can include up to 4 KM curves. This depends on number of levels in 'treatment' column in the input data.frame \code{kmdat}
+}
+\examples{
+library(survival)
+load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
+kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+kmdat <- do.call(rbind, survfit_makeup(kmobj))
+kmdat$treatment <- factor(kmdat$treatment)
 
+# without risk set table
+basic_kmplot(kmdat, time_scale="month",
+             time_grid = seq(0, 20, by =2),
+             show_risk_set = FALSE,
+             main_title = "Kaplan-Meier Curves",
+             subplot_heights = NULL,
+             suppress_plot_layout = FALSE,
+             use_colors = NULL,
+             use_line_types = NULL)
+
+# with risk set table
+basic_kmplot(kmdat, time_scale="month",
+             time_grid = seq(0, 20, by =2),
+             show_risk_set = TRUE,
+             main_title = "Kaplan-Meier Curves",
+             subplot_heights = NULL,
+             suppress_plot_layout = FALSE,
+             use_colors = NULL,
+             use_line_types = NULL)
 }

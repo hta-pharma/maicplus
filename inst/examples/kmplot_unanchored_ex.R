@@ -1,6 +1,5 @@
 # unanchored example using maicplus_kmplot
 
-devtools::load_all()
 ### IPD
 # Read in relevant ADaM data and rename variables of interest
 adsl <- read.csv(system.file("extdata", "adsl.csv",

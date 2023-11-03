@@ -4,7 +4,7 @@
 #'
 #' @param km_fit returned object from \code{survival::survfit}
 #' @param legend a character string, name used in 'type' column in returned data frame
-#' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
+#' @param time_scale a character string, 'years', 'months', 'weeks' or 'days', time unit of median survival time
 #'
 #' @examples
 #' library(survival)
@@ -23,13 +23,11 @@
 #' @export
 
 medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
-  time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
-
-  if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
+  time_scale <- match.arg(time_scale, choices = c("years", "months", "weeks", "days"))
 
   # km_fit is the returned object from survival::survfit
   km_fit <- summary(km_fit)$table
-  km_fit[, 5:ncol(km_fit)] <- km_fit[, 5:ncol(km_fit)] / time_unit[[time_scale]]
+  km_fit[, 5:ncol(km_fit)] <- get_time_as(km_fit[, 5:ncol(km_fit)], time_scale)
 
   toyadd <- data.frame(
     treatment = gsub("treatment=", "", rownames(km_fit)),
@@ -46,6 +44,7 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 #' Helper function to select set of variables used for Kaplan-Meier plot
 #'
 #' @param km_fit returned object from \code{survival::survfit}
+#' @param single_trt_name name of treatment if no strata are specified in `km_fit`
 #'
 #' @examples
 #' \dontrun{

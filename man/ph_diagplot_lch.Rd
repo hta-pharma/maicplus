@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_km.R
 \name{ph_diagplot_lch}
 \alias{ph_diagplot_lch}
-\title{Plot of Log Cumulative Hazard Rate versus time or log-time}
+\title{PH Diagnosis Plot of Log Cumulative Hazard Rate versus time or log-time}
 \usage{
 ph_diagplot_lch(
   km_fit,
@@ -16,7 +16,7 @@ ph_diagplot_lch(
 \arguments{
 \item{km_fit}{returned object from \code{survival::survfit}}
 
-\item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
+\item{time_scale}{a character string, 'years', 'months', 'weeks' or 'days', time unit of median survival time}
 
 \item{log_time}{logical, TRUE (default) or FALSE}
 

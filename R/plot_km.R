@@ -23,7 +23,8 @@
 #'   \item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights), and then KM cuvers of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is appended.
 #'   \item if "all", 2 by 2 plot, all plots in "by_trial" and "by_arm" without risk set table appended.
 #' }
-#' @example kmplot_anchored_ex.R. kmplot_unanchored_ex.R
+#' @example inst/examples/kmplot_anchored_ex.R
+#' @example inst/examples/kmplot_unanchored_ex.R
 #' @export
 
 kmplot <- function(ipd_weights,
@@ -237,7 +238,7 @@ kmplot <- function(ipd_weights,
 #'
 #' @param kmdat a data.frame, must consist 'treatment', 'time' (unit in days), 'n.risk', 'censor', 'surv', similar to an output from \code{maicplus:::survfit_makeup}
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
-#' @param time_scale a string, time unit of median survival time, taking a value of 'year', 'month', 'week' or 'day'
+#' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'
 #' @param time_grid a numeric vector in the unit of \code{time_scale}, risk set table and x axis of the km plot will be defined based on this time grid
 #' @param show_risk_set logical, show risk set table or not, TRUE by default
 #' @param main_title a string, main title of the KM plot
@@ -248,7 +249,7 @@ kmplot <- function(ipd_weights,
 #' @param use_pch_cex a scalar between 0 and 1, point size to indicate censored individuals on the KM curves, it will be passed to 'cex' of \code{points()}
 #' @param use_pch_alpha a scalar between 0 and 255, degree of color transparency of points to indicate censored individuals on the KM curves, it will be passed to 'cex' of \code{points()}
 #'
-#' @example basic_kmplot_ex.R
+#' @example inst/examples/basic_kmplot_ex.R
 #'
 #' @return a KM plot with or without risk set table appended at the bottom, with up to 4 KM curves
 #' @export
@@ -265,8 +266,6 @@ basic_kmplot <- function(kmdat,
                          use_line_types = NULL,
                          use_pch_cex = 0.65,
                          use_pch_alpha = 100) {
-  time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
-
   # precheck
   if (!length(subplot_heights) %in% c(0, (1 + show_risk_set))) stop(paste("length of subplot_heights should be", (1 + show_risk_set)))
   if (!is.factor(kmdat$treatment)) stop("kmdat$treatment needs to be a factor, its levels will be used in legend and title, first level is comparator")
@@ -276,7 +275,7 @@ basic_kmplot <- function(kmdat,
   # set up x axis (time)
   if (is.null(time_grid)) {
     max_t <- max(kmdat$time)
-    t_range <- c(0, (max_t / time_unit[[time_scale]]) * 1.07)
+    t_range <- c(0, get_time_as(max_t, time_scale) * 1.07)
   } else {
     t_range <- c(0, max(time_grid))
   }
@@ -326,7 +325,7 @@ basic_kmplot <- function(kmdat,
     tmpkmdat <- kmdat[as.numeric(kmdat$treatment) == ii, , drop = FALSE]
     lines(
       y = tmpkmdat$surv,
-      x = (tmpkmdat$time / time_unit[[time_scale]]),
+      x = get_time_as(tmpkmdat$time, time_scale),
       col = use_col[ii],
       lty = use_lty[ii],
       lwd = use_lwd[ii],
@@ -335,7 +334,7 @@ basic_kmplot <- function(kmdat,
     tmpid <- (tmpkmdat$censor != 0) # cannot just ==1, anticipating weighted case
     points(
       y = tmpkmdat$surv[tmpid],
-      x = (tmpkmdat$time[tmpid] / time_unit[[time_scale]]),
+      x = get_time_as(tmpkmdat$time[tmpid], time_scale),
       col = use_col2[ii],
       pch = 3,
       cex = use_pch_cex
@@ -369,7 +368,7 @@ basic_kmplot <- function(kmdat,
 
     for (ii in 1:nlevels(kmdat$treatment)) {
       tmpkmdat <- kmdat[as.numeric(kmdat$treatment) == ii, , drop = FALSE]
-      tmptime <- (tmpkmdat$time / time_unit[[time_scale]])
+      tmptime <- get_time_as(tmpkmdat$time, time_scale)
       tmpnr <- sapply(time_grid, function(kk) {
         tmpid <- which(tmptime > kk)
         if (length(tmpid) == 0) {
@@ -419,11 +418,11 @@ basic_kmplot <- function(kmdat,
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)
 #' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL, indicating unanchored case
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
-#' @param time_scale a string, time unit of median survival time, taking a value of 'year', 'month', 'week' or 'day'
+#' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'
 #' @param zph_transform a string, pass to \code{survival::cox.zph}, default is "log"
 #' @param zph_log_hazard a logical, if TRUE (default), y axis of the time dependent hazard function is log-hazard, otherwise, hazard.
 #'
-#' @return a 3 by 2 plot, include log-cumulative hazard plot, time dependent hazard function and unscaled scheonfeld residual plot, before and after matching
+#' @return a 3 by 2 plot, include log-cumulative hazard plot, time dependent hazard function and unscaled Schoenfeld residual plot, before and after matching
 #' @export
 #'
 #' @example
@@ -439,8 +438,6 @@ ph_diagplot <- function(ipd_weights,
                         time_scale,
                         zph_transform = "log",
                         zph_log_hazard = TRUE) {
-  time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
-
   names(tte_dat_ipd) <- toupper(names(tte_dat_ipd))
   names(tte_dat_pseudo) <- toupper(names(tte_dat_pseudo))
   ipd_trt_var <- toupper(ipd_trt_var)
@@ -457,8 +454,8 @@ ph_diagplot <- function(ipd_weights,
   tte_dat_pseudo <- tte_dat_pseudo[tte_dat_pseudo[[pseudo_trt_var]] %in% c(trt_agd, trt_common), , drop = TRUE]
   tte_dat_ipd$weights <- ipd_weights$data$weights[match(ipd_weights$data$USUBJID, tte_dat_ipd$USUBJID)]
   tte_dat_pseudo$weights <- 1
-  tte_dat_ipd$TIME2 <- tte_dat_ipd$TIME / time_unit[[time_scale]] # for cox.zph
-  tte_dat_pseudo$TIME2 <- tte_dat_pseudo$TIME / time_unit[[time_scale]] # for cox.zph
+  tte_dat_ipd$TIME2 <- get_time_as(tte_dat_ipd$TIME, as = time_scale) # for cox.zph
+  tte_dat_pseudo$TIME2 <- get_time_as(tte_dat_pseudo$TIME, as = time_scale) # for cox.zph
   if (!"USUBJID" %in% names(tte_dat_pseudo)) tte_dat_pseudo$USUBJID <- paste0("ID", 1:nrow(tte_dat_pseudo))
   if (ipd_trt_var != "ARM") tte_dat_ipd$ARM <- tte_dat_ipd[[ipd_trt_var]]
   if (pseudo_trt_var != "ARM") tte_dat_pseudo$ARM <- tte_dat_pseudo[[pseudo_trt_var]]
@@ -545,14 +542,14 @@ ph_diagplot <- function(ipd_weights,
   )
 
   # unscaled schoenfeld residual
-  ph_diagplot_scheonfeld(coxobj,
+  ph_diagplot_schoenfeld(coxobj,
                          time_scale = time_scale,
                          log_time = FALSE,
                          endpoint_name = endpoint_name,
                          subtitle = "(Before Matching)"
   )
 
-  ph_diagplot_scheonfeld(coxobj_adj,
+  ph_diagplot_schoenfeld(coxobj_adj,
                          time_scale = time_scale,
                          log_time = FALSE,
                          endpoint_name = endpoint_name,
@@ -567,7 +564,7 @@ ph_diagplot <- function(ipd_weights,
 #' a diagnosis plot for proportional hazard assumption, versus log-time (default) or time
 #'
 #' @param km_fit returned object from \code{survival::survfit}
-#' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
+#' @param time_scale a character string, 'years', 'months', 'weeks' or 'days', time unit of median survival time
 #' @param log_time logical, TRUE (default) or FALSE
 #' @param endpoint_name a character string, name of the endpoint
 #' @param subtitle a character string, subtitle of the plot
@@ -589,8 +586,7 @@ ph_diagplot_lch <- function(km_fit,
                             endpoint_name = "",
                             subtitle = "",
                             exclude_censor = TRUE) {
-  time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
-  if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
+  time_scale <- match.arg(arg = time_scale, choices = c("days", "weeks", "months", "years"))
 
   clldat <- survfit_makeup(km_fit)
 
@@ -598,7 +594,7 @@ ph_diagplot_lch <- function(km_fit,
     clldat <- lapply(clldat, function(xxt) xxt[xxt$censor == 0, , drop = FALSE])
   }
 
-  all.times <- do.call(rbind, clldat)$time / time_unit[[time_scale]]
+  all.times <- get_time_as(do.call(rbind, clldat)$time, time_scale)
   if (log_time) all.times <- log(all.times)
   t_range <- range(all.times)
   y_range <- range(log(do.call(rbind, clldat)$cumhaz))
@@ -619,7 +615,7 @@ ph_diagplot_lch <- function(km_fit,
   cols <- c("dodgerblue3", "firebrick3")
   pchs <- c(1, 4)
   for (i in seq_along(clldat)) {
-    use_x <- (clldat[[i]]$time / time_unit[[time_scale]])
+    use_x <- get_time_as(clldat[[i]]$time, time_scale)
     if (log_time) use_x <- log(use_x)
 
     lines(
@@ -643,7 +639,7 @@ ph_diagplot_lch <- function(km_fit,
 #' PH Diagnosis Plot of Schoenfeld residuals for a Cox model fit
 #'
 #' @param coxobj object returned from \code{\link[survival]{coxph}}
-#' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
+#' @param time_scale a character string, 'years', 'months', 'weeks' or 'days', time unit of median survival time
 #' @param log_time logical, TRUE (default) or FALSE
 #' @param endpoint_name a character string, name of the endpoint
 #' @param subtitle a character string, subtitle of the plot
@@ -651,30 +647,28 @@ ph_diagplot_lch <- function(km_fit,
 #' library(survival)
 #' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 #' unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
-#' ph_diagplot_scheonfeld(unweighted_cox,
+#' ph_diagplot_schoenfeld(unweighted_cox,
 #'   time_scale = "month", log_time = TRUE,
 #'   endpoint_name = "OS", subtitle = "(Before Matching)"
 #' )
 #' @return a plot of Schoenfel residuals
 #' @export
 
-ph_diagplot_scheonfeld <- function(coxobj,
-                                   time_scale = "month",
+ph_diagplot_schoenfeld <- function(coxobj,
+                                   time_scale = "months",
                                    log_time = TRUE,
                                    endpoint_name = "",
                                    subtitle = "") {
-  time_unit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
-
   # pre-check
-  if (!time_scale %in% names(time_unit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
+  time_scale <- match.arg(arg = time_scale, choices = c("days", "weeks", "months", "years"))
 
   # prepare data
   schresid <- residuals(coxobj, type = "schoenfeld")
-  plot_x <- as.numeric(names(schresid)) / time_unit[[time_scale]]
+  plot_x <- get_time_as(as.numeric(names(schresid)), time_scale)
   if (log_time) plot_x <- log(plot_x)
 
   # loewss fit
-  fit0 <- predict(loess(schresid ~ plot_x), se = T)
+  fit0 <- predict(loess(schresid ~ plot_x), se = TRUE)
   uppband <- fit0$fit + qt(0.975, fit0$df) * fit0$se
   lowband <- fit0$fit - qt(0.975, fit0$df) * fit0$se
   use_yrange <- range(schresid, uppband, lowband)
