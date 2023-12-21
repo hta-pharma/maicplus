@@ -16,8 +16,8 @@ estimate_weights(
 \method{plot}{maicplus_estimate_weights}(
   x,
   ggplot = FALSE,
-  bin_col = "#6ECEB2",
-  vline_col = "#688CE8",
+  bin_col = NULL,
+  vline_col = NULL,
   main_title = NULL,
   scaled_weights = TRUE,
   bins = 50,

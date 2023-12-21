@@ -127,10 +127,12 @@ the relative treatment effects between the internal treatment and comparator tre
 # Preprocessing
 
 ```{r setup}
-library(maicplus)
+devtools::load_all()
+#library(maicplus)
 ```
 
 Additional suggested packages for this vignette:
+
 ```{r}
 library(dplyr) # this is used for data merging/cleaning. Package itself does not depend on dplyr
 
@@ -146,11 +148,7 @@ library(boot) # for bootstrapping
 
 ## Preprocessing IPD
 
-In this example scenario, age, sex, the Eastern Cooperative Oncology Group (ECOG) performance status, smoking status,
-and number of previous treatments have been identified as imbalanced prognostic variables/treatment effect modifiers.
-
-This example reads in and combines data from three standard simulated data sets (adsl, adrs and adtte) which are saved
-as '.csv' files.
+In this example scenario, age, sex, the Eastern Cooperative Oncology Group (ECOG) performance status, smoking status, and number of previous treatments have been identified as imbalanced prognostic variables/treatment effect modifiers. In our example, adtte and adrs is merged with adsl, but we could keep adrs or adtte separate as these are not needed in weight calculation.
 
 ```{r}
 adsl <- read.csv(system.file("extdata", "adsl.csv",
@@ -276,33 +274,44 @@ outdata
 
 # Time to event analysis
 
-We first need to combine internal IPD data with pseudo comparator IPD. To obtain pseudo comparator IPD, we would 
-digitize Kaplan Meier curves from the comparator study.
+We first need to combine internal IPD data with pseudo comparator IPD. To obtain pseudo comparator IPD, we would tdigitize Kaplan Meier curves from the comparator study.
 
 ```{r}
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv", package = "maicplus", mustWork = TRUE))
 ipd_matched <- weighted_data$data
 
-# Need to specify pseudo_ipd ARM if not specified
 pseudo_ipd$ARM <- "B" # Need to specify ARM for pseudo ipd
-
-# Need to specify weights for pseudo_ipd which is 1
 pseudo_ipd$weights <- 1
-
-# make sure pseudo_ipd name has same name compared with ipd_matched for time, event, arm
 colnames(pseudo_ipd) <- c("TIME", "EVENT", "ARM", "weights")
 
-combined_data_tte <- rbind(
-  ipd_matched[, colnames(pseudo_ipd)],
-  pseudo_ipd
-)
-
-head(combined_data_tte)
+# combined_data_tte <- rbind(
+#   ipd_matched[, colnames(pseudo_ipd)],
+#   pseudo_ipd
+# )
+# 
+# head(combined_data_tte)
 ```
 
 ## Report 1: Kaplan-Meier plot
 
 ```{r}
+kmplot2(ipd_weights = weighted_data,
+        tte_dat_ipd = ipd_matched[,c("USUBJID", "TIME", "EVENT", "ARM")],
+        tte_dat_pseudo = pseudo_ipd,
+        trt_ipd = "A",
+        trt_pseudo = "B")
+
+basic_kmplot(kmdat,
+  show_risk_set = TRUE,
+  main_title = "Kaplan-Meier Curves",
+  subplot_heights = NULL,
+  suppress_plot_layout = FALSE
+)
+
+
+
+
+
 kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM,
   combined_data_tte,

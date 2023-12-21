@@ -289,17 +289,19 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
 #' @export
 
 plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
-                                           bin_col = "#6ECEB2", vline_col = "#688CE8",
+                                           bin_col = NULL, vline_col = NULL,
                                            main_title = NULL,
                                            scaled_weights = TRUE,
                                            bins = 50, ...) {
   if (ggplot) {
     if (is.null(main_title)) main_title <- c("Scaled Individual Weights", "Unscaled Individual Weights")
+    bin_col = "black"; vline_col = "red"
     plot_weights_ggplot(x, bin_col, vline_col, main_title, bins)
   } else {
     if (is.null(main_title)) {
       main_title <- ifelse(scaled_weights, "Scaled Individual Weights", "Unscaled Individual Weights")
     }
+    bin_col = "#6ECEB2"; vline_col = "#688CE8"
     plot_weights_base(x, bin_col, vline_col, main_title, scaled_weights)
   }
 }
