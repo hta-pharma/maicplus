@@ -8,6 +8,8 @@ survfit_makeup(km_fit, single_trt_name = "treatment")
 }
 \arguments{
 \item{km_fit}{returned object from \code{survival::survfit}}
+
+\item{single_trt_name}{name of treatment if no strata are specified in \code{km_fit}}
 }
 \value{
 a list of data frames of variables from survfit. Data frame is divided by treatment.

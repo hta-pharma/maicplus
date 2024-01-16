@@ -14,14 +14,10 @@ maic_anchored(
   trt_agd,
   trt_common,
   endpoint_type = "tte",
-  endpoint_name = "OS",
+  endpoint_name = "Time to Event Endpoint",
   eff_measure = c("HR", "OR", "RR", "RD", "Diff"),
-  full_output = TRUE,
-  time_scale = "month",
-  km_plot_type = c("basic", "ggplot"),
-  km_conf_type = "log-log",
-  km_layout = c("all", "by_trial", "by_arm"),
-  transform = "log"
+  time_scale = "months",
+  km_conf_type = "log-log"
 )
 }
 \arguments{
@@ -43,18 +39,16 @@ maic_anchored(
 
 \item{endpoint_type}{a string, one out of the following "binary", "tte" (time to event), "continuous"}
 
-\item{endpoint_name}{a string, name of the endpoint, used in the reported tables and graphs}
+\item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
 
 \item{eff_measure}{a string, "Diff" for continuous,"RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.}
 
-\item{full_output}{logical, if FALSE, KM plot and PH diagnosis (for time-to-event endpoint) will be muted. The function will return only a simplified table of adjusted effect estimates; only relevant when \code{endpoint_type}='tte'}
+\item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'}
 
-\item{time_scale}{a string, 'year', 'month', 'week' or 'day', time unit of median survival time; only relevant when \code{binary}=FALSE}
-
-\item{transform}{a string, pass to \code{\link[survival]{cox.zph}}; only relevant when \code{endpoint_type}='tte'}
+\item{km_conf_type}{a string, pass to \code{conf.type} of \code{survfit}}
 }
 \value{
-A list of KM plot, analysis table, and diagnostic plot
+A list, contains 'descriptive' and 'inferential'
 }
 \description{
 This is a wrapper function to provide adjusted effect estimates and relevant statistics in anchored case
@@ -63,8 +57,9 @@ This is a wrapper function to provide adjusted effect estimates and relevant sta
 \details{
 Format requirements for input \code{dat_ipd} and \code{dat_pseudo} are to have the following columns
 \itemize{
-\item arm - character or factor column
-\item status - logical column, TRUE for censored/death, FALSE for otherwise
-\item time - numeric column, observation time of the \code{status}; unit in days
+\item USUBJID - charater, unique subject ID
+\item ARM - character or factor column
+\item EVENT - numeric, 1 for censored/death, 0 for otherwise
+\item TIME - numeric column, observation time of the \code{EVENT}; unit in days
 }
 }

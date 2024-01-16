@@ -14,7 +14,7 @@
 #' @param endpoint_type a string, one out of the following "binary", "tte" (time to event), "continuous"
 #' @param eff_measure a string, "Diff" for continuous,"RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
-#' @param time_scale a string, time unit of median survival time, taking a value of 'year', 'month', 'week' or 'day'
+#' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
 #'
 #' @details Format requirements for input \code{dat_ipd} and \code{dat_pseudo} are to have the following columns
@@ -41,11 +41,10 @@ maic_anchored <- function(ipd_weights,
                           endpoint_name = "Time to Event Endpoint",
                           eff_measure = c("HR","OR","RR","RD","Diff"),
                           # time to event specific args
-                          time_scale = "month",
+                          time_scale = "months",
                           km_conf_type = "log-log") {
 
   # ==> Setup and Precheck ------------------------------------------
-  timeUnit <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
   names(dat_ipd) <- toupper(names(dat_ipd))
   names(dat_pseudo) <- toupper(names(dat_pseudo))
   ipd_trt_var <- toupper(ipd_trt_var)
@@ -78,7 +77,7 @@ maic_anchored <- function(ipd_weights,
                paste(setdiff(dat_ipd$USUBJID, ipd_weights$USUBJID), collapse = ","))
     )
   }
-  if (!time_scale %in% names(timeUnit)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
+  time_scale <- match.arg(arg = time_scale, choices = c("days", "weeks", "months", "years"))
   if (endpoint_type == "binary") { # for binary effect measure
     if (any(!c("USUBJID","VALUE") %in% names(dat_ipd))) stop("dat_ipd should have 'USUBJID', 'VALUE' columns at minimum")
     eff_measure <- match.arg(eff_measure, choices = c("OR","RD","RR"), several.ok = FALSE)

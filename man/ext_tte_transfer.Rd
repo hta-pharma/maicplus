@@ -4,17 +4,17 @@
 \alias{ext_tte_transfer}
 \title{helper function: transform TTE ADaM data to suitable input for survival R package}
 \usage{
-ext_tte_transfer(dd, time_scale = "month", trt = NULL)
+ext_tte_transfer(dd, time_scale = "months", trt = NULL)
 }
 \arguments{
-\item{dd}{data frame, ADTTE read via haven::read_sas}
+\item{dd}{data frame, ADTTE read via \code{haven::read_sas}}
 
-\item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
+\item{time_scale}{a character string, 'years', 'months', 'weeks' or 'days', time unit of median survival time}
 
 \item{trt}{values to include in treatment column}
 }
 \value{
-a data frame that can be used as input to survival::Surv
+a data frame that can be used as input to \code{survival::Surv}
 }
 \description{
 helper function: transform TTE ADaM data to suitable input for survival R package

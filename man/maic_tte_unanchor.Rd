@@ -10,7 +10,7 @@ maic_tte_unanchor(
   dat_ext,
   trt,
   trt_ext,
-  time_scale = "month",
+  time_scale = "months",
   endpoint_name = "OS",
   transform = "log"
 )
@@ -27,7 +27,7 @@ maic_tte_unanchor(
 \item{trt_ext}{character string, name of the interested comparator in external trial used to subset
 \code{dat_ext} (pseudo IPD)}
 
-\item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
+\item{time_scale}{a character string, 'years', 'months', 'weeks' or 'days', time unit of median survival time}
 
 \item{endpoint_name}{a character string, name of the endpoint}
 

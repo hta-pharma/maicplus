@@ -310,7 +310,17 @@ kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM,
 )
 
 par(cex.main = 0.85)
-km_plot(kmobj, kmobj_adj, time_scale = "month", trt = "A", trt_ext = "B", endpoint_name = "OS")
+
+kmdat <- do.call(rbind, survfit_makeup(kmobj))
+kmdat$treatment <- factor(kmdat$treatment)
+basic_kmplot(kmdat, time_scale="month",
+             time_grid = seq(0, 20, by =2),
+             show_risk_set = FALSE,
+             main_title = "Kaplan-Meier Curves",
+             subplot_heights = NULL,
+             suppress_plot_layout = FALSE,
+             use_colors = NULL,
+             use_line_types = NULL)
 ```
 
 There is also a `"ggplot"` option for Kaplan-Meier curves using `survminer` R package.
@@ -394,23 +404,23 @@ plot(coxdiag_adj, yaxt = "n", main = "Grambsch & Terneau Plot (after matching)")
 axis(2, las = 1)
 
 # log-cumulative hazard plot
-log_cum_haz_plot(kmobj,
+ph_diagplot_lch(kmobj,
   time_scale = "month", log_time = TRUE,
   endpoint_name = "OS", subtitle = "(Before Matching)"
 )
 
-log_cum_haz_plot(kmobj_adj,
+ph_diagplot_lch(kmobj_adj,
   time_scale = "month", log_time = TRUE,
   endpoint_name = "OS", subtitle = "(After Matching)"
 )
 
 # schoenfeld residual plot
-resid_plot(unweighted_cox,
+ph_diagplot_schoenfeld(unweighted_cox,
   time_scale = "month", log_time = TRUE,
   endpoint_name = "OS", subtitle = "(Before Matching)"
 )
 
-resid_plot(weighted_cox,
+ph_diagplot_schoenfeld(weighted_cox,
   time_scale = "month", log_time = TRUE,
   endpoint_name = "OS", subtitle = "(After Matching)"
 )

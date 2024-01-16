@@ -5,7 +5,6 @@
 # Note that matching step is the same regardless the endpoint type (binary, TTE, cont., count)
 # Matching by arms are not supported, due to lack of merit as from current literature (or lack of research)
 
-devtools::load_all()
 #### load data ----------------------------------------------------------
 
 ### IPD

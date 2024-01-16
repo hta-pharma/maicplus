@@ -1,7 +1,4 @@
 ## Example: weighted data
-
-# library(maicplus)
-devtools::load_all()
 load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 
 kmobj_B <- survfit(Surv(TIME, EVENT) ~ ARM,

@@ -1,5 +1,4 @@
-# library(maicplus)
-devtools::load_all()
+library(survival)
 load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 kmdat <- do.call(rbind, survfit_makeup(kmobj))
