@@ -4,14 +4,14 @@
 #' The argument setting is similar to \code{maic_anchored} and \code{maic_unanchored},
 #' and it is used in those two functions.
 #'
-#' @param ipd_weights an object returned by \code{estimate_weight}
-#' @param tte_dat_ipd a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT", "TIME" columns and a column indicating treatment assignment
-#' @param ipd_trt_var a string, column name in \code{dat_ipd} that contains the treatment assignment
-#' @param tte_dat_pseudo a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least "EVENT", "TIME"
-#' @param pseudo_trt_var a string, column name in \code{dat_ipd} that contains the treatment assignment
+#' @param weights_object an object returned by \code{estimate_weight}
+#' @param tte_ipd a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT", "TIME" columns and a column indicating treatment assignment
+#' @param tte_pseudo_ipd a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least "EVENT", "TIME"
 #' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)
 #' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL, indicating unanchored case
+#' @param trt_var_ipd a string, column name in \code{dat_ipd} that contains the treatment assignment
+#' @param trt_var_agd a string, column name in \code{dat_ipd} that contains the treatment assignment
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
 #' @param km_layout a string, only applicable for unachored case (\code{trt_common = NULL}), indicated the desired layout of output KM curve.
 #' @param ... other arguments in \code{basic_kmplot}
@@ -27,48 +27,48 @@
 #' @example inst/examples/kmplot_unanchored_ex.R
 #' @export
 
-kmplot <- function(ipd_weights,
-                   tte_dat_ipd,
-                   ipd_trt_var = "ARM",
-                   tte_dat_pseudo,
-                   pseudo_trt_var = "ARM",
+kmplot <- function(weights_object,
+                   tte_ipd,
+                   tte_pseudo_ipd,
                    trt_ipd,
                    trt_agd,
                    trt_common = NULL,
+                   trt_var_ipd = "ARM",
+                   trt_var_agd = "ARM",
                    km_conf_type = "log-log",
                    km_layout = c("all", "by_trial", "by_arm"),
                    ...) {
-  names(tte_dat_ipd) <- toupper(names(tte_dat_ipd))
-  names(tte_dat_pseudo) <- toupper(names(tte_dat_pseudo))
-  ipd_trt_var <- toupper(ipd_trt_var)
-  pseudo_trt_var <- toupper(pseudo_trt_var)
+  names(tte_ipd) <- toupper(names(tte_ipd))
+  names(tte_pseudo_ipd) <- toupper(names(tte_pseudo_ipd))
+  trt_var_ipd <- toupper(trt_var_ipd)
+  trt_var_agd <- toupper(trt_var_agd)
 
   # pre check
-  if(!"maicplus_estimate_weights" %in% class(ipd_weights)) stop("ipd_weights should be an object returned by estimate_weights")
-  if (!all(c("USUBJID", "TIME", "EVENT", ipd_trt_var) %in% names(tte_dat_ipd))) stop(paste("tte_dat_ipd needs to include at least USUBJID, TIME, EVENT,", ipd_trt_var))
-  if (!all(c("TIME", "EVENT", pseudo_trt_var) %in% names(tte_dat_pseudo))) stop(paste("tte_dat_pseudo needs to include at least TIME, EVENT,", pseudo_trt_var))
+  if(!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
+  if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(tte_ipd))) stop(paste("tte_ipd needs to include at least USUBJID, TIME, EVENT,", trt_var_ipd))
+  if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(tte_pseudo_ipd))) stop(paste("tte_pseudo_ipd needs to include at least TIME, EVENT,", trt_var_agd))
   km_layout <- match.arg(km_layout, choices = c("all", "by_trial", "by_arm"), several.ok = FALSE)
 
   # preparing data
   is_anchored <- ifelse(is.null(trt_common), FALSE, TRUE)
-  tte_dat_ipd <- tte_dat_ipd[tte_dat_ipd[[ipd_trt_var]] %in% c(trt_ipd, trt_common), , drop = TRUE]
-  tte_dat_pseudo <- tte_dat_pseudo[tte_dat_pseudo[[pseudo_trt_var]] %in% c(trt_agd, trt_common), , drop = TRUE]
-  tte_dat_ipd$weights <- ipd_weights$data$weights[match(ipd_weights$data$USUBJID, tte_dat_ipd$USUBJID)]
-  tte_dat_pseudo$weights <- 1
+  tte_ipd <- tte_ipd[tte_ipd[[trt_var_ipd]] %in% c(trt_ipd, trt_common), , drop = TRUE]
+  tte_pseudo_ipd <- tte_pseudo_ipd[tte_pseudo_ipd[[trt_var_agd]] %in% c(trt_agd, trt_common), , drop = TRUE]
+  tte_ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, tte_ipd$USUBJID)]
+  tte_pseudo_ipd$weights <- 1
 
   # generate plot
   if (!is_anchored) {
     ## unanchored case
-    kmobj_B <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", pseudo_trt_var)),
-      data = tte_dat_pseudo,
+    kmobj_B <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", trt_var_agd)),
+      data = tte_pseudo_ipd,
       conf.type = km_conf_type
     )
-    kmobj_A <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", ipd_trt_var)),
-      data = tte_dat_ipd,
+    kmobj_A <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", trt_var_ipd)),
+      data = tte_ipd,
       conf.type = km_conf_type
     )
-    kmobj_A_adj <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", ipd_trt_var)),
-      data = tte_dat_ipd,
+    kmobj_A_adj <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", trt_var_ipd)),
+      data = tte_ipd,
       conf.type = km_conf_type,
       weights = weights
     )
@@ -93,39 +93,39 @@ kmplot <- function(ipd_weights,
   } else {
     # anchored case
     # - agd trial km data
-    kmobj_C_S1 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", pseudo_trt_var)),
-      data = tte_dat_pseudo,
+    kmobj_C_S1 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", trt_var_agd)),
+      data = tte_pseudo_ipd,
       conf.type = km_conf_type,
-      subset = eval(parse(text = paste0("(tte_dat_pseudo$", pseudo_trt_var, " == '", trt_common, "')")))
+      subset = eval(parse(text = paste0("(tte_pseudo_ipd$", trt_var_agd, " == '", trt_common, "')")))
     )
-    kmobj_B_S1 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", pseudo_trt_var)),
-      data = tte_dat_pseudo,
+    kmobj_B_S1 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", trt_var_agd)),
+      data = tte_pseudo_ipd,
       conf.type = km_conf_type,
-      subset = eval(parse(text = paste0("(tte_dat_pseudo$", pseudo_trt_var, " == '", trt_agd, "')")))
+      subset = eval(parse(text = paste0("(tte_pseudo_ipd$", trt_var_agd, " == '", trt_agd, "')")))
     )
     # - ipd trial km data
-    kmobj_C_S2 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", ipd_trt_var)),
-      data = tte_dat_ipd,
+    kmobj_C_S2 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", trt_var_ipd)),
+      data = tte_ipd,
       conf.type = km_conf_type,
-      subset = eval(parse(text = paste0("(tte_dat_ipd$", ipd_trt_var, " == '", trt_common, "')")))
+      subset = eval(parse(text = paste0("(tte_ipd$", trt_var_ipd, " == '", trt_common, "')")))
     )
-    kmobj_A_S2 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", ipd_trt_var)),
-      data = tte_dat_ipd,
+    kmobj_A_S2 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", trt_var_ipd)),
+      data = tte_ipd,
       conf.type = km_conf_type,
-      subset = eval(parse(text = paste0("(tte_dat_ipd$", ipd_trt_var, " == '", trt_ipd, "')")))
+      subset = eval(parse(text = paste0("(tte_ipd$", trt_var_ipd, " == '", trt_ipd, "')")))
     )
     # - ipd trial km data with weights
-    kmobj_Cadj_S2 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", ipd_trt_var)),
-      data = tte_dat_ipd,
+    kmobj_Cadj_S2 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", trt_var_ipd)),
+      data = tte_ipd,
       conf.type = km_conf_type,
       weights = weights,
-      subset = eval(parse(text = paste0("(tte_dat_ipd$", ipd_trt_var, " == '", trt_common, "')")))
+      subset = eval(parse(text = paste0("(tte_ipd$", trt_var_ipd, " == '", trt_common, "')")))
     )
-    kmobj_Aadj_S2 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", ipd_trt_var)),
-      data = tte_dat_ipd,
+    kmobj_Aadj_S2 <- survfit(as.formula(paste("Surv(TIME, EVENT) ~", trt_var_ipd)),
+      data = tte_ipd,
       conf.type = km_conf_type,
       weights = weights,
-      subset = eval(parse(text = paste0("(tte_dat_ipd$", ipd_trt_var, " == '", trt_ipd, "')")))
+      subset = eval(parse(text = paste0("(tte_ipd$", trt_var_ipd, " == '", trt_ipd, "')")))
     )
     # - plotdat for layout by trial
     kmdat_s2 <- do.call(
@@ -409,14 +409,14 @@ basic_kmplot <- function(kmdat,
 
 #' Diagnosis plot of proportional hazard assumption for anchored and unanchored
 #'
-#' @param ipd_weights an object returned by \code{estimate_weight}
-#' @param tte_dat_ipd a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT", "TIME" columns and a column indicating treatment assignment
-#' @param ipd_trt_var a string, column name in \code{dat_ipd} that contains the treatment assignment
-#' @param tte_dat_pseudo a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least "EVENT", "TIME"
-#' @param pseudo_trt_var a string, column name in \code{dat_ipd} that contains the treatment assignment
+#' @param weights_object an object returned by \code{estimate_weight}
+#' @param tte_ipd a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT", "TIME" columns and a column indicating treatment assignment
+#' @param tte_pseudo_ipd a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least "EVENT", "TIME"
 #' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)
 #' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL, indicating unanchored case
+#' @param trt_var_ipd a string, column name in \code{dat_ipd} that contains the treatment assignment
+#' @param trt_var_agd a string, column name in \code{dat_ipd} that contains the treatment assignment
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'
 #' @param zph_transform a string, pass to \code{survival::cox.zph}, default is "log"
@@ -426,50 +426,50 @@ basic_kmplot <- function(kmdat,
 #' @export
 #'
 #' @example
-ph_diagplot <- function(ipd_weights,
-                        tte_dat_ipd,
-                        ipd_trt_var = "ARM",
-                        tte_dat_pseudo,
-                        pseudo_trt_var = "ARM",
-                        endpoint_name = "Time to Event Endpoint",
+ph_diagplot <- function(weights_object,
+                        tte_ipd,
+                        tte_pseudo_ipd,
                         trt_ipd,
                         trt_agd,
                         trt_common = NULL,
+                        trt_var_ipd = "ARM",
+                        trt_var_agd = "ARM",
+                        endpoint_name = "Time to Event Endpoint",
                         time_scale,
                         zph_transform = "log",
                         zph_log_hazard = TRUE) {
-  names(tte_dat_ipd) <- toupper(names(tte_dat_ipd))
-  names(tte_dat_pseudo) <- toupper(names(tte_dat_pseudo))
-  ipd_trt_var <- toupper(ipd_trt_var)
-  pseudo_trt_var <- toupper(pseudo_trt_var)
+  names(tte_ipd) <- toupper(names(tte_ipd))
+  names(tte_pseudo_ipd) <- toupper(names(tte_pseudo_ipd))
+  trt_var_ipd <- toupper(trt_var_ipd)
+  trt_var_agd <- toupper(trt_var_agd)
 
   # pre check
-  if(!"maicplus_estimate_weights" %in% class(ipd_weights)) stop("ipd_weights should be an object returned by estimate_weights")
-  if (!all(c("USUBJID", "TIME", "EVENT", ipd_trt_var) %in% names(tte_dat_ipd))) stop(paste("tte_dat_ipd needs to include at least USUBJID, TIME, EVENT,", ipd_trt_var))
-  if (!all(c("TIME", "EVENT", pseudo_trt_var) %in% names(tte_dat_pseudo))) stop(paste("tte_dat_ipd needs to include at least TIME, EVENT,", pseudo_trt_var))
+  if(!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
+  if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(tte_ipd))) stop(paste("tte_ipd needs to include at least USUBJID, TIME, EVENT,", trt_var_ipd))
+  if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(tte_pseudo_ipd))) stop(paste("tte_ipd needs to include at least TIME, EVENT,", trt_var_agd))
 
   # preparing analysis data
   is_anchored <- ifelse(is.null(trt_common), FALSE, TRUE)
-  tte_dat_ipd <- tte_dat_ipd[tte_dat_ipd[[ipd_trt_var]] %in% c(trt_ipd, trt_common), , drop = TRUE]
-  tte_dat_pseudo <- tte_dat_pseudo[tte_dat_pseudo[[pseudo_trt_var]] %in% c(trt_agd, trt_common), , drop = TRUE]
-  tte_dat_ipd$weights <- ipd_weights$data$weights[match(ipd_weights$data$USUBJID, tte_dat_ipd$USUBJID)]
-  tte_dat_pseudo$weights <- 1
-  tte_dat_ipd$TIME2 <- get_time_as(tte_dat_ipd$TIME, as = time_scale) # for cox.zph
-  tte_dat_pseudo$TIME2 <- get_time_as(tte_dat_pseudo$TIME, as = time_scale) # for cox.zph
-  if (!"USUBJID" %in% names(tte_dat_pseudo)) tte_dat_pseudo$USUBJID <- paste0("ID", 1:nrow(tte_dat_pseudo))
-  if (ipd_trt_var != "ARM") tte_dat_ipd$ARM <- tte_dat_ipd[[ipd_trt_var]]
-  if (pseudo_trt_var != "ARM") tte_dat_pseudo$ARM <- tte_dat_pseudo[[pseudo_trt_var]]
+  tte_ipd <- tte_ipd[tte_ipd[[trt_var_ipd]] %in% c(trt_ipd, trt_common), , drop = TRUE]
+  tte_pseudo_ipd <- tte_pseudo_ipd[tte_pseudo_ipd[[trt_var_agd]] %in% c(trt_agd, trt_common), , drop = TRUE]
+  tte_ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, tte_ipd$USUBJID)]
+  tte_pseudo_ipd$weights <- 1
+  tte_ipd$TIME2 <- get_time_as(tte_ipd$TIME, as = time_scale) # for cox.zph
+  tte_pseudo_ipd$TIME2 <- get_time_as(tte_pseudo_ipd$TIME, as = time_scale) # for cox.zph
+  if (!"USUBJID" %in% names(tte_pseudo_ipd)) tte_pseudo_ipd$USUBJID <- paste0("ID", 1:nrow(tte_pseudo_ipd))
+  if (trt_var_ipd != "ARM") tte_ipd$ARM <- tte_ipd[[trt_var_ipd]]
+  if (trt_var_agd != "ARM") tte_pseudo_ipd$ARM <- tte_pseudo_ipd[[trt_var_agd]]
 
   # prepare plot data
   retain_cols <- c("USUBJID", "TIME", "TIME2", "EVENT", "ARM", "weights")
   if (!is_anchored) {
     # unachored case
     tte_dat <- rbind(
-      tte_dat_ipd[, retain_cols, drop = FALSE],
-      tte_dat_pseudo[, retain_cols, drop = FALSE]
+      tte_ipd[, retain_cols, drop = FALSE],
+      tte_pseudo_ipd[, retain_cols, drop = FALSE]
     )
   } else {
-    tte_dat <- tte_dat_ipd[, retain_cols, drop = FALSE]
+    tte_dat <- tte_ipd[, retain_cols, drop = FALSE]
   }
   kmobj <- survival::survfit(Surv(TIME, EVENT) ~ ARM, tte_dat, conf.type = "log-log")
   kmobj_adj <- survival::survfit(Surv(TIME, EVENT) ~ ARM, tte_dat, conf.type = "log-log", weights = weights)
