@@ -1,4 +1,3 @@
-
 # Create an environment for settings
 settings_env <- new.env()
 
@@ -15,14 +14,14 @@ settings_env <- new.env()
 #'
 #' @examples
 #' # Native time format is years
-#' set_time_conversion(days = 1/365.25, weeks = 1/52.17857, months = 1/12, years = 1)
+#' set_time_conversion(days = 1 / 365.25, weeks = 1 / 52.17857, months = 1 / 12, years = 1)
 #'
 #' # Native time format is days
-#' set_time_conversion(days = 1, weeks = 7, months = 365.25/12, years = 365.25)
-#'
-set_time_conversion <- function(days = 1, weeks = 7, months = 365.25/12, years = 365.25) {
+#' set_time_conversion(days = 1, weeks = 7, months = 365.25 / 12, years = 365.25)
+set_time_conversion <- function(days = 1, weeks = 7, months = 365.25 / 12, years = 365.25) {
   settings_env$time_conversion <- c(days = days, weeks = weeks, months = months, years = years)
 }
+
 
 #' @param factor Time factor to get.
 #' @rdname time_conversion
@@ -41,14 +40,16 @@ get_time_conversion <- function(factor = c("days", "weeks", "months", "years")) 
   settings_env$time_conversion[factor]
 }
 
+
 #' Convert Time Values Using Scaling Factors
 #'
 #' @param times Numeric time values
 #' @param as A time scale to convert to
 #'
 #' @return Returns a numeric vector calculated from `times / get_time_conversion(factor = as)`
-get_time_as <- function(times, as = c("days", "weeks", "months", "years")){
-  if (!is.numeric(times)) stop('times arguments must be numeric')
+
+get_time_as <- function(times, as = c("days", "weeks", "months", "years")) {
+  if (!is.numeric(times)) stop("times arguments must be numeric")
   as <- match.arg(as)
   times / get_time_conversion(as)
 }

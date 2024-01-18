@@ -30,6 +30,9 @@ report_table <- function(coxobj, medSurvobj, tag = NULL) {
 
   desc_res <- cbind(desc_res[c(2, 1), ], "HR[95% CI]" = c(hr_res, ""), "p-Value" = c(hr_pval, ""))
 
-  if (!is.null(tag)) desc_res <- cbind(data.frame(Matching = rep(tag, nrow(desc_res))), desc_res)
+  if (!is.null(tag)) {
+    desc_res <- cbind(data.frame(Matching = rep(tag, nrow(desc_res))), desc_res)
+    desc_res$Matching[duplicated(desc_res$Matching)] <- ""
+  }
   desc_res
 }

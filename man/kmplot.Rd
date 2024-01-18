@@ -5,35 +5,35 @@
 \title{Kaplan Meier (KM) plot function for anchored and unanchored cases}
 \usage{
 kmplot(
-  ipd_weights,
-  tte_dat_ipd,
-  ipd_trt_var = "ARM",
-  tte_dat_pseudo,
-  pseudo_trt_var = "ARM",
+  weights_object,
+  tte_ipd,
+  tte_pseudo_ipd,
   trt_ipd,
   trt_agd,
   trt_common = NULL,
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
   km_conf_type = "log-log",
   km_layout = c("all", "by_trial", "by_arm"),
   ...
 )
 }
 \arguments{
-\item{ipd_weights}{an object returned by \code{estimate_weight}}
+\item{weights_object}{an object returned by \code{estimate_weight}}
 
-\item{tte_dat_ipd}{a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT", "TIME" columns and a column indicating treatment assignment}
+\item{tte_ipd}{a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT", "TIME" columns and a column indicating treatment assignment}
 
-\item{ipd_trt_var}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
-
-\item{tte_dat_pseudo}{a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least "EVENT", "TIME"}
-
-\item{pseudo_trt_var}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
+\item{tte_pseudo_ipd}{a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least "EVENT", "TIME"}
 
 \item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)}
 
 \item{trt_agd}{a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)}
 
 \item{trt_common}{a string, name of the common comparator in internal and external trial, by default is NULL, indicating unanchored case}
+
+\item{trt_var_ipd}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
+
+\item{trt_var_agd}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
 
 \item{km_conf_type}{a string, pass to \code{conf.type} of \code{survfit}}
 
@@ -104,11 +104,11 @@ match_res <- estimate_weights(
 )
 
 # plot by trial
-kmplot( ipd_weights = match_res,
-        tte_dat_ipd = adtte,
-        ipd_trt_var = "ARM",
-        tte_dat_pseudo = pseudo_ipd,
-        pseudo_trt_var = "ARM",
+kmplot( weights_object = match_res,
+        tte_ipd = adtte,
+        trt_var_ipd = "ARM",
+        tte_pseudo_ipd = pseudo_ipd,
+        trt_var_agd = "ARM",
         endpoint_name = "Overall Survival",
         trt_ipd = "A",
         trt_agd = "B",
@@ -124,11 +124,11 @@ kmplot( ipd_weights = match_res,
 
 
 # plot by arm
-kmplot( ipd_weights = match_res,
-        tte_dat_ipd = adtte,
-        ipd_trt_var = "ARM",
-        tte_dat_pseudo = pseudo_ipd,
-        pseudo_trt_var = "ARM",
+kmplot( weights_object = match_res,
+        tte_ipd = adtte,
+        trt_var_ipd = "ARM",
+        tte_pseudo_ipd = pseudo_ipd,
+        trt_var_agd = "ARM",
         endpoint_name = "Overall Survival",
         trt_ipd = "A",
         trt_agd = "B",
@@ -143,11 +143,11 @@ kmplot( ipd_weights = match_res,
         use_pch_alpha = 100)
 
 # plot all
-kmplot( ipd_weights = match_res,
-        tte_dat_ipd = adtte,
-        ipd_trt_var = "ARM",
-        tte_dat_pseudo = pseudo_ipd,
-        pseudo_trt_var = "ARM",
+kmplot( weights_object = match_res,
+        tte_ipd = adtte,
+        trt_var_ipd = "ARM",
+        tte_pseudo_ipd = pseudo_ipd,
+        trt_var_agd = "ARM",
         endpoint_name = "Overall Survival",
         trt_ipd = "A",
         trt_agd = "B",

@@ -424,8 +424,6 @@ basic_kmplot <- function(kmdat,
 #'
 #' @return a 3 by 2 plot, include log-cumulative hazard plot, time dependent hazard function and unscaled Schoenfeld residual plot, before and after matching
 #' @export
-#'
-#' @example
 ph_diagplot <- function(weights_object,
                         tte_ipd,
                         tte_pseudo_ipd,
@@ -494,7 +492,7 @@ ph_diagplot <- function(weights_object,
                   time_scale = time_scale,
                   log_time = TRUE,
                   endpoint_name = endpoint_name,
-                  subtitle = "(Before Matching)"
+                  subtitle = "(After Matching)"
   )
   # time dependent hazard plot
   plot(zphobj,

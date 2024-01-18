@@ -5,38 +5,38 @@
 \title{Diagnosis plot of proportional hazard assumption for anchored and unanchored}
 \usage{
 ph_diagplot(
-  ipd_weights,
-  tte_dat_ipd,
-  ipd_trt_var = "ARM",
-  tte_dat_pseudo,
-  pseudo_trt_var = "ARM",
-  endpoint_name = "Time to Event Endpoint",
+  weights_object,
+  tte_ipd,
+  tte_pseudo_ipd,
   trt_ipd,
   trt_agd,
   trt_common = NULL,
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
+  endpoint_name = "Time to Event Endpoint",
   time_scale,
   zph_transform = "log",
   zph_log_hazard = TRUE
 )
 }
 \arguments{
-\item{ipd_weights}{an object returned by \code{estimate_weight}}
+\item{weights_object}{an object returned by \code{estimate_weight}}
 
-\item{tte_dat_ipd}{a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT", "TIME" columns and a column indicating treatment assignment}
+\item{tte_ipd}{a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT", "TIME" columns and a column indicating treatment assignment}
 
-\item{ipd_trt_var}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
-
-\item{tte_dat_pseudo}{a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least "EVENT", "TIME"}
-
-\item{pseudo_trt_var}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
-
-\item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
+\item{tte_pseudo_ipd}{a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least "EVENT", "TIME"}
 
 \item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)}
 
 \item{trt_agd}{a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)}
 
 \item{trt_common}{a string, name of the common comparator in internal and external trial, by default is NULL, indicating unanchored case}
+
+\item{trt_var_ipd}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
+
+\item{trt_var_agd}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
+
+\item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
 
 \item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'}
 

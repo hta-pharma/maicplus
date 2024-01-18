@@ -28,11 +28,10 @@ Get and Set Time Conversion Factors
 }
 \examples{
 # Native time format is years
-set_time_conversion(days = 1/365.25, weeks = 1/52.17857, months = 1/12, years = 1)
+set_time_conversion(days = 1 / 365.25, weeks = 1 / 52.17857, months = 1 / 12, years = 1)
 
 # Native time format is days
-set_time_conversion(days = 1, weeks = 7, months = 365.25/12, years = 365.25)
-
+set_time_conversion(days = 1, weeks = 7, months = 365.25 / 12, years = 365.25)
 # Get time scale factors:
 get_time_conversion("years")
 get_time_conversion("weeks")
