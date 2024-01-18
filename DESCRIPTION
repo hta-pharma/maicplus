@@ -14,8 +14,10 @@ Depends:
     R (>= 3.6)
 Imports:
     graphics,
+    grDevices,
     stats,
     survival,
+    lubridate,
     DescTools,
     MASS,
     boot,
