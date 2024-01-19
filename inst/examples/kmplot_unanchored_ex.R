@@ -40,11 +40,11 @@ match_res <- estimate_weights(
 
 # plot
 kmplot(
-  ipd_weights = match_res,
-  tte_dat_ipd = adtte,
-  ipd_trt_var = "ARM",
-  tte_dat_pseudo = pseudo_ipd,
-  pseudo_trt_var = "ARM",
+  weights_object = match_res,
+  tte_ipd = adtte,
+  trt_var_ipd = "ARM",
+  tte_pseudo_ipd = pseudo_ipd,
+  trt_var_agd = "ARM",
   endpoint_name = "Overall Survival",
   trt_ipd = "A",
   trt_agd = "B",
