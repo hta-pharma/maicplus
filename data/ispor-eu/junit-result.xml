@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="bucher" timestamp="2024-01-19T11:54:56Z" hostname="2d6ee9e730bb" tests="1" skipped="0" failures="0" errors="0" time="0.012">
-    <testcase time="0.012" classname="bucher" name="bucher_works_as_expected"/>
+  <testsuite name="bucher" timestamp="2024-01-19T12:05:13Z" hostname="8e1887bc0033" tests="1" skipped="0" failures="0" errors="0" time="0.011">
+    <testcase time="0.0110000000000001" classname="bucher" name="bucher_works_as_expected"/>
   </testsuite>
-  <testsuite name="matching" timestamp="2024-01-19T11:54:56Z" hostname="2d6ee9e730bb" tests="2" skipped="0" failures="0" errors="0" time="0.067">
-    <testcase time="0.054" classname="matching" name="ess_footnote_text_works"/>
-    <testcase time="0.0129999999999999" classname="matching" name="calculate_weights_legend_works"/>
+  <testsuite name="matching" timestamp="2024-01-19T12:05:13Z" hostname="8e1887bc0033" tests="2" skipped="0" failures="0" errors="0" time="0.067">
+    <testcase time="0.0549999999999999" classname="matching" name="ess_footnote_text_works"/>
+    <testcase time="0.012" classname="matching" name="calculate_weights_legend_works"/>
   </testsuite>
 </testsuites>
