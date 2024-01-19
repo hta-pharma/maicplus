@@ -21,8 +21,11 @@
 #'
 #' @return In unanchored case, a KM plot with risk set table. In anchored case, depending on \code{km_layout},
 #' \itemize{
-#'   \item if "by_trial", 2 by 1 plot, first all KM curves (incl. weighted) in IPD trial, and then KM curves in AgD trial, with risk set table.
-#'   \item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights), and then KM curves of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is appended.
+#'   \item if "by_trial", 2 by 1 plot, first all KM curves (incl. weighted) in IPD trial, and then KM curves in AgD
+#'   trial, with risk set table.
+#'   \item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights),
+#'    and then KM curves of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is
+#'     appended.
 #'   \item if "all", 2 by 2 plot, all plots in "by_trial" and "by_arm" without risk set table appended.
 #' }
 #' @example inst/examples/kmplot_anchored_ex.R
@@ -281,7 +284,7 @@ basic_kmplot <- function(kmdat,
   if (!length(subplot_heights) %in% c(0, (1 + show_risk_set))) stop(paste("length of subplot_heights should be", (1 + show_risk_set)))
   if (!is.factor(kmdat$treatment)) stop("kmdat$treatment needs to be a factor, its levels will be used in legend and title, first level is comparator")
   if (nlevels(kmdat$treatment) > 4) stop("kmdat$treatment cannot have more than 4 levels")
-  if (is.null(time_grid) & show_risk_set) stop("please provide a numeric vector as time_grid to show risk set table")
+  if (is.null(time_grid) && show_risk_set) stop("please provide a numeric vector as time_grid to show risk set table")
 
   # set up x axis (time)
   if (is.null(time_grid)) {
@@ -465,7 +468,7 @@ ph_diagplot <- function(weights_object,
   tte_pseudo_ipd$weights <- 1
   tte_ipd$TIME2 <- get_time_as(tte_ipd$TIME, as = time_scale) # for cox.zph
   tte_pseudo_ipd$TIME2 <- get_time_as(tte_pseudo_ipd$TIME, as = time_scale) # for cox.zph
-  if (!"USUBJID" %in% names(tte_pseudo_ipd)) tte_pseudo_ipd$USUBJID <- paste0("ID", 1:nrow(tte_pseudo_ipd))
+  if (!"USUBJID" %in% names(tte_pseudo_ipd)) tte_pseudo_ipd$USUBJID <- paste0("ID", seq_len(nrow(tte_pseudo_ipd)))
   if (trt_var_ipd != "ARM") tte_ipd$ARM <- tte_ipd[[trt_var_ipd]]
   if (trt_var_agd != "ARM") tte_pseudo_ipd$ARM <- tte_pseudo_ipd[[trt_var_agd]]
 

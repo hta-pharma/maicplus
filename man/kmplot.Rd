@@ -48,8 +48,11 @@ layout of output KM curve.}
 \value{
 In unanchored case, a KM plot with risk set table. In anchored case, depending on \code{km_layout},
 \itemize{
-\item if "by_trial", 2 by 1 plot, first all KM curves (incl. weighted) in IPD trial, and then KM curves in AgD trial, with risk set table.
-\item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights), and then KM curves of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is appended.
+\item if "by_trial", 2 by 1 plot, first all KM curves (incl. weighted) in IPD trial, and then KM curves in AgD
+trial, with risk set table.
+\item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights),
+and then KM curves of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is
+appended.
 \item if "all", 2 by 2 plot, all plots in "by_trial" and "by_arm" without risk set table appended.
 }
 }

@@ -1,25 +1,31 @@
 #' Unanchored MAIC for continuous, binary and time-to-event endpoint
 #'
-#' This is a wrapper function to provide adjusted effect estimates and relevant statistics in unanchored case
-#' (i.e. there is no common comparator arm in the internal and external trial).
+#' This is a wrapper function to provide adjusted effect estimates and relevant statistics in unanchored case (i.e.
+#' there is no common comparator arm in the internal and external trial).
 #'
 #' @param weights_object an object returned by \code{estimate_weight}
 #' @param ipd a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial
-#' @param pseudo_ipd a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or from contingency table (for binary endpoint)
+#' @param pseudo_ipd a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or
+#'   from contingency table (for binary endpoint)
 #' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{pseudo_ipd} (pseudo IPD)
 #' @param trt_var_ipd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param endpoint_type a string, one out of the following "binary", "tte" (time to event), "continuous"
-#' @param eff_measure a string, "Diff" for continuous,"RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.
+#' @param eff_measure a string, "Diff" for continuous,"RD" (risk difference), "OR" (odds ratio), "RR" (relative risk)
+#'   for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case,
+#'   otherwise "HR" is used.
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
-#' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days
+#' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
+#'   'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
 #'
-#' @details For time-to-event analysis, it is required that input \code{ipd} and \code{pseudo_ipd} to have the following columns. This function is not sensitive to upper or lower case of letters in column names.
+#' @details For time-to-event analysis, it is required that input \code{ipd} and \code{pseudo_ipd} to have the following
+#'   columns. This function is not sensitive to upper or lower case of letters in column names.
 #' \itemize{
 #'   \item USUBJID - character, unique subject ID
-#'   \item ARM - character or factor, treatment indicator, column name does not have to be 'ARM'. User specify in \code{trt_var_ipd} and \code{trt_var_agd}
+#'   \item ARM - character or factor, treatment indicator, column name does not have to be 'ARM'. User specify in
+#'   \code{trt_var_ipd} and \code{trt_var_agd}
 #'   \item EVENT - numeric, 1 for censored/death, 0 for otherwise
 #'   \item TIME - numeric column, observation time of the \code{EVENT}; unit in days
 #' }
@@ -97,7 +103,7 @@ maic_unanchored <- function(weights_object,
   pseudo_ipd <- pseudo_ipd[pseudo_ipd$ARM == trt_agd, , drop = TRUE]
   ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
   pseudo_ipd$weights <- 1
-  if (!"USUBJID" %in% names(pseudo_ipd)) pseudo_ipd$USUBJID <- paste0("ID", 1:nrow(pseudo_ipd))
+  if (!"USUBJID" %in% names(pseudo_ipd)) pseudo_ipd$USUBJID <- paste0("ID", seq_len(nrow(pseudo_ipd)))
 
   # give warning when individual pts in IPD has no weights
   if (any(is.na(ipd$weights))) {
@@ -138,8 +144,8 @@ maic_unanchored <- function(weights_object,
     res$inferential[["report_median_surv"]] <- medSurv_out
 
     # fit PH Cox regression model
-    coxobj_dat <- coxph(Surv(TIME, EVENT) ~ ARM, dat, robust = T)
-    coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, dat, weights = weights, robust = T)
+    coxobj_dat <- coxph(Surv(TIME, EVENT) ~ ARM, dat, robust = TRUE)
+    coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, dat, weights = weights, robust = TRUE)
 
     res$inferential[["coxph_before"]] <- coxobj_dat
     res$inferential[["coxph_after"]] <- coxobj_dat_adj

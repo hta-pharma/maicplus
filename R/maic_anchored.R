@@ -104,7 +104,7 @@ maic_anchored <- function(weights_object,
   pseudo_ipd <- pseudo_ipd[pseudo_ipd$ARM %in% c(trt_agd, trt_common), , drop = TRUE]
   ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
   pseudo_ipd$weights <- 1
-  if (!"USUBJID" %in% names(pseudo_ipd)) pseudo_ipd$USUBJID <- paste0("ID", 1:nrow(pseudo_ipd))
+  if (!"USUBJID" %in% names(pseudo_ipd)) pseudo_ipd$USUBJID <- paste0("ID", seq_len(nrow(pseudo_ipd)))
 
   # give warning when individual pts in IPD has no weights
   if (any(is.na(ipd$weights))) {
@@ -150,9 +150,9 @@ maic_anchored <- function(weights_object,
     res$inferential[["report_median_surv"]] <- medSurv_out
 
     # fit PH Cox regression model
-    coxobj_ipd <- coxph(Surv(TIME, EVENT) ~ ARM, ipd, robust = T)
-    coxobj_ipd_adj <- coxph(Surv(TIME, EVENT) ~ ARM, ipd, weights = weights, robust = T)
-    coxobj_agd <- coxph(Surv(TIME, EVENT) ~ ARM, pseudo_ipd, robust = T)
+    coxobj_ipd <- coxph(Surv(TIME, EVENT) ~ ARM, ipd, robust = TRUE)
+    coxobj_ipd_adj <- coxph(Surv(TIME, EVENT) ~ ARM, ipd, weights = weights, robust = TRUE)
+    coxobj_agd <- coxph(Surv(TIME, EVENT) ~ ARM, pseudo_ipd, robust = TRUE)
 
     res$inferential[["ipd_coxph_before"]] <- coxobj_ipd
     res$inferential[["ipd_coxph_after"]] <- coxobj_ipd_adj
