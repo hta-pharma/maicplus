@@ -1,26 +1,28 @@
 #' Kaplan Meier (KM) plot function for anchored and unanchored cases
 #'
-#' It is wrapper function of \code{basic_kmplot}.
-#' The argument setting is similar to \code{maic_anchored} and \code{maic_unanchored},
-#' and it is used in those two functions.
+#' It is wrapper function of \code{basic_kmplot}. The argument setting is similar to \code{maic_anchored} and
+#' \code{maic_unanchored}, and it is used in those two functions.
 #'
 #' @param weights_object an object returned by \code{estimate_weight}
-#' @param tte_ipd a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT", "TIME" columns and a column indicating treatment assignment
-#' @param tte_pseudo_ipd a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least "EVENT", "TIME"
+#' @param tte_ipd a data frame of individual patient data (IPD) of internal trial, contain at least `"USUBJID"`,
+#'   `"EVENT"`, `"TIME"` columns and a column indicating treatment assignment
+#' @param tte_pseudo_ipd a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event
+#'   endpoint), contain at least `"EVENT"`, `"TIME"`
 #' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)
-#' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL, indicating unanchored case
+#' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL,
+#'   indicating unanchored case
 #' @param trt_var_ipd a string, column name in \code{dat_ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{dat_ipd} that contains the treatment assignment
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
-#' @param km_layout a string, only applicable for unachored case (\code{trt_common = NULL}), indicated the desired layout of output KM curve.
+#' @param km_layout a string, only applicable for unanchored case (\code{trt_common = NULL}), indicated the desired
+#'   layout of output KM curve.
 #' @param ... other arguments in \code{basic_kmplot}
 #'
-#' @return
-#' In unanchored case, a KM plot with risk set table. In anchored case, depending on \code{km_layout},
+#' @return In unanchored case, a KM plot with risk set table. In anchored case, depending on \code{km_layout},
 #' \itemize{
 #'   \item if "by_trial", 2 by 1 plot, first all KM curves (incl. weighted) in IPD trial, and then KM curves in AgD trial, with risk set table.
-#'   \item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights), and then KM cuvers of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is appended.
+#'   \item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights), and then KM curves of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is appended.
 #'   \item if "all", 2 by 2 plot, all plots in "by_trial" and "by_arm" without risk set table appended.
 #' }
 #' @example inst/examples/kmplot_anchored_ex.R
@@ -233,21 +235,30 @@ kmplot <- function(weights_object,
 
 #' Basic Kaplan Meier (KM) plot function
 #'
-#' This function can generate a basic KM plot with or without risk set table appended at the bottom.
-#' In a single plot, it can include up to 4 KM curves. This depends on number of levels in 'treatment' column in the input data.frame \code{kmdat}
+#' This function can generate a basic KM plot with or without risk set table appended at the bottom. In a single plot,
+#' it can include up to 4 KM curves. This depends on number of levels in 'treatment' column in the input data.frame
+#' \code{kmdat}
 #'
-#' @param kmdat a data.frame, must consist 'treatment', 'time' (unit in days), 'n.risk', 'censor', 'surv', similar to an output from \code{maicplus:::survfit_makeup}
+#' @param kmdat a `data.frame`, must consist `treatment`, `time` (unit in days), `n.risk`, `censor`, `surv`, similar to an
+#'   output from \code{maicplus:::survfit_makeup}
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'
-#' @param time_grid a numeric vector in the unit of \code{time_scale}, risk set table and x axis of the km plot will be defined based on this time grid
+#' @param time_grid a numeric vector in the unit of \code{time_scale}, risk set table and x axis of the km plot will be
+#'   defined based on this time grid
 #' @param show_risk_set logical, show risk set table or not, TRUE by default
 #' @param main_title a string, main title of the KM plot
-#' @param subplot_heights a numeric vector, heights argument to \code{graphic::layout()},NULL by default which means user will use the default setting
-#' @param suppress_plot_layout logical, suppress the layout setting in this function so that user can specify layout outside of the function, FALSE by default
-#' @param use_colors a character vector of length up to 4, colors to the KM curves, it will be passed to 'col' of \code{lines()}
-#' @param use_line_types a numeric vector of length up to 4, line type to the KM curves, it will be passed to 'lty' of \code{lines()}
-#' @param use_pch_cex a scalar between 0 and 1, point size to indicate censored individuals on the KM curves, it will be passed to 'cex' of \code{points()}
-#' @param use_pch_alpha a scalar between 0 and 255, degree of color transparency of points to indicate censored individuals on the KM curves, it will be passed to 'cex' of \code{points()}
+#' @param subplot_heights a numeric vector, heights argument to \code{graphic::layout()},NULL by default which means
+#'   user will use the default setting
+#' @param suppress_plot_layout logical, suppress the layout setting in this function so that user can specify layout
+#'   outside of the function, FALSE by default
+#' @param use_colors a character vector of length up to 4, colors to the KM curves, it will be passed to `col` of
+#'   \code{lines()}
+#' @param use_line_types a numeric vector of length up to 4, line type to the KM curves, it will be passed to `lty` of
+#'   \code{lines()}
+#' @param use_pch_cex a scalar between 0 and 1, point size to indicate censored individuals on the KM curves, it will be
+#'   passed to `cex` of \code{points()}
+#' @param use_pch_alpha a scalar between 0 and 255, degree of color transparency of points to indicate censored
+#'   individuals on the KM curves, it will be passed to `cex` of \code{points()}
 #'
 #' @example inst/examples/basic_kmplot_ex.R
 #'
@@ -461,7 +472,7 @@ ph_diagplot <- function(weights_object,
   # prepare plot data
   retain_cols <- c("USUBJID", "TIME", "TIME2", "EVENT", "ARM", "weights")
   if (!is_anchored) {
-    # unachored case
+    # unanchored case
     tte_dat <- rbind(
       tte_ipd[, retain_cols, drop = FALSE],
       tte_pseudo_ipd[, retain_cols, drop = FALSE]
@@ -649,7 +660,7 @@ ph_diagplot_lch <- function(km_fit,
 #'   time_scale = "month", log_time = TRUE,
 #'   endpoint_name = "OS", subtitle = "(Before Matching)"
 #' )
-#' @return a plot of Schoenfel residuals
+#' @return a plot of Schoenfeld residuals
 #' @export
 
 ph_diagplot_schoenfeld <- function(coxobj,

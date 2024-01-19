@@ -52,7 +52,7 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 #' survfit_makeup(kmobj)
 #' }
-#' @return a list of data frames of variables from survfit. Data frame is divided by treatment.
+#' @return a list of data frames of variables from [survival::survfit()]. Data frame is divided by treatment.
 #' @export
 
 survfit_makeup <- function(km_fit, single_trt_name = "treatment") {

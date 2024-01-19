@@ -20,36 +20,45 @@ basic_kmplot(
 )
 }
 \arguments{
-\item{kmdat}{a data.frame, must consist 'treatment', 'time' (unit in days), 'n.risk', 'censor', 'surv', similar to an output from \code{maicplus:::survfit_makeup}}
+\item{kmdat}{a \code{data.frame}, must consist \code{treatment}, \code{time} (unit in days), \code{n.risk}, \code{censor}, \code{surv}, similar to an
+output from \code{maicplus:::survfit_makeup}}
 
 \item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
 
 \item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'}
 
-\item{time_grid}{a numeric vector in the unit of \code{time_scale}, risk set table and x axis of the km plot will be defined based on this time grid}
+\item{time_grid}{a numeric vector in the unit of \code{time_scale}, risk set table and x axis of the km plot will be
+defined based on this time grid}
 
 \item{show_risk_set}{logical, show risk set table or not, TRUE by default}
 
 \item{main_title}{a string, main title of the KM plot}
 
-\item{subplot_heights}{a numeric vector, heights argument to \code{graphic::layout()},NULL by default which means user will use the default setting}
+\item{subplot_heights}{a numeric vector, heights argument to \code{graphic::layout()},NULL by default which means
+user will use the default setting}
 
-\item{suppress_plot_layout}{logical, suppress the layout setting in this function so that user can specify layout outside of the function, FALSE by default}
+\item{suppress_plot_layout}{logical, suppress the layout setting in this function so that user can specify layout
+outside of the function, FALSE by default}
 
-\item{use_colors}{a character vector of length up to 4, colors to the KM curves, it will be passed to 'col' of \code{lines()}}
+\item{use_colors}{a character vector of length up to 4, colors to the KM curves, it will be passed to \code{col} of
+\code{lines()}}
 
-\item{use_line_types}{a numeric vector of length up to 4, line type to the KM curves, it will be passed to 'lty' of \code{lines()}}
+\item{use_line_types}{a numeric vector of length up to 4, line type to the KM curves, it will be passed to \code{lty} of
+\code{lines()}}
 
-\item{use_pch_cex}{a scalar between 0 and 1, point size to indicate censored individuals on the KM curves, it will be passed to 'cex' of \code{points()}}
+\item{use_pch_cex}{a scalar between 0 and 1, point size to indicate censored individuals on the KM curves, it will be
+passed to \code{cex} of \code{points()}}
 
-\item{use_pch_alpha}{a scalar between 0 and 255, degree of color transparency of points to indicate censored individuals on the KM curves, it will be passed to 'cex' of \code{points()}}
+\item{use_pch_alpha}{a scalar between 0 and 255, degree of color transparency of points to indicate censored
+individuals on the KM curves, it will be passed to \code{cex} of \code{points()}}
 }
 \value{
 a KM plot with or without risk set table appended at the bottom, with up to 4 KM curves
 }
 \description{
-This function can generate a basic KM plot with or without risk set table appended at the bottom.
-In a single plot, it can include up to 4 KM curves. This depends on number of levels in 'treatment' column in the input data.frame \code{kmdat}
+This function can generate a basic KM plot with or without risk set table appended at the bottom. In a single plot,
+it can include up to 4 KM curves. This depends on number of levels in 'treatment' column in the input data.frame
+\code{kmdat}
 }
 \examples{
 library(survival)
