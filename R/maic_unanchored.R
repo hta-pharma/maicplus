@@ -37,24 +37,23 @@ maic_unanchored <- function(weights_object,
                             trt_var_agd = "arm",
                             endpoint_type = "tte",
                             endpoint_name = "Time to Event Endpoint",
-                            eff_measure = c("HR","OR","RR","RD","Diff"),
+                            eff_measure = c("HR", "OR", "RR", "RD", "Diff"),
                             # time to event specific args
                             time_scale = "months",
                             km_conf_type = "log-log") {
-
   # ==> Setup and Precheck ------------------------------------------
   names(ipd) <- toupper(names(ipd))
   names(pseudo_ipd) <- toupper(names(pseudo_ipd))
   trt_var_ipd <- toupper(trt_var_ipd)
   trt_var_agd <- toupper(trt_var_agd)
 
-  if (length(eff_measure)>1) eff_measure <- NULL
-  if (is.null(eff_measure)) eff_measure <- list(binary="OR",tte="HR",continuous="Diff")[[endpoint_type]]
+  if (length(eff_measure) > 1) eff_measure <- NULL
+  if (is.null(eff_measure)) eff_measure <- list(binary = "OR", tte = "HR", continuous = "Diff")[[endpoint_type]]
 
   # setup ARM column and precheck
-  if(!trt_var_ipd %in% names(ipd)) stop("cannot find arm indicator column trt_var_ipd in ipd")
-  if(!trt_var_agd %in% names(pseudo_ipd)) stop("cannot find arm indicator column trt_var_agd in pseudo_ipd")
-  if (trt_var_ipd != "ARM")  ipd$ARM <- ipd[[trt_var_ipd]]
+  if (!trt_var_ipd %in% names(ipd)) stop("cannot find arm indicator column trt_var_ipd in ipd")
+  if (!trt_var_agd %in% names(pseudo_ipd)) stop("cannot find arm indicator column trt_var_agd in pseudo_ipd")
+  if (trt_var_ipd != "ARM") ipd$ARM <- ipd[[trt_var_ipd]]
   if (trt_var_agd != "ARM") pseudo_ipd$ARM <- pseudo_ipd[[trt_var_agd]]
   ipd$ARM <- as.character(ipd$ARM) # just to avoid potential error when merging
   pseudo_ipd$ARM <- as.character(pseudo_ipd$ARM) # just to avoid potential error when merging
@@ -62,31 +61,29 @@ maic_unanchored <- function(weights_object,
   if (!trt_agd %in% pseudo_ipd$ARM) stop("trt_agd does not exist in pseudo_ipd$ARM")
 
   # more pre-checks
-  endpoint_type <- match.arg(endpoint_type, c("binary","tte","continuous"))
-  if(!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
+  endpoint_type <- match.arg(endpoint_type, c("binary", "tte", "continuous"))
+  if (!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
   if (any(duplicated(ipd$USUBJID))) warning("check your ipd, it has duplicated usubjid, this indicates, it might contain multiple endpoints for each subject")
   if (!all(ipd$USUBJID %in% weights_object$data$USUBJID)) {
-    stop(paste("these pts in ipd cannot be found in weights_object",
-               paste(setdiff(ipd$USUBJID, weights_object$USUBJID), collapse = ","))
-    )
+    stop(paste(
+      "these pts in ipd cannot be found in weights_object",
+      paste(setdiff(ipd$USUBJID, weights_object$USUBJID), collapse = ",")
+    ))
   }
   time_scale <- match.arg(arg = time_scale, choices = c("days", "weeks", "months", "years"))
   if (endpoint_type == "binary") { # for binary effect measure
 
-    if (any(!c("USUBJID","VALUE") %in% names(ipd))) stop("ipd should have 'USUBJID', 'VALUE' columns at minimum")
-    eff_measure <- match.arg(eff_measure, choices = c("OR","RD","RR"), several.ok = FALSE)
+    if (any(!c("USUBJID", "VALUE") %in% names(ipd))) stop("ipd should have 'USUBJID', 'VALUE' columns at minimum")
+    eff_measure <- match.arg(eff_measure, choices = c("OR", "RD", "RR"), several.ok = FALSE)
+  } else if (endpoint_type == "tte") { # for time to event effect measure
 
-  } else if (endpoint_type == "tte"){ # for time to event effect measure
-
-    if(!all(c("USUBJID","TIME", "EVENT", trt_var_ipd) %in% names(ipd))) stop(paste("ipd needs to include at least USUBJID, TIME, EVENT,", trt_var_ipd))
-    if(!all(c("TIME", "EVENT", trt_var_agd) %in% names(pseudo_ipd))) stop(paste("pseudo_ipd needs to include at least TIME, EVENT,", trt_var_agd))
+    if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(ipd))) stop(paste("ipd needs to include at least USUBJID, TIME, EVENT,", trt_var_ipd))
+    if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(pseudo_ipd))) stop(paste("pseudo_ipd needs to include at least TIME, EVENT,", trt_var_agd))
     eff_measure <- match.arg(eff_measure, choices = c("HR"), several.ok = FALSE)
-
   } else { # for continuous effect measure
 
-    if (any(!c("USUBJID","VALUE") %in% names(ipd))) stop("ipd should have 'USUBJID', 'VALUE' columns at minimum")
+    if (any(!c("USUBJID", "VALUE") %in% names(ipd))) stop("ipd should have 'USUBJID', 'VALUE' columns at minimum")
     eff_measure <- match.arg(eff_measure, choices = c("Diff"), several.ok = FALSE)
-
   }
 
   # create the hull for the output from this function
@@ -103,20 +100,22 @@ maic_unanchored <- function(weights_object,
   if (!"USUBJID" %in% names(pseudo_ipd)) pseudo_ipd$USUBJID <- paste0("ID", 1:nrow(pseudo_ipd))
 
   # give warning when individual pts in IPD has no weights
-  if (any(is.na(ipd$weights))){
-    ipd <- ipd[!is.na(ipd$weights),,drop=FALSE]
+  if (any(is.na(ipd$weights))) {
+    ipd <- ipd[!is.na(ipd$weights), , drop = FALSE]
     warning(
-      paste("these usubjid in ipd have no weight in weights_object, and hence excluded from analysis:",
-            paste(ipd$USUBJID[is.na(ipd$weights)], collapse = ","))
+      paste(
+        "these usubjid in ipd have no weight in weights_object, and hence excluded from analysis:",
+        paste(ipd$USUBJID[is.na(ipd$weights)], collapse = ",")
+      )
     )
-    if(nrow(ipd)==0) stop("there is no pts with weight in IPD!!")
+    if (nrow(ipd) == 0) stop("there is no pts with weight in IPD!!")
   }
 
   # prepare ipd and agd data for analysis, part 2/2
   if (endpoint_type == "tte") {
-    retain_cols <- c("USUBJID","ARM","TIME","EVENT","weights")
+    retain_cols <- c("USUBJID", "ARM", "TIME", "EVENT", "weights")
   } else {
-    retain_cols <- c("USUBJID","ARM","VALUE","weights")
+    retain_cols <- c("USUBJID", "ARM", "VALUE", "weights")
   }
   ipd <- ipd[, retain_cols, drop = FALSE]
   pseudo_ipd <- pseudo_ipd[, retain_cols, drop = FALSE]
@@ -124,7 +123,7 @@ maic_unanchored <- function(weights_object,
   dat$ARM <- factor(dat$ARM, levels = c(trt_agd, trt_ipd))
 
   # ==> Inferential output ------------------------------------------
-  if(endpoint_type == "tte"){
+  if (endpoint_type == "tte") {
     # Analysis table (Cox model) before and after matching, incl Median Survival Time
     # derive km w and w/o weights
     kmobj_dat <- survfit(Surv(TIME, EVENT) ~ ARM, dat, conf.type = km_conf_type)
@@ -146,7 +145,7 @@ maic_unanchored <- function(weights_object,
     res$inferential[["coxph_after"]] <- coxobj_dat_adj
 
     # derive ipd exp arm vs agd exp arm via bucher
-    res_AB <-   list(
+    res_AB <- list(
       est = NA,
       se = NA,
       ci_l = NA,

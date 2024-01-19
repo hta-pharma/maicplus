@@ -44,7 +44,7 @@ kmplot <- function(weights_object,
   trt_var_agd <- toupper(trt_var_agd)
 
   # pre check
-  if(!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
+  if (!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
   if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(tte_ipd))) stop(paste("tte_ipd needs to include at least USUBJID, TIME, EVENT,", trt_var_ipd))
   if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(tte_pseudo_ipd))) stop(paste("tte_pseudo_ipd needs to include at least TIME, EVENT,", trt_var_agd))
   km_layout <- match.arg(km_layout, choices = c("all", "by_trial", "by_arm"), several.ok = FALSE)
@@ -442,7 +442,7 @@ ph_diagplot <- function(weights_object,
   trt_var_agd <- toupper(trt_var_agd)
 
   # pre check
-  if(!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
+  if (!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
   if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(tte_ipd))) stop(paste("tte_ipd needs to include at least USUBJID, TIME, EVENT,", trt_var_ipd))
   if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(tte_pseudo_ipd))) stop(paste("tte_ipd needs to include at least TIME, EVENT,", trt_var_agd))
 
@@ -482,76 +482,76 @@ ph_diagplot <- function(weights_object,
   par(mfrow = c(3, 2), cex.lab = 0.85, cex.axis = 0.8, cex.main = 0.9)
   # log-cum-hazard plot
   ph_diagplot_lch(kmobj,
-                  time_scale = time_scale,
-                  log_time = TRUE,
-                  endpoint_name = endpoint_name,
-                  subtitle = "(Before Matching)"
+    time_scale = time_scale,
+    log_time = TRUE,
+    endpoint_name = endpoint_name,
+    subtitle = "(Before Matching)"
   )
 
   ph_diagplot_lch(kmobj_adj,
-                  time_scale = time_scale,
-                  log_time = TRUE,
-                  endpoint_name = endpoint_name,
-                  subtitle = "(After Matching)"
+    time_scale = time_scale,
+    log_time = TRUE,
+    endpoint_name = endpoint_name,
+    subtitle = "(After Matching)"
   )
   # time dependent hazard plot
   plot(zphobj,
-       main = paste0(
-         "Time-dependent Hazard function (scaled Schoenfeld residual)\n",
-         "Endpoint:", endpoint_name, "\n(Before Matching)"
-       ),
-       resid = FALSE, se = TRUE, df = 4, nsmo = 40,
-       # xlim = range(0,zphobj$time),
-       ylab = ifelse(zph_log_hazard, "Log Hazard", "Hazard"),
-       xlab = paste("Time in", time_scale),
-       lty = 1:2, lwd = 2, pch = 16, cex = 0.8,
-       col = rgb(0, 0, 128, alpha = 120, maxColorValue = 255),
-       hr = (!zph_log_hazard), yaxt = "n"
+    main = paste0(
+      "Time-dependent Hazard function (scaled Schoenfeld residual)\n",
+      "Endpoint:", endpoint_name, "\n(Before Matching)"
+    ),
+    resid = FALSE, se = TRUE, df = 4, nsmo = 40,
+    # xlim = range(0,zphobj$time),
+    ylab = ifelse(zph_log_hazard, "Log Hazard", "Hazard"),
+    xlab = paste("Time in", time_scale),
+    lty = 1:2, lwd = 2, pch = 16, cex = 0.8,
+    col = rgb(0, 0, 128, alpha = 120, maxColorValue = 255),
+    hr = (!zph_log_hazard), yaxt = "n"
   )
   axis(2, las = 1)
   pv <- as.data.frame(zphobj$table)$p
   pv <- ifelse(round(pv, 4) < 0.0001, "<0.0001", format(round(pv, 4), nsmall = 4))
   legend("bottomright",
-         cex = 0.75, bty = "n", text.col = "dodgerblue3",
-         legend = c(paste0("p-value: ", pv), paste0("time-transform: ", zph_transform)),
-         title = "PH test (survival::cox.zph)"
+    cex = 0.75, bty = "n", text.col = "dodgerblue3",
+    legend = c(paste0("p-value: ", pv), paste0("time-transform: ", zph_transform)),
+    title = "PH test (survival::cox.zph)"
   )
 
   plot(zphobj_adj,
-       main = paste0(
-         "Time-dependent Hazard function (scaled Schoenfeld residual)\n",
-         "Endpoint:", endpoint_name, "\n(After Matching)"
-       ),
-       resid = FALSE, se = TRUE, df = 4, nsmo = 40,
-       # xlim = range(0,zphobj$time),
-       ylab = ifelse(zph_log_hazard, "Log Hazard", "Hazard"),
-       xlab = paste("Time in", time_scale),
-       lty = 1:2, lwd = 2, pch = 16, cex = 0.8,
-       col = rgb(0, 0, 128, alpha = 120, maxColorValue = 255),
-       hr = (!zph_log_hazard), yaxt = "n"
+    main = paste0(
+      "Time-dependent Hazard function (scaled Schoenfeld residual)\n",
+      "Endpoint:", endpoint_name, "\n(After Matching)"
+    ),
+    resid = FALSE, se = TRUE, df = 4, nsmo = 40,
+    # xlim = range(0,zphobj$time),
+    ylab = ifelse(zph_log_hazard, "Log Hazard", "Hazard"),
+    xlab = paste("Time in", time_scale),
+    lty = 1:2, lwd = 2, pch = 16, cex = 0.8,
+    col = rgb(0, 0, 128, alpha = 120, maxColorValue = 255),
+    hr = (!zph_log_hazard), yaxt = "n"
   )
   axis(2, las = 1)
   pv <- as.data.frame(zphobj_adj$table)$p
   pv <- ifelse(round(pv, 4) < 0.0001, "<0.0001", format(round(pv, 4), nsmall = 4))
   legend("bottomright",
-         cex = 0.75, bty = "n", text.col = "dodgerblue3",
-         legend = c(paste0("p-value: ", pv), paste0("time-transform: ", zph_transform)),
-         title = "PH test (survival::cox.zph)"
+    cex = 0.75, bty = "n", text.col = "dodgerblue3",
+    legend = c(paste0("p-value: ", pv), paste0("time-transform: ", zph_transform)),
+    title = "PH test (survival::cox.zph)"
   )
 
   # unscaled schoenfeld residual
   ph_diagplot_schoenfeld(coxobj,
-                         time_scale = time_scale,
-                         log_time = FALSE,
-                         endpoint_name = endpoint_name,
-                         subtitle = "(Before Matching)"
+    time_scale = time_scale,
+    log_time = FALSE,
+    endpoint_name = endpoint_name,
+    subtitle = "(Before Matching)"
   )
 
   ph_diagplot_schoenfeld(coxobj_adj,
-                         time_scale = time_scale,
-                         log_time = FALSE,
-                         endpoint_name = endpoint_name,
-                         subtitle = "(After Matching)"
+    time_scale = time_scale,
+    log_time = FALSE,
+    endpoint_name = endpoint_name,
+    subtitle = "(After Matching)"
   )
 }
 

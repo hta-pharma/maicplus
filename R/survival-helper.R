@@ -59,8 +59,8 @@ survfit_makeup <- function(km_fit, single_trt_name = "treatment") {
   # in case km_fit is only for single arm
   if ("strata" %in% names(km_fit)) {
     use_trt <- mapply(rep, 1:2, each = km_fit$strata)
-    if(is.list(use_trt)) use_trt <- unlist(use_trt)
-    if(is.matrix(use_trt)) use_trt <- as.vector(use_trt)
+    if (is.list(use_trt)) use_trt <- unlist(use_trt)
+    if (is.matrix(use_trt)) use_trt <- as.vector(use_trt)
     is_single <- FALSE
   } else {
     use_trt <- rep(single_trt_name, length(km_fit$time))
