@@ -2,7 +2,7 @@
 % Please edit documentation in R/maic_anchored.R
 \name{maic_anchored}
 \alias{maic_anchored}
-\title{Anchored MAIC for continuous, binary and time-to-event endpoint}
+\title{Anchored MAIC for binary and time-to-event endpoint}
 \usage{
 maic_anchored(
   weights_object,
@@ -11,8 +11,8 @@ maic_anchored(
   trt_ipd,
   trt_agd,
   trt_common,
-  trt_var_ipd = "arm",
-  trt_var_agd = "arm",
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
   endpoint_type = "tte",
   endpoint_name = "Time to Event Endpoint",
   eff_measure = c("HR", "OR", "RR", "RD", "Diff"),
@@ -37,11 +37,11 @@ maic_anchored(
 
 \item{trt_var_agd}{a string, column name in \code{ipd} that contains the treatment assignment}
 
-\item{endpoint_type}{a string, one out of the following "binary", "tte" (time to event), "continuous"}
+\item{endpoint_type}{a string, one out of the following "binary", "tte" (time to event)}
 
 \item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
 
-\item{eff_measure}{a string, "Diff" for continuous,"RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.}
+\item{eff_measure}{a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.}
 
 \item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days}
 
