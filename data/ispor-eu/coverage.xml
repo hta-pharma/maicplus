@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.0335249042145594" branch-rate="0" lines-covered="35" lines-valid="1044" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-01-21 20:53:40.921308">
+<coverage line-rate="0.0334608030592734" branch-rate="0" lines-covered="35" lines-valid="1046" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-01-21 21:03:33.074756">
   <sources>
     <source>/__w/maicplus/maicplus/maicplus</source>
   </sources>
   <packages>
-    <package name="maicplus" line-rate="0.0335249042145594" branch-rate="0" complexity="0">
+    <package name="maicplus" line-rate="0.0334608030592734" branch-rate="0" complexity="0">
       <classes>
         <class name="bootstrap.R" filename="R/bootstrap.R" line-rate="0" branch-rate="0" complexity="0">
           <methods>
@@ -464,11 +464,13 @@
                 <line number="165" hits="0" branch="false"/>
                 <line number="166" hits="0" branch="false"/>
                 <line number="167" hits="0" branch="false"/>
+                <line number="168" hits="0" branch="false"/>
                 <line number="169" hits="0" branch="false"/>
-                <line number="170" hits="0" branch="false"/>
                 <line number="171" hits="0" branch="false"/>
                 <line number="172" hits="0" branch="false"/>
-                <line number="176" hits="0" branch="false"/>
+                <line number="173" hits="0" branch="false"/>
+                <line number="174" hits="0" branch="false"/>
+                <line number="178" hits="0" branch="false"/>
               </lines>
             </method>
           </methods>
@@ -554,11 +556,13 @@
             <line number="165" hits="0" branch="false"/>
             <line number="166" hits="0" branch="false"/>
             <line number="167" hits="0" branch="false"/>
+            <line number="168" hits="0" branch="false"/>
             <line number="169" hits="0" branch="false"/>
-            <line number="170" hits="0" branch="false"/>
             <line number="171" hits="0" branch="false"/>
             <line number="172" hits="0" branch="false"/>
-            <line number="176" hits="0" branch="false"/>
+            <line number="173" hits="0" branch="false"/>
+            <line number="174" hits="0" branch="false"/>
+            <line number="178" hits="0" branch="false"/>
           </lines>
         </class>
         <class name="matching.R" filename="R/matching.R" line-rate="0.108374384236453" branch-rate="0" complexity="0">
