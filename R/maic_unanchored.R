@@ -33,8 +33,8 @@ maic_unanchored <- function(weights_object,
                             pseudo_ipd,
                             trt_ipd,
                             trt_agd,
-                            trt_var_ipd = "arm",
-                            trt_var_agd = "arm",
+                            trt_var_ipd = "ARM",
+                            trt_var_agd = "ARM",
                             endpoint_type = "tte",
                             endpoint_name = "Time to Event Endpoint",
                             eff_measure = c("HR","OR","RR","RD","Diff"),
@@ -142,6 +142,7 @@ maic_unanchored <- function(weights_object,
     coxobj_dat <- coxph(Surv(TIME, EVENT) ~ ARM, dat, robust = T)
     coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, dat, weights = weights, robust = T)
 
+    browser()
     res$inferential[["coxph_before"]] <- coxobj_dat
     res$inferential[["coxph_after"]] <- coxobj_dat_adj
 

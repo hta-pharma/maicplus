@@ -35,8 +35,8 @@ maic_anchored <- function(weights_object,
                           trt_ipd,
                           trt_agd,
                           trt_common,
-                          trt_var_ipd = "arm",
-                          trt_var_agd = "arm",
+                          trt_var_ipd = "ARM",
+                          trt_var_agd = "ARM",
                           endpoint_type = "tte",
                           endpoint_name = "Time to Event Endpoint",
                           eff_measure = c("HR","OR","RR","RD","Diff"),
@@ -123,7 +123,7 @@ maic_anchored <- function(weights_object,
   if (endpoint_type == "tte") {
     retain_cols <- c("USUBJID","ARM","TIME","EVENT","weights")
   } else {
-    retain_cols <- c("USUBJID","ARM","VALUE","weights")
+    retain_cols <- c("USUBJID","ARM","VALUE","weights") # VALUE => RESPONSE
   }
   ipd <- ipd[, retain_cols, drop = FALSE]
   pseudo_ipd <- pseudo_ipd[, retain_cols, drop = FALSE]
