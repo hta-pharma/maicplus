@@ -11,7 +11,7 @@ medSurv_makeup(km_fit, legend = "before matching", time_scale)
 
 \item{legend}{a character string, name used in 'type' column in returned data frame}
 
-\item{time_scale}{a character string, 'year', 'month', 'week' or 'day', time unit of median survival time}
+\item{time_scale}{a character string, 'years', 'months', 'weeks' or 'days', time unit of median survival time}
 }
 \value{
 a data frame with a index column 'type', median survival time and confidence interval

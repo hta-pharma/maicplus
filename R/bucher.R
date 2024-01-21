@@ -61,13 +61,13 @@ bucher <- function(trt, com, conf_lv = 0.95) {
 
 print_bucher <- function(output, ci_digits = 2, pval_digits = 3) {
   res <- paste0(
-    format(round(output$est, ci_digits), nsmall = ci_digits), " (",
+    format(round(output$est, ci_digits), nsmall = ci_digits), "[",
     format(round(output$ci_l, ci_digits), nsmall = ci_digits), ";",
-    format(round(output$ci_u, ci_digits), nsmall = ci_digits), ")"
+    format(round(output$ci_u, ci_digits), nsmall = ci_digits), "]"
   )
 
   disp_pval <- round(output$pval, pval_digits)
-  disp_pval <- ifelse(disp_pval == 0, paste0("<", 1 / (10^pval_digits)), format(output$pval, nsmall = pval_digits))
+  disp_pval <- ifelse(disp_pval == 0, paste0("<", 1 / (10^pval_digits)), format(disp_pval, nsmall = pval_digits))
 
   c(result = res, pvalue = disp_pval)
 }
