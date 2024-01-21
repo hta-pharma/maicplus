@@ -163,7 +163,7 @@ maic_unanchored <- function(weights_object,
     res_AB$est <- summary(coxobj_dat_adj)$conf.int[1]
     mu <- summary(coxobj_dat_adj)$coef[1]
     sig <- summary(coxobj_dat_adj)$coef[4]
-    res_AB$se <- sqrt((exp(sig^2)-1)*exp(2*mu+sig^2)) # log normal parameterization
+    res_AB$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parameterization
     res_AB$ci_l <- summary(coxobj_dat_adj)$conf.int[3]
     res_AB$ci_u <- summary(coxobj_dat_adj)$conf.int[4]
     res_AB$pval <- summary(coxobj_dat_adj)$coef[6]

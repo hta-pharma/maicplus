@@ -123,7 +123,7 @@ maic_anchored <- function(weights_object,
   if (endpoint_type == "tte") {
     retain_cols <- c("USUBJID", "ARM", "TIME", "EVENT", "weights")
   } else {
-    retain_cols <- c("USUBJID","ARM","RESPONSE","weights")
+    retain_cols <- c("USUBJID", "ARM", "RESPONSE", "weights")
   }
   ipd <- ipd[, retain_cols, drop = FALSE]
   pseudo_ipd <- pseudo_ipd[, retain_cols, drop = FALSE]
