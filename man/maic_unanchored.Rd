@@ -2,7 +2,7 @@
 % Please edit documentation in R/maic_unanchored.R
 \name{maic_unanchored}
 \alias{maic_unanchored}
-\title{Unanchored MAIC for continuous, binary and time-to-event endpoint}
+\title{Unanchored MAIC for binary and time-to-event endpoint}
 \usage{
 maic_unanchored(
   weights_object,
@@ -10,8 +10,8 @@ maic_unanchored(
   pseudo_ipd,
   trt_ipd,
   trt_agd,
-  trt_var_ipd = "arm",
-  trt_var_agd = "arm",
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
   endpoint_type = "tte",
   endpoint_name = "Time to Event Endpoint",
   eff_measure = c("HR", "OR", "RR", "RD", "Diff"),
@@ -35,11 +35,11 @@ from contingency table (for binary endpoint)}
 
 \item{trt_var_agd}{a string, column name in \code{ipd} that contains the treatment assignment}
 
-\item{endpoint_type}{a string, one out of the following "binary", "tte" (time to event), "continuous"}
+\item{endpoint_type}{a string, one out of the following "binary", "tte" (time to event)}
 
 \item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
 
-\item{eff_measure}{a string, "Diff" for continuous,"RD" (risk difference), "OR" (odds ratio), "RR" (relative risk)
+\item{eff_measure}{a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk)
 for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case,
 otherwise "HR" is used.}
 
