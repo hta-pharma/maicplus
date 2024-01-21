@@ -52,15 +52,15 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 #' survfit_makeup(kmobj)
 #' }
-#' @return a list of data frames of variables from survfit. Data frame is divided by treatment.
+#' @return a list of data frames of variables from [survival::survfit()]. Data frame is divided by treatment.
 #' @export
 
 survfit_makeup <- function(km_fit, single_trt_name = "treatment") {
   # in case km_fit is only for single arm
   if ("strata" %in% names(km_fit)) {
     use_trt <- mapply(rep, 1:2, each = km_fit$strata)
-    if(is.list(use_trt)) use_trt <- unlist(use_trt)
-    if(is.matrix(use_trt)) use_trt <- as.vector(use_trt)
+    if (is.list(use_trt)) use_trt <- unlist(use_trt)
+    if (is.matrix(use_trt)) use_trt <- as.vector(use_trt)
     is_single <- FALSE
   } else {
     use_trt <- rep(single_trt_name, length(km_fit$time))

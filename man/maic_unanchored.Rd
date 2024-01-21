@@ -24,7 +24,8 @@ maic_unanchored(
 
 \item{ipd}{a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial}
 
-\item{pseudo_ipd}{a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or from contingency table (for binary endpoint)}
+\item{pseudo_ipd}{a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or
+from contingency table (for binary endpoint)}
 
 \item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)}
 
@@ -38,9 +39,12 @@ maic_unanchored(
 
 \item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
 
-\item{eff_measure}{a string, "Diff" for continuous,"RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.}
+\item{eff_measure}{a string, "Diff" for continuous,"RD" (risk difference), "OR" (odds ratio), "RR" (relative risk)
+for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case,
+otherwise "HR" is used.}
 
-\item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days}
+\item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
+'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days}
 
 \item{km_conf_type}{a string, pass to \code{conf.type} of \code{survfit}}
 }
@@ -48,14 +52,16 @@ maic_unanchored(
 A list, contains 'descriptive' and 'inferential'
 }
 \description{
-This is a wrapper function to provide adjusted effect estimates and relevant statistics in unanchored case
-(i.e. there is no common comparator arm in the internal and external trial).
+This is a wrapper function to provide adjusted effect estimates and relevant statistics in unanchored case (i.e.
+there is no common comparator arm in the internal and external trial).
 }
 \details{
-For time-to-event analysis, it is required that input \code{ipd} and \code{pseudo_ipd} to have the following columns. This function is not sensitive to upper or lower case of letters in column names.
+For time-to-event analysis, it is required that input \code{ipd} and \code{pseudo_ipd} to have the following
+columns. This function is not sensitive to upper or lower case of letters in column names.
 \itemize{
-\item USUBJID - charater, unique subject ID
-\item ARM - character or factor, treatment indicato, column name does not have to be 'ARM'. User specify in \code{trt_var_ipd} and \code{trt_var_agd}
+\item USUBJID - character, unique subject ID
+\item ARM - character or factor, treatment indicator, column name does not have to be 'ARM'. User specify in
+\code{trt_var_ipd} and \code{trt_var_agd}
 \item EVENT - numeric, 1 for censored/death, 0 for otherwise
 \item TIME - numeric column, observation time of the \code{EVENT}; unit in days
 }

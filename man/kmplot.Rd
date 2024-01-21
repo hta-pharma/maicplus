@@ -21,15 +21,18 @@ kmplot(
 \arguments{
 \item{weights_object}{an object returned by \code{estimate_weight}}
 
-\item{tte_ipd}{a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT", "TIME" columns and a column indicating treatment assignment}
+\item{tte_ipd}{a data frame of individual patient data (IPD) of internal trial, contain at least \code{"USUBJID"},
+\code{"EVENT"}, \code{"TIME"} columns and a column indicating treatment assignment}
 
-\item{tte_pseudo_ipd}{a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least "EVENT", "TIME"}
+\item{tte_pseudo_ipd}{a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event
+endpoint), contain at least \code{"EVENT"}, \code{"TIME"}}
 
 \item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)}
 
 \item{trt_agd}{a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)}
 
-\item{trt_common}{a string, name of the common comparator in internal and external trial, by default is NULL, indicating unanchored case}
+\item{trt_common}{a string, name of the common comparator in internal and external trial, by default is NULL,
+indicating unanchored case}
 
 \item{trt_var_ipd}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
 
@@ -37,22 +40,25 @@ kmplot(
 
 \item{km_conf_type}{a string, pass to \code{conf.type} of \code{survfit}}
 
-\item{km_layout}{a string, only applicable for unachored case (\code{trt_common = NULL}), indicated the desired layout of output KM curve.}
+\item{km_layout}{a string, only applicable for unanchored case (\code{trt_common = NULL}), indicated the desired
+layout of output KM curve.}
 
 \item{...}{other arguments in \code{basic_kmplot}}
 }
 \value{
 In unanchored case, a KM plot with risk set table. In anchored case, depending on \code{km_layout},
 \itemize{
-\item if "by_trial", 2 by 1 plot, first all KM curves (incl. weighted) in IPD trial, and then KM curves in AgD trial, with risk set table.
-\item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights), and then KM cuvers of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is appended.
+\item if "by_trial", 2 by 1 plot, first all KM curves (incl. weighted) in IPD trial, and then KM curves in AgD
+trial, with risk set table.
+\item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights),
+and then KM curves of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is
+appended.
 \item if "all", 2 by 2 plot, all plots in "by_trial" and "by_arm" without risk set table appended.
 }
 }
 \description{
-It is wrapper function of \code{basic_kmplot}.
-The argument setting is similar to \code{maic_anchored} and \code{maic_unanchored},
-and it is used in those two functions.
+It is wrapper function of \code{basic_kmplot}. The argument setting is similar to \code{maic_anchored} and
+\code{maic_unanchored}, and it is used in those two functions.
 }
 \examples{
 # anchored example using kmplot
@@ -60,12 +66,12 @@ and it is used in those two functions.
 ### IPD
 # Read in relevant ADaM data and rename variables of interest
 adsl <- read.csv(system.file("extdata", "adsl.csv",
-                             package = "maicplus",
-                             mustWork = TRUE
+  package = "maicplus",
+  mustWork = TRUE
 ))
 adtte <- read.csv(system.file("extdata", "adtte.csv",
-                              package = "maicplus",
-                              mustWork = TRUE
+  package = "maicplus",
+  mustWork = TRUE
 ))
 adtte$TIME <- adtte$AVAL
 adtte$EVENT <- adtte$EVNT
@@ -77,17 +83,17 @@ adtte <- rbind(adtte, adtte2)
 ### AgD
 # Baseline aggregate data for the comparator population
 target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
-                                   package = "maicplus", mustWork = TRUE
+  package = "maicplus", mustWork = TRUE
 ))
 # for time-to-event endpoints, pseudo IPD from digitalized KM
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
-                                   package = "maicplus",
-                                   mustWork = TRUE
+  package = "maicplus",
+  mustWork = TRUE
 ))
 pseudo_ipd$ARM <- "B"
 pseudo_ipd2 <- pseudo_ipd
 pseudo_ipd2$ARM <- "C"
-pseudo_ipd2$Time <- pseudo_ipd2$Time +5
+pseudo_ipd2$Time <- pseudo_ipd2$Time + 5
 pseudo_ipd <- rbind(pseudo_ipd, pseudo_ipd2)
 
 #### prepare data
@@ -104,73 +110,79 @@ match_res <- estimate_weights(
 )
 
 # plot by trial
-kmplot( weights_object = match_res,
-        tte_ipd = adtte,
-        trt_var_ipd = "ARM",
-        tte_pseudo_ipd = pseudo_ipd,
-        trt_var_agd = "ARM",
-        endpoint_name = "Overall Survival",
-        trt_ipd = "A",
-        trt_agd = "B",
-        trt_common = "C",
-        km_conf_type = "log-log",
-        km_layout = "by_trial",
-        time_scale="month",
-        time_grid = seq(0, 20, by =2),
-        use_colors = NULL,
-        use_line_types = NULL,
-        use_pch_cex = 0.65,
-        use_pch_alpha = 100)
+kmplot(
+  weights_object = match_res,
+  tte_ipd = adtte,
+  trt_var_ipd = "ARM",
+  tte_pseudo_ipd = pseudo_ipd,
+  trt_var_agd = "ARM",
+  endpoint_name = "Overall Survival",
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  km_conf_type = "log-log",
+  km_layout = "by_trial",
+  time_scale = "month",
+  time_grid = seq(0, 20, by = 2),
+  use_colors = NULL,
+  use_line_types = NULL,
+  use_pch_cex = 0.65,
+  use_pch_alpha = 100
+)
 
 
 # plot by arm
-kmplot( weights_object = match_res,
-        tte_ipd = adtte,
-        trt_var_ipd = "ARM",
-        tte_pseudo_ipd = pseudo_ipd,
-        trt_var_agd = "ARM",
-        endpoint_name = "Overall Survival",
-        trt_ipd = "A",
-        trt_agd = "B",
-        trt_common = "C",
-        km_conf_type = "log-log",
-        km_layout = "by_arm",
-        time_scale="month",
-        time_grid = seq(0, 20, by =2),
-        use_colors = NULL,
-        use_line_types = NULL,
-        use_pch_cex = 0.65,
-        use_pch_alpha = 100)
+kmplot(
+  weights_object = match_res,
+  tte_ipd = adtte,
+  trt_var_ipd = "ARM",
+  tte_pseudo_ipd = pseudo_ipd,
+  trt_var_agd = "ARM",
+  endpoint_name = "Overall Survival",
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  km_conf_type = "log-log",
+  km_layout = "by_arm",
+  time_scale = "month",
+  time_grid = seq(0, 20, by = 2),
+  use_colors = NULL,
+  use_line_types = NULL,
+  use_pch_cex = 0.65,
+  use_pch_alpha = 100
+)
 
 # plot all
-kmplot( weights_object = match_res,
-        tte_ipd = adtte,
-        trt_var_ipd = "ARM",
-        tte_pseudo_ipd = pseudo_ipd,
-        trt_var_agd = "ARM",
-        endpoint_name = "Overall Survival",
-        trt_ipd = "A",
-        trt_agd = "B",
-        trt_common = "C",
-        km_conf_type = "log-log",
-        km_layout = "all",
-        time_scale="month",
-        time_grid = seq(0, 20, by =2),
-        use_colors = NULL,
-        use_line_types = NULL,
-        use_pch_cex = 0.65,
-        use_pch_alpha = 100)
+kmplot(
+  weights_object = match_res,
+  tte_ipd = adtte,
+  trt_var_ipd = "ARM",
+  tte_pseudo_ipd = pseudo_ipd,
+  trt_var_agd = "ARM",
+  endpoint_name = "Overall Survival",
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  km_conf_type = "log-log",
+  km_layout = "all",
+  time_scale = "month",
+  time_grid = seq(0, 20, by = 2),
+  use_colors = NULL,
+  use_line_types = NULL,
+  use_pch_cex = 0.65,
+  use_pch_alpha = 100
+)
 # unanchored example using maicplus_kmplot
 
 ### IPD
 # Read in relevant ADaM data and rename variables of interest
 adsl <- read.csv(system.file("extdata", "adsl.csv",
-                             package = "maicplus",
-                             mustWork = TRUE
+  package = "maicplus",
+  mustWork = TRUE
 ))
 adtte <- read.csv(system.file("extdata", "adtte.csv",
-                              package = "maicplus",
-                              mustWork = TRUE
+  package = "maicplus",
+  mustWork = TRUE
 ))
 adtte$TIME <- adtte$AVAL
 adtte$EVENT <- adtte$EVNT
@@ -178,12 +190,12 @@ adtte$EVENT <- adtte$EVNT
 ### AgD
 # Baseline aggregate data for the comparator population
 target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
-                                   package = "maicplus", mustWork = TRUE
+  package = "maicplus", mustWork = TRUE
 ))
 # for time-to-event endpoints, pseudo IPD from digitalized KM
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
-                                   package = "maicplus",
-                                   mustWork = TRUE
+  package = "maicplus",
+  mustWork = TRUE
 ))
 pseudo_ipd$ARM <- "B"
 
@@ -201,25 +213,22 @@ match_res <- estimate_weights(
 )
 
 # plot
-kmplot( ipd_weights = match_res,
-        tte_dat_ipd = adtte,
-        ipd_trt_var = "ARM",
-        tte_dat_pseudo = pseudo_ipd,
-        pseudo_trt_var = "ARM",
-        endpoint_name = "Overall Survival",
-        trt_ipd = "A",
-        trt_agd = "B",
-        trt_common = NULL,
-        km_conf_type = "log-log",
-        time_scale="month",
-        time_grid = seq(0, 20, by =2),
-        use_colors = NULL,
-        use_line_types = NULL,
-        use_pch_cex = 0.65,
-        use_pch_alpha = 100)
-
-
-
-
-
+kmplot(
+  weights_object = match_res,
+  tte_ipd = adtte,
+  trt_var_ipd = "ARM",
+  tte_pseudo_ipd = pseudo_ipd,
+  trt_var_agd = "ARM",
+  endpoint_name = "Overall Survival",
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = NULL,
+  km_conf_type = "log-log",
+  time_scale = "month",
+  time_grid = seq(0, 20, by = 2),
+  use_colors = NULL,
+  use_line_types = NULL,
+  use_pch_cex = 0.65,
+  use_pch_alpha = 100
+)
 }

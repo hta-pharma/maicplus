@@ -24,7 +24,7 @@ ph_diagplot_schoenfeld(
 \item{subtitle}{a character string, subtitle of the plot}
 }
 \value{
-a plot of Schoenfel residuals
+a plot of Schoenfeld residuals
 }
 \description{
 PH Diagnosis Plot of Schoenfeld residuals for a Cox model fit

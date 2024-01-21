@@ -57,8 +57,8 @@ This is a wrapper function to provide adjusted effect estimates and relevant sta
 \details{
 For time-to-event analysis, it is required that input \code{ipd} and \code{pseudo_ipd} to have the following columns. This function is not sensitive to upper or lower case of letters in column names.
 \itemize{
-\item USUBJID - charater, unique subject ID
-\item ARM - character or factor, treatment indicato, column name does not have to be 'ARM'. User specify in \code{trt_var_ipd} and \code{trt_var_agd}
+\item USUBJID - character, unique subject ID
+\item ARM - character or factor, treatment indicator, column name does not have to be 'ARM'. User specify in \code{trt_var_ipd} and \code{trt_var_agd}
 \item EVENT - numeric, 1 for censored/death, 0 for otherwise
 \item TIME - numeric column, observation time of the \code{EVENT}; unit in days
 }
