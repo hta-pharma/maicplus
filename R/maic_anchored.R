@@ -1,26 +1,31 @@
 #' Anchored MAIC for binary and time-to-event endpoint
 #'
-#' This is a wrapper function to provide adjusted effect estimates and relevant statistics in anchored case
-#' (i.e. there is a common comparator arm in the internal and external trial).
+#' This is a wrapper function to provide adjusted effect estimates and relevant statistics in anchored case (i.e. there
+#' is a common comparator arm in the internal and external trial).
 #'
 #' @param weights_object an object returned by \code{estimate_weight}
 #' @param ipd a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial
-#' @param pseudo_ipd a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or from contingency table (for binary endpoint)
+#' @param pseudo_ipd a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or
+#'   from contingency table (for binary endpoint)
 #' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{pseudo_ipd} (pseudo IPD)
 #' @param trt_common a string, name of the common comparator in internal and external trial
 #' @param trt_var_ipd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param endpoint_type a string, one out of the following "binary", "tte" (time to event)
-#' @param eff_measure a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.
+#' @param eff_measure a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint;
+#'   "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
-#' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days
+#' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
+#'   'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
 #'
-#' @details For time-to-event analysis, it is required that input \code{ipd} and \code{pseudo_ipd} to have the following columns. This function is not sensitive to upper or lower case of letters in column names.
+#' @details For time-to-event analysis, it is required that input \code{ipd} and \code{pseudo_ipd} to have the following
+#'   columns. This function is not sensitive to upper or lower case of letters in column names.
 #' \itemize{
 #'   \item USUBJID - character, unique subject ID
-#'   \item ARM - character or factor, treatment indicator, column name does not have to be 'ARM'. User specify in \code{trt_var_ipd} and \code{trt_var_agd}
+#'   \item ARM - character or factor, treatment indicator, column name does not have to be 'ARM'. User specify in
+#'    \code{trt_var_ipd} and \code{trt_var_agd}
 #'   \item EVENT - numeric, 1 for censored/death, 0 for otherwise
 #'   \item TIME - numeric column, observation time of the \code{EVENT}; unit in days
 #' }
