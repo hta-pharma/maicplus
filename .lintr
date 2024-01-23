@@ -6,6 +6,5 @@ linters: linters_with_defaults(
   object_name_linter = NULL
   )
 exclusions: list(
-    "inst/dev",
-    "inst/examples/Example_tte.Rmd"
+    "inst/dev"
   )
