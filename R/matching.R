@@ -200,9 +200,9 @@ plot_weights_base <- function(weighted_data,
   legend("topright", bty = "n", lty = plot_lty, cex = 0.8, legend = plot_legend)
 }
 
-#' Plot MAIC weights in a histogram with key statistics in legend using ggplot
+#' Plot MAIC weights in a histogram with key statistics in legend using `ggplot2`
 #'
-#' Generates a ggplot histogram of weights. Default is to plot both unscaled and scaled weights on a same graph.
+#' Generates a `ggplot` histogram of weights. Default is to plot both unscaled and scaled weights on a same graph.
 #'
 #' @param weighted_data object returned after calculating weights using [estimate_weights]
 #' @param bin_col a string, color for the bins of histogram
@@ -267,17 +267,17 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
 #'
 #' The plot function displays individuals weights with key summary in top right legend that includes
 #' median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the
-#' original sample size). There are two options of plotting: base R plot and ggplot. The default
+#' original sample size). There are two options of plotting: base R plot and `ggplot`. The default
 #' for base R plot is to plot unscaled and scaled separately. The default
-#' for ggplot is to plot unscaled and scaled weights on a same plot.
+#' for `ggplot` is to plot unscaled and scaled weights on a same plot.
 #'
 #' @param x object from [estimate_weights]
-#' @param ggplot indicator to print base weights plot or ggplot weights plot
+#' @param ggplot indicator to print base weights plot or `ggplot` weights plot
 #' @param bin_col a string, color for the bins of histogram
 #' @param vline_col a string, color for the vertical line in the histogram
 #' @param main_title title of the plot. For ggplot, name of scaled weights plot and unscaled weights plot, respectively.
 #' @param scaled_weights (base plot only) an indicator for using scaled weights instead of regular weights
-#' @param bins (ggplot only) number of bin parameter to use
+#' @param bins (`ggplot` only) number of bin parameter to use
 #'
 #' @examples
 #' load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
