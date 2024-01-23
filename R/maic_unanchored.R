@@ -68,13 +68,20 @@ maic_unanchored <- function(weights_object,
 
   # more pre-checks
   endpoint_type <- match.arg(endpoint_type, c("binary", "tte"))
-  if (!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
-  if (any(duplicated(ipd$USUBJID))) warning("check your ipd, it has duplicated usubjid, this indicates, it might contain multiple endpoints for each subject")
+  if (!"maicplus_estimate_weights" %in% class(weights_object)) {
+    stop("weights_object should be an object returned by estimate_weights")
+  }
+  if (any(duplicated(ipd$USUBJID))) {
+    warning(
+      "check your ipd, it has duplicated usubjid, this indicates, ",
+      "it might contain multiple endpoints for each subject"
+    )
+  }
   if (!all(ipd$USUBJID %in% weights_object$data$USUBJID)) {
-    stop(paste(
-      "these pts in ipd cannot be found in weights_object",
-      paste(setdiff(ipd$USUBJID, weights_object$USUBJID), collapse = ",")
-    ))
+    stop(
+      "These pts in ipd cannot be found in weights_object ",
+      toString(setdiff(ipd$USUBJID, weights_object$USUBJID))
+    )
   }
   time_scale <- match.arg(arg = time_scale, choices = c("days", "weeks", "months", "years"))
   if (endpoint_type == "binary") { # for binary effect measure
@@ -83,13 +90,19 @@ maic_unanchored <- function(weights_object,
     eff_measure <- match.arg(eff_measure, choices = c("OR", "RD", "RR"), several.ok = FALSE)
   } else if (endpoint_type == "tte") { # for time to event effect measure
 
-    if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(ipd))) stop(paste("ipd needs to include at least USUBJID, TIME, EVENT,", trt_var_ipd))
-    if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(pseudo_ipd))) stop(paste("pseudo_ipd needs to include at least TIME, EVENT,", trt_var_agd))
+    if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(ipd))) {
+      stop("ipd needs to include at least USUBJID, TIME, EVENT, ", trt_var_ipd)
+    }
+    if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(pseudo_ipd))) {
+      stop("pseudo_ipd needs to include at least TIME, EVENT, ", trt_var_agd)
+    }
     eff_measure <- match.arg(eff_measure, choices = c("HR"), several.ok = FALSE)
   }
   # else { # for continuous effect measure
   #
-  #   if (any(!c("USUBJID", "RESPONSE") %in% names(ipd))) stop("ipd should have 'USUBJID', 'RESPONSE' columns at minimum")
+  #   if (any(!c("USUBJID", "RESPONSE") %in% names(ipd))) {
+  #   stop("ipd should have 'USUBJID', 'RESPONSE' columns at minimum")
+  #   }
   #   eff_measure <- match.arg(eff_measure, choices = c("Diff"), several.ok = FALSE)
   # }
 

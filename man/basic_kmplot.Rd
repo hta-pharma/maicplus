@@ -20,8 +20,8 @@ basic_kmplot(
 )
 }
 \arguments{
-\item{kmdat}{a \code{data.frame}, must consist \code{treatment}, \code{time} (unit in days), \code{n.risk}, \code{censor}, \code{surv}, similar to an
-output from \code{maicplus:::survfit_makeup}}
+\item{kmdat}{a \code{data.frame}, must consist \code{treatment}, \code{time} (unit in days), \code{n.risk}, \code{censor}, \code{surv}, similar to
+an output from \code{maicplus:::survfit_makeup}}
 
 \item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
 

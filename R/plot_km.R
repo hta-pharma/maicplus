@@ -49,9 +49,15 @@ kmplot <- function(weights_object,
   trt_var_agd <- toupper(trt_var_agd)
 
   # pre check
-  if (!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
-  if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(tte_ipd))) stop(paste("tte_ipd needs to include at least USUBJID, TIME, EVENT,", trt_var_ipd))
-  if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(tte_pseudo_ipd))) stop(paste("tte_pseudo_ipd needs to include at least TIME, EVENT,", trt_var_agd))
+  if (!"maicplus_estimate_weights" %in% class(weights_object)) {
+    stop("weights_object should be an object returned by estimate_weights")
+  }
+  if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(tte_ipd))) {
+    stop("tte_ipd needs to include at least USUBJID, TIME, EVENT, ", trt_var_ipd)
+  }
+  if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(tte_pseudo_ipd))) {
+    stop("tte_pseudo_ipd needs to include at least TIME, EVENT, ", trt_var_agd)
+  }
   km_layout <- match.arg(km_layout, choices = c("all", "by_trial", "by_arm"), several.ok = FALSE)
 
   # preparing data
@@ -242,8 +248,8 @@ kmplot <- function(weights_object,
 #' it can include up to 4 KM curves. This depends on number of levels in 'treatment' column in the input data.frame
 #' \code{kmdat}
 #'
-#' @param kmdat a `data.frame`, must consist `treatment`, `time` (unit in days), `n.risk`, `censor`, `surv`, similar to an
-#'   output from \code{maicplus:::survfit_makeup}
+#' @param kmdat a `data.frame`, must consist `treatment`, `time` (unit in days), `n.risk`, `censor`, `surv`, similar to
+#'   an output from \code{maicplus:::survfit_makeup}
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'
 #' @param time_grid a numeric vector in the unit of \code{time_scale}, risk set table and x axis of the km plot will be
@@ -281,8 +287,12 @@ basic_kmplot <- function(kmdat,
                          use_pch_cex = 0.65,
                          use_pch_alpha = 100) {
   # precheck
-  if (!length(subplot_heights) %in% c(0, (1 + show_risk_set))) stop(paste("length of subplot_heights should be", (1 + show_risk_set)))
-  if (!is.factor(kmdat$treatment)) stop("kmdat$treatment needs to be a factor, its levels will be used in legend and title, first level is comparator")
+  if (!length(subplot_heights) %in% c(0, (1 + show_risk_set))) {
+    stop("length of subplot_heights should be ", (1 + show_risk_set))
+  }
+  if (!is.factor(kmdat$treatment)) {
+    stop("kmdat$treatment needs to be a factor, its levels will be used in legend and title, first level is comparator")
+  }
   if (nlevels(kmdat$treatment) > 4) stop("kmdat$treatment cannot have more than 4 levels")
   if (is.null(time_grid) && show_risk_set) stop("please provide a numeric vector as time_grid to show risk set table")
 
@@ -424,19 +434,24 @@ basic_kmplot <- function(kmdat,
 #' Diagnosis plot of proportional hazard assumption for anchored and unanchored
 #'
 #' @param weights_object an object returned by \code{estimate_weight}
-#' @param tte_ipd a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT", "TIME" columns and a column indicating treatment assignment
-#' @param tte_pseudo_ipd a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least "EVENT", "TIME"
+#' @param tte_ipd a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT",
+#'   "TIME" columns and a column indicating treatment assignment
+#' @param tte_pseudo_ipd a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event
+#'   endpoint), contain at least "EVENT", "TIME"
 #' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)
-#' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL, indicating unanchored case
+#' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL,
+#'   indicating unanchored case
 #' @param trt_var_ipd a string, column name in \code{dat_ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{dat_ipd} that contains the treatment assignment
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'
 #' @param zph_transform a string, pass to \code{survival::cox.zph}, default is "log"
-#' @param zph_log_hazard a logical, if TRUE (default), y axis of the time dependent hazard function is log-hazard, otherwise, hazard.
+#' @param zph_log_hazard a logical, if TRUE (default), y axis of the time dependent hazard function is log-hazard,
+#'   otherwise, hazard.
 #'
-#' @return a 3 by 2 plot, include log-cumulative hazard plot, time dependent hazard function and unscaled Schoenfeld residual plot, before and after matching
+#' @return a 3 by 2 plot, include log-cumulative hazard plot, time dependent hazard function and unscaled Schoenfeld
+#'   residual plot, before and after matching
 #' @export
 ph_diagplot <- function(weights_object,
                         tte_ipd,
@@ -456,9 +471,15 @@ ph_diagplot <- function(weights_object,
   trt_var_agd <- toupper(trt_var_agd)
 
   # pre check
-  if (!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
-  if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(tte_ipd))) stop(paste("tte_ipd needs to include at least USUBJID, TIME, EVENT,", trt_var_ipd))
-  if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(tte_pseudo_ipd))) stop(paste("tte_ipd needs to include at least TIME, EVENT,", trt_var_agd))
+  if (!"maicplus_estimate_weights" %in% class(weights_object)) {
+    stop("weights_object should be an object returned by estimate_weights")
+  }
+  if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(tte_ipd))) {
+    stop("tte_ipd needs to include at least USUBJID, TIME, EVENT, ", trt_var_ipd)
+  }
+  if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(tte_pseudo_ipd))) {
+    stop("tte_ipd needs to include at least TIME, EVENT, ", trt_var_agd)
+  }
 
   # preparing analysis data
   is_anchored <- ifelse(is.null(trt_common), FALSE, TRUE)

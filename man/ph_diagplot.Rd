@@ -22,15 +22,18 @@ ph_diagplot(
 \arguments{
 \item{weights_object}{an object returned by \code{estimate_weight}}
 
-\item{tte_ipd}{a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT", "TIME" columns and a column indicating treatment assignment}
+\item{tte_ipd}{a data frame of individual patient data (IPD) of internal trial, contain at least "USUBJID", "EVENT",
+"TIME" columns and a column indicating treatment assignment}
 
-\item{tte_pseudo_ipd}{a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least "EVENT", "TIME"}
+\item{tte_pseudo_ipd}{a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event
+endpoint), contain at least "EVENT", "TIME"}
 
 \item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)}
 
 \item{trt_agd}{a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)}
 
-\item{trt_common}{a string, name of the common comparator in internal and external trial, by default is NULL, indicating unanchored case}
+\item{trt_common}{a string, name of the common comparator in internal and external trial, by default is NULL,
+indicating unanchored case}
 
 \item{trt_var_ipd}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
 
@@ -42,10 +45,12 @@ ph_diagplot(
 
 \item{zph_transform}{a string, pass to \code{survival::cox.zph}, default is "log"}
 
-\item{zph_log_hazard}{a logical, if TRUE (default), y axis of the time dependent hazard function is log-hazard, otherwise, hazard.}
+\item{zph_log_hazard}{a logical, if TRUE (default), y axis of the time dependent hazard function is log-hazard,
+otherwise, hazard.}
 }
 \value{
-a 3 by 2 plot, include log-cumulative hazard plot, time dependent hazard function and unscaled Schoenfeld residual plot, before and after matching
+a 3 by 2 plot, include log-cumulative hazard plot, time dependent hazard function and unscaled Schoenfeld
+residual plot, before and after matching
 }
 \description{
 Diagnosis plot of proportional hazard assumption for anchored and unanchored

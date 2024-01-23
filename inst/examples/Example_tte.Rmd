@@ -21,7 +21,7 @@ adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus",
                              mustWork = TRUE))
 # Add in a new variable: number of therapies
 adsl$n_pr_ther <- sample(1:4, size = dim(adsl)[1], replace = TRUE)
-  
+
 adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus",
                              mustWork = TRUE))
 adtte <- read.csv(system.file("extdata", "adtte.csv", package = "maicplus",
@@ -32,28 +32,28 @@ adtte <- read.csv(system.file("extdata", "adtte.csv", package = "maicplus",
 
 ```{r}
 adsl <- adsl %>% # Data containing the matching variables
-  mutate(SEX=ifelse(SEX=="Male", 1, 0)) # Coded 1 for males and 0 for females
+  mutate(SEX = ifelse(SEX == "Male", 1, 0)) # Coded 1 for males and 0 for females
 
 adrs <- adrs %>% # Response data
-  filter(PARAM=="Response") %>%
-  transmute(USUBJID, ARM, response=AVAL)
+  filter(PARAM == "Response") %>%
+  transmute(USUBJID, ARM, response = AVAL)
 
 adtte <- adtte %>% # Time to event data (overall survival)
-  filter(PARAMCD=="OS") %>%
-  mutate(Event=1-CNSR) %>% #Set up coding as Event = 1, Censor = 0
-  transmute(USUBJID, ARM, Time=AVAL, Event)
+  filter(PARAMCD == "OS") %>%
+  mutate(Event = 1 - CNSR) %>% #Set up coding as Event = 1, Censor = 0
+  transmute(USUBJID, ARM, Time = AVAL, Event)
 
 # Combine all intervention data
 intervention_input <- adsl %>%
-  full_join(adrs, by=c("USUBJID", "ARM")) %>%
-  full_join(adtte, by=c("USUBJID", "ARM"))
+  full_join(adrs, by = c("USUBJID", "ARM")) %>%
+  full_join(adtte, by = c("USUBJID", "ARM"))
 
 # Change to lower case
 names(intervention_input) <- tolower(names(intervention_input))
 
 # Create a variable for age squared (optional)
 intervention_input <- intervention_input %>%
-  mutate(age_squared = age^2)
+  mutate(age_squared = age ^ 2)
 head(intervention_input)
 
 match_cov <- c("age", "age_squared", "sex", "smoke", "ecog0", "n_pr_ther")
