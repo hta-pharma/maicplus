@@ -4,6 +4,12 @@
     <loc>https://hta-pharma.github.io/maicplus/404.html</loc>
   </url>
   <url>
+    <loc>https://hta-pharma.github.io/maicplus/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://hta-pharma.github.io/maicplus/articles/using_maicplus.html</loc>
+  </url>
+  <url>
     <loc>https://hta-pharma.github.io/maicplus/authors.html</loc>
   </url>
   <url>
@@ -11,6 +17,12 @@
   </url>
   <url>
     <loc>https://hta-pharma.github.io/maicplus/news/index.html</loc>
+  </url>
+  <url>
+    <loc>https://hta-pharma.github.io/maicplus/reference/basic_kmplot.html</loc>
+  </url>
+  <url>
+    <loc>https://hta-pharma.github.io/maicplus/reference/bootstrap_HR.html</loc>
   </url>
   <url>
     <loc>https://hta-pharma.github.io/maicplus/reference/bucher.html</loc>
@@ -43,22 +55,34 @@
     <loc>https://hta-pharma.github.io/maicplus/reference/generate_survival_data.html</loc>
   </url>
   <url>
+    <loc>https://hta-pharma.github.io/maicplus/reference/get_time_as.html</loc>
+  </url>
+  <url>
     <loc>https://hta-pharma.github.io/maicplus/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/km_plot.html</loc>
+    <loc>https://hta-pharma.github.io/maicplus/reference/kmplot.html</loc>
   </url>
   <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/log_cum_haz_plot.html</loc>
+    <loc>https://hta-pharma.github.io/maicplus/reference/maic_anchored.html</loc>
   </url>
   <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/maic_tte_unanchor.html</loc>
+    <loc>https://hta-pharma.github.io/maicplus/reference/maic_unanchored.html</loc>
   </url>
   <url>
     <loc>https://hta-pharma.github.io/maicplus/reference/maicplus-package.html</loc>
   </url>
   <url>
     <loc>https://hta-pharma.github.io/maicplus/reference/medSurv_makeup.html</loc>
+  </url>
+  <url>
+    <loc>https://hta-pharma.github.io/maicplus/reference/ph_diagplot.html</loc>
+  </url>
+  <url>
+    <loc>https://hta-pharma.github.io/maicplus/reference/ph_diagplot_lch.html</loc>
+  </url>
+  <url>
+    <loc>https://hta-pharma.github.io/maicplus/reference/ph_diagplot_schoenfeld.html</loc>
   </url>
   <url>
     <loc>https://hta-pharma.github.io/maicplus/reference/plot_weights_base.html</loc>
@@ -76,9 +100,9 @@
     <loc>https://hta-pharma.github.io/maicplus/reference/report_table.html</loc>
   </url>
   <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/resid_plot.html</loc>
+    <loc>https://hta-pharma.github.io/maicplus/reference/survfit_makeup.html</loc>
   </url>
   <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/survfit_makeup.html</loc>
+    <loc>https://hta-pharma.github.io/maicplus/reference/time_conversion.html</loc>
   </url>
 </urlset>
