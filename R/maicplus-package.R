@@ -8,11 +8,13 @@
 NULL
 
 #' @import graphics
+#' @importFrom grDevices col2rgb rgb
 #' @import stats
 #' @import survival
 #' @import DescTools
 #' @import MASS
 #' @import boot
 #' @import stringr
+#' @import lubridate
 #' @importFrom utils stack
 NULL

@@ -4,13 +4,15 @@
 \alias{survfit_makeup}
 \title{Helper function to select set of variables used for Kaplan-Meier plot}
 \usage{
-survfit_makeup(km_fit)
+survfit_makeup(km_fit, single_trt_name = "treatment")
 }
 \arguments{
 \item{km_fit}{returned object from \code{survival::survfit}}
+
+\item{single_trt_name}{name of treatment if no strata are specified in \code{km_fit}}
 }
 \value{
-a list of data frames of variables from survfit. Data frame is divided by treatment.
+a list of data frames of variables from \code{\link[survival:survfit]{survival::survfit()}}. Data frame is divided by treatment.
 }
 \description{
 Helper function to select set of variables used for Kaplan-Meier plot

@@ -254,16 +254,15 @@ complete_agd <- function(use_agd) {
 
 #' helper function: transform TTE ADaM data to suitable input for survival R package
 #'
-#' @param dd data frame, ADTTE read via haven::read_sas
-#' @param time_scale a character string, 'year', 'month', 'week' or 'day', time unit of median survival time
+#' @param dd data frame, ADTTE read via `haven::read_sas`
+#' @param time_scale a character string, 'years', 'months', 'weeks' or 'days', time unit of median survival time
 #' @param trt values to include in treatment column
 #'
-#' @return a data frame that can be used as input to survival::Surv
+#' @return a data frame that can be used as input to `survival::Surv`
 
-ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
-  time_units <- list("year" = 365.24, "month" = 30.4367, "week" = 7, "day" = 1)
-
-  if (!time_scale %in% names(time_units)) stop("time_scale has to be 'year', 'month', 'week' or 'day'")
+ext_tte_transfer <- function(dd, time_scale = "months", trt = NULL) {
+  time_scale <- match.arg(time_scale, choices = c("years", "months", "weeks", "days"))
+  time_units <- get_time_conversion(time_scale)
 
   if ("CENSOR" %in% names(dd)) {
     dd <- dd[!is.na(dd$CENSOR), ]
@@ -276,7 +275,7 @@ ext_tte_transfer <- function(dd, time_scale = "month", trt = NULL) {
     dd$AVAL <- as.numeric(as.character(dd$TIME))
   }
 
-  dd$time <- dd$AVAL * time_units[[time_scale]]
+  dd$time <- dd$AVAL * time_units
   if (!is.null(trt)) dd$treatment <- trt
   as.data.frame(dd)
 }

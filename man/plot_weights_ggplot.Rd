@@ -2,7 +2,7 @@
 % Please edit documentation in R/matching.R
 \name{plot_weights_ggplot}
 \alias{plot_weights_ggplot}
-\title{Plot MAIC weights in a histogram with key statistics in legend using ggplot}
+\title{Plot MAIC weights in a histogram with key statistics in legend using \code{ggplot2}}
 \usage{
 plot_weights_ggplot(weighted_data, bin_col, vline_col, main_title, bins)
 }
@@ -21,5 +21,5 @@ plot_weights_ggplot(weighted_data, bin_col, vline_col, main_title, bins)
 a plot of unscaled and scaled weights
 }
 \description{
-Generates a ggplot histogram of weights. Default is to plot both unscaled and scaled weights on a same graph.
+Generates a \code{ggplot} histogram of weights. Default is to plot both unscaled and scaled weights on a same graph.
 }

@@ -38,7 +38,7 @@ The default is \code{"BFGS"}, other options are \code{"Nelder-Mead"}, \code{"CG"
 
 \item{x}{object from \link{estimate_weights}}
 
-\item{ggplot}{indicator to print base weights plot or ggplot weights plot}
+\item{ggplot}{indicator to print base weights plot or \code{ggplot} weights plot}
 
 \item{bin_col}{a string, color for the bins of histogram}
 
@@ -48,7 +48,7 @@ The default is \code{"BFGS"}, other options are \code{"Nelder-Mead"}, \code{"CG"
 
 \item{scaled_weights}{(base plot only) an indicator for using scaled weights instead of regular weights}
 
-\item{bins}{(ggplot only) number of bin parameter to use}
+\item{bins}{(\code{ggplot} only) number of bin parameter to use}
 }
 \value{
 a list with the following 4 elements,
@@ -70,9 +70,9 @@ to match the covariates in aggregate data.
 
 The plot function displays individuals weights with key summary in top right legend that includes
 median weight, effective sample size (ESS), and reduction percentage (what percent ESS is reduced from the
-original sample size). There are two options of plotting: base R plot and ggplot. The default
+original sample size). There are two options of plotting: base R plot and \code{ggplot}. The default
 for base R plot is to plot unscaled and scaled separately. The default
-for ggplot is to plot unscaled and scaled weights on a same plot.
+for \code{ggplot} is to plot unscaled and scaled weights on a same plot.
 }
 \section{Methods (by generic)}{
 \itemize{
