@@ -34,9 +34,9 @@ endpoint), contain at least \code{"EVENT"}, \code{"TIME"}}
 \item{trt_common}{a string, name of the common comparator in internal and external trial, by default is NULL,
 indicating unanchored case}
 
-\item{trt_var_ipd}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
+\item{trt_var_ipd}{a string, column name in \code{tte_ipd} that contains the treatment assignment}
 
-\item{trt_var_agd}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
+\item{trt_var_agd}{a string, column name in \code{tte_pseudo_ipd} that contains the treatment assignment}
 
 \item{km_conf_type}{a string, pass to \code{conf.type} of \code{survfit}}
 

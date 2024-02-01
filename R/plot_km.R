@@ -12,8 +12,8 @@
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)
 #' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL,
 #'   indicating unanchored case
-#' @param trt_var_ipd a string, column name in \code{dat_ipd} that contains the treatment assignment
-#' @param trt_var_agd a string, column name in \code{dat_ipd} that contains the treatment assignment
+#' @param trt_var_ipd a string, column name in \code{tte_ipd} that contains the treatment assignment
+#' @param trt_var_agd a string, column name in \code{tte_pseudo_ipd} that contains the treatment assignment
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
 #' @param km_layout a string, only applicable for unanchored case (\code{trt_common = NULL}), indicated the desired
 #'   layout of output KM curve.
