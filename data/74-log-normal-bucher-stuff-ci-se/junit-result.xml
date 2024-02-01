@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="bucher" timestamp="2024-02-01T23:08:37Z" hostname="189ef31d1420" tests="1" skipped="0" failures="0" errors="1" time="0.015">
+    <testcase time="0.0149999999999999" classname="bucher" name="bucher_works_as_expected">
+      <error type="error" message="Error in `names(RR_CI) &lt;- c(&quot;lower&quot;, &quot;upper&quot;)`: 'names' attribute [2] must be the same length as the vector [0] ('test-bucher.R:2:3')">Error in `names(RR_CI) &lt;- c("lower", "upper")`: 'names' attribute [2] must be the same length as the vector [0]
+Backtrace:
+    ▆
+ 1. └─maicplus::bucher(...) at test-bucher.R:2:3</error>
+    </testcase>
+  </testsuite>
+  <testsuite name="matching" timestamp="2024-02-01T23:08:37Z" hostname="189ef31d1420" tests="2" skipped="0" failures="0" errors="0" time="0.108">
+    <testcase time="0.0960000000000001" classname="matching" name="ess_footnote_text_works"/>
+    <testcase time="0.012" classname="matching" name="calculate_weights_legend_works"/>
+  </testsuite>
+</testsuites>
