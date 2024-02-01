@@ -96,26 +96,26 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
   wt_rs <- (wt / sum(wt)) * nrow(EM)
 
   # bootstrapping
-  if(!is.null(nr.boot.iteration)){
+  if (!is.null(nr.boot.iteration)) {
     set.seed(set.seed.boot)
     rowid_in_data <- which(!ind)
     outboot <- lapply(1:nr.boot.iteration, function(k) {
-       boot_rows <- sample(x=1:nrow(EM), size=nrow(EM), replace=TRUE)
-       boot_rowid <- rowid_in_data[boot_rows]
-       boot_EM <- EM[boot_rows,,drop=FALSE]
-       boot_opt <- optim(
-         par = alpha,
-         fn = objfn, gr = gradfn,
-         X = boot_EM,
-         method = method,
-         control = list(maxit = 300, trace = 0), ...
-       )
-       boot_alpha <- boot_opt$par
-       boot_wt <- exp(boot_EM %*% boot_alpha)
-       cbind("rowid"=boot_rows,"weight"=boot_wt)
+      boot_rows <- sample(x = 1:nrow(EM), size = nrow(EM), replace = TRUE)
+      boot_rowid <- rowid_in_data[boot_rows]
+      boot_EM <- EM[boot_rows, , drop = FALSE]
+      boot_opt <- optim(
+        par = alpha,
+        fn = objfn, gr = gradfn,
+        X = boot_EM,
+        method = method,
+        control = list(maxit = 300, trace = 0), ...
+      )
+      boot_alpha <- boot_opt$par
+      boot_wt <- exp(boot_EM %*% boot_alpha)
+      cbind("rowid" = boot_rows, "weight" = boot_wt)
     })
     outboot <- simplify2array(outboot)
-  }else{
+  } else {
     outboot <- NULL
   }
 
