@@ -10,6 +10,8 @@ estimate_weights(
   centered_colnames = NULL,
   start_val = 0,
   method = "BFGS",
+  nr.boot.iteration = NULL,
+  set.seed.boot = 1234,
   ...
 )
 
@@ -31,8 +33,14 @@ estimate_weights(
 
 \item{start_val}{a scalar, the starting value for all coefficients of the propensity score regression}
 
-\item{method}{a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()}).
+\item{method}{a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()})
 The default is \code{"BFGS"}, other options are \code{"Nelder-Mead"}, \code{"CG"}, \code{"L-BFGS-B"}, \code{"SANN"}, and \code{"Brent"}}
+
+\item{nr.boot.iteration}{an integer, number of bootstrap iterations. By default is NULL which means bootstrapping
+procedure will not be triggered, and hence the element \code{"boot"} of output list object will be NA.}
+
+\item{set.seed.boot}{a scalar, the random seed for conducting the bootstrapping, only relevant if \code{nr.boot.iteration}
+is not NULL. By default, use seed 1234}
 
 \item{...}{all other arguments from \code{base::optim()}}
 
@@ -61,6 +69,9 @@ effect modifiers}
 modifiers}
 \item{ess}{effective sample size, square of sum divided by sum of squares}
 \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
+\item{boot}{a n by 2 by k array or NA, where n equals to number of rows in \code{data}, and k equals \code{nr.boot.iteration}.
+the 2 columns in the second dimension include a column of numeric indexes of the rows in \code{data} that are selected at a
+bootstrapping iteration and a column of weights. \code{boot} is NA when argument \code{nr.boot.iteration} is set as NULL }
 }
 }
 \description{
