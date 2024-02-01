@@ -40,42 +40,43 @@ kmplot2 <- function(weights_object,
                     km_layout = c("all", "by_trial", "by_arm"),
                     time_scale,
                     ...) {
-  
   names(tte_ipd) <- toupper(names(tte_ipd))
   names(tte_pseudo_ipd) <- toupper(names(tte_pseudo_ipd))
   trt_var_ipd <- toupper(trt_var_ipd)
   trt_var_agd <- toupper(trt_var_agd)
-  
+
   # pre check
-  if(!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
+  if (!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
   if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(tte_ipd))) stop(paste("tte_ipd needs to include at least USUBJID, TIME, EVENT,", trt_var_ipd))
   if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(tte_pseudo_ipd))) stop(paste("tte_pseudo_ipd needs to include at least TIME, EVENT,", trt_var_agd))
   km_layout <- match.arg(km_layout, choices = c("all", "by_trial", "by_arm"), several.ok = FALSE)
-  
+
   # preparing data
   is_anchored <- ifelse(is.null(trt_common), FALSE, TRUE)
   tte_ipd <- tte_ipd[tte_ipd[[trt_var_ipd]] %in% c(trt_ipd, trt_common), , drop = TRUE]
   tte_pseudo_ipd <- tte_pseudo_ipd[tte_pseudo_ipd[[trt_var_agd]] %in% c(trt_agd, trt_common), , drop = TRUE]
   tte_ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, tte_ipd$USUBJID)]
   tte_pseudo_ipd$weights <- 1
-  
+
   tte_ipd$TIME <- get_time_as(tte_ipd$TIME, as = time_scale)
   tte_pseudo_ipd$TIME <- get_time_as(tte_pseudo_ipd$TIME, as = time_scale)
-  
+
   if (!is_anchored) {
-    
     kmobj_B <- survfit(Surv(TIME, EVENT) ~ 1,
       data = tte_pseudo_ipd,
-      conf.type = km_conf_type)
-    
+      conf.type = km_conf_type
+    )
+
     kmobj_A <- survfit(Surv(TIME, EVENT) ~ 1,
       data = tte_ipd,
-      conf.type = km_conf_type)
-    
+      conf.type = km_conf_type
+    )
+
     kmobj_A_adj <- survfit(Surv(TIME, EVENT) ~ 1,
       data = tte_ipd,
       conf.type = km_conf_type,
-      weights = weights)
+      weights = weights
+    )
 
     kmlist <- list(
       kmobj_B = kmobj_B,
@@ -83,37 +84,44 @@ kmplot2 <- function(weights_object,
       kmobj_A_adj = kmobj_A_adj
     )
     kmlist_name <- c(trt_agd, trt_ipd, paste0(trt_ipd, " (weighted)"))
-    basic_kmplot2(kmlist,
-                  kmlist_name,
-                  ...)
-  } else if(is_anchored){
-    
+    basic_kmplot2(
+      kmlist,
+      kmlist_name,
+      ...
+    )
+  } else if (is_anchored) {
     kmobj_A <- survfit(Surv(TIME, EVENT) ~ 1,
-                       data = tte_ipd[tte_ipd[,trt_var_ipd] == trt_ipd,],
-                       conf.type = km_conf_type)
-    
+      data = tte_ipd[tte_ipd[, trt_var_ipd] == trt_ipd, ],
+      conf.type = km_conf_type
+    )
+
     kmobj_B <- survfit(Surv(TIME, EVENT) ~ 1,
-                       data = tte_pseudo_ipd[tte_pseudo_ipd[,trt_var_agd] == trt_agd,],
-                       conf.type = km_conf_type)
+      data = tte_pseudo_ipd[tte_pseudo_ipd[, trt_var_agd] == trt_agd, ],
+      conf.type = km_conf_type
+    )
 
     kmobj_A_adj <- survfit(Surv(TIME, EVENT) ~ 1,
-                           data = tte_ipd[tte_ipd[,trt_var_ipd] == trt_ipd,],
-                           conf.type = km_conf_type,
-                           weights = weights)
-    
+      data = tte_ipd[tte_ipd[, trt_var_ipd] == trt_ipd, ],
+      conf.type = km_conf_type,
+      weights = weights
+    )
+
     kmobj_C <- survfit(Surv(TIME, EVENT) ~ 1,
-                       data = tte_ipd[tte_ipd[,trt_var_ipd] == trt_common,],
-                       conf.type = km_conf_type)
-    
+      data = tte_ipd[tte_ipd[, trt_var_ipd] == trt_common, ],
+      conf.type = km_conf_type
+    )
+
     kmobj_C_adj <- survfit(Surv(TIME, EVENT) ~ 1,
-                       data = tte_ipd[tte_ipd[,trt_var_ipd] == trt_common,],
-                       conf.type = km_conf_type,
-                       weights = weights)
-    
+      data = tte_ipd[tte_ipd[, trt_var_ipd] == trt_common, ],
+      conf.type = km_conf_type,
+      weights = weights
+    )
+
     kmobj_C_agd <- survfit(Surv(TIME, EVENT) ~ 1,
-                          data = tte_pseudo_ipd[tte_pseudo_ipd[,trt_var_agd] == trt_common,],
-                          conf.type = km_conf_type)
-    
+      data = tte_pseudo_ipd[tte_pseudo_ipd[, trt_var_agd] == trt_common, ],
+      conf.type = km_conf_type
+    )
+
     kmlist <- list(
       kmobj_C = kmobj_C,
       kmobj_A = kmobj_A,
@@ -121,85 +129,87 @@ kmplot2 <- function(weights_object,
       kmobj_C_adj = kmobj_C_adj
     )
     kmlist_name <- c(trt_ipd, trt_common, paste0(trt_ipd, " (weighted)"), paste0(trt_common, " (weighted)"))
-    
+
     kmlist2 <- list(
       kmobj_C_agd = kmobj_C_agd,
       kmobj_B = kmobj_B
     )
     kmlist2_name <- c(trt_common, trt_agd)
-    
+
     kmlist3 <- list(
       kmobj_B = kmobj_B,
       kmobj_A = kmobj_A,
       kmobj_A_adj = kmobj_A_adj
     )
     kmlist3_name <- c(trt_agd, trt_ipd, paste0(trt_ipd, " (weighted)"))
-    
+
     kmlist4 <- list(
       kmobj_C_agd = kmobj_C_agd,
       kmobj_C = kmobj_C,
       kmobj_C_adj = kmobj_C_adj
     )
     kmlist4_name <- c(paste0(trt_common, " (AgD)"), paste0(trt_common, " (IPD)"), paste0(trt_common, " (IPD,weighted)"))
-    
+
     splots <- list()
-    
-    if(km_layout == "by_trial"){
-    
-      splots[[1]] <-  basic_kmplot2(kmlist,
-                                    kmlist_name,
-                                    main_title = paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_common, ") in the IPD trial"),
-                                    ...)
-      splots[[2]] <-  basic_kmplot2(kmlist2,
-                                    kmlist2_name,
-                                    main_title = paste0("Kaplan-Meier Curves \n(", trt_agd, " vs ", trt_common, ") in the AgD trial"),
-                                    ...)
+
+    if (km_layout == "by_trial") {
+      splots[[1]] <- basic_kmplot2(kmlist,
+        kmlist_name,
+        main_title = paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_common, ") in the IPD trial"),
+        ...
+      )
+      splots[[2]] <- basic_kmplot2(kmlist2,
+        kmlist2_name,
+        main_title = paste0("Kaplan-Meier Curves \n(", trt_agd, " vs ", trt_common, ") in the AgD trial"),
+        ...
+      )
 
       arrange_ggsurvplots(splots, ncol = 2, nrow = 1)
-      
-    } else if(km_layout == "by_arm"){
+    } else if (km_layout == "by_arm") {
+      splots[[1]] <- basic_kmplot2(kmlist3,
+        kmlist3_name,
+        main_title = paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_agd, ")"),
+        ...
+      )
+      splots[[2]] <- basic_kmplot2(kmlist4,
+        kmlist4_name,
+        main_title = paste0("Kaplan-Meier Curves of Common Comparator \n", trt_common, "(IPD vs AgD Trial)"),
+        ...
+      )
 
-      splots[[1]] <-  basic_kmplot2(kmlist3,
-                                    kmlist3_name,
-                                    main_title = paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_agd, ")"),
-                                    ...)
-      splots[[2]] <-  basic_kmplot2(kmlist4,
-                                    kmlist4_name,
-                                    main_title = paste0("Kaplan-Meier Curves of Common Comparator \n", trt_common, "(IPD vs AgD Trial)"),
-                                    ...)
-      
       arrange_ggsurvplots(splots, ncol = 2, nrow = 1)
-      
-    } else if(km_layout == "all"){
-      
-      splots[[1]] <-  basic_kmplot2(kmlist,
-                                    kmlist_name,
-                                    main_title = paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_common, ") in the IPD trial"),
-                                    ...)
-      splots[[3]] <-  basic_kmplot2(kmlist2,
-                                    kmlist2_name,
-                                    main_title = paste0("Kaplan-Meier Curves \n(", trt_agd, " vs ", trt_common, ") in the AgD trial"),
-                                    ...)
-      
-      splots[[2]] <-  basic_kmplot2(kmlist3,
-                                    kmlist3_name,
-                                    main_title = paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_agd, ")"),
-                                    ...)
-      splots[[4]] <-  basic_kmplot2(kmlist4,
-                                    kmlist4_name,
-                                    main_title = paste0("Kaplan-Meier Curves of Common Comparator \n", trt_common, "(IPD vs AgD Trial)"),
-                                    ...)
-      
+    } else if (km_layout == "all") {
+      splots[[1]] <- basic_kmplot2(kmlist,
+        kmlist_name,
+        main_title = paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_common, ") in the IPD trial"),
+        ...
+      )
+      splots[[3]] <- basic_kmplot2(kmlist2,
+        kmlist2_name,
+        main_title = paste0("Kaplan-Meier Curves \n(", trt_agd, " vs ", trt_common, ") in the AgD trial"),
+        ...
+      )
+
+      splots[[2]] <- basic_kmplot2(kmlist3,
+        kmlist3_name,
+        main_title = paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_agd, ")"),
+        ...
+      )
+      splots[[4]] <- basic_kmplot2(kmlist4,
+        kmlist4_name,
+        main_title = paste0("Kaplan-Meier Curves of Common Comparator \n", trt_common, "(IPD vs AgD Trial)"),
+        ...
+      )
+
       arrange_ggsurvplots(splots, ncol = 2, nrow = 2)
     }
-    
   }
 }
 
 #' Basic Kaplan Meier (KM) plot function using ggplot
 #'
 #' This function generates a basic KM plot using ggplot.
-#' 
+#'
 #' @param kmlist a list of survival::survfit object
 #' @param kmlist_name a vector indicating the treatment names of each survfit object
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
@@ -220,17 +230,15 @@ basic_kmplot2 <- function(kmlist,
                           censor = T,
                           xlim = NULL,
                           use_colors = NULL,
-                          use_line_types = NULL
-                          ){
-
+                          use_line_types = NULL) {
   if (is.null(use_line_types)) {
     use_line_types <- c(1, 1, 2, 2)
   }
-  
+
   if (is.null(use_colors)) {
     use_colors <- c("#5450E4", "#00857C", "#6ECEB2", "#7B68EE")
-  } 
-  
+  }
+
   # Produce the Kaplan-Meier plot
   survminer_plot <- survminer::ggsurvplot(kmlist,
     linetype = use_line_types,
