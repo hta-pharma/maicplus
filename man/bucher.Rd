@@ -2,37 +2,97 @@
 % Please edit documentation in R/bucher.R
 \name{bucher}
 \alias{bucher}
-\title{Bucher method for adjusted treatment effect}
+\alias{print.maicplus_bucher}
+\title{Calculate relative risk using bucher's method for anchored comparison}
 \usage{
-bucher(trt, com, conf_lv = 0.95)
+bucher(trt = NULL, com = NULL, conf_lv = 0.95)
+
+\method{print}{maicplus_bucher}(x, ci_digits = 2, pval_digits = 3)
 }
 \arguments{
-\item{trt}{a list with two named scalars for the study with interested experimental arm,
-one named \code{'est'} for the point estimate, and the other named \code{'se'} for the standard error}
+\item{trt}{A list of two scalars for the study with interested experimental arm.
+One named \code{'logRR'} for the log relative risk and the other named \code{'logRR_SE'} for the standard error of log relative risk
+One can also use the object returned from \link{find_RR} for convenience.
+If only \code{'RR'} and \code{'RR_SE'} are available for the internal study, function
+first calculates \code{'logRR'} and \code{'logRR_SE'} from the provided relative risk.}
 
-\item{com}{same as \code{trt}, but for the study with interested control arm}
+\item{com}{Same list as \link{trt}, but for the comparator study
+If only \code{'RR'} and \code{'RR_SE'} are available for the comparator study, function
+first calculates \code{'logRR'} and \code{'logRR_SE'} from the provided relative risk.}
 
-\item{conf_lv}{a numerical scalar, prescribe confidence level to derive two-sided
-confidence interval for the adjusted treatment effect}
+\item{conf_lv}{Defines the percentage of confidence interval}
+
+\item{x}{object from \link{bucher}}
+
+\item{ci_digits}{an integer, number of decimal places for point estimate and derived confidence limits}
+
+\item{pval_digits}{an integer, number of decimal places to display Z-test p-value}
 }
 \value{
-a list with 5 elements,
+a list with 6 elements,
 \describe{
-\item{est}{a scalar, point estimate of the adjusted treatment effect}
-\item{se}{a scalar, standard error of the adjusted treatment effect (i.e. \code{est} in return)}
-\item{ci_l}{a scalar, lower confidence limit of a two-sided CI with prescribed nominal level by \code{conf_lv}}
-\item{ci_u}{a scalar, upper confidence limit of a two-sided CI with prescribed nominal level by \code{conf_lv}}
-\item{pval}{p-value of Z-test, with null hypothesis that \code{est} is zero}
+\item{RR}{an estimate of relative risk}
+\item{RR_SE}{standard error of the relative risk}
+\item{RR_CI}{Two-sided CI with prescribed nominal level by \link{conf_lv}}
+\item{pval}{p-value of Z-test, with null hypothesis that RR is zero}
+\item{logRR}{an estimate of log of relative risk}
+\item{logRR_SE}{standard error of the log of relative risk}
 }
 }
 \description{
-Given two estimated treatment effects of A vs. C and B vs. C
-(i.e. two point estimates and corresponding standard errors),
-derive the adjusted treatment of A vs. B using Bucher method,
-with two-sided confidence limits and Z-test p-value
+Convenient function to calculate relative risk using bucher's method.
+Function calculates treatment effect of C vs B via subtracting treatment effect of C vs A from treatment effect of B vs A.
+Function also calculates standard error and confidence interval for the relative risk (C vs B).
+This function is for an anchored comparison as it assumes a common comparator "A".
+Delta method is used to calculate the standard error.
+There are two ways of finding CI of the relative risk:
+use se(RR) obtained via the delta method and calculate the end points or
+form a confidence interval for logRR and then exponentiate the endpoints.
+We will use the second method since logRR converges to a normal distribution
+more quickly than RR. This is also a default coxph method in \link{survival} R package.
 }
+\section{Methods (by generic)}{
+\itemize{
+\item \code{print(maicplus_bucher)}: Print method for bucher objects
+
+}}
 \examples{
-trt <- list(est = 1.1, se = 0.2)
-com <- list(est = 1.3, se = 0.18)
-bucher(trt, com, conf_lv = 0.9)
+set.seed(1)
+ipd <- generate_survival_data() # fix column names and time
+colnames(ipd) <- c("USUBJID", "TIME", "EVENT", "ARM", "X1", "X2", "X3", "X4")
+ipd$TIME <- ipd$TIME * 365
+ipd$ARM <- ifelse(ipd$ARM == 1, "A", "C")
+ipd$ARM <- stats::relevel(as.factor(ipd$ARM), ref = "C")
+
+adtte <- ipd[,c("USUBJID", "TIME", "EVENT", "ARM")]
+
+agd <- data.frame(
+  STUDY = "Simulation study",
+  ARM = "Total",
+  N = 150,
+  X1_PROP = 0.5,
+  X2_PROP = 0.5,
+  X3_PROP = 0.5,
+  X4_PROP = 0.5)
+
+BC_reported <- list(RR = 0.4354202, RR_SE = 0.0939458)
+
+ipd_centered <- center_ipd(ipd = ipd, agd = agd)
+head(ipd_centered)
+
+centered_colnames <- paste0("X", 1:4, "_CENTERED")
+
+weights_object <- estimate_weights(
+  data = ipd_centered,
+  centered_colnames = centered_colnames
+)
+
+ipd_matched <- weights_object$data
+
+# find weighted relative effect of AC
+weighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = ipd_matched, weights = ipd_matched$weights)
+AC_weighted <- find_RR(weighted_cox)
+
+weighted_bucher <- bucher(trt = AC_weighted, com = BC_reported)
+print(weighted_bucher)
 }
