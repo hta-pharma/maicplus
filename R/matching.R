@@ -14,7 +14,7 @@
 #' @param method a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()})
 #' The default is `"BFGS"`, other options are `"Nelder-Mead"`, `"CG"`, `"L-BFGS-B"`, `"SANN"`, and `"Brent"`
 #' @param nr.boot.iteration an integer, number of bootstrap iterations. By default is NULL which means bootstrapping
-#' procedure will not be triggered, and hence the element `"boot"` of output list object will be NA.
+#' procedure will not be triggered, and hence the element `"boot"` of output list object will be NULL.
 #' @param set.seed.boot a scalar, the random seed for conducting the bootstrapping, only relevant if \code{nr.boot.iteration}
 #' is not NULL. By default, use seed 1234
 #' @param ... all other arguments from \code{base::optim()}

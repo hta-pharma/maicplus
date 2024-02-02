@@ -37,7 +37,7 @@ estimate_weights(
 The default is \code{"BFGS"}, other options are \code{"Nelder-Mead"}, \code{"CG"}, \code{"L-BFGS-B"}, \code{"SANN"}, and \code{"Brent"}}
 
 \item{nr.boot.iteration}{an integer, number of bootstrap iterations. By default is NULL which means bootstrapping
-procedure will not be triggered, and hence the element \code{"boot"} of output list object will be NA.}
+procedure will not be triggered, and hence the element \code{"boot"} of output list object will be NULL.}
 
 \item{set.seed.boot}{a scalar, the random seed for conducting the bootstrapping, only relevant if \code{nr.boot.iteration}
 is not NULL. By default, use seed 1234}
