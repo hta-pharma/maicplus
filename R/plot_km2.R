@@ -154,29 +154,29 @@ kmplot2 <- function(weights_object,
     main_title2 <- paste0("Kaplan-Meier Curves \n(", trt_agd, " vs ", trt_common, ") in the AgD trial")
     main_title3 <- paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_agd, ")")
     main_title4 <- paste0("Kaplan-Meier Curves of Common Comparator \n", trt_common, "(IPD vs AgD Trial)")
-    
+
     kmlist_combined <- list(kmlist, kmlist2, kmlist3, kmlist4)
     kmlist_name_combined <- list(kmlist_name, kmlist2_name, kmlist3_name, kmlist4_name)
     main_title_combined <- list(main_title, main_title2, main_title3, main_title4)
-    
-    plot_basic_kmplot2 <- function(ii){
+
+    plot_basic_kmplot2 <- function(ii) {
       basic_kmplot2(kmlist_combined[[ii]],
-                    kmlist_name_combined[[ii]],
-                    main_title = main_title_combined[[ii]],
-                    ...
+        kmlist_name_combined[[ii]],
+        main_title = main_title_combined[[ii]],
+        ...
       )
     }
-    
+
     splots <- list()
-    
+
     if (km_layout == "by_trial") {
-      splots <- lapply(c(1,2), plot_basic_kmplot2)
+      splots <- lapply(c(1, 2), plot_basic_kmplot2)
       arrange_ggsurvplots(splots, ncol = 2, nrow = 1)
     } else if (km_layout == "by_arm") {
-      splots <- lapply(c(3,4), plot_basic_kmplot2)
+      splots <- lapply(c(3, 4), plot_basic_kmplot2)
       arrange_ggsurvplots(splots, ncol = 2, nrow = 1)
     } else if (km_layout == "all") {
-      splots <- lapply(c(1,3,2,4), plot_basic_kmplot2)
+      splots <- lapply(c(1, 3, 2, 4), plot_basic_kmplot2)
       arrange_ggsurvplots(splots, ncol = 2, nrow = 2)
     }
   }
