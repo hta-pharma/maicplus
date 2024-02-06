@@ -10,7 +10,7 @@ basic_kmplot2(
   endpoint_name = "Time to Event Endpoint",
   show_risk_set = TRUE,
   main_title = "Kaplan-Meier Curves",
-  break.x.by = NULL,
+  break_x_by = NULL,
   censor = T,
   xlim = NULL,
   use_colors = NULL,
@@ -28,7 +28,7 @@ basic_kmplot2(
 
 \item{main_title}{a string, main title of the KM plot}
 
-\item{break.x.by}{bin parameter for survminer}
+\item{break_x_by}{bin parameter for survminer}
 
 \item{censor}{indicator to include censor information}
 

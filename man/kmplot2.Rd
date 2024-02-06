@@ -120,7 +120,7 @@ kmplot2(
   km_conf_type = "log-log",
   km_layout = "by_trial",
   time_scale = "month",
-  break.x.by = 2
+  break_x_by = 2
 )
 
 # plot by arm
@@ -137,7 +137,7 @@ kmplot2(
   km_conf_type = "log-log",
   km_layout = "by_arm",
   time_scale = "month",
-  break.x.by = 2
+  break_x_by = 2
 )
 
 # plot all
@@ -154,10 +154,9 @@ kmplot2(
   km_conf_type = "log-log",
   km_layout = "all",
   time_scale = "month",
-  break.x.by = 2,
+  break_x_by = 2,
   xlim = c(0, 20)
 )
-
 # unanchored example using maicplus_kmplot
 
 ### IPD
@@ -211,7 +210,7 @@ kmplot2(
   endpoint_name = "Overall Survival",
   km_conf_type = "log-log",
   time_scale = "month",
-  break.x.by = 2,
+  break_x_by = 2,
   xlim = c(0, 20)
 )
 }
