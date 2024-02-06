@@ -51,6 +51,6 @@ kmplot2(
   endpoint_name = "Overall Survival",
   km_conf_type = "log-log",
   time_scale = "month",
-  break.x.by = 2,
+  break_x_by = 2,
   xlim = c(0, 20)
 )

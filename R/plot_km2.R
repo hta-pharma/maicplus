@@ -52,7 +52,7 @@ kmplot2 <- function(weights_object,
   km_layout <- match.arg(km_layout, choices = c("all", "by_trial", "by_arm"), several.ok = FALSE)
 
   # preparing data
-  is_anchored <- ifelse(is.null(trt_common), FALSE, TRUE)
+  is_anchored <- is.null(trt_common)
   tte_ipd <- tte_ipd[tte_ipd[[trt_var_ipd]] %in% c(trt_ipd, trt_common), , drop = TRUE]
   tte_pseudo_ipd <- tte_pseudo_ipd[tte_pseudo_ipd[[trt_var_agd]] %in% c(trt_agd, trt_common), , drop = TRUE]
   tte_ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, tte_ipd$USUBJID)]
@@ -150,57 +150,33 @@ kmplot2 <- function(weights_object,
     )
     kmlist4_name <- c(paste0(trt_common, " (AgD)"), paste0(trt_common, " (IPD)"), paste0(trt_common, " (IPD,weighted)"))
 
+    main_title <- paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_common, ") in the IPD trial")
+    main_title2 <- paste0("Kaplan-Meier Curves \n(", trt_agd, " vs ", trt_common, ") in the AgD trial")
+    main_title3 <- paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_agd, ")")
+    main_title4 <- paste0("Kaplan-Meier Curves of Common Comparator \n", trt_common, "(IPD vs AgD Trial)")
+    
+    kmlist_combined <- list(kmlist, kmlist2, kmlist3, kmlist4)
+    kmlist_name_combined <- list(kmlist_name, kmlist2_name, kmlist3_name, kmlist4_name)
+    main_title_combined <- list(main_title, main_title2, main_title3, main_title4)
+    
+    plot_basic_kmplot2 <- function(ii){
+      basic_kmplot2(kmlist_combined[[ii]],
+                    kmlist_name_combined[[ii]],
+                    main_title = main_title_combined[[ii]],
+                    ...
+      )
+    }
+    
     splots <- list()
-
+    
     if (km_layout == "by_trial") {
-      splots[[1]] <- basic_kmplot2(kmlist,
-        kmlist_name,
-        main_title = paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_common, ") in the IPD trial"),
-        ...
-      )
-      splots[[2]] <- basic_kmplot2(kmlist2,
-        kmlist2_name,
-        main_title = paste0("Kaplan-Meier Curves \n(", trt_agd, " vs ", trt_common, ") in the AgD trial"),
-        ...
-      )
-
+      splots <- lapply(c(1,2), plot_basic_kmplot2)
       arrange_ggsurvplots(splots, ncol = 2, nrow = 1)
     } else if (km_layout == "by_arm") {
-      splots[[1]] <- basic_kmplot2(kmlist3,
-        kmlist3_name,
-        main_title = paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_agd, ")"),
-        ...
-      )
-      splots[[2]] <- basic_kmplot2(kmlist4,
-        kmlist4_name,
-        main_title = paste0("Kaplan-Meier Curves of Common Comparator \n", trt_common, "(IPD vs AgD Trial)"),
-        ...
-      )
-
+      splots <- lapply(c(3,4), plot_basic_kmplot2)
       arrange_ggsurvplots(splots, ncol = 2, nrow = 1)
     } else if (km_layout == "all") {
-      splots[[1]] <- basic_kmplot2(kmlist,
-        kmlist_name,
-        main_title = paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_common, ") in the IPD trial"),
-        ...
-      )
-      splots[[3]] <- basic_kmplot2(kmlist2,
-        kmlist2_name,
-        main_title = paste0("Kaplan-Meier Curves \n(", trt_agd, " vs ", trt_common, ") in the AgD trial"),
-        ...
-      )
-
-      splots[[2]] <- basic_kmplot2(kmlist3,
-        kmlist3_name,
-        main_title = paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_agd, ")"),
-        ...
-      )
-      splots[[4]] <- basic_kmplot2(kmlist4,
-        kmlist4_name,
-        main_title = paste0("Kaplan-Meier Curves of Common Comparator \n", trt_common, "(IPD vs AgD Trial)"),
-        ...
-      )
-
+      splots <- lapply(c(1,3,2,4), plot_basic_kmplot2)
       arrange_ggsurvplots(splots, ncol = 2, nrow = 2)
     }
   }
@@ -215,7 +191,7 @@ kmplot2 <- function(weights_object,
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
 #' @param show_risk_set logical, show risk set table or not, TRUE by default
 #' @param main_title a string, main title of the KM plot
-#' @param break.x.by bin parameter for survminer
+#' @param break_x_by bin parameter for survminer
 #' @param censor indicator to include censor information
 #' @param xlim x limit for the x-axis of the plot
 #' @param use_colors a character vector of length up to 4, colors to the KM curves, it will be passed to 'col' of \code{lines()}
@@ -226,7 +202,7 @@ basic_kmplot2 <- function(kmlist,
                           endpoint_name = "Time to Event Endpoint",
                           show_risk_set = TRUE,
                           main_title = "Kaplan-Meier Curves",
-                          break.x.by = NULL,
+                          break_x_by = NULL,
                           censor = T,
                           xlim = NULL,
                           use_colors = NULL,
@@ -246,9 +222,9 @@ basic_kmplot2 <- function(kmlist,
     size = 0.2,
     combine = TRUE,
     risk.table = show_risk_set,
-    risk.table.y.text.col = T,
+    risk.table.y.text.col = TRUE,
     risk.table.y.text = FALSE,
-    break.x.by = break.x.by,
+    break.x.by = break_x_by,
     censor = censor,
     censor.size = 2,
     xlab = "Time",
@@ -258,7 +234,7 @@ basic_kmplot2 <- function(kmlist,
     title = paste0(main_title, "\nEndpoint:", endpoint_name),
     legend.labs = kmlist_name,
     tables.theme = theme_cleantable(),
-    ggtheme = theme_classic(base_size = 10),
+    ggtheme = ggplot2::theme_classic(base_size = 10),
     fontsize = 3,
     conf.int = FALSE,
     xlim = xlim

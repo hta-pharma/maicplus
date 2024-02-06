@@ -61,7 +61,7 @@ kmplot <- function(weights_object,
   km_layout <- match.arg(km_layout, choices = c("all", "by_trial", "by_arm"), several.ok = FALSE)
 
   # preparing data
-  is_anchored <- ifelse(is.null(trt_common), FALSE, TRUE)
+  is_anchored <- is.null(trt_common)
   tte_ipd <- tte_ipd[tte_ipd[[trt_var_ipd]] %in% c(trt_ipd, trt_common), , drop = TRUE]
   tte_pseudo_ipd <- tte_pseudo_ipd[tte_pseudo_ipd[[trt_var_agd]] %in% c(trt_agd, trt_common), , drop = TRUE]
   tte_ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, tte_ipd$USUBJID)]
