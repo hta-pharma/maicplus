@@ -40,6 +40,9 @@ kmplot2 <- function(weights_object,
                     km_layout = c("all", "by_trial", "by_arm"),
                     time_scale,
                     ...) {
+  
+  if (!requireNamespace("survminer", quietly = TRUE)) stop("survminer package is required for this function")
+  
   names(tte_ipd) <- toupper(names(tte_ipd))
   names(tte_pseudo_ipd) <- toupper(names(tte_pseudo_ipd))
   trt_var_ipd <- toupper(trt_var_ipd)
