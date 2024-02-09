@@ -16,8 +16,10 @@
 #' @param trt_var_ipd a string, column name in \code{tte_ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{tte_pseudo_ipd} that contains the treatment assignment
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
-#' @param km_layout a string, only applicable for unanchored case (\code{trt_common = NULL}), indicated the desired layout of output KM curve.
-#' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'
+#' @param km_layout a string, only applicable for unanchored case (\code{trt_common = NULL}), indicated the 
+#'   desired layout of output KM curve.
+#' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 
+#'   weeks' or 'days'
 #' @param ... other arguments in \code{basic_kmplot2}
 #'
 #' @return In unanchored case, a KM plot with risk set table. In anchored case, depending on \code{km_layout},
@@ -193,16 +195,20 @@ kmplot2 <- function(weights_object,
 #'
 #' This function generates a basic KM plot using ggplot.
 #'
-#' @param kmlist a list of survival::survfit object
-#' @param kmlist_name a vector indicating the treatment names of each survfit object
-#' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
+#' @param kmlist a list of \code{survfit} object
+#' @param kmlist_name a vector indicating the treatment names of each \code{survfit} object
+#' @param endpoint_name a string, name of time to event endpoint, to be show in the 
+#'   last line of title
 #' @param show_risk_set logical, show risk set table or not, TRUE by default
 #' @param main_title a string, main title of the KM plot
-#' @param break_x_by bin parameter for survminer
+#' @param break_x_by bin parameter for \code{survminer}
 #' @param censor indicator to include censor information
 #' @param xlim x limit for the x-axis of the plot
-#' @param use_colors a character vector of length up to 4, colors to the KM curves, it will be passed to 'col' of \code{lines()}
-#' @param use_line_types a numeric vector of length up to 4, line type to the KM curves, it will be passed to 'lty' of \code{lines()}
+#' @param use_colors a character vector of length up to 4, colors to the KM curves, 
+#'   it will be passed to 'col' of \code{lines()}
+#' @param use_line_types a numeric vector of length up to 4, line type to the KM curves, 
+#'   it will be passed to \code{lty} of \code{lines()}
+#' @export
 
 basic_kmplot2 <- function(kmlist,
                           kmlist_name,
@@ -214,6 +220,9 @@ basic_kmplot2 <- function(kmlist,
                           xlim = NULL,
                           use_colors = NULL,
                           use_line_types = NULL) {
+  
+  if (!requireNamespace("survminer", quietly = TRUE)) stop("survminer package is required for this function")
+  
   if (is.null(use_line_types)) {
     use_line_types <- c(1, 1, 2, 2)
   }

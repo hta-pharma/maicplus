@@ -18,25 +18,28 @@ basic_kmplot2(
 )
 }
 \arguments{
-\item{kmlist}{a list of survival::survfit object}
+\item{kmlist}{a list of \code{survfit} object}
 
-\item{kmlist_name}{a vector indicating the treatment names of each survfit object}
+\item{kmlist_name}{a vector indicating the treatment names of each \code{survfit} object}
 
-\item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
+\item{endpoint_name}{a string, name of time to event endpoint, to be show in the
+last line of title}
 
 \item{show_risk_set}{logical, show risk set table or not, TRUE by default}
 
 \item{main_title}{a string, main title of the KM plot}
 
-\item{break_x_by}{bin parameter for survminer}
+\item{break_x_by}{bin parameter for \code{survminer}}
 
 \item{censor}{indicator to include censor information}
 
 \item{xlim}{x limit for the x-axis of the plot}
 
-\item{use_colors}{a character vector of length up to 4, colors to the KM curves, it will be passed to 'col' of \code{lines()}}
+\item{use_colors}{a character vector of length up to 4, colors to the KM curves,
+it will be passed to 'col' of \code{lines()}}
 
-\item{use_line_types}{a numeric vector of length up to 4, line type to the KM curves, it will be passed to 'lty' of \code{lines()}}
+\item{use_line_types}{a numeric vector of length up to 4, line type to the KM curves,
+it will be passed to \code{lty} of \code{lines()}}
 }
 \description{
 This function generates a basic KM plot using ggplot.

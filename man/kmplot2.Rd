@@ -41,9 +41,11 @@ indicating unanchored case}
 
 \item{km_conf_type}{a string, pass to \code{conf.type} of \code{survfit}}
 
-\item{km_layout}{a string, only applicable for unanchored case (\code{trt_common = NULL}), indicated the desired layout of output KM curve.}
+\item{km_layout}{a string, only applicable for unanchored case (\code{trt_common = NULL}), indicated the
+desired layout of output KM curve.}
 
-\item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'}
+\item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months',
+weeks' or 'days'}
 
 \item{...}{other arguments in \code{basic_kmplot2}}
 }
