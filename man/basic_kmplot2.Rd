@@ -11,7 +11,7 @@ basic_kmplot2(
   show_risk_set = TRUE,
   main_title = "Kaplan-Meier Curves",
   break_x_by = NULL,
-  censor = T,
+  censor = TRUE,
   xlim = NULL,
   use_colors = NULL,
   use_line_types = NULL

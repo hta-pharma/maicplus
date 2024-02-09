@@ -5,11 +5,14 @@
 #' and it is used in those two functions.
 #'
 #' @param weights_object an object returned by \code{estimate_weight}
-#' @param tte_ipd a data frame of individual patient data (IPD) of internal trial, contain at least `"USUBJID"`, `"EVENT"`, `"TIME"` columns and a column indicating treatment assignment
-#' @param tte_pseudo_ipd a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least `"EVENT"`, `"TIME"`
-#' @param trt_ipd a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)
+#' @param tte_ipd a data frame of individual patient data (IPD) of internal trial, contain at least `"USUBJID"`,
+#'   `"EVENT"`, `"TIME"` columns and a column indicating treatment assignment
+#' @param tte_pseudo_ipd a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event
+#'   endpoint), contain at least `"EVENT"`, `"TIME"`
+#' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)
-#' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL, indicating unanchored case
+#' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL,
+#'   indicating unanchored case
 #' @param trt_var_ipd a string, column name in \code{tte_ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{tte_pseudo_ipd} that contains the treatment assignment
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
@@ -17,11 +20,13 @@
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'
 #' @param ... other arguments in \code{basic_kmplot2}
 #'
-#' @return
-#' In unanchored case, a KM plot with risk set table. In anchored case, depending on \code{km_layout},
+#' @return In unanchored case, a KM plot with risk set table. In anchored case, depending on \code{km_layout},
 #' \itemize{
-#'   \item if "by_trial", 2 by 1 plot, first all KM curves (incl. weighted) in IPD trial, and then KM curves in AgD trial, with risk set table.
-#'   \item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights), and then KM cuvers of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is appended.
+#'   \item if "by_trial", 2 by 1 plot, first all KM curves (incl. weighted) in IPD trial, and then KM curves in AgD
+#'   trial, with risk set table.
+#'   \item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights),
+#'    and then KM curves of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is
+#'     appended.
 #'   \item if "all", 2 by 2 plot, all plots in "by_trial" and "by_arm" without risk set table appended.
 #' }
 #' @example inst/examples/kmplot2_anchored_ex.R
@@ -205,7 +210,7 @@ basic_kmplot2 <- function(kmlist,
                           show_risk_set = TRUE,
                           main_title = "Kaplan-Meier Curves",
                           break_x_by = NULL,
-                          censor = T,
+                          censor = TRUE,
                           xlim = NULL,
                           use_colors = NULL,
                           use_line_types = NULL) {

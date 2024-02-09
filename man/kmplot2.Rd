@@ -22,15 +22,18 @@ kmplot2(
 \arguments{
 \item{weights_object}{an object returned by \code{estimate_weight}}
 
-\item{tte_ipd}{a data frame of individual patient data (IPD) of internal trial, contain at least \code{"USUBJID"}, \code{"EVENT"}, \code{"TIME"} columns and a column indicating treatment assignment}
+\item{tte_ipd}{a data frame of individual patient data (IPD) of internal trial, contain at least \code{"USUBJID"},
+\code{"EVENT"}, \code{"TIME"} columns and a column indicating treatment assignment}
 
-\item{tte_pseudo_ipd}{a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event endpoint), contain at least \code{"EVENT"}, \code{"TIME"}}
+\item{tte_pseudo_ipd}{a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event
+endpoint), contain at least \code{"EVENT"}, \code{"TIME"}}
 
 \item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)}
 
 \item{trt_agd}{a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)}
 
-\item{trt_common}{a string, name of the common comparator in internal and external trial, by default is NULL, indicating unanchored case}
+\item{trt_common}{a string, name of the common comparator in internal and external trial, by default is NULL,
+indicating unanchored case}
 
 \item{trt_var_ipd}{a string, column name in \code{tte_ipd} that contains the treatment assignment}
 
@@ -47,8 +50,11 @@ kmplot2(
 \value{
 In unanchored case, a KM plot with risk set table. In anchored case, depending on \code{km_layout},
 \itemize{
-\item if "by_trial", 2 by 1 plot, first all KM curves (incl. weighted) in IPD trial, and then KM curves in AgD trial, with risk set table.
-\item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights), and then KM cuvers of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is appended.
+\item if "by_trial", 2 by 1 plot, first all KM curves (incl. weighted) in IPD trial, and then KM curves in AgD
+trial, with risk set table.
+\item if "by_arm", 2 by 1 plot, first KM curves of \code{trt_agd} and  \code{trt_ipd} (with and without weights),
+and then KM curves of \code{trt_common} in AgD trial and IPD trial (with and without weights). Risk set table is
+appended.
 \item if "all", 2 by 2 plot, all plots in "by_trial" and "by_arm" without risk set table appended.
 }
 }
