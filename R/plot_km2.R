@@ -16,9 +16,9 @@
 #' @param trt_var_ipd a string, column name in \code{tte_ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{tte_pseudo_ipd} that contains the treatment assignment
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
-#' @param km_layout a string, only applicable for unanchored case (\code{trt_common = NULL}), indicated the 
+#' @param km_layout a string, only applicable for unanchored case (\code{trt_common = NULL}), indicated the
 #'   desired layout of output KM curve.
-#' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 
+#' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months',
 #'   weeks' or 'days'
 #' @param ... other arguments in \code{basic_kmplot2}
 #'
@@ -55,9 +55,15 @@ kmplot2 <- function(weights_object,
   trt_var_agd <- toupper(trt_var_agd)
 
   # pre check
-  if (!"maicplus_estimate_weights" %in% class(weights_object)) stop("weights_object should be an object returned by estimate_weights")
-  if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(tte_ipd))) stop(paste("tte_ipd needs to include at least USUBJID, TIME, EVENT,", trt_var_ipd))
-  if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(tte_pseudo_ipd))) stop(paste("tte_pseudo_ipd needs to include at least TIME, EVENT,", trt_var_agd))
+  if (!"maicplus_estimate_weights" %in% class(weights_object)) {
+    stop("weights_object should be an object returned by estimate_weights")
+  }
+  if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(tte_ipd))) {
+    stop(paste("tte_ipd needs to include at least USUBJID, TIME, EVENT,", trt_var_ipd))
+  }
+  if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(tte_pseudo_ipd))) {
+    stop(paste("tte_pseudo_ipd needs to include at least TIME, EVENT,", trt_var_agd))
+  }
   km_layout <- match.arg(km_layout, choices = c("all", "by_trial", "by_arm"), several.ok = FALSE)
 
   # preparing data
