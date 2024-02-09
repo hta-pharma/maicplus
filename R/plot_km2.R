@@ -173,13 +173,13 @@ kmplot2 <- function(weights_object,
 
     if (km_layout == "by_trial") {
       splots <- lapply(c(1, 2), plot_basic_kmplot2)
-      arrange_ggsurvplots(splots, ncol = 2, nrow = 1)
+      survminer::arrange_ggsurvplots(splots, ncol = 2, nrow = 1)
     } else if (km_layout == "by_arm") {
       splots <- lapply(c(3, 4), plot_basic_kmplot2)
-      arrange_ggsurvplots(splots, ncol = 2, nrow = 1)
+      survminer::arrange_ggsurvplots(splots, ncol = 2, nrow = 1)
     } else if (km_layout == "all") {
       splots <- lapply(c(1, 3, 2, 4), plot_basic_kmplot2)
-      arrange_ggsurvplots(splots, ncol = 2, nrow = 2)
+      survminer::arrange_ggsurvplots(splots, ncol = 2, nrow = 2)
     }
   }
 }
