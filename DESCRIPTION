@@ -27,7 +27,7 @@ Suggests:
     testthat (>= 2.0),
     ggplot2,
     rmarkdown,
-    clubSandwich, 
+    clubSandwich,
     dplyr,
     sandwich,
     survminer
