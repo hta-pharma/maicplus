@@ -203,16 +203,16 @@ kmplot2 <- function(weights_object,
 #'
 #' @param kmlist a list of \code{survfit} object
 #' @param kmlist_name a vector indicating the treatment names of each \code{survfit} object
-#' @param endpoint_name a string, name of time to event endpoint, to be show in the 
+#' @param endpoint_name a string, name of time to event endpoint, to be show in the
 #'   last line of title
 #' @param show_risk_set logical, show risk set table or not, TRUE by default
 #' @param main_title a string, main title of the KM plot
 #' @param break_x_by bin parameter for \code{survminer}
 #' @param censor indicator to include censor information
 #' @param xlim x limit for the x-axis of the plot
-#' @param use_colors a character vector of length up to 4, colors to the KM curves, 
+#' @param use_colors a character vector of length up to 4, colors to the KM curves,
 #'   it will be passed to 'col' of \code{lines()}
-#' @param use_line_types a numeric vector of length up to 4, line type to the KM curves, 
+#' @param use_line_types a numeric vector of length up to 4, line type to the KM curves,
 #'   it will be passed to \code{lty} of \code{lines()}
 #' @export
 
@@ -226,9 +226,8 @@ basic_kmplot2 <- function(kmlist,
                           xlim = NULL,
                           use_colors = NULL,
                           use_line_types = NULL) {
-  
   if (!requireNamespace("survminer", quietly = TRUE)) stop("survminer package is required for this function")
-  
+
   if (is.null(use_line_types)) {
     use_line_types <- c(1, 1, 2, 2)
   }
