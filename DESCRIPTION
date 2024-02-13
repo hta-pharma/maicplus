@@ -27,7 +27,7 @@ Suggests:
     testthat (>= 2.0),
     ggplot2,
     rmarkdown,
-    clubSandwich, 
+    clubSandwich,
     dplyr,
     sandwich,
     survminer
@@ -38,4 +38,4 @@ Encoding: UTF-8
 Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.1
