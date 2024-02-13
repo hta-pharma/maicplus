@@ -5,14 +5,18 @@
 #' Derive individual weights in the matching step of MAIC
 #'
 #' Assuming data is properly processed, this function takes individual patient data (IPD) with centered covariates
-#' (effect modifiers and/or prognostic variables) as input, and generates weights for each individual in IPD trial
-#' to match the covariates in aggregate data.
+#' (effect modifiers and/or prognostic variables) as input, and generates weights for each individual in IPD trial to
+#' match the covariates in aggregate data.
 #'
 #' @param data a numeric matrix, centered covariates of IPD, no missing value in any cell is allowed
 #' @param centered_colnames a character or numeric vector (column indicators) of centered covariates
 #' @param start_val a scalar, the starting value for all coefficients of the propensity score regression
-#' @param method a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()}).
-#' The default is `"BFGS"`, other options are `"Nelder-Mead"`, `"CG"`, `"L-BFGS-B"`, `"SANN"`, and `"Brent"`
+#' @param method a string, name of the optimization algorithm (see 'method' argument of \code{base::optim()}) The
+#'   default is `"BFGS"`, other options are `"Nelder-Mead"`, `"CG"`, `"L-BFGS-B"`, `"SANN"`, and `"Brent"`
+#' @param n_boot_iteration an integer, number of bootstrap iterations. By default is NULL which means bootstrapping
+#'   procedure will not be triggered, and hence the element `"boot"` of output list object will be NULL.
+#' @param set_seed_boot a scalar, the random seed for conducting the bootstrapping, only relevant if
+#'   \code{n_boot_iteration} is not NULL. By default, use seed 1234
 #' @param ... all other arguments from \code{base::optim()}
 #'
 #' @return a list with the following 4 elements,
@@ -25,6 +29,10 @@
 #'   modifiers}
 #'   \item{ess}{effective sample size, square of sum divided by sum of squares}
 #'   \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
+#'   \item{boot}{a n by 2 by k array or NA, where n equals to number of rows in \code{data}, and k equals
+#'   \code{n_boot_iteration}. The 2 columns in the second dimension include a column of numeric indexes of the rows in
+#'   \code{data} that are selected at a bootstrapping iteration and a column of weights. \code{boot} is NA when argument
+#'   \code{n_boot_iteration} is set as NULL }
 #' }
 #'
 #' @examples
@@ -38,18 +46,30 @@
 #'
 #' @export
 
-estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, method = "BFGS", ...) {
+estimate_weights <- function(data,
+                             centered_colnames = NULL,
+                             start_val = 0,
+                             method = "BFGS",
+                             n_boot_iteration = NULL,
+                             set_seed_boot = 1234,
+                             ...) {
   # pre check
   ch1 <- is.data.frame(data)
-  if (!ch1) stop("'data' is not a data.frame")
+  if (!ch1) {
+    stop("'data' is not a data.frame")
+  }
 
   ch2 <- (!is.null(centered_colnames))
   if (ch2 && is.numeric(centered_colnames)) {
     ch2b <- any(centered_colnames < 1 | centered_colnames > ncol(data))
-    if (ch2b) stop("specified centered_colnames are out of bound")
+    if (ch2b) {
+      stop("specified centered_colnames are out of bound")
+    }
   } else if (ch2 && is.character(centered_colnames)) {
     ch2b <- !all(centered_colnames %in% names(data))
-    if (ch2b) stop("1 or more specified centered_colnames are not found in 'data'")
+    if (ch2b) {
+      stop("1 or more specified centered_colnames are not found in 'data'")
+    }
   } else {
     stop("'centered_colnames' should be either a numeric or character vector")
   }
@@ -58,7 +78,10 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
     !is.numeric(data[, centered_colnames[ii]])
   })
   if (any(ch3)) {
-    stop(paste0("following columns of 'data' are not numeric for the calculation:", paste(which(ch3), collapse = ",")))
+    stop(paste0(
+      "following columns of 'data' are not numeric for the calculation:",
+      paste(which(ch3), collapse = ",")
+    ))
   }
 
   # prepare data for optimization
@@ -68,25 +91,39 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
   nr_missing <- sum(ind)
   EM <- as.matrix(EM[!ind, , drop = FALSE])
 
-  # objective and gradient functions
-  objfn <- function(alpha, X) {
-    sum(exp(X %*% alpha))
-  }
-  gradfn <- function(alpha, X) {
-    colSums(sweep(X, 1, exp(X %*% alpha), "*"))
-  }
-
   # estimate weights
-  opt1 <- optim(
-    par = rep(start_val, ncol(EM)),
-    fn = objfn, gr = gradfn,
-    X = EM,
-    method = method,
-    control = list(maxit = 300, trace = 2), ...
-  )
-  alpha <- opt1$par
-  wt <- exp(EM %*% alpha)
+  opt1 <- optimise_weights(matrix = EM, par = rep(start_val, ncol(EM)), method = method, ...)
+  alpha <- opt1$alpha
+  wt <- opt1$wt
   wt_rs <- (wt / sum(wt)) * nrow(EM)
+
+  # bootstrapping
+  outboot <- if (is.null(n_boot_iteration)) {
+    NULL
+  } else {
+    # Make sure to leave '.Random.seed' as-is on exit
+    genv <- globalenv()
+    old_seed <- genv$.Random.seed
+    on.exit(suspendInterrupts({
+      if (is.null(old_seed)) {
+        rm(".Random.seed", envir = genv, inherits = FALSE)
+      } else {
+        assign(".Random.seed", value = old_seed, envir = genv, inherits = FALSE)
+      }
+    }))
+    set.seed(set_seed_boot)
+    rowid_in_data <- which(!ind)
+    vapply(
+      seq_len(n_boot_iteration),
+      FUN.VALUE = matrix(0, nrow = nrow(EM), ncol = 2),
+      FUN = function(i) {
+        boot_rows <- sample(x = nrow(EM), size = nrow(EM), replace = TRUE)
+        boot_EM <- EM[boot_rows, , drop = FALSE]
+        boot_opt <- optimise_weights(matrix = boot_EM, par = alpha, method = method, ...)
+        cbind("rowid" = rowid_in_data[boot_rows], "weight" = boot_opt$wt[, 1])
+      }
+    )
+  }
 
   # append weights to data
   data$weights <- NA
@@ -103,13 +140,45 @@ estimate_weights <- function(data, centered_colnames = NULL, start_val = 0, meth
     centered_colnames = centered_colnames,
     nr_missing = nr_missing,
     ess = sum(wt)^2 / sum(wt^2),
-    opt = opt1
+    opt = opt1$opt,
+    boot = outboot
   )
 
   class(outdata) <- c("maicplus_estimate_weights", "list")
   outdata
 }
 
+
+#' Estimate weights using `optim`
+#'
+#' @param matrix Matrix of data to be used for estimating weights
+#' @param par Vector of starting values for the parameters with length equal to the number of columns in `matrix`
+#' @param method Method parameter passed to [stats::optim]
+#' @param ... Additional `control` parameters passed to [stats::optim]
+#'
+#' @return List containing estimated `alpha` values and `wt` weights for all rows of matrix
+#' @noRd
+optimise_weights <- function(matrix,
+                             par = rep(0, ncol(matrix)),
+                             method = "BFGS",
+                             ...) {
+  if (!all(is.numeric(par) || is.finite(par), length(par) == ncol(matrix))) {
+    stop("par must be a numeric vector with finite values of length equal to the number of columns in 'matrix'")
+  }
+  opt1 <- optim(
+    par = par,
+    fn = function(alpha, X) sum(exp(X %*% alpha)),
+    gr = function(alpha, X) colSums(sweep(X, 1, exp(X %*% alpha), "*")),
+    X = matrix,
+    method = method,
+    control = list(maxit = 300, trace = 2, ...)
+  )
+  list(
+    opt = opt1,
+    alpha = opt1$par,
+    wt = exp(matrix %*% opt1$par)
+  )
+}
 
 #' Calculate Statistics for Weight Plot Legend
 #'
