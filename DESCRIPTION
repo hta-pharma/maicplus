@@ -14,8 +14,10 @@ Depends:
     R (>= 3.6)
 Imports:
     graphics,
+    grDevices,
     stats,
     survival,
+    lubridate,
     DescTools,
     MASS,
     boot,
@@ -25,7 +27,7 @@ Suggests:
     testthat (>= 2.0),
     ggplot2,
     rmarkdown,
-    clubSandwich, 
+    clubSandwich,
     dplyr,
     sandwich,
     survminer
@@ -36,4 +38,4 @@ Encoding: UTF-8
 Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
