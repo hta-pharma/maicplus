@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="bucher" timestamp="2023-10-13T07:47:30Z" hostname="dc48434def58" tests="2" skipped="0" failures="1" errors="0" time="0.065">
-    <testcase time="0.0129999999999999" classname="bucher" name="bucher_works_as_expected"/>
-    <testcase time="0.052" classname="bucher" name="bucher_works_when_difference_in_trt_effects_is_positive">
+  <testsuite name="bucher" timestamp="2024-02-15T09:21:04Z" hostname="e3ae1ee90883" tests="2" skipped="0" failures="1" errors="0" time="0.06">
+    <testcase time="0.012" classname="bucher" name="bucher_works_as_expected"/>
+    <testcase time="0.048" classname="bucher" name="bucher_works_when_difference_in_trt_effects_is_positive">
       <failure type="failure" message="`result` not equal to `expected`. ('test-bucher.R:31:3')">`result` not equal to `expected`.
 Component "se": Mean relative difference: 0.2155355
 Component "ci_l": Mean relative difference: 28.86361
@@ -10,8 +10,24 @@ Component "ci_u": Mean relative difference: 1.136449
 Component "pval": Mean relative difference: 0.680807</failure>
     </testcase>
   </testsuite>
-  <testsuite name="matching" timestamp="2023-10-13T07:47:30Z" hostname="dc48434def58" tests="2" skipped="0" failures="0" errors="0" time="0.081">
-    <testcase time="0.0710000000000002" classname="matching" name="ess_footnote_text_works"/>
-    <testcase time="0.00999999999999979" classname="matching" name="calculate_weights_legend_works"/>
+  <testsuite name="matching" timestamp="2024-02-15T09:21:04Z" hostname="e3ae1ee90883" tests="18" skipped="0" failures="0" errors="0" time="0.108">
+    <testcase time="0.0559999999999998" classname="matching" name="ess_footnote_text_works"/>
+    <testcase time="0.00500000000000012" classname="matching" name="calculate_weights_legend_works"/>
+    <testcase time="0.00600000000000001" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.00099999999999989" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.002" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.01" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.0129999999999999" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
   </testsuite>
 </testsuites>
