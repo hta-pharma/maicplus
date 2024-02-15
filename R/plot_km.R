@@ -12,8 +12,8 @@
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)
 #' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL,
 #'   indicating unanchored case
-#' @param trt_var_ipd a string, column name in \code{dat_ipd} that contains the treatment assignment
-#' @param trt_var_agd a string, column name in \code{dat_ipd} that contains the treatment assignment
+#' @param trt_var_ipd a string, column name in \code{tte_ipd} that contains the treatment assignment
+#' @param trt_var_agd a string, column name in \code{tte_pseudo_ipd} that contains the treatment assignment
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
 #' @param km_layout a string, only applicable for unanchored case (\code{trt_common = NULL}), indicated the desired
 #'   layout of output KM curve.
@@ -61,9 +61,9 @@ kmplot <- function(weights_object,
   km_layout <- match.arg(km_layout, choices = c("all", "by_trial", "by_arm"), several.ok = FALSE)
 
   # preparing data
-  is_anchored <- ifelse(is.null(trt_common), FALSE, TRUE)
-  tte_ipd <- tte_ipd[tte_ipd[[trt_var_ipd]] %in% c(trt_ipd, trt_common), , drop = TRUE]
-  tte_pseudo_ipd <- tte_pseudo_ipd[tte_pseudo_ipd[[trt_var_agd]] %in% c(trt_agd, trt_common), , drop = TRUE]
+  is_anchored <- !is.null(trt_common)
+  tte_ipd <- tte_ipd[tte_ipd[[trt_var_ipd]] %in% c(trt_ipd, trt_common), , drop = FALSE]
+  tte_pseudo_ipd <- tte_pseudo_ipd[tte_pseudo_ipd[[trt_var_agd]] %in% c(trt_agd, trt_common), , drop = FALSE]
   tte_ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, tte_ipd$USUBJID)]
   tte_pseudo_ipd$weights <- 1
 
