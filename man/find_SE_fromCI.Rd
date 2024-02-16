@@ -15,11 +15,9 @@ treatment effect}
 
 \item{CI_perc}{Percentage of confidence interval reported}
 
-\item{logged}{Whether the confidence interval should be logged or not.
-For relative treatment effect, log should be applied because log
-treatment effect is assumed to be normally distributed.
-Default is true and this applies to hazard ratio, odds ratio, and
-risk ratio.}
+\item{logged}{Whether the confidence interval should be logged.
+For relative treatment effect, log should be applied because
+estimated log treatment effect is approximately normally distributed.}
 }
 \value{
 Standard error of log relative treatment effect if \code{'logged'}
@@ -32,7 +30,7 @@ treatment effects. This function calculates standard error of the
 treatment effect given the reported confidence interval.
 For relative treatment effect (i.e. hazard ratio, odds ratio, and
 risk ratio), the function would log the confidence interval.
-For risk difference, we do not need to log the confidence interval.
+For risk difference, we do not log the confidence interval.
 The option to log the confidence interval is controlled
 by \code{'logged'} parameter.
 }

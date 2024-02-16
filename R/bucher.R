@@ -71,7 +71,7 @@ bucher <- function(trt, com, conf_lv = 0.95) {
 #' treatment effect given the reported confidence interval.
 #' For relative treatment effect (i.e. hazard ratio, odds ratio, and 
 #' risk ratio), the function would log the confidence interval. 
-#' For risk difference, we do not need to log the confidence interval.
+#' For risk difference, we do not log the confidence interval.
 #' The option to log the confidence interval is controlled 
 #' by `'logged'` parameter.
 #'  
@@ -80,11 +80,9 @@ bucher <- function(trt, com, conf_lv = 0.95) {
 #' @param CI_upper Reported upper percentile value of the
 #' treatment effect
 #' @param CI_perc Percentage of confidence interval reported
-#' @param logged Whether the confidence interval should be logged or not.
-#' For relative treatment effect, log should be applied because log 
-#' treatment effect is assumed to be normally distributed.
-#' Default is true and this applies to hazard ratio, odds ratio, and 
-#' risk ratio.
+#' @param logged Whether the confidence interval should be logged.
+#' For relative treatment effect, log should be applied because 
+#' estimated log treatment effect is approximately normally distributed.
 #' @return Standard error of log relative treatment effect if `'logged'` 
 #' is true and standard error of the treatment effect if `'logged'`
 #' is false
@@ -109,16 +107,17 @@ find_SE_fromCI <- function(CI_lower = NULL, CI_upper = NULL,
 #' estimate and derived confidence limits
 #' @param pval_digits an integer, number of decimal places to display 
 #' Z-test p-value
-#' @param logged Whether the confidence interval should be logged.
-#' Default is set to false.
+#' @param exponentiate Whether the treatment effect and confidence 
+#' interval should be exponentiated. This applies to relative treative
+#' treatment effects. Default is set to false.
 #' @describeIn bucher Print method for bucher objects
 #' @export
 
 print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3, 
-                                  logged = FALSE) {
+                                  exponentiate = FALSE) {
   
   transform_this <- function(x){
-    ifelse(logged, exp(x), x)
+    ifelse(exponentiate, exp(x), x)
   }
   
   res <- paste0(
