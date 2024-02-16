@@ -38,6 +38,7 @@
 #' com <- list(est = log(1.3), se = 0.18)
 #' result <- bucher(trt, com, conf_lv = 0.9)
 #' print(result, ci_digits = 3, pval_digits = 3)
+
 bucher <- function(trt, com, conf_lv = 0.95) {
   est <- trt$est - com$est
   se <- sqrt(trt$se^2 + com$se^2)
@@ -100,7 +101,7 @@ find_SE_fromCI <- function(CI_lower = NULL, CI_upper = NULL,
 
 #' Print method for maicplus_bucher object
 #'
-#' @param x object from [bucher]
+#' @param x maicplus_bucher object
 #' @param ci_digits an integer, number of decimal places for point
 #' estimate and derived confidence limits
 #' @param pval_digits an integer, number of decimal places to display

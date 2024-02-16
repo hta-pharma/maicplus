@@ -6,11 +6,11 @@ test_that("bucher works as expected", {
   )
 
   expected <- list(
-    est = -0.1670541,
-    se = 0.2690725,
-    ci_l = -0.6096389,
-    ci_u = 0.2755308,
-    pval = 0.5346973
+    est = -0.1670540846631661247,
+    se = 0.26907248094147423467,
+    ci_l = -0.60963893085258069604,
+    ci_u = 0.27553076152624844664,
+    pval = 0.53469725822185854014
   )
   expect_equal(result, expected)
 })
