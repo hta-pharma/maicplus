@@ -3,48 +3,60 @@
 \name{bucher}
 \alias{bucher}
 \alias{print.maicplus_bucher}
-\title{Bucher method for adjusted treatment effect}
+\title{Bucher method for combining treatment effects}
 \usage{
 bucher(trt, com, conf_lv = 0.95)
 
-\method{print}{maicplus_bucher}(x, ci_digits = 2, pval_digits = 3)
+\method{print}{maicplus_bucher}(x, ci_digits = 2, pval_digits = 3, logged = FALSE)
 }
 \arguments{
-\item{trt}{a list with two named scalars for the study with interested experimental arm,
-one named \code{'est'} for the point estimate (log scale), and the other named \code{'se'} for the standard error
-of the log treatment effect. For instance, for time-to-event data, \code{'est'} would be
-log hazard ratio and \code{'se'} would be standard error of the log hazard ratio.}
+\item{trt}{a list of two scalars for the study with the
+experimental arm. \code{'est'} is the point estimate and \code{'se'}
+is the standard error of the treatment effect.
+For time-to-event data, \code{'est'} and \code{'se'} should be point estimate and
+standard error of the log hazard ratio.
+For binary data, \code{'est'} and \code{'se'} should be point estimate and
+standard error of the log odds ratio, log risk ratio, or risk
+difference.}
 
-\item{com}{same as \code{trt}, but for the study with interested control arm}
+\item{com}{same as \code{trt}, but for the study with the
+control arm}
 
-\item{conf_lv}{a numerical scalar, prescribe confidence level to derive two-sided
-confidence interval for the adjusted treatment effect}
+\item{conf_lv}{a numerical scalar, prescribe confidence level to derive
+two-sided confidence interval for the treatment effect}
 
 \item{x}{object from \link{bucher}}
 
-\item{ci_digits}{an integer, number of decimal places for point estimate and derived confidence limits}
+\item{ci_digits}{an integer, number of decimal places for point
+estimate and derived confidence limits}
 
-\item{pval_digits}{an integer, number of decimal places to display Z-test p-value}
+\item{pval_digits}{an integer, number of decimal places to display
+Z-test p-value}
+
+\item{logged}{Whether the confidence interval should be logged.
+Default is set to false.}
 }
 \value{
 a list with 5 elements,
 \describe{
-\item{est}{a scalar, point estimate of the adjusted treatment effect}
-\item{se}{a scalar, standard error of the adjusted treatment effect (i.e. \code{est} in return)}
-\item{ci_l}{a scalar, lower confidence limit of a two-sided CI with prescribed nominal level by \code{conf_lv}}
-\item{ci_u}{a scalar, upper confidence limit of a two-sided CI with prescribed nominal level by \code{conf_lv}}
-\item{pval}{p-value of Z-test, with null hypothesis that \code{est} is zero}
+\item{est}{a scalar, point estimate of the treatment effect}
+\item{se}{a scalar, standard error of the treatment effect}
+\item{ci_l}{a scalar, lower confidence limit of a two-sided CI
+with prescribed nominal level by \code{conf_lv}}
+\item{ci_u}{a scalar, upper confidence limit of a two-sided CI
+with prescribed nominal level by \code{conf_lv}}
+\item{pval}{p-value of Z-test, with null hypothesis that
+\code{est} is zero}
 }
 }
 \description{
-Given two estimated treatment effects of A vs. C and B vs. C
-(i.e. two point estimates and corresponding standard errors),
-derive the adjusted treatment of A vs. B using Bucher method,
-with two-sided confidence limits and Z-test p-value.
-The relative treatment effects should be in log scale in the case of
-hazard ratio, odds ratio, and risk ratio. The corresponding
-standard error would be standard error of the log relative treatment
-effect.
+Given two treatment effects of A vs. C and B vs. C
+derive the treatment effects of A vs. B using the Bucher method.
+Two-sided confidence interval and Z-test p-value are also calculated.
+Treatment effects and standard errors should be in log scale
+for hazard ratio, odds ratio, and risk ratio.
+Treatment effects and standard errors should be in natural scale
+for risk difference.
 }
 \section{Methods (by generic)}{
 \itemize{
@@ -54,5 +66,6 @@ effect.
 \examples{
 trt <- list(est = log(1.1), se = 0.2)
 com <- list(est = log(1.3), se = 0.18)
-bucher(trt, com, conf_lv = 0.9)
+result <- bucher(trt, com, conf_lv = 0.9)
+print(result, ci_digits = 3, pval_digits = 3)
 }

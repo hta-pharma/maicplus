@@ -7,11 +7,19 @@
 find_SE_fromCI(CI_lower = NULL, CI_upper = NULL, CI_perc = 0.95, logged = TRUE)
 }
 \arguments{
-\item{CI_lower}{Reported lower percentile value of the relative risk}
+\item{CI_lower}{Reported lower percentile value of the
+treatment effect}
 
-\item{CI_upper}{Reported upper percentile value of the relative risk}
+\item{CI_upper}{Reported upper percentile value of the
+treatment effect}
 
-\item{CI_perc}{Reported percentage of confidence interval reported}
+\item{CI_perc}{Percentage of confidence interval reported}
+
+\item{logged}{Whether the confidence interval should be logged or not.
+For relative treatment effect, log should be applied because log
+treatment effect is assumed to be normally distributed.
+Default is true and this applies to hazard ratio, odds ratio, and
+risk ratio.}
 }
 \value{
 Standard error of log relative treatment effect if \code{'logged'}
@@ -23,7 +31,7 @@ Comparator studies often only report confidence interval of the
 treatment effects. This function calculates standard error of the
 treatment effect given the reported confidence interval.
 For relative treatment effect (i.e. hazard ratio, odds ratio, and
-risk ratio), the function would first log the confidence interval.
+risk ratio), the function would log the confidence interval.
 For risk difference, we do not need to log the confidence interval.
 The option to log the confidence interval is controlled
 by \code{'logged'} parameter.
