@@ -108,9 +108,9 @@ find_SE_fromCI <- function(CI_lower = NULL, CI_upper = NULL,
 #' @param pval_digits an integer, number of decimal places to display 
 #' Z-test p-value
 #' @param exponentiate Whether the treatment effect and confidence 
-#' interval should be exponentiated. This applies to relative treative
+#' interval should be exponentiated. This applies to relative
 #' treatment effects. Default is set to false.
-#' @describeIn bucher Print method for bucher objects
+#' @describeIn bucher Print method for maicplus_bucher objects
 #' @export
 
 print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3, 
