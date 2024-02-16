@@ -1,36 +1,35 @@
-
 #' Bucher method for combining treatment effects
 #'
 #' Given two treatment effects of A vs. C and B vs. C
 #' derive the treatment effects of A vs. B using the Bucher method.
 #' Two-sided confidence interval and Z-test p-value are also calculated.
-#' Treatment effects and standard errors should be in log scale 
-#' for hazard ratio, odds ratio, and risk ratio. 
+#' Treatment effects and standard errors should be in log scale
+#' for hazard ratio, odds ratio, and risk ratio.
 #' Treatment effects and standard errors should be in natural scale
 #' for risk difference.
 #'
-#' @param trt a list of two scalars for the study with the 
-#' experimental arm. `'est'` is the point estimate and `'se'` 
+#' @param trt a list of two scalars for the study with the
+#' experimental arm. `'est'` is the point estimate and `'se'`
 #' is the standard error of the treatment effect.
 #' For time-to-event data, `'est'` and `'se'` should be point estimate and
-#' standard error of the log hazard ratio. 
-#' For binary data, `'est'` and `'se'` should be point estimate and 
-#' standard error of the log odds ratio, log risk ratio, or risk 
+#' standard error of the log hazard ratio.
+#' For binary data, `'est'` and `'se'` should be point estimate and
+#' standard error of the log odds ratio, log risk ratio, or risk
 #' difference.
 #' @param com same as \code{trt}, but for the study with the
 #' control arm
-#' @param conf_lv a numerical scalar, prescribe confidence level to derive 
+#' @param conf_lv a numerical scalar, prescribe confidence level to derive
 #' two-sided confidence interval for the treatment effect
 #'
 #' @return a list with 5 elements,
 #' \describe{
 #'   \item{est}{a scalar, point estimate of the treatment effect}
 #'   \item{se}{a scalar, standard error of the treatment effect}
-#'   \item{ci_l}{a scalar, lower confidence limit of a two-sided CI 
+#'   \item{ci_l}{a scalar, lower confidence limit of a two-sided CI
 #'   with prescribed nominal level by \code{conf_lv}}
-#'   \item{ci_u}{a scalar, upper confidence limit of a two-sided CI 
+#'   \item{ci_u}{a scalar, upper confidence limit of a two-sided CI
 #'   with prescribed nominal level by \code{conf_lv}}
-#'   \item{pval}{p-value of Z-test, with null hypothesis that 
+#'   \item{pval}{p-value of Z-test, with null hypothesis that
 #'   \code{est} is zero}
 #' }
 #' @export
@@ -39,7 +38,6 @@
 #' com <- list(est = log(1.3), se = 0.18)
 #' result <- bucher(trt, com, conf_lv = 0.9)
 #' print(result, ci_digits = 3, pval_digits = 3)
-
 bucher <- function(trt, com, conf_lv = 0.95) {
   est <- trt$est - com$est
   se <- sqrt(trt$se^2 + com$se^2)
@@ -58,7 +56,7 @@ bucher <- function(trt, com, conf_lv = 0.95) {
     ci_u = ci_u,
     pval = pval
   )
-  
+
   class(outdata) <- c("list", "maicplus_bucher")
   outdata
 }
@@ -66,72 +64,75 @@ bucher <- function(trt, com, conf_lv = 0.95) {
 
 #' Calculate standard error from the reported confidence interval.
 #'
-#' Comparator studies often only report confidence interval of the 
-#' treatment effects. This function calculates standard error of the 
+#' Comparator studies often only report confidence interval of the
+#' treatment effects. This function calculates standard error of the
 #' treatment effect given the reported confidence interval.
-#' For relative treatment effect (i.e. hazard ratio, odds ratio, and 
-#' risk ratio), the function would log the confidence interval. 
+#' For relative treatment effect (i.e. hazard ratio, odds ratio, and
+#' risk ratio), the function would log the confidence interval.
 #' For risk difference, we do not log the confidence interval.
-#' The option to log the confidence interval is controlled 
+#' The option to log the confidence interval is controlled
 #' by `'logged'` parameter.
-#'  
-#' @param CI_lower Reported lower percentile value of the 
+#'
+#' @param CI_lower Reported lower percentile value of the
 #' treatment effect
 #' @param CI_upper Reported upper percentile value of the
 #' treatment effect
 #' @param CI_perc Percentage of confidence interval reported
 #' @param logged Whether the confidence interval should be logged.
-#' For relative treatment effect, log should be applied because 
+#' For relative treatment effect, log should be applied because
 #' estimated log treatment effect is approximately normally distributed.
-#' @return Standard error of log relative treatment effect if `'logged'` 
+#' @return Standard error of log relative treatment effect if `'logged'`
 #' is true and standard error of the treatment effect if `'logged'`
 #' is false
 #' @examples
 #' find_SE_fromCI(CI_lower = 0.55, CI_upper = 0.90, CI_perc = 0.95)
 #' @export
 
-find_SE_fromCI <- function(CI_lower = NULL, CI_upper = NULL, 
-                           CI_perc = 0.95, logged = TRUE){
-  
+find_SE_fromCI <- function(CI_lower = NULL, CI_upper = NULL,
+                           CI_perc = 0.95, logged = TRUE) {
   alpha <- 1 - CI_perc
   se <- ifelse(logged,
-               (log(CI_upper) - log(CI_lower)) / (2 * qnorm(1 - alpha/2)),
-               (CI_upper - CI_lower) / (2 * qnorm(1 - alpha/2)))
+    (log(CI_upper) - log(CI_lower)) / (2 * qnorm(1 - alpha / 2)),
+    (CI_upper - CI_lower) / (2 * qnorm(1 - alpha / 2))
+  )
   return(se)
 }
 
 #' Print method for maicplus_bucher object
 #'
 #' @param x object from [bucher]
-#' @param ci_digits an integer, number of decimal places for point 
+#' @param ci_digits an integer, number of decimal places for point
 #' estimate and derived confidence limits
-#' @param pval_digits an integer, number of decimal places to display 
+#' @param pval_digits an integer, number of decimal places to display
 #' Z-test p-value
-#' @param exponentiate Whether the treatment effect and confidence 
+#' @param exponentiate Whether the treatment effect and confidence
 #' interval should be exponentiated. This applies to relative treative
 #' treatment effects. Default is set to false.
 #' @describeIn bucher Print method for bucher objects
 #' @export
 
-print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3, 
+print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
                                   exponentiate = FALSE) {
-  
-  transform_this <- function(x){
+  transform_this <- function(x) {
     ifelse(exponentiate, exp(x), x)
   }
-  
+
   res <- paste0(
-    format(round(transform_this(x$est), ci_digits), 
-           nsmall = ci_digits), "[",
-    format(round(transform_this(x$ci_l), ci_digits), 
-           nsmall = ci_digits), ";",
-    format(round(transform_this(x$ci_u), ci_digits), 
-           nsmall = ci_digits), "]"
+    format(round(transform_this(x$est), ci_digits),
+      nsmall = ci_digits
+    ), "[",
+    format(round(transform_this(x$ci_l), ci_digits),
+      nsmall = ci_digits
+    ), ";",
+    format(round(transform_this(x$ci_u), ci_digits),
+      nsmall = ci_digits
+    ), "]"
   )
 
   disp_pval <- round(x$pval, pval_digits)
-  disp_pval <- ifelse(disp_pval == 0, paste0("<", 1 / (10^pval_digits)), 
-                      format(disp_pval, nsmall = pval_digits))
+  disp_pval <- ifelse(disp_pval == 0, paste0("<", 1 / (10^pval_digits)),
+    format(disp_pval, nsmall = pval_digits)
+  )
 
   output <- c(res, disp_pval)
   names(output) <- c("result", "pvalue")
