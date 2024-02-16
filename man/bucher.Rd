@@ -34,7 +34,7 @@ estimate and derived confidence limits}
 Z-test p-value}
 
 \item{exponentiate}{Whether the treatment effect and confidence
-interval should be exponentiated. This applies to relative treative
+interval should be exponentiated. This applies to relative
 treatment effects. Default is set to false.}
 }
 \value{
@@ -61,7 +61,7 @@ for risk difference.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{print(maicplus_bucher)}: Print method for bucher objects
+\item \code{print(maicplus_bucher)}: Print method for maicplus_bucher objects
 
 }}
 \examples{
