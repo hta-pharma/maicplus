@@ -100,7 +100,7 @@ find_SE_fromCI <- function(CI_lower = NULL, CI_upper = NULL,
   return(se)
 }
 
-#' Print method for bucher object
+#' Print method for maicplus_bucher object
 #'
 #' @param x object from [bucher]
 #' @param ci_digits an integer, number of decimal places for point 
