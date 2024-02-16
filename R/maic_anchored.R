@@ -48,7 +48,13 @@ maic_anchored <- function(weights_object,
                           # time to event specific args
                           time_scale = "months",
                           km_conf_type = "log-log") {
-  # ==> Setup and Precheck ------------------------------------------
+  # ==> Initial Setup ------------------------------------------
+  # create the hull for the output from this function
+  res <- list(
+    descriptive = list(),
+    inferential = list()
+  )
+
   names(ipd) <- toupper(names(ipd))
   names(pseudo_ipd) <- toupper(names(pseudo_ipd))
   trt_var_ipd <- toupper(trt_var_ipd)
@@ -62,6 +68,8 @@ maic_anchored <- function(weights_object,
   if (trt_var_ipd != "ARM") ipd$ARM <- ipd[[trt_var_ipd]]
   if (trt_var_agd != "ARM") pseudo_ipd$ARM <- pseudo_ipd[[trt_var_agd]]
   ipd$ARM <- as.character(ipd$ARM) # just to avoid potential error when merging
+
+  # ==> Precheck ------------------------------------------
   pseudo_ipd$ARM <- as.character(pseudo_ipd$ARM) # just to avoid potential error when merging
   if (!trt_ipd %in% ipd$ARM) stop("trt_ipd does not exist in ipd$ARM")
   if (!trt_agd %in% pseudo_ipd$ARM) stop("trt_agd does not exist in pseudo_ipd$ARM")
@@ -75,7 +83,6 @@ maic_anchored <- function(weights_object,
   if (!length(pseudo_ipd_arms) >= 2) {
     stop("In anchored case, there should be at least two arms in pseudo_ipd, but you have: ", toString(pseudo_ipd_arms))
   }
-  # more pre-checks
   endpoint_type <- match.arg(endpoint_type, c("binary", "tte"))
   if (!"maicplus_estimate_weights" %in% class(weights_object)) {
     stop("weights_object should be an object returned by estimate_weights")
@@ -114,13 +121,9 @@ maic_anchored <- function(weights_object,
   #   eff_measure <- match.arg(eff_measure, choices = c("Diff"), several.ok = FALSE)
   # }
 
-  # create the hull for the output from this function
-  res <- list(
-    descriptive = list(),
-    inferential = list()
-  )
 
-  # prepare ipd and agd data for analysis, part 1/2
+  # ==> IPD and AgD data preparation ------------------------------------------
+  # part 1/2
   ipd <- ipd[ipd$ARM %in% c(trt_ipd, trt_common), , drop = TRUE]
   pseudo_ipd <- pseudo_ipd[pseudo_ipd$ARM %in% c(trt_agd, trt_common), , drop = TRUE]
   ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
@@ -137,7 +140,7 @@ maic_anchored <- function(weights_object,
     if (nrow(ipd) == 0) stop("there is no pts with weight in IPD!!")
   }
 
-  # prepare ipd and agd data for analysis, part 2/2
+  # part 2/2
   if (endpoint_type == "tte") {
     retain_cols <- c("USUBJID", "ARM", "TIME", "EVENT", "weights")
   } else {
