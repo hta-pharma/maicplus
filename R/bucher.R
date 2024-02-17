@@ -38,7 +38,6 @@
 #' com <- list(est = log(1.3), se = 0.18)
 #' result <- bucher(trt, com, conf_lv = 0.9)
 #' print(result, ci_digits = 3, pval_digits = 3)
-
 bucher <- function(trt, com, conf_lv = 0.95) {
   est <- trt$est - com$est
   se <- sqrt(trt$se^2 + com$se^2)
