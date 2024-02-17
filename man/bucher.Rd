@@ -25,7 +25,7 @@ control arm}
 \item{conf_lv}{a numerical scalar, prescribe confidence level to derive
 two-sided confidence interval for the treatment effect}
 
-\item{x}{object from \link{bucher}}
+\item{x}{\code{maicplus_bucher} object}
 
 \item{ci_digits}{an integer, number of decimal places for point
 estimate and derived confidence limits}
@@ -61,7 +61,7 @@ for risk difference.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{print(maicplus_bucher)}: Print method for maicplus_bucher objects
+\item \code{print(maicplus_bucher)}: Print method for \code{maicplus_bucher} objects
 
 }}
 \examples{

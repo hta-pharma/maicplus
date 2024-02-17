@@ -99,9 +99,9 @@ find_SE_fromCI <- function(CI_lower = NULL, CI_upper = NULL,
   return(se)
 }
 
-#' Print method for maicplus_bucher object
+#' Print method for `maicplus_bucher` object
 #'
-#' @param x maicplus_bucher object
+#' @param x `maicplus_bucher` object
 #' @param ci_digits an integer, number of decimal places for point
 #' estimate and derived confidence limits
 #' @param pval_digits an integer, number of decimal places to display
@@ -109,7 +109,7 @@ find_SE_fromCI <- function(CI_lower = NULL, CI_upper = NULL,
 #' @param exponentiate Whether the treatment effect and confidence
 #' interval should be exponentiated. This applies to relative
 #' treatment effects. Default is set to false.
-#' @describeIn bucher Print method for maicplus_bucher objects
+#' @describeIn bucher Print method for `maicplus_bucher` objects
 #' @export
 
 print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
