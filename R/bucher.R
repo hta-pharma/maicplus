@@ -85,11 +85,11 @@ bucher <- function(trt, com, conf_lv = 0.95) {
 #' is true and standard error of the treatment effect if `'logged'`
 #' is false
 #' @examples
-#' find_SE_fromCI(CI_lower = 0.55, CI_upper = 0.90, CI_perc = 0.95)
+#' find_SE_from_CI(CI_lower = 0.55, CI_upper = 0.90, CI_perc = 0.95)
 #' @export
 
-find_SE_fromCI <- function(CI_lower = NULL, CI_upper = NULL,
-                           CI_perc = 0.95, logged = TRUE) {
+find_SE_from_CI <- function(CI_lower = NULL, CI_upper = NULL,
+                            CI_perc = 0.95, logged = TRUE) {
   alpha <- 1 - CI_perc
   se <- ifelse(logged,
     (log(CI_upper) - log(CI_lower)) / (2 * qnorm(1 - alpha / 2)),
