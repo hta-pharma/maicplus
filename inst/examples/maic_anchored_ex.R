@@ -7,11 +7,11 @@ adsl <- read.csv(system.file("extdata", "adsl.csv",
   package = "maicplus",
   mustWork = TRUE
 ))
-adsl$USUBJID <- paste0("xx",adsl$USUBJID)
+adsl$USUBJID <- paste0("xx", adsl$USUBJID)
 adsl2 <- adsl
-adsl2$USUBJID <- sample(size=nrow(adsl2),paste0("yy",adsl2$USUBJID),replace =FALSE)
-adsl2 <- adsl2[order(adsl2$USUBJID),]
-adsl <- rbind(adsl,adsl2)
+adsl2$USUBJID <- sample(size = nrow(adsl2), paste0("yy", adsl2$USUBJID), replace = FALSE)
+adsl2 <- adsl2[order(adsl2$USUBJID), ]
+adsl <- rbind(adsl, adsl2)
 
 adtte <- read.csv(system.file("extdata", "adtte.csv",
   package = "maicplus",
@@ -19,7 +19,7 @@ adtte <- read.csv(system.file("extdata", "adtte.csv",
 ))
 adtte$TIME <- adtte$AVAL
 adtte$EVENT <- adtte$EVNT
-adtte$USUBJID <- paste0("xx",adtte$USUBJID)
+adtte$USUBJID <- paste0("xx", adtte$USUBJID)
 
 adtte2 <- adtte
 adtte2$ARM <- "C"
@@ -28,7 +28,7 @@ fit_C <- flexsurv::flexsurvspline(formula = Surv(TIME, EVENT) ~ 1, data = adtte2
 tmp <- simulate(fit_C, nsim = 1, seed = 1234, newdata = adtte2, censtime = max(adtte$TIME))
 adtte2$TIME <- tmp$time_1
 adtte2$EVENT <- tmp$event_1
-adtte2$USUBJID <- paste0("yy",adtte2$USUBJID)
+adtte2$USUBJID <- paste0("yy", adtte2$USUBJID)
 adtte <- rbind(adtte, adtte2)
 
 ### AgD
@@ -109,8 +109,8 @@ result_boot <- maic_anchored(
 result_boot$inferential$report_median_surv
 result_boot$inferential$report_overall_robustCI
 result_boot$inferential$report_overall_bootCI
-quantile(result_boot$inferential$boot_est,p=0.025)
-quantile(result_boot$inferential$boot_est,p=0.975)
+quantile(result_boot$inferential$boot_est, p = 0.025)
+quantile(result_boot$inferential$boot_est, p = 0.975)
 
 ph_diagplot(
   weights_object = match_res,

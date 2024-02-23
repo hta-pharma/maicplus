@@ -190,21 +190,21 @@ maic_anchored <- function(weights_object,
     res_AB$ci_u <- exp(res_AB$ci_u)
 
     # get bootstrapped estimates if applicable
-    if(!is.null(weights_object$boot)){
+    if (!is.null(weights_object$boot)) {
       tmp_boot_obj <- weights_object$boot
       k <- dim(tmp_boot_obj)[3]
-      tmp_boot_est <- sapply(1:k, function(ii){
-        boot_x <- tmp_boot_obj[,,ii]
-        boot_ipd_id <- weights_object$data$USUBJID[boot_x[,1]]
-        boot_ipd <- ipd[match(boot_ipd_id,ipd$USUBJID),,drop=FALSE]
-        boot_ipd$weights <- boot_x[,2]
+      tmp_boot_est <- sapply(1:k, function(ii) {
+        boot_x <- tmp_boot_obj[, , ii]
+        boot_ipd_id <- weights_object$data$USUBJID[boot_x[, 1]]
+        boot_ipd <- ipd[match(boot_ipd_id, ipd$USUBJID), , drop = FALSE]
+        boot_ipd$weights <- boot_x[, 2]
 
         boot_coxobj_ipd_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_ipd, weights = weights) # does not matter use robust se or not, point estimate will not change and calculation would be faster
         boot_AB_est <- summary(boot_coxobj_ipd_adj)$coef[1] - summary(coxobj_agd)$coef[1]
         exp(boot_AB_est)
       })
       res$inferential[["boot_est"]] <- tmp_boot_est
-    }else{
+    } else {
       res$inferential[["boot_est"]] <- NULL
     }
 
@@ -220,13 +220,13 @@ maic_anchored <- function(weights_object,
       )
     )
 
-    if(is.null(res$inferential[["boot_est"]])){
+    if (is.null(res$inferential[["boot_est"]])) {
       res$inferential[["report_overall_bootCI"]] <- NULL
-    }else{
+    } else {
       boot_res_AB <- res_AB
-      boot_logres_se <- sd(log(res$inferential[["boot_est"]]),na.rm=TRUE)
-      boot_res_AB$ci_l <- exp( log(boot_res_AB$est) + qnorm(0.025)*boot_logres_se )
-      boot_res_AB$ci_u <- exp( log(boot_res_AB$est) + qnorm(0.975)*boot_logres_se )
+      boot_logres_se <- sd(log(res$inferential[["boot_est"]]), na.rm = TRUE)
+      boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
+      boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
       # boot_res_AB$ci_l <- quantile(res$inferential[["boot_est"]],p=0.025)
       # boot_res_AB$ci_u <- quantile(res$inferential[["boot_est"]],p=0.975)
       res$inferential[["report_overall_bootCI"]] <- rbind(
@@ -240,7 +240,6 @@ maic_anchored <- function(weights_object,
         )
       )
     }
-
   }
 
   # output
