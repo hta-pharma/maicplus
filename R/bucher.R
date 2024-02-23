@@ -40,7 +40,7 @@
 #' print(result, ci_digits = 3, pval_digits = 3)
 bucher <- function(trt, com, conf_lv = 0.95) {
   est <- trt$est - com$est
-  se <- sqrt(trt$se ^ 2 + com$se ^ 2)
+  se <- sqrt(trt$se^2 + com$se^2)
   ci_l <- est - stats::qnorm(0.5 + conf_lv / 2) * se
   ci_u <- est + stats::qnorm(0.5 + conf_lv / 2) * se
   if (est > 0) {
@@ -105,8 +105,9 @@ find_SE_from_CI <- function(CI_lower = NULL, CI_upper = NULL,
 
   alpha <- 1 - CI_perc
   se <- ifelse(logged,
-               (log(CI_upper) - log(CI_lower)) / (2 * qnorm(1 - alpha / 2)),
-               (CI_upper - CI_lower) / (2 * qnorm(1 - alpha / 2)))
+    (log(CI_upper) - log(CI_lower)) / (2 * qnorm(1 - alpha / 2)),
+    (CI_upper - CI_lower) / (2 * qnorm(1 - alpha / 2))
+  )
   return(se)
 }
 
@@ -131,13 +132,16 @@ print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
 
   res <- paste0(
     format(round(transform_this(x$est), ci_digits),
-           nsmall = ci_digits),
+      nsmall = ci_digits
+    ),
     " [",
     format(round(transform_this(x$ci_l), ci_digits),
-           nsmall = ci_digits),
+      nsmall = ci_digits
+    ),
     "; ",
     format(round(transform_this(x$ci_u), ci_digits),
-           nsmall = ci_digits),
+      nsmall = ci_digits
+    ),
     "]"
   )
 
@@ -146,6 +150,7 @@ print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
     ifelse(disp_pval == 0,
            paste0("<", 1 / (10 ^ pval_digits)),
            format(disp_pval, nsmall = pval_digits))
+  )
 
   output <- c(res, disp_pval)
   names(output) <- c("result", "pvalue")
