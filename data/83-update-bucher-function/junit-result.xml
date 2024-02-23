@@ -1,30 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="bucher" timestamp="2024-02-22T17:11:14Z" hostname="a8c22c8011eb" tests="1" skipped="0" failures="1" errors="0" time="0.016">
-    <testcase time="0.016" classname="bucher" name="bucher_works_as_expected">
-      <failure type="failure" message="`result` not equal to `expected`. ('test-bucher.R:15:3')">`result` not equal to `expected`.
-Attributes: &lt; names for target but not for current &gt;
-Attributes: &lt; Length mismatch: comparison on first 0 components &gt;</failure>
-    </testcase>
+  <testsuite name="bucher" timestamp="2024-02-23T14:45:27Z" hostname="23cd3c23bd3e" tests="1" skipped="0" failures="0" errors="0" time="0.011">
+    <testcase time="0.0110000000000001" classname="bucher" name="bucher_works_as_expected"/>
   </testsuite>
-  <testsuite name="matching" timestamp="2024-02-22T17:11:14Z" hostname="a8c22c8011eb" tests="18" skipped="0" failures="0" errors="0" time="0.144">
-    <testcase time="0.0860000000000001" classname="matching" name="ess_footnote_text_works"/>
-    <testcase time="0.0110000000000001" classname="matching" name="calculate_weights_legend_works"/>
-    <testcase time="0.00600000000000001" classname="matching" name="optimise_weights_works_as_expected"/>
-    <testcase time="0.002" classname="matching" name="optimise_weights_works_as_expected"/>
-    <testcase time="0.00099999999999989" classname="matching" name="optimise_weights_works_as_expected"/>
-    <testcase time="0.01" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected"/>
+  <testsuite name="matching" timestamp="2024-02-23T14:45:27Z" hostname="23cd3c23bd3e" tests="18" skipped="0" failures="0" errors="0" time="0.126">
+    <testcase time="0.0539999999999998" classname="matching" name="ess_footnote_text_works"/>
+    <testcase time="0.0130000000000001" classname="matching" name="calculate_weights_legend_works"/>
+    <testcase time="0.00800000000000001" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.0109999999999999" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.00100000000000011" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.0109999999999999" classname="matching" name="estimate_weights_works_as_expected"/>
     <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected"/>
     <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected"/>
     <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected"/>
     <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.0130000000000001" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
-    <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.0129999999999999" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
     <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
     <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
     <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
     <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
     <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
   </testsuite>
 </testsuites>
