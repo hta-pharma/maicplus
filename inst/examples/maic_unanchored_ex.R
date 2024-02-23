@@ -86,7 +86,6 @@ result_boot <- maic_unanchored(
 result_boot$inferential$report_median_surv
 result_boot$inferential$report_overall_robustCI
 result_boot$inferential$report_overall_bootCI
-## the bootstrapped est is totally off !!!
 quantile(result_boot$inferential$boot_est,p=0.025)
 quantile(result_boot$inferential$boot_est,p=0.975)
 
