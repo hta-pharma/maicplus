@@ -132,17 +132,12 @@ print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
   res <- paste0(
     format(round(transform_this(x$est), ci_digits),
       nsmall = ci_digits
-    ),
-    " [",
+    ), " [",
     format(round(transform_this(x$ci_l), ci_digits),
       nsmall = ci_digits
-    ),
-    "; ",
+    ), "; ",
     format(round(transform_this(x$ci_u), ci_digits),
-      nsmall = ci_digits
-    ),
-    "]"
-  )
+      nsmall = ci_digits), "]")
 
   disp_pval <- round(x$pval, pval_digits)
   disp_pval <-
