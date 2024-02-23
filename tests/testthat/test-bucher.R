@@ -1,16 +1,17 @@
 test_that("bucher works as expected", {
   result <- bucher(
-    trt = list(est = 1, se = 0.04),
-    com = list(est = 1.2, se = 0.08),
+    trt = list(est = log(1.1), se = 0.2),
+    com = list(est = log(1.3), se = 0.18),
     conf_lv = 0.9
   )
 
   expected <- list(
-    est = -0.2,
-    se = 0.0894427190999916,
-    ci_l = -0.347120180916023,
-    ci_u = -0.0528798190839771,
-    pval = 0.0253473186774683
+    est = -0.1670540846631661247,
+    se = 0.26907248094147423467,
+    ci_l = -0.60963893085258069604,
+    ci_u = 0.27553076152624844664,
+    pval = 0.53469725822185854014
   )
+  class(expected) <- c("maicplus_bucher", "list")
   expect_equal(result, expected)
 })
