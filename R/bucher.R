@@ -147,9 +147,14 @@ print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
   disp_pval <- round(x$pval, pval_digits)
   disp_pval <-
     ifelse(disp_pval == 0,
+<<<<<<< Updated upstream
       paste0("<", 1 / (10^pval_digits)),
       format(disp_pval, nsmall = pval_digits)
     )
+=======
+           paste0("<", 1 / (10 ^ pval_digits)),
+           format(disp_pval, nsmall = pval_digits))
+>>>>>>> Stashed changes
 
   output <- c(res, disp_pval)
   names(output) <- c("result", "pvalue")
