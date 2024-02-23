@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.102584814216478" branch-rate="0" lines-covered="127" lines-valid="1238" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-02-23 15:28:54.46911">
+<coverage line-rate="0.10266774454325" branch-rate="0" lines-covered="127" lines-valid="1237" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-02-23 15:46:24.879139">
   <sources>
     <source>/__w/maicplus/maicplus/maicplus</source>
   </sources>
   <packages>
-    <package name="maicplus" line-rate="0.102584814216478" branch-rate="0" complexity="0">
+    <package name="maicplus" line-rate="0.10266774454325" branch-rate="0" complexity="0">
       <classes>
         <class name="bootstrap.R" filename="R/bootstrap.R" line-rate="0" branch-rate="0" complexity="0">
           <methods>
@@ -63,7 +63,7 @@
             <line number="88" hits="0" branch="false"/>
           </lines>
         </class>
-        <class name="bucher.R" filename="R/bucher.R" line-rate="0.3" branch-rate="0" complexity="0">
+        <class name="bucher.R" filename="R/bucher.R" line-rate="0.306122448979592" branch-rate="0" complexity="0">
           <methods>
             <method name="bucher" signature="" line-rate="0.9375" branch-rate="0" complexity="0">
               <lines>
@@ -115,16 +115,15 @@
                 <line number="138" hits="0" branch="false"/>
                 <line number="139" hits="0" branch="false"/>
                 <line number="140" hits="0" branch="false"/>
-                <line number="141" hits="0" branch="false"/>
                 <line number="142" hits="0" branch="false"/>
+                <line number="143" hits="0" branch="false"/>
                 <line number="144" hits="0" branch="false"/>
                 <line number="145" hits="0" branch="false"/>
                 <line number="146" hits="0" branch="false"/>
                 <line number="147" hits="0" branch="false"/>
-                <line number="148" hits="0" branch="false"/>
+                <line number="149" hits="0" branch="false"/>
                 <line number="150" hits="0" branch="false"/>
                 <line number="151" hits="0" branch="false"/>
-                <line number="152" hits="0" branch="false"/>
               </lines>
             </method>
           </methods>
@@ -169,16 +168,15 @@
             <line number="138" hits="0" branch="false"/>
             <line number="139" hits="0" branch="false"/>
             <line number="140" hits="0" branch="false"/>
-            <line number="141" hits="0" branch="false"/>
             <line number="142" hits="0" branch="false"/>
+            <line number="143" hits="0" branch="false"/>
             <line number="144" hits="0" branch="false"/>
             <line number="145" hits="0" branch="false"/>
             <line number="146" hits="0" branch="false"/>
             <line number="147" hits="0" branch="false"/>
-            <line number="148" hits="0" branch="false"/>
+            <line number="149" hits="0" branch="false"/>
             <line number="150" hits="0" branch="false"/>
             <line number="151" hits="0" branch="false"/>
-            <line number="152" hits="0" branch="false"/>
           </lines>
         </class>
         <class name="data_generation.R" filename="R/data_generation.R" line-rate="0" branch-rate="0" complexity="0">
