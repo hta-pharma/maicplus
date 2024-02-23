@@ -48,7 +48,7 @@ bucher <- function(trt, com, conf_lv = 0.95) {
   } else {
     pval <- 2 * stats::pnorm(est, 0, se)
   }
-  
+
   outdata <- list(
     est = est,
     se = se,
@@ -56,7 +56,7 @@ bucher <- function(trt, com, conf_lv = 0.95) {
     ci_u = ci_u,
     pval = pval
   )
-  
+
   class(outdata) <- c("maicplus_bucher", "list")
   outdata
 }
@@ -90,19 +90,19 @@ bucher <- function(trt, com, conf_lv = 0.95) {
 
 find_SE_from_CI <- function(CI_lower = NULL, CI_upper = NULL,
                             CI_perc = 0.95, logged = TRUE) {
-  
+
   if (CI_perc > 1 || CI_perc < 0) {
     stop("CI_perc has to be between 0 and 1")
   }
-  
+
   if (is.null(CI_lower) || is.null(CI_upper)) {
     stop("Both CI_lower and CI_upper need to be specified")
   }
-  
+
   if (!is.numeric(CI_lower) || !is.numeric(CI_upper)) {
     stop("Both CI_lower and CI_upper need to be specified")
   }
-  
+
   alpha <- 1 - CI_perc
   se <- ifelse(logged,
                (log(CI_upper) - log(CI_lower)) / (2 * qnorm(1 - alpha / 2)),
@@ -128,7 +128,7 @@ print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
   transform_this <- function(x) {
     ifelse(exponentiate, exp(x), x)
   }
-  
+
   res <- paste0(
     format(round(transform_this(x$est), ci_digits),
            nsmall = ci_digits),
@@ -140,13 +140,13 @@ print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
            nsmall = ci_digits),
     "]"
   )
-  
+
   disp_pval <- round(x$pval, pval_digits)
   disp_pval <-
     ifelse(disp_pval == 0,
            paste0("<", 1 / (10 ^ pval_digits)),
            format(disp_pval, nsmall = pval_digits))
-  
+
   output <- c(res, disp_pval)
   names(output) <- c("result", "pvalue")
   return(output)
