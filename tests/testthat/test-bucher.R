@@ -12,5 +12,6 @@ test_that("bucher works as expected", {
     ci_u = 0.27553076152624844664,
     pval = 0.53469725822185854014
   )
+  class(expected) <- c("maicplus_bucher", "list")
   expect_equal(result, expected)
 })
