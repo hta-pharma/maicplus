@@ -90,15 +90,16 @@ bucher <- function(trt, com, conf_lv = 0.95) {
 
 find_SE_from_CI <- function(CI_lower = NULL, CI_upper = NULL,
                             CI_perc = 0.95, logged = TRUE) {
-  if (CI_perc > 1 || CI_perc < 0) {
+  
+  if (CI_perc > 1 || CI_perc < 0){
     stop("CI_perc has to be between 0 and 1")
   }
-
-  if (is.null(CI_lower) || is.null(CI_upper)) {
+  
+  if (is.null(CI_lower) || is.null(CI_upper)){
     stop("Both CI_lower and CI_upper need to be specified")
   }
-
-  if (!is.numeric(CI_lower) || !is.numeric(CI_upper)) {
+  
+  if (!is.numeric(CI_lower) || !is.numeric(CI_upper)){
     stop("Both CI_lower and CI_upper need to be specified")
   }
 
