@@ -148,7 +148,7 @@ maic_anchored <- function(weights_object,
   }
   ipd <- ipd[, retain_cols, drop = FALSE]
   pseudo_ipd <- pseudo_ipd[, retain_cols, drop = FALSE]
-  dat <- rbind(ipd, pseudo_ipd)
+  dat <- rbind(ipd, pseudo_ipd) # only used if apply contrast method
   ipd$ARM <- factor(ipd$ARM, levels = c(trt_common, trt_ipd))
   pseudo_ipd$ARM <- factor(pseudo_ipd$ARM, levels = c(trt_common, trt_agd))
   dat$ARM <- factor(dat$ARM, levels = c(trt_common, trt_agd, trt_ipd))
@@ -196,10 +196,10 @@ maic_anchored <- function(weights_object,
       tmp_boot_est <- sapply(1:k, function(ii){
         boot_x <- tmp_boot_obj[,,ii]
         boot_ipd_id <- weights_object$data$USUBJID[boot_x[,1]]
-        boot_weights <- boot_x[,2]
         boot_ipd <- ipd[match(boot_ipd_id,ipd$USUBJID),,drop=FALSE]
+        boot_ipd$weights <- boot_x[,2]
 
-        boot_coxobj_ipd_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_ipd, weights = boot_weights) # does not matter use robust se or not, point estimate will not change and calculation would be faster
+        boot_coxobj_ipd_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_ipd, weights = weights) # does not matter use robust se or not, point estimate will not change and calculation would be faster
         boot_AB_est <- summary(boot_coxobj_ipd_adj)$coef[1] - summary(coxobj_agd)$coef[1]
         exp(boot_AB_est)
       })
@@ -208,6 +208,7 @@ maic_anchored <- function(weights_object,
       res$inferential[["boot_est"]] <- NULL
     }
 
+    # make analysis report table
     res$inferential[["report_overall_robustCI"]] <- rbind(
       report_table(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
       report_table(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
