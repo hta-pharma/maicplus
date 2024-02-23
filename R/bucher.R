@@ -129,17 +129,13 @@ print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
     ifelse(exponentiate, exp(x), x)
   }
 
-  res <- paste0(
-    format(round(transform_this(x$est), ci_digits),
-      nsmall = ci_digits
-    ), " [",
-    format(round(transform_this(x$ci_l), ci_digits),
-      nsmall = ci_digits
-    ), "; ",
-    format(round(transform_this(x$ci_u), ci_digits),
-      nsmall = ci_digits
-    ), "]"
-  )
+  a <- format(round(transform_this(x$est), ci_digits), 
+              nsmall = ci_digits)
+  b <- format(round(transform_this(x$ci_l), ci_digits),
+              nsmall = ci_digits)
+  c <- format(round(transform_this(x$ci_u), ci_digits),
+              nsmall = ci_digits)
+  res <- paste0(a, " [", b, "; ", c, "]")
 
   disp_pval <- round(x$pval, pval_digits)
   disp_pval <-
