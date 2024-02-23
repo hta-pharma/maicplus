@@ -128,7 +128,6 @@ print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
   transform_this <- function(x) {
     ifelse(exponentiate, exp(x), x)
   }
-
   a <- format(round(transform_this(x$est), ci_digits),
     nsmall = ci_digits
   )
