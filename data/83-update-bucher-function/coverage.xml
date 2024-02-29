@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.127625201938611" branch-rate="0" lines-covered="158" lines-valid="1238" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-02-29 21:41:34.032477">
+<coverage line-rate="0.127625201938611" branch-rate="0" lines-covered="158" lines-valid="1238" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-02-29 21:54:32.349826">
   <sources>
     <source>/__w/maicplus/maicplus/maicplus</source>
   </sources>
@@ -67,22 +67,22 @@
           <methods>
             <method name="bucher" signature="" line-rate="0.9375" branch-rate="0" complexity="0">
               <lines>
-                <line number="44" hits="3" branch="false"/>
-                <line number="45" hits="3" branch="false"/>
-                <line number="46" hits="3" branch="false"/>
-                <line number="47" hits="3" branch="false"/>
-                <line number="48" hits="3" branch="false"/>
+                <line number="44" hits="2" branch="false"/>
+                <line number="45" hits="2" branch="false"/>
+                <line number="46" hits="2" branch="false"/>
+                <line number="47" hits="2" branch="false"/>
+                <line number="48" hits="2" branch="false"/>
                 <line number="49" hits="0" branch="false"/>
-                <line number="51" hits="3" branch="false"/>
-                <line number="54" hits="3" branch="false"/>
-                <line number="55" hits="3" branch="false"/>
-                <line number="56" hits="3" branch="false"/>
-                <line number="57" hits="3" branch="false"/>
-                <line number="58" hits="3" branch="false"/>
-                <line number="59" hits="3" branch="false"/>
-                <line number="60" hits="3" branch="false"/>
-                <line number="62" hits="3" branch="false"/>
-                <line number="63" hits="3" branch="false"/>
+                <line number="51" hits="2" branch="false"/>
+                <line number="54" hits="2" branch="false"/>
+                <line number="55" hits="2" branch="false"/>
+                <line number="56" hits="2" branch="false"/>
+                <line number="57" hits="2" branch="false"/>
+                <line number="58" hits="2" branch="false"/>
+                <line number="59" hits="2" branch="false"/>
+                <line number="60" hits="2" branch="false"/>
+                <line number="62" hits="2" branch="false"/>
+                <line number="63" hits="2" branch="false"/>
               </lines>
             </method>
             <method name="find_SE_from_CI" signature="" line-rate="0.75" branch-rate="0" complexity="0">
@@ -129,22 +129,22 @@
             </method>
           </methods>
           <lines>
-            <line number="44" hits="3" branch="false"/>
-            <line number="45" hits="3" branch="false"/>
-            <line number="46" hits="3" branch="false"/>
-            <line number="47" hits="3" branch="false"/>
-            <line number="48" hits="3" branch="false"/>
+            <line number="44" hits="2" branch="false"/>
+            <line number="45" hits="2" branch="false"/>
+            <line number="46" hits="2" branch="false"/>
+            <line number="47" hits="2" branch="false"/>
+            <line number="48" hits="2" branch="false"/>
             <line number="49" hits="0" branch="false"/>
-            <line number="51" hits="3" branch="false"/>
-            <line number="54" hits="3" branch="false"/>
-            <line number="55" hits="3" branch="false"/>
-            <line number="56" hits="3" branch="false"/>
-            <line number="57" hits="3" branch="false"/>
-            <line number="58" hits="3" branch="false"/>
-            <line number="59" hits="3" branch="false"/>
-            <line number="60" hits="3" branch="false"/>
-            <line number="62" hits="3" branch="false"/>
-            <line number="63" hits="3" branch="false"/>
+            <line number="51" hits="2" branch="false"/>
+            <line number="54" hits="2" branch="false"/>
+            <line number="55" hits="2" branch="false"/>
+            <line number="56" hits="2" branch="false"/>
+            <line number="57" hits="2" branch="false"/>
+            <line number="58" hits="2" branch="false"/>
+            <line number="59" hits="2" branch="false"/>
+            <line number="60" hits="2" branch="false"/>
+            <line number="62" hits="2" branch="false"/>
+            <line number="63" hits="2" branch="false"/>
             <line number="96" hits="1" branch="false"/>
             <line number="97" hits="0" branch="false"/>
             <line number="100" hits="1" branch="false"/>
