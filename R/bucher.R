@@ -71,7 +71,7 @@ bucher <- function(trt, com, conf_lv = 0.95) {
 #' treatment effect given the reported confidence interval.
 #' For relative treatment effect (i.e. hazard ratio, odds ratio, and
 #' risk ratio), the function would log the confidence interval.
-#' For risk difference and mean difference, 
+#' For risk difference and mean difference,
 #' we do not log the confidence interval.
 #' The option to log the confidence interval is controlled
 #' by `'logged'` parameter.
