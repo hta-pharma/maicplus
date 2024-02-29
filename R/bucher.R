@@ -6,7 +6,7 @@
 #' Treatment effects and standard errors should be in log scale
 #' for hazard ratio, odds ratio, and risk ratio.
 #' Treatment effects and standard errors should be in natural scale
-#' for risk difference.
+#' for risk difference and mean difference.
 #'
 #' @param trt a list of two scalars for the study with the
 #' experimental arm. `'est'` is the point estimate and `'se'`
@@ -16,6 +16,8 @@
 #' For binary data, `'est'` and `'se'` should be point estimate and
 #' standard error of the log odds ratio, log risk ratio, or risk
 #' difference.
+#' For continuous data,  `'est'` and `'se'` should be point estimate and
+#' standard error of the mean difference.
 #' @param com same as \code{trt}, but for the study with the
 #' control arm
 #' @param conf_lv a numerical scalar, prescribe confidence level to derive
@@ -69,7 +71,8 @@ bucher <- function(trt, com, conf_lv = 0.95) {
 #' treatment effect given the reported confidence interval.
 #' For relative treatment effect (i.e. hazard ratio, odds ratio, and
 #' risk ratio), the function would log the confidence interval.
-#' For risk difference, we do not log the confidence interval.
+#' For risk difference and mean difference, 
+#' we do not log the confidence interval.
 #' The option to log the confidence interval is controlled
 #' by `'logged'` parameter.
 #'

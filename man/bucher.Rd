@@ -17,7 +17,9 @@ For time-to-event data, \code{'est'} and \code{'se'} should be point estimate an
 standard error of the log hazard ratio.
 For binary data, \code{'est'} and \code{'se'} should be point estimate and
 standard error of the log odds ratio, log risk ratio, or risk
-difference.}
+difference.
+For continuous data,  \code{'est'} and \code{'se'} should be point estimate and
+standard error of the mean difference.}
 
 \item{com}{same as \code{trt}, but for the study with the
 control arm}
@@ -57,7 +59,7 @@ Two-sided confidence interval and Z-test p-value are also calculated.
 Treatment effects and standard errors should be in log scale
 for hazard ratio, odds ratio, and risk ratio.
 Treatment effects and standard errors should be in natural scale
-for risk difference.
+for risk difference and mean difference.
 }
 \section{Methods (by generic)}{
 \itemize{
