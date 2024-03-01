@@ -48,7 +48,13 @@ maic_anchored <- function(weights_object,
                           # time to event specific args
                           time_scale = "months",
                           km_conf_type = "log-log") {
-  # ==> Setup and Precheck ------------------------------------------
+  # ==> Initial Setup ------------------------------------------
+  # create the hull for the output from this function
+  res <- list(
+    descriptive = list(),
+    inferential = list()
+  )
+
   names(ipd) <- toupper(names(ipd))
   names(pseudo_ipd) <- toupper(names(pseudo_ipd))
   trt_var_ipd <- toupper(trt_var_ipd)
@@ -62,6 +68,8 @@ maic_anchored <- function(weights_object,
   if (trt_var_ipd != "ARM") ipd$ARM <- ipd[[trt_var_ipd]]
   if (trt_var_agd != "ARM") pseudo_ipd$ARM <- pseudo_ipd[[trt_var_agd]]
   ipd$ARM <- as.character(ipd$ARM) # just to avoid potential error when merging
+
+  # ==> Precheck ------------------------------------------
   pseudo_ipd$ARM <- as.character(pseudo_ipd$ARM) # just to avoid potential error when merging
   if (!trt_ipd %in% ipd$ARM) stop("trt_ipd does not exist in ipd$ARM")
   if (!trt_agd %in% pseudo_ipd$ARM) stop("trt_agd does not exist in pseudo_ipd$ARM")
@@ -75,7 +83,6 @@ maic_anchored <- function(weights_object,
   if (!length(pseudo_ipd_arms) >= 2) {
     stop("In anchored case, there should be at least two arms in pseudo_ipd, but you have: ", toString(pseudo_ipd_arms))
   }
-  # more pre-checks
   endpoint_type <- match.arg(endpoint_type, c("binary", "tte"))
   if (!"maicplus_estimate_weights" %in% class(weights_object)) {
     stop("weights_object should be an object returned by estimate_weights")
@@ -114,13 +121,8 @@ maic_anchored <- function(weights_object,
   #   eff_measure <- match.arg(eff_measure, choices = c("Diff"), several.ok = FALSE)
   # }
 
-  # create the hull for the output from this function
-  res <- list(
-    descriptive = list(),
-    inferential = list()
-  )
 
-  # prepare ipd and agd data for analysis, part 1/2
+  # ==> IPD and AgD data preparation ------------------------------------------
   ipd <- ipd[ipd$ARM %in% c(trt_ipd, trt_common), , drop = TRUE]
   pseudo_ipd <- pseudo_ipd[pseudo_ipd$ARM %in% c(trt_agd, trt_common), , drop = TRUE]
   ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
@@ -131,73 +133,126 @@ maic_anchored <- function(weights_object,
   if (any(is.na(ipd$weights))) {
     ipd <- ipd[!is.na(ipd$weights), , drop = FALSE]
     warning(
-      "These usubjid in ipd have no weight in weights_object, and hence excluded from analysis: ",
+      "These USUBJID in IPD have no weight in weights_object and hence excluded from analysis: ",
       toString(ipd$USUBJID[is.na(ipd$weights)])
     )
-    if (nrow(ipd) == 0) stop("there is no pts with weight in IPD!!")
+    if (nrow(ipd) == 0) stop("There are no patients with valid weights in IPD!")
   }
 
-  # prepare ipd and agd data for analysis, part 2/2
-  if (endpoint_type == "tte") {
-    retain_cols <- c("USUBJID", "ARM", "TIME", "EVENT", "weights")
-  } else {
-    retain_cols <- c("USUBJID", "ARM", "RESPONSE", "weights")
-  }
+  outcome_cols <- if (endpoint_type == "tte") c("TIME", "EVENT") else "RESPONSE"
+  retain_cols <- c("USUBJID", "ARM", outcome_cols, "weights")
+
   ipd <- ipd[, retain_cols, drop = FALSE]
   pseudo_ipd <- pseudo_ipd[, retain_cols, drop = FALSE]
-  dat <- rbind(ipd, pseudo_ipd)
+  dat <- rbind(ipd, pseudo_ipd) # only used if apply contrast method
   ipd$ARM <- factor(ipd$ARM, levels = c(trt_common, trt_ipd))
   pseudo_ipd$ARM <- factor(pseudo_ipd$ARM, levels = c(trt_common, trt_agd))
   dat$ARM <- factor(dat$ARM, levels = c(trt_common, trt_agd, trt_ipd))
 
   # ==> Inferential output ------------------------------------------
-  if (endpoint_type == "tte") {
-    # Analysis table (Cox model) before and after matching, incl Median Survival Time
-    # derive km w and w/o weights
-    kmobj_ipd <- survfit(Surv(TIME, EVENT) ~ ARM, ipd, conf.type = km_conf_type)
-    kmobj_ipd_adj <- survfit(Surv(TIME, EVENT) ~ ARM, ipd, weights = ipd$weights, conf.type = km_conf_type)
-    kmobj_agd <- survfit(Surv(TIME, EVENT) ~ ARM, pseudo_ipd, conf.type = km_conf_type)
-    res$descriptive[["survfit_ipd_before"]] <- survfit_makeup(kmobj_ipd)
-    res$descriptive[["survfit_ipd_after"]] <- survfit_makeup(kmobj_ipd_adj)
-    res$descriptive[["survfit_pseudo"]] <- survfit_makeup(kmobj_agd)
-    # derive median survival time
-    medSurv_ipd <- medSurv_makeup(kmobj_ipd, legend = "IPD, before matching", time_scale = time_scale)
-    medSurv_ipd_adj <- medSurv_makeup(kmobj_ipd_adj, legend = "IPD, after matching", time_scale = time_scale)
-    medSurv_agd <- medSurv_makeup(kmobj_agd, legend = "AgD, external", time_scale = time_scale)
-    medSurv_out <- rbind(medSurv_ipd, medSurv_ipd_adj, medSurv_agd)
+  result <- if (endpoint_type == "tte") {
+    maic_anchored_tte(res, ipd, km_conf_type, pseudo_ipd, time_scale, weights_object, endpoint_name, trt_ipd, trt_agd)
+  } else {
+    stop("Endpoint type ", endpoint_type, " currently unsupported.")
+  }
 
-    res$inferential[["report_median_surv"]] <- medSurv_out
+  result
+}
 
-    # fit PH Cox regression model
-    coxobj_ipd <- coxph(Surv(TIME, EVENT) ~ ARM, ipd, robust = TRUE)
-    coxobj_ipd_adj <- coxph(Surv(TIME, EVENT) ~ ARM, ipd, weights = weights, robust = TRUE)
-    coxobj_agd <- coxph(Surv(TIME, EVENT) ~ ARM, pseudo_ipd, robust = TRUE)
 
-    res$inferential[["ipd_coxph_before"]] <- coxobj_ipd
-    res$inferential[["ipd_coxph_after"]] <- coxobj_ipd_adj
-    res$inferential[["agd_coxph"]] <- coxobj_agd
+# MAIC inference functions by outcome type ------------
 
-    # derive ipd exp arm vs agd exp arm via bucher
-    res_AC <- as.list(summary(coxobj_ipd_adj)$coef)[c(1, 4)]
-    res_BC <- as.list(summary(coxobj_agd)$coef)[c(1, 4)]
-    names(res_AC) <- names(res_BC) <- c("est", "se")
-    res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
-    res_AB$est <- exp(res_AB$est)
-    res_AB$ci_l <- exp(res_AB$ci_l)
-    res_AB$ci_u <- exp(res_AB$ci_u)
+maic_anchored_tte <- function(res,
+                              ipd,
+                              km_conf_type,
+                              pseudo_ipd,
+                              time_scale,
+                              weights_object,
+                              endpoint_name,
+                              trt_ipd,
+                              trt_agd) {
+  # Analysis table (Cox model) before and after matching, incl Median Survival Time
+  # derive km w and w/o weights
+  kmobj_ipd <- survfit(Surv(TIME, EVENT) ~ ARM, ipd, conf.type = km_conf_type)
+  kmobj_ipd_adj <- survfit(Surv(TIME, EVENT) ~ ARM, ipd, weights = ipd$weights, conf.type = km_conf_type)
+  kmobj_agd <- survfit(Surv(TIME, EVENT) ~ ARM, pseudo_ipd, conf.type = km_conf_type)
+  res$descriptive[["survfit_ipd_before"]] <- survfit_makeup(kmobj_ipd)
+  res$descriptive[["survfit_ipd_after"]] <- survfit_makeup(kmobj_ipd_adj)
+  res$descriptive[["survfit_pseudo"]] <- survfit_makeup(kmobj_agd)
+  # derive median survival time
+  medSurv_ipd <- medSurv_makeup(kmobj_ipd, legend = "IPD, before matching", time_scale = time_scale)
+  medSurv_ipd_adj <- medSurv_makeup(kmobj_ipd_adj, legend = "IPD, after matching", time_scale = time_scale)
+  medSurv_agd <- medSurv_makeup(kmobj_agd, legend = "AgD, external", time_scale = time_scale)
+  medSurv_out <- rbind(medSurv_ipd, medSurv_ipd_adj, medSurv_agd)
 
-    res$inferential[["report_overall"]] <- rbind(
+  res$inferential[["report_median_surv"]] <- medSurv_out
+
+  # fit PH Cox regression model
+  coxobj_ipd <- coxph(Surv(TIME, EVENT) ~ ARM, ipd, robust = TRUE)
+  coxobj_ipd_adj <- coxph(Surv(TIME, EVENT) ~ ARM, ipd, weights = weights, robust = TRUE)
+  coxobj_agd <- coxph(Surv(TIME, EVENT) ~ ARM, pseudo_ipd, robust = TRUE)
+
+  res$inferential[["ipd_coxph_before"]] <- coxobj_ipd
+  res$inferential[["ipd_coxph_after"]] <- coxobj_ipd_adj
+  res$inferential[["agd_coxph"]] <- coxobj_agd
+
+  # derive ipd exp arm vs agd exp arm via bucher
+  res_AC <- as.list(summary(coxobj_ipd_adj)$coef)[c(1, 4)]
+  res_BC <- as.list(summary(coxobj_agd)$coef)[c(1, 4)]
+  names(res_AC) <- names(res_BC) <- c("est", "se")
+  res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
+  res_AB$est <- exp(res_AB$est)
+  res_AB$ci_l <- exp(res_AB$ci_l)
+  res_AB$ci_u <- exp(res_AB$ci_u)
+
+  # get bootstrapped estimates if applicable
+  res$inferential[["boot_est"]] <- NULL
+  if (!is.null(weights_object$boot)) {
+    tmp_boot_obj <- weights_object$boot
+    k <- dim(tmp_boot_obj)[3]
+    tmp_boot_est <- sapply(seq_len(k), function(ii) {
+      boot_x <- tmp_boot_obj[, , ii]
+      boot_ipd_id <- weights_object$data$USUBJID[boot_x[, 1]]
+      boot_ipd <- ipd[match(boot_ipd_id, ipd$USUBJID), , drop = FALSE]
+      boot_ipd$weights <- boot_x[, 2]
+
+      # does not matter use robust se or not, point estimate will not change and calculation would be faster
+      boot_coxobj_ipd_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_ipd, weights = weights)
+      boot_AB_est <- summary(boot_coxobj_ipd_adj)$coef[1] - summary(coxobj_agd)$coef[1]
+      exp(boot_AB_est)
+    })
+    res$inferential[["boot_est"]] <- tmp_boot_est
+  }
+
+  # make analysis report table
+  res$inferential[["report_overall_robustCI"]] <- rbind(
+    report_table(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
+    report_table(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
+    report_table(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
+    c(
+      paste0("** adj.", trt_ipd, " vs ", trt_agd),
+      rep("-", 4),
+      print(res_AB, pval_digits = 3)
+    )
+  )
+
+  if (is.null(res$inferential[["boot_est"]])) {
+    res$inferential[["report_overall_bootCI"]] <- NULL
+  } else {
+    boot_res_AB <- res_AB
+    boot_logres_se <- sd(log(res$inferential[["boot_est"]]), na.rm = TRUE)
+    boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
+    boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
+    res$inferential[["report_overall_bootCI"]] <- rbind(
       report_table(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
       report_table(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
       report_table(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
       c(
         paste0("** adj.", trt_ipd, " vs ", trt_agd),
         rep("-", 4),
-        print(res_AB, pval_digits = 3)
+        print(boot_res_AB, pval_digits = 3)
       )
     )
   }
-
-  # output
   res
 }

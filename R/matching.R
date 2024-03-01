@@ -30,9 +30,10 @@
 #'   \item{ess}{effective sample size, square of sum divided by sum of squares}
 #'   \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
 #'   \item{boot}{a n by 2 by k array or NA, where n equals to number of rows in \code{data}, and k equals
-#'   \code{n_boot_iteration}. The 2 columns in the second dimension include a column of numeric indexes of the rows in
-#'   \code{data} that are selected at a bootstrapping iteration and a column of weights. \code{boot} is NA when argument
-#'   \code{n_boot_iteration} is set as NULL }
+#'      \code{n_boot_iteration}. The 2 columns in the second dimension include a column of numeric indexes of the rows
+#'      in \code{data} that are selected at a bootstrapping iteration and a column of weights. \code{boot} is NA when
+#'      argument \code{n_boot_iteration} is set as NULL
+#'   }
 #' }
 #'
 #' @examples
