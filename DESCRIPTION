@@ -30,7 +30,8 @@ Suggests:
     clubSandwich,
     dplyr,
     sandwich,
-    survminer
+    survminer,
+    flexsurv
 VignetteBuilder:
     knitr
 biocViews:
