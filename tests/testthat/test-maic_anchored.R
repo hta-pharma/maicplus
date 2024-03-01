@@ -106,7 +106,7 @@ test_that("maic_unanchored works for TTE using robust SE", {
     result$inferential$report_overall_robustCI$`HR[95% CI]`,
     c(
       "0.22[0.19;0.26]", "", "0.16[0.11;0.24]", "", "0.57[0.48;0.68]",
-      "", "0.29[0.19;0.44]"
+      "", "0.29 [0.19; 0.44]"
     )
   )
 })
@@ -206,7 +206,7 @@ test_that("maic_unanchored works for TTE using bootstrap SE", {
     result$inferential$report_overall_bootCI$`HR[95% CI]`,
     c(
       "0.22[0.19;0.26]", "", "0.16[0.11;0.24]", "", "0.57[0.48;0.68]",
-      "", "0.29[0.22;0.38]"
+      "", "0.29 [0.22; 0.38]"
     )
   )
 
