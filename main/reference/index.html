@@ -35,12 +35,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/main">main</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -88,9 +82,9 @@
         <dd>Bootstrapping weighted hazard ratios to obtain confidence interval</dd>
       </dl><dl><dt>
           
-          <code><a href="bucher.html">bucher()</a></code> 
+          <code><a href="bucher.html">bucher()</a></code> <code><a href="bucher.html">print(<i>&lt;maicplus_bucher&gt;</i>)</a></code> 
         </dt>
-        <dd>Bucher method for adjusted treatment effect</dd>
+        <dd>Bucher method for combining treatment effects</dd>
       </dl><dl><dt>
           
           <code><a href="center_ipd.html">center_ipd()</a></code> 
@@ -121,6 +115,11 @@
           <code><a href="ext_tte_transfer.html">ext_tte_transfer()</a></code> 
         </dt>
         <dd>helper function: transform TTE ADaM data to suitable input for survival R package</dd>
+      </dl><dl><dt>
+          
+          <code><a href="find_SE_from_CI.html">find_SE_from_CI()</a></code> 
+        </dt>
+        <dd>Calculate standard error from the reported confidence interval.</dd>
       </dl><dl><dt>
           
           <code><a href="generate_survival_data.html">generate_survival_data()</a></code> 
@@ -181,11 +180,6 @@
           <code><a href="plot_weights_ggplot.html">plot_weights_ggplot()</a></code> 
         </dt>
         <dd>Plot MAIC weights in a histogram with key statistics in legend using <code>ggplot2</code></dd>
-      </dl><dl><dt>
-          
-          <code><a href="print_bucher.html">print_bucher()</a></code> 
-        </dt>
-        <dd>Report-friendly output format for result from Bucher's method</dd>
       </dl><dl><dt>
           
           <code><a href="process_agd.html">process_agd()</a></code> 

@@ -55,6 +55,9 @@
     <loc>https://hta-pharma.github.io/maicplus/reference/ext_tte_transfer.html</loc>
   </url>
   <url>
+    <loc>https://hta-pharma.github.io/maicplus/reference/find_SE_from_CI.html</loc>
+  </url>
+  <url>
     <loc>https://hta-pharma.github.io/maicplus/reference/generate_survival_data.html</loc>
   </url>
   <url>
@@ -95,9 +98,6 @@
   </url>
   <url>
     <loc>https://hta-pharma.github.io/maicplus/reference/plot_weights_ggplot.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/print_bucher.html</loc>
   </url>
   <url>
     <loc>https://hta-pharma.github.io/maicplus/reference/process_agd.html</loc>
