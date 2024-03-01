@@ -250,7 +250,7 @@ maic_anchored_tte <- function(res,
       c(
         paste0("** adj.", trt_ipd, " vs ", trt_agd),
         rep("-", 4),
-        print_bucher(output = boot_res_AB, pval_digits = 3)
+        print(res_AB, pval_digits = 3)
       )
     )
   }
