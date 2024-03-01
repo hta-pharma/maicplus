@@ -7,7 +7,7 @@
 \usage{
 bucher(trt, com, conf_lv = 0.95)
 
-\method{print}{maicplus_bucher}(x, ci_digits = 2, pval_digits = 3, exponentiate = FALSE)
+\method{print}{maicplus_bucher}(x, ci_digits = 2, pval_digits = 3, exponentiate = FALSE, ...)
 }
 \arguments{
 \item{trt}{a list of two scalars for the study with the
@@ -35,7 +35,9 @@ estimate and derived confidence limits}
 \item{pval_digits}{an integer, number of decimal places to display
 Z-test p-value}
 
-\item{exponentiate}{Whether the treatment effect and confidence
+\item{exponentiate}{whether the treatment effect and confidence}
+
+\item{...}{not used
 interval should be exponentiated. This applies to relative
 treatment effects. Default is set to false.}
 }
