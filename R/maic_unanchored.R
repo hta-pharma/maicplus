@@ -189,11 +189,12 @@ maic_unanchored <- function(weights_object,
         boot_ipd_id <- weights_object$data$USUBJID[boot_x[, 1]]
         boot_ipd <- ipd[match(boot_ipd_id, ipd$USUBJID), , drop = FALSE]
         boot_ipd$weights <- boot_x[, 2]
-        # boot_ipd$weights <- boot_ipd$weights * sum(!is.na(boot_ipd$weights)) / sum(boot_ipd$weights, na.rm=TRUE) # does not make any impact
+
         boot_dat <- rbind(boot_ipd, pseudo_ipd)
         boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
 
-        boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_dat, weights = weights) # does not matter use robust se or not, point estimate will not change and calculation would be faster
+        # does not matter use robust se or not, point estimate will not change and calculation would be faster
+        boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_dat, weights = weights)
         boot_AB_est <- summary(boot_coxobj_dat_adj)$coef[1]
         exp(boot_AB_est)
       })
