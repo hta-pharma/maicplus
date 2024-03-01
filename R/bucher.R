@@ -120,14 +120,15 @@ find_SE_from_CI <- function(CI_lower = NULL, CI_upper = NULL,
 #' estimate and derived confidence limits
 #' @param pval_digits an integer, number of decimal places to display
 #' Z-test p-value
-#' @param exponentiate Whether the treatment effect and confidence
+#' @param exponentiate whether the treatment effect and confidence
+#' @param ... not used
 #' interval should be exponentiated. This applies to relative
 #' treatment effects. Default is set to false.
 #' @describeIn bucher Print method for `maicplus_bucher` objects
 #' @export
 
 print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
-                                  exponentiate = FALSE) {
+                                  exponentiate = FALSE, ...) {
   transform_this <- function(x) {
     ifelse(exponentiate, exp(x), x)
   }
@@ -151,5 +152,5 @@ print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
 
   output <- c(res, disp_pval)
   names(output) <- c("result", "pvalue")
-  return(output)
+  print(output)
 }

@@ -193,7 +193,7 @@ maic_anchored <- function(weights_object,
       c(
         paste0("** adj.", trt_ipd, " vs ", trt_agd),
         rep("-", 4),
-        print_bucher(output = res_AB, pval_digits = 3)
+        print(res_AB, pval_digits = 3)
       )
     )
   }
