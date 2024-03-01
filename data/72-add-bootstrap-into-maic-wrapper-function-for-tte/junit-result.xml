@@ -1,26 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="bucher" timestamp="2024-02-23T08:21:25Z" hostname="51e9df5ff883" tests="1" skipped="0" failures="0" errors="0" time="0.012">
+  <testsuite name="bucher" timestamp="2024-03-01T16:44:58Z" hostname="02737fb5410f" tests="3" skipped="0" failures="0" errors="0" time="0.07">
     <testcase time="0.012" classname="bucher" name="bucher_works_as_expected"/>
+    <testcase time="0.044" classname="bucher" name="find_SE_from_CI_works_as_expected"/>
+    <testcase time="0.014" classname="bucher" name="bucher_print_works_as_expected"/>
   </testsuite>
-  <testsuite name="matching" timestamp="2024-02-23T08:21:25Z" hostname="51e9df5ff883" tests="18" skipped="0" failures="0" errors="0" time="0.129">
-    <testcase time="0.0549999999999999" classname="matching" name="ess_footnote_text_works"/>
-    <testcase time="0.014" classname="matching" name="calculate_weights_legend_works"/>
-    <testcase time="0.00700000000000012" classname="matching" name="optimise_weights_works_as_expected"/>
-    <testcase time="0.00299999999999989" classname="matching" name="optimise_weights_works_as_expected"/>
-    <testcase time="0.0110000000000001" classname="matching" name="optimise_weights_works_as_expected"/>
-    <testcase time="0.01" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected"/>
+  <testsuite name="maic_anchored" timestamp="2024-03-01T16:44:58Z" hostname="02737fb5410f" tests="2" skipped="0" failures="0" errors="2" time="1.265">
+    <testcase time="0.915" classname="maic_anchored" name="maic_unanchored_works_for_TTE_using_robust_SE">
+      <error type="error" message="Error in `print_bucher(output = res_AB, pval_digits = 3)`: could not find function &quot;print_bucher&quot; ('test-maic_anchored.R:66:3')">Error in `print_bucher(output = res_AB, pval_digits = 3)`: could not find function "print_bucher"
+Backtrace:
+    ▆
+ 1. └─maicplus::maic_anchored(...) at test-maic_anchored.R:66:3
+ 2.   └─maicplus:::maic_anchored_tte(...)
+ 3.     └─base::rbind(...)
+ 4.       └─base::rbind(deparse.level, ...)</error>
+    </testcase>
+    <testcase time="0.35" classname="maic_anchored" name="maic_unanchored_works_for_TTE_using_bootstrap_SE">
+      <error type="error" message="Error in `print_bucher(output = res_AB, pval_digits = 3)`: could not find function &quot;print_bucher&quot; ('test-maic_anchored.R:182:3')">Error in `print_bucher(output = res_AB, pval_digits = 3)`: could not find function "print_bucher"
+Backtrace:
+    ▆
+ 1. └─maicplus::maic_anchored(...) at test-maic_anchored.R:182:3
+ 2.   └─maicplus:::maic_anchored_tte(...)
+ 3.     └─base::rbind(...)
+ 4.       └─base::rbind(deparse.level, ...)</error>
+    </testcase>
+  </testsuite>
+  <testsuite name="matching" timestamp="2024-03-01T16:44:59Z" hostname="02737fb5410f" tests="18" skipped="0" failures="0" errors="0" time="0.108">
+    <testcase time="0.0470000000000002" classname="matching" name="ess_footnote_text_works"/>
+    <testcase time="0.00499999999999989" classname="matching" name="calculate_weights_legend_works"/>
+    <testcase time="0.0100000000000002" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.00199999999999978" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.00099999999999989" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.0110000000000001" classname="matching" name="estimate_weights_works_as_expected"/>
     <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00200000000000022" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected"/>
     <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected"/>
     <testcase time="0.00300000000000011" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.0139999999999998" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
-    <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.0150000000000001" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00199999999999978" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00100000000000033" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00199999999999978" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
     <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
-    <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
-    <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
-    <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
-    <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00100000000000033" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00199999999999978" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
   </testsuite>
 </testsuites>
