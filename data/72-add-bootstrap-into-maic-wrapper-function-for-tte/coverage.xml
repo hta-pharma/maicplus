@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.274750575594781" branch-rate="0" lines-covered="358" lines-valid="1303" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-03-01 18:28:02.543463">
+<coverage line-rate="0.274750575594781" branch-rate="0" lines-covered="358" lines-valid="1303" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-03-01 18:30:55.935129">
   <sources>
     <source>/__w/maicplus/maicplus/maicplus</source>
   </sources>
@@ -628,23 +628,22 @@
                 <line number="191" hits="0" branch="false"/>
                 <line number="193" hits="0" branch="false"/>
                 <line number="194" hits="0" branch="false"/>
-                <line number="196" hits="0" branch="false"/>
                 <line number="197" hits="0" branch="false"/>
                 <line number="198" hits="0" branch="false"/>
                 <line number="199" hits="0" branch="false"/>
                 <line number="200" hits="0" branch="false"/>
-                <line number="202" hits="0" branch="false"/>
-                <line number="206" hits="0" branch="false"/>
+                <line number="201" hits="0" branch="false"/>
+                <line number="203" hits="0" branch="false"/>
                 <line number="207" hits="0" branch="false"/>
                 <line number="208" hits="0" branch="false"/>
                 <line number="209" hits="0" branch="false"/>
-                <line number="211" hits="0" branch="false"/>
+                <line number="210" hits="0" branch="false"/>
                 <line number="212" hits="0" branch="false"/>
-                <line number="214" hits="0" branch="false"/>
+                <line number="213" hits="0" branch="false"/>
                 <line number="215" hits="0" branch="false"/>
                 <line number="216" hits="0" branch="false"/>
                 <line number="217" hits="0" branch="false"/>
-                <line number="221" hits="0" branch="false"/>
+                <line number="218" hits="0" branch="false"/>
                 <line number="222" hits="0" branch="false"/>
                 <line number="223" hits="0" branch="false"/>
                 <line number="224" hits="0" branch="false"/>
@@ -654,7 +653,8 @@
                 <line number="228" hits="0" branch="false"/>
                 <line number="229" hits="0" branch="false"/>
                 <line number="230" hits="0" branch="false"/>
-                <line number="235" hits="0" branch="false"/>
+                <line number="231" hits="0" branch="false"/>
+                <line number="236" hits="0" branch="false"/>
               </lines>
             </method>
           </methods>
@@ -758,23 +758,22 @@
             <line number="191" hits="0" branch="false"/>
             <line number="193" hits="0" branch="false"/>
             <line number="194" hits="0" branch="false"/>
-            <line number="196" hits="0" branch="false"/>
             <line number="197" hits="0" branch="false"/>
             <line number="198" hits="0" branch="false"/>
             <line number="199" hits="0" branch="false"/>
             <line number="200" hits="0" branch="false"/>
-            <line number="202" hits="0" branch="false"/>
-            <line number="206" hits="0" branch="false"/>
+            <line number="201" hits="0" branch="false"/>
+            <line number="203" hits="0" branch="false"/>
             <line number="207" hits="0" branch="false"/>
             <line number="208" hits="0" branch="false"/>
             <line number="209" hits="0" branch="false"/>
-            <line number="211" hits="0" branch="false"/>
+            <line number="210" hits="0" branch="false"/>
             <line number="212" hits="0" branch="false"/>
-            <line number="214" hits="0" branch="false"/>
+            <line number="213" hits="0" branch="false"/>
             <line number="215" hits="0" branch="false"/>
             <line number="216" hits="0" branch="false"/>
             <line number="217" hits="0" branch="false"/>
-            <line number="221" hits="0" branch="false"/>
+            <line number="218" hits="0" branch="false"/>
             <line number="222" hits="0" branch="false"/>
             <line number="223" hits="0" branch="false"/>
             <line number="224" hits="0" branch="false"/>
@@ -784,7 +783,8 @@
             <line number="228" hits="0" branch="false"/>
             <line number="229" hits="0" branch="false"/>
             <line number="230" hits="0" branch="false"/>
-            <line number="235" hits="0" branch="false"/>
+            <line number="231" hits="0" branch="false"/>
+            <line number="236" hits="0" branch="false"/>
           </lines>
         </class>
         <class name="matching.R" filename="R/matching.R" line-rate="0.403361344537815" branch-rate="0" complexity="0">
