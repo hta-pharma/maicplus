@@ -1,0 +1,200 @@
+---
+title: "Calculating weights"
+date: "`r Sys.Date()`"
+output: 
+  html_document: default
+bibliography: references.bib
+csl: biomedicine.csl
+vignette: >
+  %\VignetteIndexEntry{Using maicplus}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 14px;
+  }
+td {  /* Table  */
+  font-size: 10px;
+}
+h1.title {
+  font-size: 38px;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  }
+h2 { /* Header 2 */
+    font-size: 22px;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.dim = c(6, 4),
+  warning = FALSE
+)
+```
+
+
+# Loading R packages
+
+```{r}
+#install.packages("maicplus")
+library(maicplus)
+```
+
+Additional suggested packages for this vignette:
+
+```{r, message = FALSE}
+library(dplyr) # this is used for data merging/cleaning
+```
+
+# Preprocessing
+
+## Preprocessing IPD
+
+In this example scenario, age, sex, Eastern Cooperative Oncology Group (ECOG) performance status, smoking status, and number of previous treatments have been identified as imbalanced prognostic variables/effect modifiers.
+
+This example reads in and combines data from three standard simulated data sets (adsl, adrs and adtte) which are saved as '.csv' files.
+
+```{r}
+adsl <- read.csv(system.file("extdata", "adsl.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
+adrs <- read.csv(system.file("extdata", "adrs.csv",
+  package = "maicplus",
+  mustWork = TRUE
+))
+adtte <- read.csv(system.file("extdata", "adtte.csv", package = "maicplus", mustWork = TRUE))
+
+# Data containing the matching variables
+adsl <- adsl %>%
+  mutate(SEX_MALE = ifelse(SEX == "Male", 1, 0)) %>%
+  mutate(AGE_SQUARED = AGE^2)
+
+# Could use built-in function for dummizing variables
+# adsl <- dummize_ipd(adsl, dummize_cols=c("SEX"), dummize_ref_level=c("Female"))
+
+# Response data
+adrs <- adrs %>%
+  dplyr::filter(PARAM == "Response") %>%
+  transmute(USUBJID, ARM, RESPONSE = AVAL, PARAM)
+
+# Time to event data (overall survival)
+adtte <- adtte %>%
+  dplyr::filter(PARAMCD == "OS") %>%
+  mutate(EVENT = 1 - CNSR) %>%
+  transmute(USUBJID, ARM, TIME = AVAL, EVENT)
+
+# Rename adsl as ipd
+ipd <- adsl 
+head(ipd)
+```
+
+## Preprocessing aggregate data
+
+There are two ways of specifying aggregate data. One approach is to read in aggregate data using an excel spreadsheet. In the spreadsheet, possible variable types include mean, median, or standard deviation for continuous variables and count or proportion for binary variables. The naming should be followed by these suffixes accordingly: _COUNT, _MEAN, _MEDIAN, _SD, _PROP. Then, `process_agd` will convert the count into proportions.
+
+Other way is to define data frame of aggregate data in R. If you do it this way, _COUNT prefix should not be specified and only proportion is allowed for binary variables. Other suffix names would be the same as the first approach.
+
+Possible missingness in the binary variables should be accounted for by subtracting the denominator by the missing count i.e. proportion = count / (N - missing).
+
+```{r}
+# Through excel spreadsheet
+# target_pop <- read.csv(system.file("extdata","aggregate_data_example_1.csv", package = "maicplus", mustWork = TRUE))
+# agd <- process_agd(target_pop)
+
+# Second approach by defining a data frame in R
+agd <- data.frame(
+  STUDY = "Lung study",
+  ARM = "Total",
+  N = 300,
+  AGE_MEAN = 51,
+  AGE_MEDIAN = 49,
+  AGE_SD = 3.25,
+  SEX_MALE_PROP = 147 / 300,
+  ECOG0_PROP = 0.40,
+  SMOKE_PROP = 58 / (300 - 5),
+  N_PR_THER_MEDIAN = 2
+)
+```
+
+## Centering IPD
+
+In the statistical theory section, we briefly explained why it is useful to transform IPD by subtracting the aggregate data means when performing optimization. The function `center_ipd` centers the IPD using the aggregate data means.
+
+```{r}
+#### prepare data
+ipd_centered <- center_ipd(ipd = ipd, agd = agd)
+head(ipd_centered)
+```
+
+### How to handle standard deviation aggregate summary
+
+As described in NICE DSU TSD 18 Appendix D [@phillippo2016b], balancing on both mean and standard deviation for continuous variables may be considered in some cases. If a standard deviation is provided in the comparator population,  preprocessing is done so that in the target population, $E(X^2)$ is calculated using the variance formula $Var(X)=E(X^{2})-E(X)^{2}$. This $E(X^2)$ in the target population is then matched with the $X^{2}$ calculated in the internal IPD.
+
+### How to handle median aggregate summary
+
+If a median is provided, IPD is preprocessed to categorize the variable into a binary variable. All the values in the IPD that are higher than the comparator population median is assigned a value of 1. Conversely, all values that are
+lower are assigned a value of 0. Comparator population median is replaced by 0.5 to adjust to the categorization in the IPD data. The newly created IPD binary variable is matched so that the proportion is 0.5.
+
+# Calculating weights
+
+We use the centered IPD and use the function `estimate_weights` to calculate the weights. Before running this function, we need to specify the column that are centered, i.e. covariates that will be used in the optimization.
+
+```{r}
+# list variables that are going to be used to match
+centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+centered_colnames <- paste0(centered_colnames, "_CENTERED")
+
+weights_object <- estimate_weights(
+  data = ipd_centered,
+  centered_colnames = centered_colnames
+)
+
+# Alternatively, you can specify the numeric column locations for centered_colnames
+# weights_object <- estimate_weights(ipd_centered, centered_colnames = c(14, 16:20))
+```
+
+Following the calculation of weights, it is necessary to determine whether the optimization procedure has worked correctly and whether the weights derived are sensible.
+
+The approximate effective sample size is calculated as: $$ ESS =  \frac{({ \sum_{i=1}^n\hat{\omega}_i })^2}{ \sum_{i=1}^n \hat{\omega}^2_i} $$ A small ESS, relative to the original sample size, is an indication that the weights are highly variable and that the estimate may be unstable. This often occurs if there is very limited overlap in the distribution of the matching variables between the populations being compared.
+
+In this example, the ESS reduction is 66.73% of the total number of patients in the intervention arm (500 patients in total). As this is a considerable reduction, estimates using this weighted data may be unreliable.
+
+```{r}
+weights_object$ess
+```
+
+Also, it is useful to visualize the weights using a histogram to check if there are any extreme weights. Scaled weights are weights that are relative to the original unit weights of each individual. Scaled weights are
+calculated as $$\tilde{w}_i  =  \frac{\hat{w}_i}{\sum_{i=1}^n \hat{w}_i} \times n $$.
+
+```{r}
+plot(weights_object)
+
+#ggplot option is also available
+#plot(weights_object, ggplot = TRUE, bin_col = "black", vline_col = "red")
+```
+
+Another check would be to look at whether the weighted summary of covariates in internal IPD match the external aggregate data summary.
+
+```{r}
+outdata <- check_weights(weights_object, agd)
+outdata
+```
+
+# References
