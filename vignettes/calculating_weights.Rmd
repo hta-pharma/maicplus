@@ -52,7 +52,7 @@ knitr::opts_chunk$set(
 # Loading R packages
 
 ```{r}
-#install.packages("maicplus")
+# install.packages("maicplus")
 library(maicplus)
 ```
 
@@ -101,7 +101,7 @@ adtte <- adtte %>%
   transmute(USUBJID, ARM, TIME = AVAL, EVENT)
 
 # Rename adsl as ipd
-ipd <- adsl 
+ipd <- adsl
 head(ipd)
 ```
 
@@ -186,8 +186,8 @@ calculated as $$\tilde{w}_i  =  \frac{\hat{w}_i}{\sum_{i=1}^n \hat{w}_i} \times 
 ```{r}
 plot(weights_object)
 
-#ggplot option is also available
-#plot(weights_object, ggplot = TRUE, bin_col = "black", vline_col = "red")
+# ggplot option is also available
+# plot(weights_object, ggplot = TRUE, bin_col = "black", vline_col = "red")
 ```
 
 Another check would be to look at whether the weighted summary of covariates in internal IPD match the external aggregate data summary.

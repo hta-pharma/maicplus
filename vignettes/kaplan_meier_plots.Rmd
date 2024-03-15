@@ -51,7 +51,7 @@ knitr::opts_chunk$set(
 # Loading R packages
 
 ```{r}
-#install.packages("maicplus")
+# install.packages("maicplus")
 library(maicplus)
 ```
 
