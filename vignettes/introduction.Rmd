@@ -1,0 +1,126 @@
+---
+title: "Introduction"
+date: "`r Sys.Date()`"
+output: 
+  html_document: default
+bibliography: references.bib
+csl: biomedicine.csl
+vignette: >
+  %\VignetteIndexEntry{Using maicplus}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 14px;
+  }
+td {  /* Table  */
+  font-size: 10px;
+}
+h1.title {
+  font-size: 38px;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  }
+h2 { /* Header 2 */
+    font-size: 22px;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.dim = c(6, 4),
+  warning = FALSE
+)
+```
+
+
+# Introduction
+
+This package describes the steps required to perform a matching-adjusted indirect comparison (MAIC) analysis using the `maicplus` package in R where the endpoint of interest is either time-to-event (e.g. overall survival) or binary
+(e.g. objective tumor response).
+
+The methods described in this document are based on those originally described by Signorovitch et al. 2010 and described in the National Institute for Health and Care Excellence (NICE) Decision Support Unit (DSU) Technical Support
+Document (TSD) 18. [@signorovitch2010; @phillippo2016a]
+
+When there is no common comparator treatment to link a clinical trial of a new intervention to clinical trials of other comparator treatments, it is referred to as an unanchored MAIC. When there is a common comparator available to link, it is referred to as an anchored MAIC.
+
+The premise of MAIC methods is to adjust for between-trial differences in patient demographic or disease characteristics at baseline. When a common treatment comparator is unavailable, a MAIC assumes that differences between absolute outcomes that would be observed in each trial are entirely explained by imbalances in prognostic variables and effect modifiers. Under this assumption, every prognostic variable and every effect modifier that is imbalanced between the two studies must be available. This assumption is generally considered very difficult to meet. [@phillippo2016a] 
+
+There are several ways of identifying prognostic variables/effect modifiers to be used in the MAIC analyses. We can approach from a clinical perspective, seeking advice from clinical experts or looking into published paper or previous regulatory submissions. We can also approach it from a data perspective, exploring regression models or subgroup analysis to identify interactions between baseline characteristics and treatment effect.
+
+# Statistical theory behind MAIC
+
+We will briefly go over the statistical theory behind MAIC. For more detailed information, refer to Signorovitch et al. 2010. [@signorovitch2010]
+
+Let us define $t_i$ to be the treatment patient $i$ received. We assume $t_i=0$ if the patient received intervention (IPD) and $t_i=1$ if the patient received comparator treatment. The causal effect of treatment $T=0$ vs $T=1$ on the
+mean of the outcome $Y$ can be estimated as below
+
+\[
+\frac{\sum_{i=1}^{n}y_{i}(1-t_{i})w_{i}}{\sum_{i=1}^{n}(1-t_{i})w_{i}}-\bar{y}_{1}
+\]
+
+where $w_i=\frac{Pr(T_i=1\mid x_i)}{Pr(T_i=0\mid x_i)}$ is the odds that patient $i$ received treatment $T=1$ vs $T=0$ (i.e. enrolls in aggregate data study vs IPD study) given baseline characteristics $x_i$. Thus, the patients receiving $T=0$ are re-weighted to match the distribution of patients receiving $T=1$. Note that this causal effect would be the case when the outcome $Y$ is continuous. If the outcome is binary, $Y$ would be a proportion and we would use a link function such as logit to give us the causal effect in an odds ratio scale. As in propensity score methods, we may
+assume $w_i$ to follow logistic regression form
+
+\[
+w_{i}=exp(x_i^{T}\beta)
+\]
+
+However, in order to estimate $\beta$, we cannot use maximum likelihood approach because we do not have IPD for both trials. Instead, we use method of moments. We estimate $\beta$ such that the weighted averages of the covariates in the IPD exactly matches the aggregate data averages. Mathematically speaking, we want to estimate $\beta$ such that:
+
+\[
+0=\frac{\sum_{i=1}^{n}x_{i}exp(x_i^{T}\hat{\beta})}{\sum_{i=1}^{n}exp(x_i^{T}\hat{\beta})}-\bar{x}_{agg}
+\]
+
+If the $x_i$ contains all confounders and the logistic regression for $w_i$ is correctly specified, we obtain a consistent estimate of the causal effect of intervention vs comparator treatment. Above equation is equivalent to
+
+\[
+0=\sum_{i=1}^{n}(x_{i}-\bar{x}_{agg})exp(x_{i}^{T}\hat{\beta})
+\]
+
+We could transform IPD by subtracting the aggregate data means (this is why we center IPD in the preprocessing step in `maicplus`)
+
+\[
+0=\sum_{i=1}^{n}x_{i}exp(x_{i}^{T}\hat{\beta})
+\]
+
+Note that this is the first derivative of
+
+\[
+Q(\beta)=\sum_{i=1}^{n}exp(x_{i}^{T}\hat{\beta})
+\]
+
+which has second derivative
+
+\[
+Q''(\beta)=\sum_{i=1}^{n}x_ix_i^Texp(x_{i}^{T}\hat{\beta})
+\]
+
+Since $Q''(\beta)$ is positive-definite for all $\beta$, $Q(\beta)$ is convex and any finite solution from
+the equation is unique and corresponds to the global minimum of $Q(\beta)$. Thus, we can use optimization 
+methods to calculate $\beta$.
+
+# Example scenario
+
+We present an unanchored MAIC of two treatments in lung cancer. This example is borrowed from the Roche MAIC R package. [@rochemaic] The two endpoints being compared are overall survival (a time to event outcome) and objective response (a binary outcome). The data available are:
+
+* Individual patient data from a single arm study
+* Aggregate summary data for the comparator study
+* Pseudo patient data from the comparator study. This is not required for the matching process but is needed to derive the relative treatment effects between the internal treatment and comparator treatment.
+
+# References
