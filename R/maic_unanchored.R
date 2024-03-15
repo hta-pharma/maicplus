@@ -112,14 +112,21 @@ maic_unanchored <- function(weights_object,
     inferential = list()
   )
 
-  # prepare ipd and agd data for analysis, part 1/2
+  # prepare ipd and agd data for analysis
+
+  #: subset ipd, retain only ipd from interested trts
   ipd <- ipd[ipd$ARM == trt_ipd, , drop = TRUE]
   pseudo_ipd <- pseudo_ipd[pseudo_ipd$ARM == trt_agd, , drop = TRUE]
+
+  #: assign weights to real and pseudo ipd
   ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
   pseudo_ipd$weights <- 1
-  if (!"USUBJID" %in% names(pseudo_ipd)) pseudo_ipd$USUBJID <- paste0("ID", seq_len(nrow(pseudo_ipd)))
 
-  # give warning when individual pts in IPD has no weights
+  #: necessary formatting for pseudo ipd
+  if (!"USUBJID" %in% names(pseudo_ipd)) pseudo_ipd$USUBJID <- paste0("ID", seq_len(nrow(pseudo_ipd)))
+  if ("RESPONSE" %in% names(pseudo_ipd) && is.logical(pseudo_ipd$RESPONSE))  pseudo_ipd$RESPONSE <- as.numeric(pseudo_ipd$RESPONSE)
+
+  #: give warning when individual pts in IPD has no weights
   if (any(is.na(ipd$weights))) {
     ipd <- ipd[!is.na(ipd$weights), , drop = FALSE]
     warning(
@@ -131,7 +138,7 @@ maic_unanchored <- function(weights_object,
     if (nrow(ipd) == 0) stop("there is no pts with weight in IPD!!")
   }
 
-  # prepare ipd and agd data for analysis, part 2/2
+  #: retain necessary columns
   if (endpoint_type == "tte") {
     retain_cols <- c("USUBJID", "ARM", "TIME", "EVENT", "weights")
   } else {
@@ -139,10 +146,12 @@ maic_unanchored <- function(weights_object,
   }
   ipd <- ipd[, retain_cols, drop = FALSE]
   pseudo_ipd <- pseudo_ipd[, retain_cols, drop = FALSE]
+
+  #: merge real and pseudo ipds
   dat <- rbind(ipd, pseudo_ipd)
   dat$ARM <- factor(dat$ARM, levels = c(trt_agd, trt_ipd))
 
-  # ==> Inferential output ------------------------------------------
+  # ==> Output for TTE ------------------------------------------
   if (endpoint_type == "tte") {
     # Analysis table (Cox model) before and after matching, incl Median Survival Time
     # derive km w and w/o weights
@@ -230,6 +239,10 @@ maic_unanchored <- function(weights_object,
         tmp_report_table
       )
     }
+
+  # ==> Output for Binary ------------------------------------------
+  }else if(endpoint_type == "binary"){
+
   }
 
   # output
