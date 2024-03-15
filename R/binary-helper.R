@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples
-get_pseudo_ipd_binary <- function(binary_agd, format = c("stacked", "unstacked", "brief")) {
+get_pseudo_ipd_binary <- function(binary_agd, format = c("stacked", "unstacked")) {
   # pre check
   if (format == "stacked") {
     if (!is.data.frame(binary_agd)) stop("stacked binary_agd should be data.frame with columns 'ARM', 'RESPONSE', 'COUNT'")
@@ -24,9 +24,6 @@ get_pseudo_ipd_binary <- function(binary_agd, format = c("stacked", "unstacked",
     bin_res <- toupper(colnames(binary_agd))
     bin_res <- sort(bin_res)
     if (!(identical(bin_res, c("FALSE", "TRUE")) | identical(bin_res, c("NO", "YES")))) stop("column names of unstacked binary_agd should be either TRUE/FALSE or Yes/No")
-  } else if (format == "brief") {
-    if (!is.list(binary_agd)) stop("brief binary_agd should be a R list including 'total' sample size")
-    if (!"total" %in% names(binary_agd)) stop("brief binary_agd should be a R list including 'total' sample size")
   }
 
   # pre process binary_agd, depending on format
@@ -52,20 +49,10 @@ get_pseudo_ipd_binary <- function(binary_agd, format = c("stacked", "unstacked",
       rownames(tmpout) <- NULL
       tmpout$RESPONSE <- as.logical(tmpout$RESPONSE)
       tmpout
-    },
-    "brief" = {
-      nr_arms <- length(brief) - 1
-      tmpout <- data.frame(
-        ARM = rep(setdiff(names(brief), "total"), each = 2),
-        RESPONSE = rep(c(TRUE, FALSE), nr_arms),
-        COUNT = NA
-      )
-      tmpout$COUNT <- unlist(brief[tmpout$ARM])
-      tmpout
     }
   )
 
-  # create IPD
+  # create pseudo binary IPD
   use_binary_agd$ARM <- factor(use_binary_agd$ARM, levels = unique(use_binary_agd$ARM))
   n_per_arm <- tapply(use_binary_agd$COUNT, use_binary_agd$ARM, sum)
   n_yes_per_arm <- use_binary_agd$COUNT[use_binary_agd$RESPONSE] # use_binary_agd is already ordered as per factor ARM
