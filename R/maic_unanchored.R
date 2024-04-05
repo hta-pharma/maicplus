@@ -161,7 +161,6 @@ maic_unanchored <- function(weights_object,
     coxobj_dat <- coxph(Surv(TIME, EVENT) ~ ARM, dat, robust = TRUE)
     coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, dat, weights = weights, robust = TRUE)
 
-    browser()
     res$inferential[["coxph_before"]] <- coxobj_dat
     res$inferential[["coxph_after"]] <- coxobj_dat_adj
 
@@ -181,10 +180,56 @@ maic_unanchored <- function(weights_object,
     res_AB$ci_u <- summary(coxobj_dat_adj)$conf.int[4]
     res_AB$pval <- summary(coxobj_dat_adj)$coef[6]
 
-    res$inferential[["report_overall"]] <- rbind(
+    # get bootstrapped estimates if applicable
+    if (!is.null(weights_object$boot)) {
+      tmp_boot_obj <- weights_object$boot
+      k <- dim(tmp_boot_obj)[3]
+      tmp_boot_est <- sapply(1:k, function(ii) {
+        boot_x <- tmp_boot_obj[, , ii]
+        boot_ipd_id <- weights_object$data$USUBJID[boot_x[, 1]]
+        boot_ipd <- ipd[match(boot_ipd_id, ipd$USUBJID), , drop = FALSE]
+        boot_ipd$weights <- boot_x[, 2]
+
+        boot_dat <- rbind(boot_ipd, pseudo_ipd)
+        boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
+
+        # does not matter use robust se or not, point estimate will not change and calculation would be faster
+        boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_dat, weights = weights)
+        boot_AB_est <- summary(boot_coxobj_dat_adj)$coef[1]
+        exp(boot_AB_est)
+      })
+      res$inferential[["boot_est"]] <- tmp_boot_est
+    } else {
+      res$inferential[["boot_est"]] <- NULL
+    }
+
+    # make analysis report table
+    res$inferential[["report_overall_robustCI"]] <- rbind(
       report_table(coxobj_dat, medSurv_dat, tag = paste0("Before matching/", endpoint_name)),
       report_table(coxobj_dat_adj, medSurv_dat_adj, tag = paste0("After matching/", endpoint_name))
     )
+
+    if (is.null(res$inferential[["boot_est"]])) {
+      res$inferential[["report_overall_bootCI"]] <- NULL
+    } else {
+      boot_res_AB <- res_AB
+      boot_logres_se <- sd(log(res$inferential[["boot_est"]]), na.rm = TRUE)
+      boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
+      boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
+      # boot_res_AB$ci_l <- quantile(res$inferential[["boot_est"]],p=0.025)
+      # boot_res_AB$ci_u <- quantile(res$inferential[["boot_est"]],p=0.975)
+
+      tmp_report_table <- report_table(coxobj_dat_adj, medSurv_dat_adj, tag = paste0("After matching/", endpoint_name))
+      tmp_report_table$`HR[95% CI]`[1] <- paste0(
+        format(round(boot_res_AB$est, 2), nsmall = 2), "[",
+        format(round(boot_res_AB$ci_l, 2), nsmall = 2), ";",
+        format(round(boot_res_AB$ci_u, 2), nsmall = 2), "]"
+      )
+      res$inferential[["report_overall_bootCI"]] <- rbind(
+        report_table(coxobj_dat, medSurv_dat, tag = paste0("Before matching/", endpoint_name)),
+        tmp_report_table
+      )
+    }
   }
 
   # output
