@@ -1,28 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="bucher" timestamp="2024-03-01T16:44:06Z" hostname="762ddac12e7e" tests="3" skipped="0" failures="0" errors="0" time="0.067">
-    <testcase time="0.012" classname="bucher" name="bucher_works_as_expected"/>
+  <testsuite name="bucher" timestamp="2024-04-05T05:54:58Z" hostname="2048720a2ea1" tests="3" skipped="0" failures="0" errors="0" time="0.065">
+    <testcase time="0.0109999999999999" classname="bucher" name="bucher_works_as_expected"/>
     <testcase time="0.042" classname="bucher" name="find_SE_from_CI_works_as_expected"/>
-    <testcase time="0.0129999999999999" classname="bucher" name="bucher_print_works_as_expected"/>
+    <testcase time="0.012" classname="bucher" name="bucher_print_works_as_expected"/>
   </testsuite>
-  <testsuite name="matching" timestamp="2024-03-01T16:44:07Z" hostname="762ddac12e7e" tests="18" skipped="0" failures="0" errors="0" time="0.078">
-    <testcase time="0.0149999999999999" classname="matching" name="ess_footnote_text_works"/>
-    <testcase time="0.014" classname="matching" name="calculate_weights_legend_works"/>
-    <testcase time="0.00600000000000001" classname="matching" name="optimise_weights_works_as_expected"/>
-    <testcase time="0.00100000000000011" classname="matching" name="optimise_weights_works_as_expected"/>
-    <testcase time="0.002" classname="matching" name="optimise_weights_works_as_expected"/>
-    <testcase time="0.0109999999999999" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected"/>
+  <testsuite name="maic_anchored" timestamp="2024-04-05T05:54:58Z" hostname="2048720a2ea1" tests="10" skipped="0" failures="0" errors="0" time="1.177">
+    <testcase time="0.86" classname="maic_anchored" name="maic_unanchored_works_for_TTE_using_robust_SE"/>
+    <testcase time="0.00300000000000011" classname="maic_anchored" name="maic_unanchored_works_for_TTE_using_robust_SE"/>
+    <testcase time="0.00099999999999989" classname="maic_anchored" name="maic_unanchored_works_for_TTE_using_robust_SE"/>
+    <testcase time="0.00100000000000033" classname="maic_anchored" name="maic_unanchored_works_for_TTE_using_robust_SE"/>
+    <testcase time="0.00199999999999978" classname="maic_anchored" name="maic_unanchored_works_for_TTE_using_robust_SE"/>
+    <testcase time="0.00099999999999989" classname="maic_anchored" name="maic_unanchored_works_for_TTE_using_robust_SE"/>
+    <testcase time="0.305" classname="maic_anchored" name="maic_unanchored_works_for_TTE_using_bootstrap_SE"/>
+    <testcase time="0.00099999999999989" classname="maic_anchored" name="maic_unanchored_works_for_TTE_using_bootstrap_SE"/>
+    <testcase time="0.00200000000000022" classname="maic_anchored" name="maic_unanchored_works_for_TTE_using_bootstrap_SE"/>
+    <testcase time="0.00099999999999989" classname="maic_anchored" name="maic_unanchored_works_for_TTE_using_bootstrap_SE"/>
+  </testsuite>
+  <testsuite name="matching" timestamp="2024-04-05T05:54:59Z" hostname="2048720a2ea1" tests="18" skipped="0" failures="0" errors="0" time="0.07">
+    <testcase time="0.016" classname="matching" name="ess_footnote_text_works"/>
+    <testcase time="0.00499999999999989" classname="matching" name="calculate_weights_legend_works"/>
+    <testcase time="0.00499999999999989" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.00100000000000033" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.00199999999999978" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.0089999999999999" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00100000000000033" classname="matching" name="estimate_weights_works_as_expected"/>
     <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.0130000000000001" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00200000000000022" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00199999999999978" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.0180000000000002" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
     <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
-    <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
-    <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
     <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
-    <testcase time="0.00100000000000011" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
-    <testcase time="0.002" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00200000000000022" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00099999999999989" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
   </testsuite>
 </testsuites>
