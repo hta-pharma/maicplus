@@ -7,10 +7,10 @@
 #' @param ipd a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial
 #' @param pseudo_ipd a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or
 #'   from contingency table (for binary endpoint)
-#' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)
+#' @param trt_ipd a string, name of the interested investigation arm in internal trial \code{ipd} (real IPD)
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{pseudo_ipd} (pseudo IPD)
 #' @param trt_var_ipd a string, column name in \code{ipd} that contains the treatment assignment
-#' @param trt_var_agd a string, column name in \code{ipd} that contains the treatment assignment
+#' @param trt_var_agd a string, column name in \code{pseudo_ipd} that contains the treatment assignment
 #' @param endpoint_type a string, one out of the following "binary", "tte" (time to event)
 #' @param eff_measure a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk)
 #'   for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case,
@@ -161,7 +161,6 @@ maic_unanchored <- function(weights_object,
     coxobj_dat <- coxph(Surv(TIME, EVENT) ~ ARM, dat, robust = TRUE)
     coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, dat, weights = weights, robust = TRUE)
 
-    browser()
     res$inferential[["coxph_before"]] <- coxobj_dat
     res$inferential[["coxph_after"]] <- coxobj_dat_adj
 
