@@ -27,13 +27,13 @@ maic_unanchored(
 \item{pseudo_ipd}{a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or
 from contingency table (for binary endpoint)}
 
-\item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)}
+\item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{ipd} (real IPD)}
 
 \item{trt_agd}{a string, name of the interested investigation arm in external trial \code{pseudo_ipd} (pseudo IPD)}
 
 \item{trt_var_ipd}{a string, column name in \code{ipd} that contains the treatment assignment}
 
-\item{trt_var_agd}{a string, column name in \code{ipd} that contains the treatment assignment}
+\item{trt_var_agd}{a string, column name in \code{pseudo_ipd} that contains the treatment assignment}
 
 \item{endpoint_type}{a string, one out of the following "binary", "tte" (time to event)}
 
