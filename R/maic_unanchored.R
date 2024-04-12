@@ -164,69 +164,7 @@ maic_unanchored <- function(weights_object,
   result <- if (endpoint_type == "tte") {
     maic_unanchored_tte(res, res_AB, dat, km_conf_type, time_scale, weights_object, endpoint_name, trt_ipd, trt_agd)
   } else if (endpoint_type == "binary") {
-    # ~~~ Analysis table
-    # : set up proper link
-    glm_link <- switch(eff_measure,
-      "RD" = poisson(link = "identity"),
-      "RR" = poisson(link = "log"),
-      "OR" = binomial(link = "logit")
-    )
-
-    # : fit glm for binary outcome and robust estimate with weights
-    binobj_dat <- glm(RESPONSE ~ ARM, dat, family = glm_link)
-    binobj_dat_adj <- glm(RESPONSE ~ ARM, dat, weights = weights, family = glm_link)
-    bin_robust_cov <- clubSandwich::vcovCR(binobj_dat_adj,
-      cluster = dat$USUBJID,
-      type = binary_robust_cov_type
-    )
-    bin_robust_coef <- clubSandwich::conf_int(binobj_dat_adj, bin_robust_cov, coef = 2)
-
-    res$inferential[["model_before"]] <- binobj_dat
-    res$inferential[["model_after"]] <- binobj_dat_adj
-
-    list(
-      mod = summary(mod),
-      est = coef_res$beta * 100,
-      ci_l = round(coef_res$CI_L * 100, 2),
-      ci_u = round(coef_res$CI_U * 100, 2),
-      se = coef_res$SE * 100
-    )
-
-    res_AB$est <- bin_robust_coef$beta
-    if (eff_measure %in% c("RR", "OR")) {
-      res_AB$est <- exp(res_AB$est)
-    } else if (eff_measure == "RD") {
-      res_AB$est <- res_AB$est * 100
-    }
-    mu <- summary(coxobj_dat_adj)$coef[1]
-    sig <- summary(coxobj_dat_adj)$coef[4]
-    res_AB$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parameterization
-    res_AB$ci_l <- summary(coxobj_dat_adj)$conf.int[3]
-    res_AB$ci_u <- summary(coxobj_dat_adj)$conf.int[4]
-    res_AB$pval <- summary(coxobj_dat_adj)$coef[6]
-
-    # : get bootstrapped estimates if applicable
-    if (!is.null(weights_object$boot)) {
-      tmp_boot_obj <- weights_object$boot
-      k <- dim(tmp_boot_obj)[3]
-      tmp_boot_est <- sapply(1:k, function(ii) {
-        boot_x <- tmp_boot_obj[, , ii]
-        boot_ipd_id <- weights_object$data$USUBJID[boot_x[, 1]]
-        boot_ipd <- ipd[match(boot_ipd_id, ipd$USUBJID), , drop = FALSE]
-        boot_ipd$weights <- boot_x[, 2]
-
-        boot_dat <- rbind(boot_ipd, pseudo_ipd)
-        boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
-
-        # does not matter use robust se or not, point estimate will not change and calculation would be faster
-        boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_dat, weights = weights)
-        boot_AB_est <- summary(boot_coxobj_dat_adj)$coef[1]
-        exp(boot_AB_est)
-      })
-      res$inferential[["boot_est"]] <- tmp_boot_est
-    } else {
-      res$inferential[["boot_est"]] <- NULL
-    }
+    maic_unanchored_binary(res, res_AB, dat, weights_object, endpoint_name, trt_ipd, trt_agd)
   } else {
     stop("Endpoint type ", endpoint_type, " currently unsupported.")
   }
@@ -235,7 +173,7 @@ maic_unanchored <- function(weights_object,
   result
 }
 
-# MAIC inference functions by outcome type ------------
+# MAIC inference functions for TTE outcome type ------------
 
 maic_unanchored_tte <- function(res,
                                 res_AB,
@@ -327,3 +265,90 @@ maic_unanchored_tte <- function(res,
     )
   }
 }
+
+# MAIC inference functions for Binary outcome type ------------
+
+maic_unanchored_binary <- function(res,
+                                   res_AB,
+                                   dat,
+                                   weights_object,
+                                   endpoint_name,
+                                   trt_ipd,
+                                   trt_agd) {
+  # ~~~ Analysis table
+  # : set up proper link
+  glm_link <- switch(eff_measure,
+                     "RD" = poisson(link = "identity"),
+                     "RR" = poisson(link = "log"),
+                     "OR" = binomial(link = "logit")
+  )
+
+  # : fit glm for binary outcome and robust estimate with weights
+  binobj_dat <- glm(RESPONSE ~ ARM, dat, family = glm_link)
+  binobj_dat_adj <- glm(RESPONSE ~ ARM, dat, weights = weights, family = glm_link)
+  bin_robust_cov <- clubSandwich::vcovCR(binobj_dat_adj,
+                                         cluster = dat$USUBJID,
+                                         type = binary_robust_cov_type
+  )
+  bin_robust_coef <- clubSandwich::conf_int(binobj_dat_adj, bin_robust_cov, coef = 2)
+
+  res$inferential[["model_before"]] <- binobj_dat
+  res$inferential[["model_after"]] <- binobj_dat_adj
+
+  list(
+    mod = summary(mod),
+    est = coef_res$beta * 100,
+    ci_l = round(coef_res$CI_L * 100, 2),
+    ci_u = round(coef_res$CI_U * 100, 2),
+    se = coef_res$SE * 100
+  )
+
+  res_AB$est <- bin_robust_coef$beta
+  if (eff_measure %in% c("RR", "OR")) {
+    res_AB$est <- exp(res_AB$est)
+  } else if (eff_measure == "RD") {
+    res_AB$est <- res_AB$est * 100
+  }
+  mu <- summary(coxobj_dat_adj)$coef[1]
+  sig <- summary(coxobj_dat_adj)$coef[4]
+  res_AB$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parameterization
+  res_AB$ci_l <- summary(coxobj_dat_adj)$conf.int[3]
+  res_AB$ci_u <- summary(coxobj_dat_adj)$conf.int[4]
+  res_AB$pval <- summary(coxobj_dat_adj)$coef[6]
+
+  # : get bootstrapped estimates if applicable
+  if (!is.null(weights_object$boot)) {
+    tmp_boot_obj <- weights_object$boot
+    k <- dim(tmp_boot_obj)[3]
+    tmp_boot_est <- sapply(1:k, function(ii) {
+      boot_x <- tmp_boot_obj[, , ii]
+      boot_ipd_id <- weights_object$data$USUBJID[boot_x[, 1]]
+      boot_ipd <- ipd[match(boot_ipd_id, ipd$USUBJID), , drop = FALSE]
+      boot_ipd$weights <- boot_x[, 2]
+
+      boot_dat <- rbind(boot_ipd, pseudo_ipd)
+      boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
+
+      # does not matter use robust se or not, point estimate will not change and calculation would be faster
+      boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_dat, weights = weights)
+      boot_AB_est <- summary(boot_coxobj_dat_adj)$coef[1]
+      exp(boot_AB_est)
+    })
+    res$inferential[["boot_est"]] <- tmp_boot_est
+  } else {
+    res$inferential[["boot_est"]] <- NULL
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
