@@ -1,12 +1,12 @@
 ---
-title: "Preprocessing and calculating weights"
+title: "Preprocessing and Calculating Weights"
 date: "`r Sys.Date()`"
 output: 
   html_document: default
 bibliography: references.bib
 csl: biomedicine.csl
 vignette: >
-  %\VignetteIndexEntry{Using maicplus}
+  %\VignetteIndexEntry{Calculating Weights}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -66,9 +66,9 @@ library(dplyr) # this is used for data merging/cleaning
 
 ## Preprocessing IPD
 
-In this example scenario, age, sex, Eastern Cooperative Oncology Group (ECOG) performance status, smoking status, and number of previous treatments have been identified as imbalanced prognostic variables/effect modifiers.
-
 This example reads in and combines data from three standard simulated data sets (adsl, adrs and adtte) which are saved as '.csv' files.
+
+In this example scenario, age, sex, Eastern Cooperative Oncology Group (ECOG) performance status, smoking status, and number of previous treatments have been identified as imbalanced prognostic variables/effect modifiers.
 
 ```{r}
 adsl <- read.csv(system.file("extdata", "adsl.csv",
@@ -107,11 +107,11 @@ head(ipd)
 
 ## Preprocessing aggregate data
 
-There are two ways of specifying aggregate data. One approach is to read in aggregate data using an excel spreadsheet. In the spreadsheet, possible variable types include mean, median, or standard deviation for continuous variables and count or proportion for binary variables. The naming should be followed by these suffixes accordingly: _COUNT, _MEAN, _MEDIAN, _SD, _PROP. Then, `process_agd` will convert the count into proportions.
+There are two methods for specifying aggregate data. The first method involves importing aggregate data via an Excel spreadsheet. Within the spreadsheet, variable types such as mean, median, or standard deviation are possible for continuous variables, while count or proportion are applicable for binary variables. Each variable should be suffixed accordingly: _COUNT, _MEAN, _MEDIAN, _SD, or _PROP. Subsequently, the process_agd function will convert counts into proportions.
 
-Other way is to define data frame of aggregate data in R. If you do it this way, _COUNT prefix should not be specified and only proportion is allowed for binary variables. Other suffix names would be the same as the first approach.
+The second method entails defining a data frame of aggregate data in R. When using this approach, the _COUNT prefix should be omitted, and only proportions are permissible for binary variables. Other suffixes remain consistent with the first method.
 
-Possible missingness in the binary variables should be accounted for by subtracting the denominator by the missing count i.e. proportion = count / (N - missing).
+Any potential missing values in binary variables should be addressed by adjusting the denominator to account for missing counts, i.e., the proportion equals the count divided by (N - missing).
 
 ```{r}
 # Through excel spreadsheet
@@ -145,16 +145,15 @@ head(ipd_centered)
 
 ### How to handle standard deviation aggregate summary
 
-As described in NICE DSU TSD 18 Appendix D [@phillippo2016b], balancing on both mean and standard deviation for continuous variables may be considered in some cases. If a standard deviation is provided in the comparator population,  preprocessing is done so that in the target population, $E(X^2)$ is calculated using the variance formula $Var(X)=E(X^{2})-E(X)^{2}$. This $E(X^2)$ in the target population is then matched with the $X^{2}$ calculated in the internal IPD.
+As outlined in NICE DSU TSD 18 Appendix D (Phillippo et al., 2016), balancing on both mean and standard deviation for continuous variables may be necessary in certain scenarios. When a standard deviation is provided in the comparator population, preprocessing involves calculating $E(X^2)$ in the target population using the variance formula $Var(X)=E(X^{2})-E(X)^{2}$. This calculated $E(X^2)$ in the target population is then aligned with $X^{2}$ computed in the internal IPD.
 
 ### How to handle median aggregate summary
 
-If a median is provided, IPD is preprocessed to categorize the variable into a binary variable. All the values in the IPD that are higher than the comparator population median is assigned a value of 1. Conversely, all values that are
-lower are assigned a value of 0. Comparator population median is replaced by 0.5 to adjust to the categorization in the IPD data. The newly created IPD binary variable is matched so that the proportion is 0.5.
+When a median is provided, the IPD is preprocessed to categorize the variable into a binary form. Values in the IPD exceeding the comparator population median are assigned a value of 1, while values lower than the median are assigned 0. The comparator population median is replaced by 0.5 to adjust to the binary categorization in the IPD data. Subsequently, the newly formed IPD binary variable is aligned to ensure a proportion of 0.5.
 
 # Calculating weights
 
-We use the centered IPD and use the function `estimate_weights` to calculate the weights. Before running this function, we need to specify the column that are centered, i.e. covariates that will be used in the optimization.
+We utilize the centered IPD and employ the `estimate_weights` function to compute the weights. Prior to executing this function, it's essential to specify the centered columns, i.e., the covariates to be utilized in the optimization process.
 
 ```{r}
 # list variables that are going to be used to match

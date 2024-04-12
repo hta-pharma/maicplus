@@ -1,12 +1,12 @@
 ---
-title: "Kaplan Meier Plots"
+title: "Kaplan-Meier Plots"
 date: "`r Sys.Date()`"
 output: 
   html_document: default
 bibliography: references.bib
 csl: biomedicine.csl
 vignette: >
-  %\VignetteIndexEntry{Using maicplus}
+  %\VignetteIndexEntry{Kaplan-Meier Plots}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -63,7 +63,7 @@ library(survminer) # this is used for ggplot version of KM plots
 
 # Introduction
 
-To plot Kaplan Meier curves, we need to first obtain pseudo comparator IPD by digitizing Kaplan-Meier curves from the comparator study. For more information on how to digitize Kaplan-Meier curves, refer to Guyot et al. and Liu et al. [@guyot2012; @Liu2021].
+After conducting an MAIC, the results can be effectively illustrated through visual representations of the weighted and non-weighted data. This can be achieved by plotting Kaplan-Meier (KM) curves and comprehensively depicting the time-to-event data. To generate these curves, it is crucial to obtain pseudo-IPD from the comparator study through the digitization of KM curves from the comparator study. For guidance on this process, refer to the works of Guyot et al. and Liu et al. [@guyot2012; @Liu2021]
 
 ## Unanchored case
 
