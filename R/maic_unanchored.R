@@ -162,11 +162,17 @@ maic_unanchored <- function(weights_object,
   # ==> Inferential output ------------------------------------------
 
   result <- if (endpoint_type == "tte") {
-    maic_unanchored_tte(res, res_AB, dat, km_conf_type, time_scale, weights_object, endpoint_name, trt_ipd, trt_agd)
+
+    maic_unanchored_tte(res, res_AB, dat, ipd, pseudo_ipd, km_conf_type, time_scale, weights_object, endpoint_name, trt_ipd, trt_agd)
+
   } else if (endpoint_type == "binary") {
-    maic_unanchored_binary(res, res_AB, dat, weights_object, endpoint_name, trt_ipd, trt_agd)
+
+    maic_unanchored_binary(res, res_AB, dat, ipd, pseudo_ipd, weights_object, endpoint_name, trt_ipd, trt_agd)
+
   } else {
+
     stop("Endpoint type ", endpoint_type, " currently unsupported.")
+
   }
 
   # output
@@ -178,6 +184,8 @@ maic_unanchored <- function(weights_object,
 maic_unanchored_tte <- function(res,
                                 res_AB,
                                 dat,
+                                ipd,
+                                pseudo_ipd,
                                 km_conf_type,
                                 time_scale,
                                 weights_object,
@@ -271,6 +279,8 @@ maic_unanchored_tte <- function(res,
 maic_unanchored_binary <- function(res,
                                    res_AB,
                                    dat,
+                                   ipd,
+                                   pseudo_ipd,
                                    weights_object,
                                    endpoint_name,
                                    trt_ipd,
@@ -294,14 +304,6 @@ maic_unanchored_binary <- function(res,
 
   res$inferential[["model_before"]] <- binobj_dat
   res$inferential[["model_after"]] <- binobj_dat_adj
-
-  list(
-    mod = summary(mod),
-    est = coef_res$beta * 100,
-    ci_l = round(coef_res$CI_L * 100, 2),
-    ci_u = round(coef_res$CI_U * 100, 2),
-    se = coef_res$SE * 100
-  )
 
   res_AB$est <- bin_robust_coef$beta
   if (eff_measure %in% c("RR", "OR")) {
@@ -330,9 +332,18 @@ maic_unanchored_binary <- function(res,
       boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
 
       # does not matter use robust se or not, point estimate will not change and calculation would be faster
-      boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_dat, weights = weights)
-      boot_AB_est <- summary(boot_coxobj_dat_adj)$coef[1]
-      exp(boot_AB_est)
+      boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_dat, weights = weights, family = glm_link)
+      boot_bin_robust_cov <- clubSandwich::vcovCR(binobj_dat_adj,
+                                                  cluster = dat$USUBJID,
+                                                  type = binary_robust_cov_type
+      )
+      boot_bin_robust_coef <- clubSandwich::conf_int(boot_binobj_dat_adj, boot_bin_robust_cov, coef = 2)
+      boot_AB_est <- boot_bin_robust_coef$beta
+      if (eff_measure %in% c("RR", "OR")) {
+        boot_AB_est <- exp(boot_AB_est)
+      } else if (eff_measure == "RD") {
+        boot_AB_est <- boot_AB_est * 100
+      }
     })
     res$inferential[["boot_est"]] <- tmp_boot_est
   } else {
