@@ -69,12 +69,12 @@ The matching is accomplished by re-weighting patients in the study with the IPD 
 
 The mapping approach can be described as follows: assuming that each trial has one arm, each patient can be characterized by the following random triple ($X$, $T$, $Y$), where $X$ represents the baseline characteristics (e.g., age and weight), $T$ represents the treatment of interest (e.g., $T = 0$ for the IPD study and $T = 1$ for the study with AgD), and $Y$ is the outcome of interest (e.g., overall survival).
 
-Each patient is characterized by a random triple ($x_i$, $t_i$, $y_i$) with $i=1$ to $n$ but only when IPD is available, i.e., when $t_i$ = 0. In case where $t_i$ = 1, only the mean baseline characteristics and mean outcome are observed.
+Each patient is characterized by a random triple ($x_i$, $t_i$, $y_i$) with $i=1$ to $n$ but only when IPD is available, i.e., when $t_i$ = 0. In case where $t_i$ = 1, only the mean baseline characteristics $\bar{x}_{agg}$ and mean outcome $\bar{y}_{agg}$ are observed.
 
 Given the observed data, the causal effect of treatment $T = 0$ versus $T = 1$ on the mean of $Y$ can be estimated as follows:
 
 \[
-\frac{\sum_{i=1}^{n}y_{i}(1-t_{i})w_{i}}{\sum_{i=1}^{n}(1-t_{i})w_{i}}-\bar{y}_{1}
+\frac{\sum_{i=1}^{n}y_{i}w_{i}}{\sum_{i=1}^{n}w_{i}}-\bar{y}_{agg}
 \]
 
 where $w_i=\frac{Pr(T_i=1\mid x_i)}{Pr(T_i=0\mid x_i)}$ is the odds that patient $i$ received treatment $T=1$ vs $T=0$ (i.e. enrolls in aggregate data study vs IPD study) given baseline characteristics $x_i$. Thus, the patients receiving $T=0$ are re-weighted to match the distribution of patients receiving $T=1$. Note that this causal effect would be the case when the outcome $Y$ is continuous. If the outcome is binary, $Y$ would be a proportion and we would use a link function such as logit to give us the causal effect in an odds ratio scale. As in propensity score methods, we may
@@ -102,7 +102,7 @@ It is possible to use this estimator since a logistic regression model for the o
 \hat{\theta}=\frac{\sum_{i=1}^{n}y_{i}exp(x_i^{T}\hat{\beta})}{\sum_{i=1}^{n}exp(x_i^{T}\hat{\beta})}-\bar{y}_{agg}
 \]
 
-In order to solve the equation above to estimate $\beta$, we could transform IPD by subtracting the aggregate data means. Then $\bar{x}_{agg}$ would equal 0 and equation would further be simplified. This is why we center IPD in the preprocessing step in `maicplus`.
+In order to solve the equation above to estimate $\beta$, we could transform IPD by subtracting the aggregate data means. Then $\bar{x}_{agg}$ would equal 0 and the equation would simplify. This is why IPD is centered in the preprocessing step in `maicplus`.
 
 \[
 0=\sum_{i=1}^{n}x_{i}exp(x_{i}^{T}\hat{\beta})
