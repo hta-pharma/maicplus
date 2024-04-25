@@ -41,10 +41,11 @@ pre { /* Code block - determines code spacing between lines */
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.dim = c(6, 4),
-  warning = FALSE
+  # collapse = TRUE,
+  # comment = "#>",
+  fig.dim = c(8, 6),
+  warning = FALSE,
+  message = FALSE
 )
 ```
 
@@ -57,7 +58,7 @@ library(maicplus)
 
 Additional suggested packages for this vignette:
 
-```{r, message = FALSE}
+```{r}
 library(survminer) # this is used for ggplot version of KM plots
 ```
 
@@ -68,7 +69,6 @@ After conducting an MAIC, the results can be effectively illustrated through vis
 ## Unanchored case
 
 ```{r}
-# Read in relevant ADaM data and rename variables of interest
 adsl <- read.csv(system.file("extdata", "adsl.csv",
   package = "maicplus",
   mustWork = TRUE
@@ -80,11 +80,11 @@ adtte <- read.csv(system.file("extdata", "adtte.csv",
 adtte$TIME <- adtte$AVAL
 adtte$EVENT <- adtte$EVNT
 
-### AgD
 # Baseline aggregate data for the comparator population
 target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
   package = "maicplus", mustWork = TRUE
 ))
+
 # for time-to-event endpoints, pseudo IPD from digitalized KM
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
   package = "maicplus",
@@ -92,21 +92,21 @@ pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
 ))
 pseudo_ipd$ARM <- "B"
 
-#### prepare data
+# prepare data
 target_pop <- process_agd(target_pop)
 adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
-use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
+ipd_centered <- center_ipd(ipd = adsl, agd = target_pop)
 
-#### derive weights
+# derive weights
 match_res <- estimate_weights(
-  data = use_adsl,
-  centered_colnames = grep("_CENTERED$", names(use_adsl)),
+  data = ipd_centered,
+  centered_colnames = grep("_CENTERED$", names(ipd_centered)),
   start_val = 0,
   method = "BFGS"
 )
 ```
 
-Here is a Kaplan-Meier plot using base R graphics. Note that number at risk for weighted treatment arm is the sum of individual weights at risk.
+Here is a Kaplan-Meier plot using base R graphics. Note that number at risk for weighted treatment arm is the sum of individual weights at risk. Consequently, number at risk for weighted treatment arm at time 0 is different from calculated ESS.
 
 ```{r}
 kmplot(
@@ -129,7 +129,7 @@ kmplot(
 )
 ```
 
-There is also a `ggplot` option for Kaplan-Meier curves using `survminer` R package.
+There is also a ggplot option for Kaplan-Meier curves using `survminer` R package.
 
 ```{r}
 kmplot2(
@@ -151,8 +151,9 @@ kmplot2(
 
 ## Anchored case
 
+Note that generated data is not realistic. It is only for illustration purposes.
+
 ```{r}
-# Read in relevant ADaM data and rename variables of interest
 adsl <- read.csv(system.file("extdata", "adsl.csv",
   package = "maicplus",
   mustWork = TRUE
@@ -168,11 +169,11 @@ adtte2$ARM <- "C"
 adtte2$TIME <- adtte2$TIME + 7
 adtte <- rbind(adtte, adtte2)
 
-### AgD
 # Baseline aggregate data for the comparator population
 target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
   package = "maicplus", mustWork = TRUE
 ))
+
 # for time-to-event endpoints, pseudo IPD from digitalized KM
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
   package = "maicplus",
@@ -184,15 +185,15 @@ pseudo_ipd2$ARM <- "C"
 pseudo_ipd2$Time <- pseudo_ipd2$Time + 5
 pseudo_ipd <- rbind(pseudo_ipd, pseudo_ipd2)
 
-#### prepare data
+# prepare data
 target_pop <- process_agd(target_pop)
 adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
-use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
+ipd_centered <- center_ipd(ipd = adsl, agd = target_pop)
 
-#### derive weights
+# derive weights
 match_res <- estimate_weights(
-  data = use_adsl,
-  centered_colnames = grep("_CENTERED$", names(use_adsl)),
+  data = ipd_centered,
+  centered_colnames = grep("_CENTERED$", names(ipd_centered)),
   start_val = 0,
   method = "BFGS"
 )
@@ -261,7 +262,7 @@ kmplot(
 )
 ```
 
-Again there is also a `ggplot` option
+Again there is also a ggplot option
 
 ```{r}
 # plot by trial

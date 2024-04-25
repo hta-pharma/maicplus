@@ -3,6 +3,10 @@ title: "Introduction"
 date: "`r Sys.Date()`"
 output: 
   html_document: default
+  pdf_document: default
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding,
+  output_format = "all") })
 bibliography: references.bib
 csl: biomedicine.csl
 vignette: >
@@ -39,16 +43,6 @@ pre { /* Code block - determines code spacing between lines */
 }
 </style>
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.dim = c(6, 4),
-  warning = FALSE
-)
-```
-
-
 # Introduction
 
 Health technology assessments and appraisals necessitate dependable estimations of relative treatment effects to guide reimbursement determinations. In instances where direct comparative evidence is lacking, yet both treatments under scrutiny have been separately evaluated against a shared comparator (e.g., placebo or standard care), a conventional indirect comparison can be conducted utilizing published aggregate data from each study.
@@ -65,7 +59,7 @@ Various approaches exist for identifying prognostic variables and effect modifie
 
 # Statistical theory behind MAIC
 
-The matching is accomplished by re-weighting patients in the study with the IPD by their odds, or likelihood, of having been enrolled in the study with the AgD. We usually refer to probability with the term “likelihood” as we seek for the variable that would maximize the probability of observing the outcome. The approach is very similar to propensity score weighting with the difference that IPD is not available for one study, so the usual maximum likelihood approach cannot be used to estimate the parameters of the propensity score model. Instead, a method of moments must be used (the method of moments is a statistical method for the estimation of population parameters). After the matching is complete and weights have been added to the IPD, it is possible to estimate the weighted outcomes and compare the results across.
+The matching is accomplished by re-weighting patients in the study with the individual patient data (IPD) by their odds, or likelihood, of having been enrolled in the study with the aggregate data (AgD). We usually refer to probability with the term “likelihood” as we seek for the variable that would maximize the probability of observing the outcome. The approach is very similar to propensity score weighting with the difference that IPD is not available for one study, so the usual maximum likelihood approach cannot be used to estimate the parameters. Instead, a method of moments must be used (the method of moments is a statistical method for the estimation of population parameters). After the matching is complete and weights have been added to the IPD, it is possible to estimate the weighted outcomes and compare the results across.
 
 The mapping approach can be described as follows: assuming that each trial has one arm, each patient can be characterized by the following random triple ($X$, $T$, $Y$), where $X$ represents the baseline characteristics (e.g., age and weight), $T$ represents the treatment of interest (e.g., $T = 0$ for the IPD study and $T = 1$ for the study with AgD), and $Y$ is the outcome of interest (e.g., overall survival).
 
@@ -84,7 +78,7 @@ assume $w_i$ to follow logistic regression form
 w_{i}=exp(x_i^{T}\beta)
 \]
 
-However, in order to estimate $\beta$, we cannot use maximum likelihood approach because we do not have IPD for both trials. Instead, we use method of moments. We estimate $\beta$ such that the weighted averages of the covariates in the IPD exactly matches the aggregate data averages. Mathematically speaking, we want to estimate $\beta$ such that:
+In order to estimate $\beta$, we use method of moments. We estimate $\beta$ such that the weighted averages of the covariates in the IPD exactly matches the aggregate data averages. Mathematically speaking, we estimate $\beta$ such that:
 
 \[
 0=\frac{\sum_{i=1}^{n}x_{i}exp(x_i^{T}\hat{\beta})}{\sum_{i=1}^{n}exp(x_i^{T}\hat{\beta})}-\bar{x}_{agg}
@@ -96,13 +90,13 @@ This equation is equivalent to
 0=\sum_{i=1}^{n}(x_{i}-\bar{x}_{agg})exp(x_{i}^{T}\hat{\beta})
 \]
 
-It is possible to use this estimator since a logistic regression model for the odds of receiving $T = 1$ vs $T = 0$ would, by definition, provide the correct weights for balancing the trial populations. If the $x_i$ contains all the confounders and the logistic model for $w_i$ is correctly specified, then $\hat{\theta}$ in the next equation provides a consistent estimate of the causal effect of treatment $T = 0$ vs $T = 1$ on the mean of Y among patients.
+It is possible to use this estimator since a logistic regression model for the odds of receiving $T = 1$ vs $T = 0$ would, by definition, provide the correct weights for balancing the trial populations. If the $x_i$ contains all the confounders and the logistic model for $w_i$ is correctly specified, then $\hat{\theta}$ in the next equation provides a consistent estimate of the causal effect of treatment $T = 0$ vs $T = 1$ on the mean of $Y$ among patients.
 
 \[
 \hat{\theta}=\frac{\sum_{i=1}^{n}y_{i}exp(x_i^{T}\hat{\beta})}{\sum_{i=1}^{n}exp(x_i^{T}\hat{\beta})}-\bar{y}_{agg}
 \]
 
-In order to solve the equation above to estimate $\beta$, we could transform IPD by subtracting the aggregate data means. Then $\bar{x}_{agg}$ would equal 0 and the equation would simplify. This is why IPD is centered in the preprocessing step in `maicplus`.
+In order to solve the equation set up by the methods of moments, we could transform IPD by subtracting the aggregate data means. Then $\bar{x}_{agg}$ would equal 0 and the equation would simplify. This is why IPD is centered in the preprocessing step.
 
 \[
 0=\sum_{i=1}^{n}x_{i}exp(x_{i}^{T}\hat{\beta})

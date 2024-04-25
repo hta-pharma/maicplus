@@ -3,6 +3,10 @@ title: "Preprocessing and Calculating Weights"
 date: "`r Sys.Date()`"
 output: 
   html_document: default
+  pdf_document: default
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding,
+  output_format = "all") })
 bibliography: references.bib
 csl: biomedicine.csl
 vignette: >
@@ -40,12 +44,7 @@ pre { /* Code block - determines code spacing between lines */
 </style>
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.dim = c(6, 4),
-  warning = FALSE
-)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```
 
 
@@ -56,10 +55,10 @@ knitr::opts_chunk$set(
 library(maicplus)
 ```
 
-Additional suggested packages for this vignette:
+Additional R packages for this vignette:
 
-```{r, message = FALSE}
-library(dplyr) # this is used for data merging/cleaning
+```{r}
+library(dplyr)
 ```
 
 # Preprocessing
@@ -107,24 +106,20 @@ head(ipd)
 
 ## Preprocessing aggregate data
 
-There are two methods for specifying aggregate data. The first method involves importing aggregate data via an Excel spreadsheet. Within the spreadsheet, variable types such as mean, median, or standard deviation are possible for continuous variables, while count or proportion are applicable for binary variables. Each variable should be suffixed accordingly: _COUNT, _MEAN, _MEDIAN, _SD, or _PROP. Subsequently, the process_agd function will convert counts into proportions.
+There are two methods for specifying aggregate data. The first method involves importing aggregate data via an Excel spreadsheet. Within the spreadsheet, variable types such as mean, median, or standard deviation are possible for continuous variables, while count or proportion are possible for binary variables. Each variable should be suffixed accordingly: _COUNT, _MEAN, _MEDIAN, _SD, or _PROP. Subsequently, the `process_agd` function will convert counts into proportions.
 
 The second method entails defining a data frame of aggregate data in R. When using this approach, the _COUNT prefix should be omitted, and only proportions are permissible for binary variables. Other suffixes remain consistent with the first method.
 
-Any potential missing values in binary variables should be addressed by adjusting the denominator to account for missing counts, i.e., the proportion equals the count divided by (N - missing).
+Any missing values in binary variables should be addressed by adjusting the denominator to account for missing counts, i.e., the proportion equals the count divided by (N - missing).
 
 ```{r}
-# Through excel spreadsheet
+# Through an excel spreadsheet
 # target_pop <- read.csv(system.file("extdata","aggregate_data_example_1.csv", package = "maicplus", mustWork = TRUE))
 # agd <- process_agd(target_pop)
 
 # Second approach by defining a data frame in R
 agd <- data.frame(
-  STUDY = "Lung study",
-  ARM = "Total",
-  N = 300,
   AGE_MEAN = 51,
-  AGE_MEDIAN = 49,
   AGE_SD = 3.25,
   SEX_MALE_PROP = 147 / 300,
   ECOG0_PROP = 0.40,
@@ -133,23 +128,22 @@ agd <- data.frame(
 )
 ```
 
+### How _SD prefix is handled
+
+As outlined in NICE DSU TSD 18 Appendix D [@phillippo2016b], balancing on both mean and standard deviation for continuous variables may be necessary in certain scenarios. When a standard deviation is provided in the comparator population, preprocessing involves calculating $E(X^2)$ in the target population (i.e. aggregate data) using the variance formula $Var(X)=E(X^{2})-E(X)^{2}$. This calculated $E(X^2)$ in the target population is then aligned with $X^{2}$ computed in the internal IPD.
+
+### How _MEDIAN prefix is handled
+
+When a median is provided, IPD is preprocessed to categorize the variable into a binary form. Values in the IPD exceeding the comparator population median are assigned a value of 1, while values lower than the median are assigned 0. The comparator population median is replaced by 0.5 to adjust to the binary categorization in the IPD data. Subsequently, the newly formed IPD binary variable is aligned to ensure a proportion of 0.5.
+
 ## Centering IPD
 
-In the statistical theory section, we briefly explained why it is useful to transform IPD by subtracting the aggregate data means when performing optimization. The function `center_ipd` centers the IPD using the aggregate data means.
+In the introduction vignette, we explain why centering the IPD variables using aggregate data means is needed when calculating weights. The function `center_ipd` centers the IPD using the aggregate data means.
 
 ```{r}
-#### prepare data
 ipd_centered <- center_ipd(ipd = ipd, agd = agd)
 head(ipd_centered)
 ```
-
-### How to handle standard deviation aggregate summary
-
-As outlined in NICE DSU TSD 18 Appendix D (Phillippo et al., 2016), balancing on both mean and standard deviation for continuous variables may be necessary in certain scenarios. When a standard deviation is provided in the comparator population, preprocessing involves calculating $E(X^2)$ in the target population using the variance formula $Var(X)=E(X^{2})-E(X)^{2}$. This calculated $E(X^2)$ in the target population is then aligned with $X^{2}$ computed in the internal IPD.
-
-### How to handle median aggregate summary
-
-When a median is provided, the IPD is preprocessed to categorize the variable into a binary form. Values in the IPD exceeding the comparator population median are assigned a value of 1, while values lower than the median are assigned 0. The comparator population median is replaced by 0.5 to adjust to the binary categorization in the IPD data. Subsequently, the newly formed IPD binary variable is aligned to ensure a proportion of 0.5.
 
 # Calculating weights
 
@@ -160,13 +154,13 @@ We utilize the centered IPD and employ the `estimate_weights` function to comput
 centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
 centered_colnames <- paste0(centered_colnames, "_CENTERED")
 
-weights_object <- estimate_weights(
+match_res <- estimate_weights(
   data = ipd_centered,
   centered_colnames = centered_colnames
 )
 
 # Alternatively, you can specify the numeric column locations for centered_colnames
-# weights_object <- estimate_weights(ipd_centered, centered_colnames = c(14, 16:20))
+# match_res <- estimate_weights(ipd_centered, centered_colnames = c(14, 16:20))
 ```
 
 Following the calculation of weights, it is necessary to determine whether the optimization procedure has worked correctly and whether the weights derived are sensible.
@@ -176,23 +170,23 @@ The approximate effective sample size is calculated as: $$ ESS =  \frac{({ \sum_
 In this example, the ESS reduction is 66.73% of the total number of patients in the intervention arm (500 patients in total). As this is a considerable reduction, estimates using this weighted data may be unreliable.
 
 ```{r}
-weights_object$ess
+match_res$ess
 ```
 
 Also, it is useful to visualize the weights using a histogram to check if there are any extreme weights. Scaled weights are weights that are relative to the original unit weights of each individual. Scaled weights are
 calculated as $$\tilde{w}_i  =  \frac{\hat{w}_i}{\sum_{i=1}^n \hat{w}_i} \times n $$.
 
 ```{r}
-plot(weights_object)
+plot(match_res)
 
 # ggplot option is also available
-# plot(weights_object, ggplot = TRUE, bin_col = "black", vline_col = "red")
+# plot(match_res, ggplot = TRUE, bin_col = "black", vline_col = "red")
 ```
 
 Another check would be to look at whether the weighted summary of covariates in internal IPD match the external aggregate data summary.
 
 ```{r}
-outdata <- check_weights(weights_object, agd)
+outdata <- check_weights(match_res, agd)
 outdata
 ```
 
