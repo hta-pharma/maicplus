@@ -41,8 +41,6 @@ pre { /* Code block - determines code spacing between lines */
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  # collapse = TRUE,
-  # comment = "#>",
   fig.dim = c(8, 6),
   warning = FALSE,
   message = FALSE
