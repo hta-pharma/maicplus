@@ -15,6 +15,9 @@
 #' @param eff_measure a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk)
 #'   for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case,
 #'   otherwise "HR" is used.
+#' @param boot_ci_is_quantile a logical, specify if the 95% bootstrapped confidence interval should be dervied by sample quantile. Default FALSE,
+#'   which the estimates assumes to follow asymptotic normal (only if eff_measure is "RD") or log-normal with a variance that can be approximated
+#'   by bootstrapped sample of the estimate. This default option may be handy when the number of bootstrap iterations is not big.
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
 #'   'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days
@@ -45,6 +48,7 @@ maic_unanchored <- function(weights_object,
                             endpoint_type = "tte",
                             endpoint_name = "Time to Event Endpoint",
                             eff_measure = c("HR", "OR", "RR", "RD"),
+                            boot_ci_is_quantile = FALSE,
                             # time to event specific args
                             time_scale = "months",
                             km_conf_type = "log-log",
@@ -106,9 +110,6 @@ maic_unanchored <- function(weights_object,
 
     if (any(!c("USUBJID", "RESPONSE") %in% names(ipd))) stop("ipd should have 'USUBJID', 'RESPONSE' columns at minimum")
     eff_measure <- match.arg(eff_measure, choices = c("OR", "RD", "RR"), several.ok = FALSE)
-    if (!"family" %in% class(glm_link)) {
-      stop("glm_link should be family object, see family argument of glm()")
-    }
     # !! add a check of binary_robust_cov_type
   } else if (endpoint_type == "tte") { # for time to event effect measure
 
@@ -162,17 +163,11 @@ maic_unanchored <- function(weights_object,
   # ==> Inferential output ------------------------------------------
 
   result <- if (endpoint_type == "tte") {
-
     maic_unanchored_tte(res, res_AB, dat, ipd, pseudo_ipd, km_conf_type, time_scale, weights_object, endpoint_name, trt_ipd, trt_agd)
-
   } else if (endpoint_type == "binary") {
-
-    maic_unanchored_binary(res, res_AB, dat, ipd, pseudo_ipd, weights_object, endpoint_name, trt_ipd, trt_agd)
-
+    maic_unanchored_binary(res, res_AB, dat, ipd, pseudo_ipd, binary_robust_cov_type, weights_object, endpoint_name, eff_measure, trt_ipd, trt_agd)
   } else {
-
     stop("Endpoint type ", endpoint_type, " currently unsupported.")
-
   }
 
   # output
@@ -247,8 +242,8 @@ maic_unanchored_tte <- function(res,
 
   # : make analysis report table
   res$inferential[["report_overall_robustCI"]] <- rbind(
-    report_table(coxobj_dat, medSurv_dat, tag = paste0("Before matching/", endpoint_name)),
-    report_table(coxobj_dat_adj, medSurv_dat_adj, tag = paste0("After matching/", endpoint_name))
+    report_table_tte(coxobj_dat, medSurv_dat, tag = paste0("Before matching/", endpoint_name)),
+    report_table_tte(coxobj_dat_adj, medSurv_dat_adj, tag = paste0("After matching/", endpoint_name))
   )
 
   if (is.null(res$inferential[["boot_est"]])) {
@@ -261,17 +256,20 @@ maic_unanchored_tte <- function(res,
     # boot_res_AB$ci_l <- quantile(res$inferential[["boot_est"]],p=0.025)
     # boot_res_AB$ci_u <- quantile(res$inferential[["boot_est"]],p=0.975)
 
-    tmp_report_table <- report_table(coxobj_dat_adj, medSurv_dat_adj, tag = paste0("After matching/", endpoint_name))
-    tmp_report_table$`HR[95% CI]`[1] <- paste0(
+    tmp_report_table_tte <- report_table_tte(coxobj_dat_adj, medSurv_dat_adj, tag = paste0("After matching/", endpoint_name))
+    tmp_report_table_tte$`HR[95% CI]`[1] <- paste0(
       format(round(boot_res_AB$est, 2), nsmall = 2), "[",
       format(round(boot_res_AB$ci_l, 2), nsmall = 2), ";",
       format(round(boot_res_AB$ci_u, 2), nsmall = 2), "]"
     )
     res$inferential[["report_overall_bootCI"]] <- rbind(
-      report_table(coxobj_dat, medSurv_dat, tag = paste0("Before matching/", endpoint_name)),
-      tmp_report_table
+      report_table_tte(coxobj_dat, medSurv_dat, tag = paste0("Before matching/", endpoint_name)),
+      tmp_report_table_tte
     )
   }
+
+  # output
+  res
 }
 
 # MAIC inference functions for Binary outcome type ------------
@@ -281,42 +279,49 @@ maic_unanchored_binary <- function(res,
                                    dat,
                                    ipd,
                                    pseudo_ipd,
+                                   binary_robust_cov_type,
                                    weights_object,
                                    endpoint_name,
+                                   eff_measure,
                                    trt_ipd,
                                    trt_agd) {
   # ~~~ Analysis table
   # : set up proper link
   glm_link <- switch(eff_measure,
-                     "RD" = poisson(link = "identity"),
-                     "RR" = poisson(link = "log"),
-                     "OR" = binomial(link = "logit")
+    "RD" = poisson(link = "identity"),
+    "RR" = poisson(link = "log"),
+    "OR" = binomial(link = "logit")
   )
 
   # : fit glm for binary outcome and robust estimate with weights
   binobj_dat <- glm(RESPONSE ~ ARM, dat, family = glm_link)
   binobj_dat_adj <- glm(RESPONSE ~ ARM, dat, weights = weights, family = glm_link)
   bin_robust_cov <- clubSandwich::vcovCR(binobj_dat_adj,
-                                         cluster = dat$USUBJID,
-                                         type = binary_robust_cov_type
+    cluster = dat$USUBJID,
+    type = binary_robust_cov_type
   )
-  bin_robust_coef <- clubSandwich::conf_int(binobj_dat_adj, bin_robust_cov, coef = 2)
+  bin_robust_coef <- clubSandwich::conf_int(binobj_dat_adj, bin_robust_cov, coef = 2, p_values = TRUE)
 
   res$inferential[["model_before"]] <- binobj_dat
   res$inferential[["model_after"]] <- binobj_dat_adj
 
-  res_AB$est <- bin_robust_coef$beta
+  mu <- bin_robust_coef$beta
+  sig <- bin_robust_coef$SE
+  res_AB$ci_l <- bin_robust_coef$CI_L
+  res_AB$ci_u <- bin_robust_coef$CI_U
+  res_AB$pval <- bin_robust_coef$p_val
+
   if (eff_measure %in% c("RR", "OR")) {
-    res_AB$est <- exp(res_AB$est)
+    res_AB$est <- exp(mu)
+    res_AB$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parameterization
+    res_AB$ci_l <- exp(res_AB$ci_l)
+    res_AB$ci_u <- exp(res_AB$ci_u)
   } else if (eff_measure == "RD") {
-    res_AB$est <- res_AB$est * 100
+    res_AB$est <- mu * 100
+    res_AB$se <- sig * 100
+    res_AB$ci_l <- res_AB$ci_l * 100
+    res_AB$ci_u <- res_AB$ci_u * 100
   }
-  mu <- summary(coxobj_dat_adj)$coef[1]
-  sig <- summary(coxobj_dat_adj)$coef[4]
-  res_AB$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parameterization
-  res_AB$ci_l <- summary(coxobj_dat_adj)$conf.int[3]
-  res_AB$ci_u <- summary(coxobj_dat_adj)$conf.int[4]
-  res_AB$pval <- summary(coxobj_dat_adj)$coef[6]
 
   # : get bootstrapped estimates if applicable
   if (!is.null(weights_object$boot)) {
@@ -334,8 +339,8 @@ maic_unanchored_binary <- function(res,
       # does not matter use robust se or not, point estimate will not change and calculation would be faster
       boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_dat, weights = weights, family = glm_link)
       boot_bin_robust_cov <- clubSandwich::vcovCR(binobj_dat_adj,
-                                                  cluster = dat$USUBJID,
-                                                  type = binary_robust_cov_type
+        cluster = dat$USUBJID,
+        type = binary_robust_cov_type
       )
       boot_bin_robust_coef <- clubSandwich::conf_int(boot_binobj_dat_adj, boot_bin_robust_cov, coef = 2)
       boot_AB_est <- boot_bin_robust_coef$beta
@@ -349,17 +354,34 @@ maic_unanchored_binary <- function(res,
   } else {
     res$inferential[["boot_est"]] <- NULL
   }
+
+  # : make analysis report table
+  res$inferential[["report_overall_robustCI"]] <- rbind(
+    report_table_binary(binobj_dat, tag = paste0("Before matching/", endpoint_name), eff_measure = eff_measure),
+    report_table_binary(binobj_dat_adj, res_AB, tag = paste0("After matching/", endpoint_name), eff_measure = eff_measure)
+  )
+
+  if (is.null(res$inferential[["boot_est"]])) {
+    res$inferential[["report_overall_bootCI"]] <- NULL
+  } else {
+    boot_res_AB <- res_AB
+    boot_logres_se <- sd(log(res$inferential[["boot_est"]]), na.rm = TRUE)
+    boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
+    boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
+    # boot_res_AB$ci_l <- quantile(res$inferential[["boot_est"]],p=0.025)
+    # boot_res_AB$ci_u <- quantile(res$inferential[["boot_est"]],p=0.975)
+
+    tmp_report_table_tte <- report_table_tte(coxobj_dat_adj, medSurv_dat_adj, tag = paste0("After matching/", endpoint_name))
+    tmp_report_table_tte$`HR[95% CI]`[1] <- paste0(
+      format(round(boot_res_AB$est, 2), nsmall = 2), "[",
+      format(round(boot_res_AB$ci_l, 2), nsmall = 2), ";",
+      format(round(boot_res_AB$ci_u, 2), nsmall = 2), "]"
+    )
+    res$inferential[["report_overall_bootCI"]] <- rbind(
+      report_table_binary(coxobj_dat, medSurv_dat, tag = paste0("Before matching/", endpoint_name), eff_measure = eff_measure),
+      tmp_report_table_binary
+    )
+  }
+  # output
+  res
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

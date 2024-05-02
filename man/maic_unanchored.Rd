@@ -14,9 +14,10 @@ maic_unanchored(
   trt_var_agd = "ARM",
   endpoint_type = "tte",
   endpoint_name = "Time to Event Endpoint",
-  eff_measure = c("HR", "OR", "RR", "RD", "Diff"),
+  eff_measure = c("HR", "OR", "RR", "RD"),
   time_scale = "months",
-  km_conf_type = "log-log"
+  km_conf_type = "log-log",
+  binary_robust_cov_type = "CR2"
 )
 }
 \arguments{
@@ -47,6 +48,8 @@ otherwise "HR" is used.}
 'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days}
 
 \item{km_conf_type}{a string, pass to \code{conf.type} of \code{survfit}}
+
+\item{binary_robust_cov_type}{a string to pass to argument "type" of \link[clubSandwich]{vcovCR}, see viable options in the documentation of that function. Default is "CR2"}
 }
 \value{
 A list, contains 'descriptive' and 'inferential'
