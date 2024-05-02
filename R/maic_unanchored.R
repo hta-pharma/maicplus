@@ -221,7 +221,12 @@ maic_unanchored_tte <- function(res,
   if (!is.null(weights_object$boot)) {
     tmp_boot_obj <- weights_object$boot
     k <- dim(tmp_boot_obj)[3]
+
+    cli::cli_progress_bar("Going through bootstrapped weights", total = k, .envir = .GlobalEnv)
+
     tmp_boot_est <- sapply(1:k, function(ii) {
+      cli::cli_progress_update(.envir = .GlobalEnv)
+
       boot_x <- tmp_boot_obj[, , ii]
       boot_ipd_id <- weights_object$data$USUBJID[boot_x[, 1]]
       boot_ipd <- ipd[match(boot_ipd_id, ipd$USUBJID), , drop = FALSE]
@@ -235,6 +240,9 @@ maic_unanchored_tte <- function(res,
       boot_AB_est <- summary(boot_coxobj_dat_adj)$coef[1]
       exp(boot_AB_est)
     })
+
+    cli::cli_progress_done(.envir = .GlobalEnv)
+
     res$inferential[["boot_est"]] <- tmp_boot_est
   } else {
     res$inferential[["boot_est"]] <- NULL
@@ -327,7 +335,12 @@ maic_unanchored_binary <- function(res,
   if (!is.null(weights_object$boot)) {
     tmp_boot_obj <- weights_object$boot
     k <- dim(tmp_boot_obj)[3]
+
+    cli::cli_progress_bar("Going through bootstrapped weights", total = k, .envir = .GlobalEnv)
+
     tmp_boot_est <- sapply(1:k, function(ii) {
+      cli::cli_progress_update(.envir = .GlobalEnv)
+
       boot_x <- tmp_boot_obj[, , ii]
       boot_ipd_id <- weights_object$data$USUBJID[boot_x[, 1]]
       boot_ipd <- ipd[match(boot_ipd_id, ipd$USUBJID), , drop = FALSE]
@@ -350,6 +363,9 @@ maic_unanchored_binary <- function(res,
         boot_AB_est <- boot_AB_est * 100
       }
     })
+
+    cli::cli_progress_done(.envir = .GlobalEnv)
+
     res$inferential[["boot_est"]] <- tmp_boot_est
   } else {
     res$inferential[["boot_est"]] <- NULL
@@ -371,14 +387,14 @@ maic_unanchored_binary <- function(res,
     # boot_res_AB$ci_l <- quantile(res$inferential[["boot_est"]],p=0.025)
     # boot_res_AB$ci_u <- quantile(res$inferential[["boot_est"]],p=0.975)
 
-    tmp_report_table_tte <- report_table_tte(coxobj_dat_adj, medSurv_dat_adj, tag = paste0("After matching/", endpoint_name))
-    tmp_report_table_tte$`HR[95% CI]`[1] <- paste0(
+    tmp_report_table_binary <-report_table_binary(binobj_dat_adj, res_AB, tag = paste0("After matching/", endpoint_name), eff_measure = eff_measure)
+    tmp_report_table_binary[[paste0(eff_measure,'[95% CI]')]][1] <- paste0(
       format(round(boot_res_AB$est, 2), nsmall = 2), "[",
       format(round(boot_res_AB$ci_l, 2), nsmall = 2), ";",
       format(round(boot_res_AB$ci_u, 2), nsmall = 2), "]"
     )
     res$inferential[["report_overall_bootCI"]] <- rbind(
-      report_table_binary(coxobj_dat, medSurv_dat, tag = paste0("Before matching/", endpoint_name), eff_measure = eff_measure),
+      report_table_binary(binobj_dat, tag = paste0("Before matching/", endpoint_name), eff_measure = eff_measure),
       tmp_report_table_binary
     )
   }
