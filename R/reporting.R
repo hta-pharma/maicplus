@@ -91,7 +91,7 @@ report_table_binary <- function(binobj, weighted_result = NULL, eff_measure = c(
 
   # assemble the table
   desc_res <- data.frame(
-    "Arm" = ARM,
+    "treatment" = ARM,
     "N" = N,
     "n.events(%)" = paste0(N.EVNT, "(", format(N.EVNT.PERC, nsmall = 1), ")")
   )
