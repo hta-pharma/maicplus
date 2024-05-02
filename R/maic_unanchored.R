@@ -387,8 +387,8 @@ maic_unanchored_binary <- function(res,
     # boot_res_AB$ci_l <- quantile(res$inferential[["boot_est"]],p=0.025)
     # boot_res_AB$ci_u <- quantile(res$inferential[["boot_est"]],p=0.975)
 
-    tmp_report_table_binary <-report_table_binary(binobj_dat_adj, res_AB, tag = paste0("After matching/", endpoint_name), eff_measure = eff_measure)
-    tmp_report_table_binary[[paste0(eff_measure,'[95% CI]')]][1] <- paste0(
+    tmp_report_table_binary <- report_table_binary(binobj_dat_adj, res_AB, tag = paste0("After matching/", endpoint_name), eff_measure = eff_measure)
+    tmp_report_table_binary[[paste0(eff_measure, "[95% CI]")]][1] <- paste0(
       format(round(boot_res_AB$est, 2), nsmall = 2), "[",
       format(round(boot_res_AB$ci_l, 2), nsmall = 2), ";",
       format(round(boot_res_AB$ci_u, 2), nsmall = 2), "]"

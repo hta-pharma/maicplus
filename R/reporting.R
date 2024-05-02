@@ -74,18 +74,18 @@ report_table_binary <- function(binobj, weighted_result = NULL, eff_measure = c(
   N.EVNT <- round(N.EVNT, 1)
 
   # inferential part
-  if(!weighted){
+  if (!weighted) {
     bin_res_est <- coef(binobj)[2]
-    bin_res_ci <- confint(binobj,parm = 2, test= "LRT", trace = FALSE)
-    bin_res <- c(bin_res_est,bin_res_ci)
-    if(eff_measure!="RD") bin_res <- exp(bin_res)
-    bin_res <- round(bin_res,2) |> format(nsmall=2)
+    bin_res_ci <- confint(binobj, parm = 2, test = "LRT", trace = FALSE)
+    bin_res <- c(bin_res_est, bin_res_ci)
+    if (eff_measure != "RD") bin_res <- exp(bin_res)
+    bin_res <- round(bin_res, 2) |> format(nsmall = 2)
     bin_res <- paste0(bin_res[1], "[", bin_res[2], ";", bin_res[3], "]")
-    bin_pval <- round(summary(binobj)$coefficients[2,4],3) |> format(nsmall=3)
-  }else{
+    bin_pval <- round(summary(binobj)$coefficients[2, 4], 3) |> format(nsmall = 3)
+  } else {
     bin_res <- round(unlist(weighted_result[c("est", "ci_l", "ci_u")]), 2) |> format(nsmall = 2)
     bin_res <- paste0(bin_res[1], "[", bin_res[2], ";", bin_res[3], "]")
-    bin_pval <- round(weighted_result$pval, 3) |> format(nsmall=3)
+    bin_pval <- round(weighted_result$pval, 3) |> format(nsmall = 3)
   }
   if (bin_pval == "0.000") bin_pval <- "<0.001"
 
