@@ -132,7 +132,11 @@ maic_anchored <- function(weights_object,
     }
     eff_measure <- match.arg(eff_measure, choices = c("HR"), several.ok = FALSE)
   }
-
+  if (!is.null(weights_object$boot) & boot_ci_is_quantile) {
+    tmp_boot_obj <- weights_object$boot
+    k <- dim(tmp_boot_obj)[3]
+    if (k < 500) warning("!! Number of bootstrap iteration is <500 and quantile based bootrapped CI is not trustworthy, please consider to set boot_ci_is_quantile=FALSE")
+  }
 
   # ==> IPD and AgD data preparation ------------------------------------------
   # : subset ipd, retain only ipd from interested trts
@@ -170,10 +174,9 @@ maic_anchored <- function(weights_object,
   dat$ARM <- factor(dat$ARM, levels = c(trt_common, trt_agd, trt_ipd))
 
   # ==> Inferential output ------------------------------------------
-
   result <- if (endpoint_type == "tte") {
     maic_anchored_tte(
-      res, ipd, km_conf_type, pseudo_ipd, time_scale,
+      res, res_AB, dat, ipd, pseudo_ipd, km_conf_type, time_scale,
       weights_object, endpoint_name, boot_ci_is_quantile, trt_ipd, trt_agd
     )
   } else if (endpoint_type == "binary") {
@@ -224,13 +227,13 @@ maic_anchored_tte <- function(res,
   coxobj_ipd_adj <- coxph(Surv(TIME, EVENT) ~ ARM, ipd, weights = weights, robust = TRUE)
   coxobj_agd <- coxph(Surv(TIME, EVENT) ~ ARM, pseudo_ipd)
 
-  res$inferential[["ipd_coxph_before"]] <- coxobj_ipd
-  res$inferential[["ipd_coxph_after"]] <- coxobj_ipd_adj
-  res$inferential[["agd_coxph"]] <- coxobj_agd
+  res$inferential[["ipd_model_before"]] <- coxobj_ipd
+  res$inferential[["ipd_model_after"]] <- coxobj_ipd_adj
+  res$inferential[["agd_model"]] <- coxobj_agd
 
   # derive ipd exp arm vs agd exp arm via bucher
-  res_AC <- as.list(summary(coxobj_ipd_adj)$coef)[c(1, 4)]
-  res_BC <- as.list(summary(coxobj_agd)$coef)[c(1, 4)]
+  res_AC <- as.list(summary(coxobj_ipd_adj)$coef)[c(1, 4)] # est, robust se
+  res_BC <- as.list(summary(coxobj_agd)$coef)[c(1, 3)] # est, se
   names(res_AC) <- names(res_BC) <- c("est", "se")
   res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
   res_AB$est <- exp(res_AB$est)
@@ -239,14 +242,14 @@ maic_anchored_tte <- function(res,
 
   # : get bootstrapped estimates if applicable
   if (!is.null(weights_object$boot)) {
-    cli::cli_progress_update(.envir = .GlobalEnv)
-
     tmp_boot_obj <- weights_object$boot
     k <- dim(tmp_boot_obj)[3]
 
     cli::cli_progress_bar("Going through bootstrapped weights", total = k, .envir = .GlobalEnv)
 
     tmp_boot_est <- sapply(seq_len(k), function(ii) {
+      cli::cli_progress_update(.envir = .GlobalEnv)
+
       boot_x <- tmp_boot_obj[, , ii]
       boot_ipd_id <- weights_object$data$USUBJID[boot_x[, 1]]
       boot_ipd <- ipd[match(boot_ipd_id, ipd$USUBJID), , drop = FALSE]
@@ -267,13 +270,13 @@ maic_anchored_tte <- function(res,
 
   # : make analysis report table
   res$inferential[["report_overall_robustCI"]] <- rbind(
-    report_table(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
-    report_table(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
-    report_table(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
+    report_table_tte(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
+    report_table_tte(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
+    report_table_tte(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
     c(
       paste0("** adj.", trt_ipd, " vs ", trt_agd),
-      rep("-", 4),
-      print(res_AB, pval_digits = 3)
+      rep("--", 4),
+      reformat(res_AB, pval_digits = 3)
     )
   )
 
@@ -295,8 +298,8 @@ maic_anchored_tte <- function(res,
       report_table_tte(coxobj_agd, medSurv_agd, tag = paste0("AgD/", endpoint_name)),
       c(
         paste0("** adj.", trt_ipd, " vs ", trt_agd),
-        rep("-", 4),
-        print(boot_res_AB, pval_digits = 3)
+        rep("--", 4),
+        reformat(boot_res_AB, pval_digits = 3)
       )
     )
   }
@@ -411,8 +414,8 @@ maic_anchored_binary <- function(res,
     report_table_binary(binobj_agd, tag = paste0("AgD/", endpoint_name), eff_measure = eff_measure),
     c(
       paste0("** adj.", trt_ipd, " vs ", trt_agd),
-      rep("-", 4),
-      print(res_AB, pval_digits = 3)
+      rep("--", 4),
+      reformat(res_AB, pval_digits = 3)
     )
   )
 
@@ -441,11 +444,12 @@ maic_anchored_binary <- function(res,
       report_table_binary(binobj_agd, tag = paste0("AgD/", endpoint_name), eff_measure = eff_measure),
       c(
         paste0("** adj.", trt_ipd, " vs ", trt_agd),
-        rep("-", 4),
-        print(boot_res_AB, pval_digits = 3)
+        rep("--", 4),
+        reformat(boot_res_AB, pval_digits = 3)
       )
     )
   }
+
   # output
   res
 }

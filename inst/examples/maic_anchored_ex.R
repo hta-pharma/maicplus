@@ -1,5 +1,6 @@
 # anchored example using maic_anchored for tte
 library(flexsurv)
+devtools::load_all()
 ### IPD
 set.seed(1234)
 # Read in relevant ADaM data and rename variables of interest

@@ -129,28 +129,57 @@ find_SE_from_CI <- function(CI_lower = NULL, CI_upper = NULL,
 
 print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
                                   exponentiate = FALSE, ...) {
+  output <- reformat(x, ci_digits, pval_digits,
+                     show_pval = TRUE, exponentiate)
+  print(output)
+}
+
+#' Reformat `maicplus_bucher` alike object
+#'
+#' @param x a list, structured like a `maicplus_bucher` object
+#' @param ci_digits an integer, number of decimal places for point
+#' estimate and derived confidence limits
+#' @param pval_digits an integer, number of decimal places to display
+#' Z-test p-value
+#' @param show_pval a logical value, default is TRUE. If FALSE, p-value will not
+#' be output as the second element of the character vector
+#' @param exponentiate whether the treatment effect and confidence
+#' interval should be exponentiated. This applies to relative
+#' treatment effects. Default is set to false.
+
+
+reformat <- function(x, ci_digits = 2, pval_digits = 3,
+                     show_pval = TRUE, exponentiate = FALSE) {
   transform_this <- function(x) {
     ifelse(exponentiate, exp(x), x)
   }
+
   a <- format(round(transform_this(x$est), ci_digits),
-    nsmall = ci_digits
+              nsmall = ci_digits
   )
   b <- format(round(transform_this(x$ci_l), ci_digits),
-    nsmall = ci_digits
+              nsmall = ci_digits
   )
   c <- format(round(transform_this(x$ci_u), ci_digits),
-    nsmall = ci_digits
+              nsmall = ci_digits
   )
   res <- paste0(a, " [", b, "; ", c, "]")
 
   disp_pval <- round(x$pval, pval_digits)
   disp_pval <-
     ifelse(disp_pval == 0,
-      paste0("<", 1 / (10^pval_digits)),
-      format(disp_pval, nsmall = pval_digits)
+           paste0("<", 1 / (10^pval_digits)),
+           format(disp_pval, nsmall = pval_digits)
     )
 
-  output <- c(res, disp_pval)
-  names(output) <- c("result", "pvalue")
-  print(output)
+  if(show_pval){
+    output <- c(res, disp_pval)
+    names(output) <- c("result", "pvalue")
+  }else{
+    output <- res
+    names(output) <- "result"
+  }
+
+  output
 }
+
