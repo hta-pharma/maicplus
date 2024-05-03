@@ -35,6 +35,8 @@
 #' }
 #'
 #' @importFrom survival survfit Surv
+#' @importFrom clubSandwich conf_int vcovCR
+#' @importFrom cli cli_progress_bar cli_progress_update cli_progress_done
 #' @return A list, contains 'descriptive' and 'inferential'
 #' @export
 
@@ -188,7 +190,6 @@ maic_anchored <- function(weights_object,
 
 
 # MAIC inference functions for TTE outcome type ------------
-
 maic_anchored_tte <- function(res,
                               res_AB,
                               dat,
@@ -305,7 +306,6 @@ maic_anchored_tte <- function(res,
 }
 
 # MAIC inference functions for Binary outcome type ------------
-
 maic_anchored_binary <- function(res,
                                  res_AB,
                                  dat,
