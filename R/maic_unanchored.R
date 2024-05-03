@@ -163,9 +163,15 @@ maic_unanchored <- function(weights_object,
   # ==> Inferential output ------------------------------------------
 
   result <- if (endpoint_type == "tte") {
-    maic_unanchored_tte(res, res_AB, dat, ipd, pseudo_ipd, km_conf_type, time_scale, weights_object, endpoint_name, trt_ipd, trt_agd)
+    maic_unanchored_tte(
+      res, res_AB, dat, ipd, pseudo_ipd, km_conf_type, time_scale,
+      weights_object, endpoint_name, boot_ci_is_quantile, trt_ipd, trt_agd
+    )
   } else if (endpoint_type == "binary") {
-    maic_unanchored_binary(res, res_AB, dat, ipd, pseudo_ipd, binary_robust_cov_type, weights_object, endpoint_name, eff_measure, trt_ipd, trt_agd)
+    maic_unanchored_binary(
+      res, res_AB, dat, ipd, pseudo_ipd, binary_robust_cov_type,
+      weights_object, endpoint_name, eff_measure, boot_ci_is_quantile, trt_ipd, trt_agd
+    )
   } else {
     stop("Endpoint type ", endpoint_type, " currently unsupported.")
   }
@@ -185,6 +191,7 @@ maic_unanchored_tte <- function(res,
                                 time_scale,
                                 weights_object,
                                 endpoint_name,
+                                boot_ci_is_quantile,
                                 trt_ipd,
                                 trt_agd) {
   # ~~~ Descriptive table before and after matching
@@ -259,11 +266,13 @@ maic_unanchored_tte <- function(res,
   } else {
     boot_res_AB <- res_AB
     boot_logres_se <- sd(log(res$inferential[["boot_est"]]), na.rm = TRUE)
-    boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
-    boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
-    # boot_res_AB$ci_l <- quantile(res$inferential[["boot_est"]],p=0.025)
-    # boot_res_AB$ci_u <- quantile(res$inferential[["boot_est"]],p=0.975)
-
+    if (boot_ci_is_quantile) {
+      boot_res_AB$ci_l <- quantile(res$inferential[["boot_est"]], p = 0.025)
+      boot_res_AB$ci_u <- quantile(res$inferential[["boot_est"]], p = 0.975)
+    } else {
+      boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
+      boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
+    }
     tmp_report_table_tte <- report_table_tte(coxobj_dat_adj, medSurv_dat_adj, tag = paste0("After matching/", endpoint_name))
     tmp_report_table_tte$`HR[95% CI]`[1] <- paste0(
       format(round(boot_res_AB$est, 2), nsmall = 2), "[",
@@ -291,6 +300,7 @@ maic_unanchored_binary <- function(res,
                                    weights_object,
                                    endpoint_name,
                                    eff_measure,
+                                   boot_ci_is_quantile,
                                    trt_ipd,
                                    trt_agd) {
   # ~~~ Analysis table
@@ -382,11 +392,13 @@ maic_unanchored_binary <- function(res,
   } else {
     boot_res_AB <- res_AB
     boot_logres_se <- sd(log(res$inferential[["boot_est"]]), na.rm = TRUE)
-    boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
-    boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
-    # boot_res_AB$ci_l <- quantile(res$inferential[["boot_est"]],p=0.025)
-    # boot_res_AB$ci_u <- quantile(res$inferential[["boot_est"]],p=0.975)
-
+    if (boot_ci_is_quantile) {
+      boot_res_AB$ci_l <- quantile(res$inferential[["boot_est"]], p = 0.025)
+      boot_res_AB$ci_u <- quantile(res$inferential[["boot_est"]], p = 0.975)
+    } else {
+      boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
+      boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
+    }
     tmp_report_table_binary <- report_table_binary(binobj_dat_adj, res_AB, tag = paste0("After matching/", endpoint_name), eff_measure = eff_measure)
     tmp_report_table_binary[[paste0(eff_measure, "[95% CI]")]][1] <- paste0(
       format(round(boot_res_AB$est, 2), nsmall = 2), "[",
