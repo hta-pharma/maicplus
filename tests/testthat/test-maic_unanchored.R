@@ -61,8 +61,8 @@ test_that("test binary case",{
 
 test_that("test time to event case", {
   # anchored example using maic_anchored for tte
-  library(flexsurv)
-  devtools::load_all()
+  # library(flexsurv)
+  # devtools::load_all()
 
   # Read in relevant ADaM data and rename variables of interest
   adsl <- read.csv(system.file("extdata", "adsl.csv",
