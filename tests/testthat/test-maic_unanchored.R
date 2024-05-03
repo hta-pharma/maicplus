@@ -1,4 +1,4 @@
-test_that("test binary case",{
+test_that("test binary case", {
   # load in prognostic IPD data and AgD
   # devtools::load_all()
   load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
@@ -16,40 +16,48 @@ test_that("test binary case",{
   adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus", mustWork = TRUE))
   adrs$RESPONSE <- adrs$AVAL
 
-  pseudo_adrs <- get_pseudo_ipd_binary(binary_agd = data.frame(ARM = rep("B",2),
-                                                               RESPONSE = c("YES","NO"),
-                                                               COUNT = c(280,120)),
-                                       format = "stacked")
+  pseudo_adrs <- get_pseudo_ipd_binary(
+    binary_agd = data.frame(
+      ARM = rep("B", 2),
+      RESPONSE = c("YES", "NO"),
+      COUNT = c(280, 120)
+    ),
+    format = "stacked"
+  )
 
   # unanchored binary MAIC, with CI based on sandwich estimator
   testout <-
-  maic_unanchored(weights_object = weighted_data,
-                  ipd = adrs,
-                  pseudo_ipd = pseudo_adrs,
-                  trt_ipd = "A",
-                  trt_agd = "B",
-                  trt_var_ipd = "ARM",
-                  trt_var_agd = "ARM",
-                  endpoint_type = "binary",
-                  endpoint_name = "Binary Endpoint",
-                  eff_measure = "RR",
-                  # binary specific args
-                  binary_robust_cov_type = "CR2")
+    maic_unanchored(
+      weights_object = weighted_data,
+      ipd = adrs,
+      pseudo_ipd = pseudo_adrs,
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_var_ipd = "ARM",
+      trt_var_agd = "ARM",
+      endpoint_type = "binary",
+      endpoint_name = "Binary Endpoint",
+      eff_measure = "RR",
+      # binary specific args
+      binary_robust_cov_type = "CR2"
+    )
 
   # unanchored binary MAIC, with bootstrapped CI
   testout2 <-
-  maic_unanchored(weights_object = weighted_data2,
-                  ipd = adrs,
-                  pseudo_ipd = pseudo_adrs,
-                  trt_ipd = "A",
-                  trt_agd = "B",
-                  trt_var_ipd = "ARM",
-                  trt_var_agd = "ARM",
-                  endpoint_type = "binary",
-                  endpoint_name = "Binary Endpoint",
-                  eff_measure = "RR",
-                  # binary specific args
-                  binary_robust_cov_type = "CR2")
+    maic_unanchored(
+      weights_object = weighted_data2,
+      ipd = adrs,
+      pseudo_ipd = pseudo_adrs,
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_var_ipd = "ARM",
+      trt_var_agd = "ARM",
+      endpoint_type = "binary",
+      endpoint_name = "Binary Endpoint",
+      eff_measure = "RR",
+      # binary specific args
+      binary_robust_cov_type = "CR2"
+    )
 
   # save(list = c("expectout","expectout2"), file = file.path("inst","extdata", "test_binary_unanchored_expected.RData"))
   load(system.file("extdata", "test_binary_unanchored_expected.RData", package = "maicplus", mustWork = TRUE))
@@ -66,12 +74,12 @@ test_that("test time to event case", {
 
   # Read in relevant ADaM data and rename variables of interest
   adsl <- read.csv(system.file("extdata", "adsl.csv",
-                               package = "maicplus",
-                               mustWork = TRUE
+    package = "maicplus",
+    mustWork = TRUE
   ))
   adtte <- read.csv(system.file("extdata", "adtte.csv",
-                                package = "maicplus",
-                                mustWork = TRUE
+    package = "maicplus",
+    mustWork = TRUE
   ))
   adtte$TIME <- adtte$AVAL
   adtte$EVENT <- adtte$EVNT
@@ -81,12 +89,12 @@ test_that("test time to event case", {
   ### AgD
   # Baseline aggregate data for the comparator population
   target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
-                                     package = "maicplus", mustWork = TRUE
+    package = "maicplus", mustWork = TRUE
   ))
   # for time-to-event endpoints, pseudo IPD from digitalized KM
   pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
-                                     package = "maicplus",
-                                     mustWork = TRUE
+    package = "maicplus",
+    mustWork = TRUE
   ))
   pseudo_ipd$ARM <- "B"
 
@@ -147,22 +155,3 @@ test_that("test time to event case", {
   expect_equal(testout, expectout)
   expect_equal(testout2, expectout2)
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

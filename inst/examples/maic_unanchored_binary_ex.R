@@ -15,51 +15,43 @@ weighted_data2 <- estimate_weights(data = ipd_centered, centered_colnames = cent
 adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus", mustWork = TRUE))
 adrs$RESPONSE <- adrs$AVAL
 
-pseudo_adrs <- get_pseudo_ipd_binary(binary_agd = data.frame(ARM = rep("B",2),
-                                                             RESPONSE = c("YES","NO"),
-                                                             COUNT = c(280,120)),
-                                     format = "stacked")
+pseudo_adrs <- get_pseudo_ipd_binary(
+  binary_agd = data.frame(
+    ARM = rep("B", 2),
+    RESPONSE = c("YES", "NO"),
+    COUNT = c(280, 120)
+  ),
+  format = "stacked"
+)
 
 # unanchored binary MAIC, with CI based on sandwich estimator
-maic_unanchored(weights_object = weighted_data,
-                ipd = adrs,
-                pseudo_ipd = pseudo_adrs,
-                trt_ipd = "A",
-                trt_agd = "B",
-                trt_var_ipd = "ARM",
-                trt_var_agd = "ARM",
-                endpoint_type = "binary",
-                endpoint_name = "Binary Endpoint",
-                eff_measure = "RR",
-                # binary specific args
-                binary_robust_cov_type = "CR2")
+maic_unanchored(
+  weights_object = weighted_data,
+  ipd = adrs,
+  pseudo_ipd = pseudo_adrs,
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
+  endpoint_type = "binary",
+  endpoint_name = "Binary Endpoint",
+  eff_measure = "RR",
+  # binary specific args
+  binary_robust_cov_type = "CR2"
+)
 
 # unanchored binary MAIC, with bootstrapped CI
-maic_unanchored(weights_object = weighted_data2,
-                ipd = adrs,
-                pseudo_ipd = pseudo_adrs,
-                trt_ipd = "A",
-                trt_agd = "B",
-                trt_var_ipd = "ARM",
-                trt_var_agd = "ARM",
-                endpoint_type = "binary",
-                endpoint_name = "Binary Endpoint",
-                eff_measure = "RR",
-                # binary specific args
-                binary_robust_cov_type = "CR2")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+maic_unanchored(
+  weights_object = weighted_data2,
+  ipd = adrs,
+  pseudo_ipd = pseudo_adrs,
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
+  endpoint_type = "binary",
+  endpoint_name = "Binary Endpoint",
+  eff_measure = "RR",
+  # binary specific args
+  binary_robust_cov_type = "CR2"
+)
