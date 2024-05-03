@@ -142,7 +142,7 @@ maic_anchored <- function(weights_object,
   pseudo_ipd$weights <- 1
   if (!"USUBJID" %in% names(pseudo_ipd)) pseudo_ipd$USUBJID <- paste0("ID", seq_len(nrow(pseudo_ipd)))
 
-  #: give warning when individual pts in IPD has no weights
+  # : give warning when individual pts in IPD has no weights
   if (any(is.na(ipd$weights))) {
     ipd <- ipd[!is.na(ipd$weights), , drop = FALSE]
     warning(
@@ -170,8 +170,10 @@ maic_anchored <- function(weights_object,
   # ==> Inferential output ------------------------------------------
 
   result <- if (endpoint_type == "tte") {
-    maic_anchored_tte(res, ipd, km_conf_type, pseudo_ipd, time_scale,
-                      weights_object, endpoint_name, boot_ci_is_quantile, trt_ipd, trt_agd)
+    maic_anchored_tte(
+      res, ipd, km_conf_type, pseudo_ipd, time_scale,
+      weights_object, endpoint_name, boot_ci_is_quantile, trt_ipd, trt_agd
+    )
   } else if (endpoint_type == "binary") {
     maic_anchored_binary(
       res, res_AB, dat, ipd, pseudo_ipd, binary_robust_cov_type,
@@ -217,9 +219,9 @@ maic_anchored_tte <- function(res,
 
   # ~~~ Analysis table (Cox model) before and after matching
   # fit PH Cox regression model
-  coxobj_ipd <- coxph(Surv(TIME, EVENT) ~ ARM, ipd, robust = TRUE)
+  coxobj_ipd <- coxph(Surv(TIME, EVENT) ~ ARM, ipd) # robust = TRUE or not makes a diff
   coxobj_ipd_adj <- coxph(Surv(TIME, EVENT) ~ ARM, ipd, weights = weights, robust = TRUE)
-  coxobj_agd <- coxph(Surv(TIME, EVENT) ~ ARM, pseudo_ipd, robust = TRUE)
+  coxobj_agd <- coxph(Surv(TIME, EVENT) ~ ARM, pseudo_ipd)
 
   res$inferential[["ipd_coxph_before"]] <- coxobj_ipd
   res$inferential[["ipd_coxph_after"]] <- coxobj_ipd_adj
@@ -235,7 +237,6 @@ maic_anchored_tte <- function(res,
   res_AB$ci_u <- exp(res_AB$ci_u)
 
   # : get bootstrapped estimates if applicable
-  res$inferential[["boot_est"]] <- NULL
   if (!is.null(weights_object$boot)) {
     cli::cli_progress_update(.envir = .GlobalEnv)
 
@@ -259,6 +260,8 @@ maic_anchored_tte <- function(res,
     cli::cli_progress_done(.envir = .GlobalEnv)
 
     res$inferential[["boot_est"]] <- tmp_boot_est
+  } else {
+    res$inferential[["boot_est"]] <- NULL
   }
 
   # : make analysis report table
@@ -288,7 +291,7 @@ maic_anchored_tte <- function(res,
     res$inferential[["report_overall_bootCI"]] <- rbind(
       report_table_tte(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
       report_table_tte(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
-      report_table_tte(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
+      report_table_tte(coxobj_agd, medSurv_agd, tag = paste0("AgD/", endpoint_name)),
       c(
         paste0("** adj.", trt_ipd, " vs ", trt_agd),
         rep("-", 4),
@@ -297,6 +300,152 @@ maic_anchored_tte <- function(res,
     )
   }
 
+  # output
+  res
+}
+
+# MAIC inference functions for Binary outcome type ------------
+
+maic_anchored_binary <- function(res,
+                                 res_AB,
+                                 dat,
+                                 ipd,
+                                 pseudo_ipd,
+                                 binary_robust_cov_type,
+                                 weights_object,
+                                 endpoint_name,
+                                 eff_measure,
+                                 boot_ci_is_quantile,
+                                 trt_ipd,
+                                 trt_agd) {
+  # ~~~ Analysis table
+  # : set up proper link
+  glm_link <- switch(eff_measure,
+    "RD" = poisson(link = "identity"),
+    "RR" = poisson(link = "log"),
+    "OR" = binomial(link = "logit")
+  )
+
+  # : fit glm for binary outcome and robust estimate with weights
+  binobj_ipd <- glm(RESPONSE ~ ARM, ipd, family = glm_link)
+  binobj_ipd_adj <- glm(RESPONSE ~ ARM, ipd, weights = weights, family = glm_link)
+  binobj_agd <- glm(RESPONSE ~ ARM, agd, family = glm_link)
+  bin_robust_cov <- clubSandwich::vcovCR(binobj_ipd_adj,
+    cluster = ipd$USUBJID,
+    type = binary_robust_cov_type
+  )
+  bin_robust_coef <- clubSandwich::conf_int(binobj_dat_adj, bin_robust_cov, coef = 2, p_values = TRUE)
+
+  res$inferential[["ipd_model_before"]] <- binobj_ipd
+  res$inferential[["ipd_model_after"]] <- binobj_ipd_adj
+  res$inferential[["agd_model"]] <- binobj_ipd
+
+  # derive ipd exp arm vs agd exp arm via bucher
+  mu <- bin_robust_coef$beta
+  sig <- bin_robust_coef$SE
+  res_AB$ci_l <- bin_robust_coef$CI_L
+  res_AB$ci_u <- bin_robust_coef$CI_U
+  res_AB$pval <- bin_robust_coef$p_val
+
+  res_AC <- as.list(summary(binobj_ipd_adj)$coefficients[c(2, 1:2)])
+  res_BC <- as.list(summary(binobj_agd)$coefficients[c(2, 1:2)])
+  names(res_AC) <- names(res_BC) <- c("est", "se")
+  res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
+
+  if (eff_measure %in% c("RR", "OR")) {
+    res_AB$est <- exp(mu)
+    res_AB$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parameterization
+    res_AB$ci_l <- exp(res_AB$ci_l)
+    res_AB$ci_u <- exp(res_AB$ci_u)
+  } else if (eff_measure == "RD") {
+    res_AB$est <- mu * 100
+    res_AB$se <- sig * 100
+    res_AB$ci_l <- res_AB$ci_l * 100
+    res_AB$ci_u <- res_AB$ci_u * 100
+  }
+
+  # : get bootstrapped estimates if applicable
+  if (!is.null(weights_object$boot)) {
+    tmp_boot_obj <- weights_object$boot
+    k <- dim(tmp_boot_obj)[3]
+
+    cli::cli_progress_bar("Going through bootstrapped weights", total = k, .envir = .GlobalEnv)
+
+    tmp_boot_est <- sapply(1:k, function(ii) {
+      cli::cli_progress_update(.envir = .GlobalEnv)
+
+      boot_x <- tmp_boot_obj[, , ii]
+      boot_ipd_id <- weights_object$data$USUBJID[boot_x[, 1]]
+      boot_ipd <- ipd[match(boot_ipd_id, ipd$USUBJID), , drop = FALSE]
+      boot_ipd$weights <- boot_x[, 2]
+
+      boot_dat <- rbind(boot_ipd, pseudo_ipd)
+      boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
+
+      # does not matter use robust se or not, point estimate will not change and calculation would be faster
+      boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_dat, weights = weights, family = glm_link)
+      boot_bin_robust_cov <- clubSandwich::vcovCR(binobj_dat_adj,
+        cluster = dat$USUBJID,
+        type = binary_robust_cov_type
+      )
+      boot_bin_robust_coef <- clubSandwich::conf_int(boot_binobj_dat_adj, boot_bin_robust_cov, coef = 2)
+      boot_AB_est <- boot_bin_robust_coef$beta
+      if (eff_measure %in% c("RR", "OR")) {
+        boot_AB_est <- exp(boot_AB_est)
+      } else if (eff_measure == "RD") {
+        boot_AB_est <- boot_AB_est * 100
+      }
+    })
+
+    cli::cli_progress_done(.envir = .GlobalEnv)
+
+    res$inferential[["boot_est"]] <- tmp_boot_est
+  } else {
+    res$inferential[["boot_est"]] <- NULL
+  }
+
+  # : make analysis report table
+  res$inferential[["report_overall_robustCI"]] <- rbind(
+    report_table_binary(binobj_ipd, tag = paste0("IPD/", endpoint_name), eff_measure = eff_measure),
+    report_table_binary(binobj_ipd_adj, res_AB, tag = paste0("weighted IPD/", endpoint_name), eff_measure = eff_measure),
+    report_table_binary(binobj_agd, tag = paste0("AgD/", endpoint_name), eff_measure = eff_measure),
+    c(
+      paste0("** adj.", trt_ipd, " vs ", trt_agd),
+      rep("-", 4),
+      print(res_AB, pval_digits = 3)
+    )
+  )
+
+  if (is.null(res$inferential[["boot_est"]])) {
+    res$inferential[["report_overall_bootCI"]] <- NULL
+  } else {
+    boot_res_AB <- res_AB
+    boot_se <- sd(res$inferential[["boot_est"]], na.rm = TRUE)
+    boot_logres_se <- sd(log(res$inferential[["boot_est"]]), na.rm = TRUE)
+    if (boot_ci_is_quantile) {
+      boot_res_AB$ci_l <- quantile(res$inferential[["boot_est"]], p = 0.025)
+      boot_res_AB$ci_u <- quantile(res$inferential[["boot_est"]], p = 0.975)
+    } else {
+      if (eff_measure %in% c("RR", "OR")) {
+        boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
+        boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
+      } else {
+        boot_res_AB$ci_l <- boot_res_AB$est + qnorm(0.025) * boot_se
+        boot_res_AB$ci_u <- boot_res_AB$est + qnorm(0.975) * boot_se
+      }
+    }
+
+    res$inferential[["report_overall_bootCI"]] <- rbind(
+      report_table_binary(binobj_ipd, tag = paste0("IPD/", endpoint_name), eff_measure = eff_measure),
+      report_table_binary(binobj_ipd_adj, boot_res_AB, tag = paste0("weighted IPD/", endpoint_name), eff_measure = eff_measure),
+      report_table_binary(binobj_agd, tag = paste0("AgD/", endpoint_name), eff_measure = eff_measure),
+      c(
+        paste0("** adj.", trt_ipd, " vs ", trt_agd),
+        rep("-", 4),
+        print(boot_res_AB, pval_digits = 3)
+      )
+    )
+  }
   # output
   res
 }
