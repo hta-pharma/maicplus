@@ -6,7 +6,7 @@
 \usage{
 report_table_binary(
   binobj,
-  resobj,
+  weighted_result = NULL,
   eff_measure = c("OR", "RD", "RR"),
   tag = NULL
 )
@@ -14,7 +14,7 @@ report_table_binary(
 \arguments{
 \item{binobj}{object from glm()}
 
-\item{resobj}{object res_AB}
+\item{weighted_result}{object res_AB}
 
 \item{eff_measure}{a string, binary effect measure, could be "OR", "RR", "RD“}
 

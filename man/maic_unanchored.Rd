@@ -15,6 +15,7 @@ maic_unanchored(
   endpoint_type = "tte",
   endpoint_name = "Time to Event Endpoint",
   eff_measure = c("HR", "OR", "RR", "RD"),
+  boot_ci_is_quantile = FALSE,
   time_scale = "months",
   km_conf_type = "log-log",
   binary_robust_cov_type = "CR2"
@@ -43,6 +44,10 @@ from contingency table (for binary endpoint)}
 \item{eff_measure}{a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk)
 for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case,
 otherwise "HR" is used.}
+
+\item{boot_ci_is_quantile}{a logical, specify if the 95\% bootstrapped confidence interval should be dervied by sample quantile. Default FALSE,
+which the estimates assumes to follow asymptotic normal (only if eff_measure is "RD") or log-normal with a variance that can be approximated
+by bootstrapped sample of the estimate. This default option may be handy when the number of bootstrap iterations is not big.}
 
 \item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
 'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days}
