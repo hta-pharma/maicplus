@@ -31,7 +31,8 @@ Suggests:
     dplyr,
     sandwich,
     survminer,
-    flexsurv
+    flexsurv,
+    tibble
 VignetteBuilder:
     knitr
 biocViews:

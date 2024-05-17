@@ -96,6 +96,7 @@ test_that("estimate_weights works as expected with bootstrapping", {
 
 
 test_that("estimate_weights works when the input is a tibble", {
+  skip_if_not_installed("tibble")
   load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
   load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
   ipd_centered <- center_ipd(ipd = ipd, agd = agd)
