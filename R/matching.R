@@ -75,8 +75,8 @@ estimate_weights <- function(data,
     stop("'centered_colnames' should be either a numeric or character vector")
   }
 
-  ch3 <- sapply(seq_along(centered_colnames), function(ii) {
-    !is.numeric(data[, centered_colnames[ii]])
+  ch3 <- sapply(centered_colnames, function(ii) {
+    !is.numeric(data[[ii]])
   })
   if (any(ch3)) {
     stop(paste0(
