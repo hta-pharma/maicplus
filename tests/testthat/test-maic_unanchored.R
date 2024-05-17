@@ -59,8 +59,8 @@ test_that("test binary case", {
       binary_robust_cov_type = "CR2"
     )
 
-  # save(list = c("expectout","expectout2"), file = file.path("inst","extdata", "test_binary_unanchored_expected.RData"))
-  load(system.file("extdata", "test_binary_unanchored_expected.RData", package = "maicplus", mustWork = TRUE))
+  # save(list = c("expectout","expectout2"), file = test_path("data", "test_binary_unanchored_expected.RData"))
+  load(test_path("data", "test_binary_unanchored_expected.RData"))
 
   expect_equal(testout, expectout)
   expect_equal(testout2, expectout2)
@@ -151,7 +151,7 @@ test_that("test time to event case", {
     km_conf_type = "log-log"
   )
 
-  # save(list = c("expectout","expectout2"), file = file.path("inst","extdata", "test_tte_unanchored_expected.RData"))
+  # save(list = c("expectout","expectout2"), file = test_path("data", "test_binary_unanchored_expected.RData"))
   expect_equal(testout, expectout)
   expect_equal(testout2, expectout2)
 })
