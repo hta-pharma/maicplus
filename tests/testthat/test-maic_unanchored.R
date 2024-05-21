@@ -58,11 +58,11 @@ test_that("test binary case", {
       binary_robust_cov_type = "CR2"
     )
 
-    if (FALSE) {
+  if (FALSE) {
     # Manual snapshot of results
     expectout <- testout
     expectout2 <- testout2
-    save(list = c("expectout","expectout2"), file = test_path("data", "test_binary_unanchored_expected.RData"))
+    save(list = c("expectout", "expectout2"), file = test_path("data", "test_binary_unanchored_expected.RData"))
   }
 
   load(test_path("data", "test_binary_unanchored_expected.RData"))
@@ -160,7 +160,7 @@ test_that("test time to event case", {
     # Manual snapshot of results
     expectout <- testout
     expectout2 <- testout2
-    save(list = c("expectout","expectout2"), file = test_path("data", "test_tte_unanchored_expected.RData"))
+    save(list = c("expectout", "expectout2"), file = test_path("data", "test_tte_unanchored_expected.RData"))
   }
 
   load(test_path("data", "test_tte_unanchored_expected.RData"))
