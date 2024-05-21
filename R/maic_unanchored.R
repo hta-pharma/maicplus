@@ -12,17 +12,18 @@
 #' @param trt_var_ipd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param endpoint_type a string, one out of the following "binary", "tte" (time to event)
-#' @param eff_measure a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk)
-#'   for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case,
-#'   otherwise "HR" is used.
-#' @param boot_ci_is_quantile a logical, specify if the 95% bootstrapped confidence interval should be dervied by sample quantile. Default FALSE,
-#'   which the estimates assumes to follow asymptotic normal (only if eff_measure is "RD") or log-normal with a variance that can be approximated
-#'   by bootstrapped sample of the estimate. This default option may be handy when the number of bootstrap iterations is not big.
+#' @param eff_measure a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint;
+#'   "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.
+#' @param boot_ci_is_quantile a logical, specify if the 95% bootstrapped confidence interval should be derived by sample
+#'   quantile. Default FALSE, which the estimates assumes to follow asymptotic normal (only if `eff_measure` is "RD") or
+#'   log-normal with a variance that can be approximated by bootstrapped sample of the estimate. This default option may
+#'   be handy when the number of bootstrap iterations is not big.
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
 #'   'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
-#' @param binary_robust_cov_type a string to pass to argument "type" of \link[clubSandwich]{vcovCR}, see viable options in the documentation of that function. Default is "CR2"
+#' @param binary_robust_cov_type a string to pass to argument "type" of \link[clubSandwich]{vcovCR}, see viable options
+#'   in the documentation of that function. Default is "CR2"
 #'
 #' @details For time-to-event analysis, it is required that input \code{ipd} and \code{pseudo_ipd} to have the following
 #'   columns. This function is not sensitive to upper or lower case of letters in column names.
@@ -133,7 +134,9 @@ maic_unanchored <- function(weights_object,
 
   # : necessary formatting for pseudo ipd
   if (!"USUBJID" %in% names(pseudo_ipd)) pseudo_ipd$USUBJID <- paste0("ID", seq_len(nrow(pseudo_ipd)))
-  if ("RESPONSE" %in% names(pseudo_ipd) && is.logical(pseudo_ipd$RESPONSE)) pseudo_ipd$RESPONSE <- as.numeric(pseudo_ipd$RESPONSE)
+  if ("RESPONSE" %in% names(pseudo_ipd) && is.logical(pseudo_ipd$RESPONSE)) {
+    pseudo_ipd$RESPONSE <- as.numeric(pseudo_ipd$RESPONSE)
+  }
 
   # : give warning when individual pts in IPD has no weights
   if (any(is.na(ipd$weights))) {
@@ -209,17 +212,17 @@ maic_unanchored_tte <- function(res,
 
   # ~~~ Analysis table (Cox model) before and after matching
   # : fit PH Cox regression model
-  coxobj_dat <- coxph(Surv(TIME, EVENT) ~ ARM, dat, robust = TRUE)
+  coxobj_dat <- coxph(Surv(TIME, EVENT) ~ ARM, dat)
   coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, dat, weights = weights, robust = TRUE)
 
   res$inferential[["coxph_before"]] <- coxobj_dat
   res$inferential[["coxph_after"]] <- coxobj_dat_adj
 
-  # : derive ipd exp arm vs agd exp arm via bucher
+  # : derive ipd exp arm vs agd exp arm
   res_AB$est <- summary(coxobj_dat_adj)$conf.int[1]
   mu <- summary(coxobj_dat_adj)$coef[1]
   sig <- summary(coxobj_dat_adj)$coef[4]
-  res_AB$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parameterization
+  res_AB$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parametrization
   res_AB$ci_l <- summary(coxobj_dat_adj)$conf.int[3]
   res_AB$ci_u <- summary(coxobj_dat_adj)$conf.int[4]
   res_AB$pval <- summary(coxobj_dat_adj)$coef[6]
@@ -242,7 +245,6 @@ maic_unanchored_tte <- function(res,
       boot_dat <- rbind(boot_ipd, pseudo_ipd)
       boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
 
-      # does not matter use robust se or not, point estimate will not change and calculation would be faster
       boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_dat, weights = weights)
       boot_AB_est <- summary(boot_coxobj_dat_adj)$coef[1]
       exp(boot_AB_est)
@@ -273,7 +275,10 @@ maic_unanchored_tte <- function(res,
       boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
       boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
     }
-    tmp_report_table_tte <- report_table_tte(coxobj_dat_adj, medSurv_dat_adj, tag = paste0("After matching/", endpoint_name))
+    tmp_report_table_tte <- report_table_tte(coxobj_dat_adj,
+      medSurv_dat_adj,
+      tag = paste0("After matching/", endpoint_name)
+    )
     tmp_report_table_tte$`HR[95% CI]`[1] <- paste0(
       format(round(boot_res_AB$est, 2), nsmall = 2), "[",
       format(round(boot_res_AB$ci_l, 2), nsmall = 2), ";",
@@ -383,8 +388,17 @@ maic_unanchored_binary <- function(res,
 
   # : make analysis report table
   res$inferential[["report_overall_robustCI"]] <- rbind(
-    report_table_binary(binobj_dat, tag = paste0("Before matching/", endpoint_name), eff_measure = eff_measure),
-    report_table_binary(binobj_dat_adj, res_AB, tag = paste0("After matching/", endpoint_name), eff_measure = eff_measure)
+    report_table_binary(
+      binobj_dat,
+      tag = paste0("Before matching/", endpoint_name),
+      eff_measure = eff_measure
+    ),
+    report_table_binary(
+      binobj_dat_adj,
+      res_AB,
+      tag = paste0("After matching/", endpoint_name),
+      eff_measure = eff_measure
+    )
   )
 
   if (is.null(res$inferential[["boot_est"]])) {
@@ -399,14 +413,26 @@ maic_unanchored_binary <- function(res,
       boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
       boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
     }
-    tmp_report_table_binary <- report_table_binary(binobj_dat_adj, res_AB, tag = paste0("After matching/", endpoint_name), eff_measure = eff_measure)
+    tmp_report_table_binary <- report_table_binary(
+      binobj_dat_adj,
+      res_AB,
+      tag = paste0("After matching/", endpoint_name),
+      eff_measure = eff_measure
+    )
     tmp_report_table_binary[[paste0(eff_measure, "[95% CI]")]][1] <- paste0(
-      format(round(boot_res_AB$est, 2), nsmall = 2), "[",
-      format(round(boot_res_AB$ci_l, 2), nsmall = 2), ";",
-      format(round(boot_res_AB$ci_u, 2), nsmall = 2), "]"
+      format(round(boot_res_AB$est, 2), nsmall = 2),
+      "[",
+      format(round(boot_res_AB$ci_l, 2), nsmall = 2),
+      ";",
+      format(round(boot_res_AB$ci_u, 2), nsmall = 2),
+      "]"
     )
     res$inferential[["report_overall_bootCI"]] <- rbind(
-      report_table_binary(binobj_dat, tag = paste0("Before matching/", endpoint_name), eff_measure = eff_measure),
+      report_table_binary(
+        binobj_dat,
+        tag = paste0("Before matching/", endpoint_name),
+        eff_measure = eff_measure
+      ),
       tmp_report_table_binary
     )
   }
