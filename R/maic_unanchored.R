@@ -22,8 +22,8 @@
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
 #'   'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
-#' @param binary_robust_cov_type a string to pass to argument "type" of \link[clubSandwich]{vcovCR}, see viable options
-#'   in the documentation of that function. Default is "CR2"
+#' @param binary_robust_cov_type a string to pass to argument `type` of [sandwich::vcovHC], see possible options
+#'   in the documentation of that function. Default is `"HC3"`
 #'
 #' @details For time-to-event analysis, it is required that input \code{ipd} and \code{pseudo_ipd} to have the following
 #'   columns. This function is not sensitive to upper or lower case of letters in column names.
@@ -54,7 +54,7 @@ maic_unanchored <- function(weights_object,
                             time_scale = "months",
                             km_conf_type = "log-log",
                             # binary specific args
-                            binary_robust_cov_type = "CR2") {
+                            binary_robust_cov_type = "HC3") {
   # ==> Initial Setup ------------------------------------------
   # ~~~ Create the hull for the output from this function
   res <- list(
@@ -111,7 +111,11 @@ maic_unanchored <- function(weights_object,
 
     if (any(!c("USUBJID", "RESPONSE") %in% names(ipd))) stop("ipd should have 'USUBJID', 'RESPONSE' columns at minimum")
     eff_measure <- match.arg(eff_measure, choices = c("OR", "RD", "RR"), several.ok = FALSE)
-    # !! add a check of binary_robust_cov_type
+
+    binary_robust_cov_type <- match.arg(
+      binary_robust_cov_type,
+      choices = c("HC3", "const", "HC", "HC0", "HC1", "HC2", "HC4", "HC4m", "HC5")
+    )
   } else if (endpoint_type == "tte") { # for time to event effect measure
 
     if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(ipd))) {
@@ -319,20 +323,18 @@ maic_unanchored_binary <- function(res,
   # : fit glm for binary outcome and robust estimate with weights
   binobj_dat <- glm(RESPONSE ~ ARM, dat, family = glm_link)
   binobj_dat_adj <- glm(RESPONSE ~ ARM, dat, weights = weights, family = glm_link)
-  bin_robust_cov <- clubSandwich::vcovCR(binobj_dat_adj,
-    cluster = dat$USUBJID,
-    type = binary_robust_cov_type
-  )
-  bin_robust_coef <- clubSandwich::conf_int(binobj_dat_adj, bin_robust_cov, coef = 2, p_values = TRUE)
+  bin_robust_cov <- sandwich::vcovHC(binobj_dat_adj, type = binary_robust_cov_type)
+  bin_robust_coef <- lmtest::coeftest(binobj_dat_adj, vcov. = bin_robust_cov)
+  bin_robust_ci <- lmtest::coefci(binobj_dat_adj, vcov. = bin_robust_cov)
 
   res$inferential[["model_before"]] <- binobj_dat
   res$inferential[["model_after"]] <- binobj_dat_adj
 
-  mu <- bin_robust_coef$beta
-  sig <- bin_robust_coef$SE
-  res_AB$ci_l <- bin_robust_coef$CI_L
-  res_AB$ci_u <- bin_robust_coef$CI_U
-  res_AB$pval <- bin_robust_coef$p_val
+  mu <- bin_robust_coef[2, "Estimate"]
+  sig <- bin_robust_coef[2, "Std. Error"]
+  res_AB$ci_l <- bin_robust_ci[2, "2.5 %"]
+  res_AB$ci_u <- bin_robust_ci[2, "97.5 %"]
+  res_AB$pval <- bin_robust_coef[2, "Pr(>|z|)"]
 
   if (eff_measure %in% c("RR", "OR")) {
     res_AB$est <- exp(mu)
@@ -366,12 +368,9 @@ maic_unanchored_binary <- function(res,
 
       # does not matter use robust se or not, point estimate will not change and calculation would be faster
       boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_dat, weights = weights, family = glm_link)
-      boot_bin_robust_cov <- clubSandwich::vcovCR(binobj_dat_adj,
-        cluster = dat$USUBJID,
-        type = binary_robust_cov_type
-      )
-      boot_bin_robust_coef <- clubSandwich::conf_int(boot_binobj_dat_adj, boot_bin_robust_cov, coef = 2)
-      boot_AB_est <- boot_bin_robust_coef$beta
+      boot_bin_robust_cov <- sandwich::vcovHC(binobj_dat_adj, type = binary_robust_cov_type)
+      boot_bin_robust_coef <- lmtest::coeftest(boot_binobj_dat_adj, vcov. = boot_bin_robust_cov)
+      boot_AB_est <- boot_bin_robust_coef[2, "Estimate"]
       if (eff_measure %in% c("RR", "OR")) {
         boot_AB_est <- exp(boot_AB_est)
       } else if (eff_measure == "RD") {

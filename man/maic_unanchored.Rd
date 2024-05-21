@@ -18,7 +18,7 @@ maic_unanchored(
   boot_ci_is_quantile = FALSE,
   time_scale = "months",
   km_conf_type = "log-log",
-  binary_robust_cov_type = "CR2"
+  binary_robust_cov_type = "HC3"
 )
 }
 \arguments{
@@ -54,8 +54,8 @@ be handy when the number of bootstrap iterations is not big.}
 
 \item{km_conf_type}{a string, pass to \code{conf.type} of \code{survfit}}
 
-\item{binary_robust_cov_type}{a string to pass to argument "type" of \link[clubSandwich]{vcovCR}, see viable options
-in the documentation of that function. Default is "CR2"}
+\item{binary_robust_cov_type}{a string to pass to argument \code{type} of \link[sandwich:vcovHC]{sandwich::vcovHC}, see possible options
+in the documentation of that function. Default is \code{"HC3"}}
 }
 \value{
 A list, contains 'descriptive' and 'inferential'

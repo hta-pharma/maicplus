@@ -36,7 +36,7 @@ maic_unanchored(
   endpoint_name = "Binary Endpoint",
   eff_measure = "RR",
   # binary specific args
-  binary_robust_cov_type = "CR2"
+  binary_robust_cov_type = "HC3"
 )
 
 # unanchored binary MAIC, with bootstrapped CI

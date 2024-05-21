@@ -134,7 +134,7 @@ Additional suggested packages for this vignette:
 ```{r}
 library(dplyr) # this is used for data merging/cleaning. Package itself does not depend on dplyr
 
-library(clubSandwich) # For robust standard error in logistic regression
+# library(clubSandwich) # For robust standard error in logistic regression
 library(sandwich)
 
 library(survival)
@@ -482,13 +482,14 @@ names(OR_CI_wtd) <- c("OR", "OR_low_CI", "OR_upp_CI")
 OR_CI_wtd
 
 # Robust standard error
-vmod <- clubSandwich::vcovCR(weighted_OR, cluster = seq_len(dim(combined_data_binary)[1]), type = "CR2")
-coef_res <- clubSandwich::conf_int(weighted_OR, vmod, coef = 2)
+if (requireNamespace("clubSandwich")) {
+  vmod <- clubSandwich::vcovCR(weighted_OR, cluster = seq_len(dim(combined_data_binary)[1]), type = "CR2")
+  coef_res <- clubSandwich::conf_int(weighted_OR, vmod, coef = 2)
 
-OR_CI_robust <- exp(with(coef_res, c(beta, CI_L, CI_U)))
-names(OR_CI_robust) <- c("Estimate", "Lower 95% CI", "Upper 95% CI")
-OR_CI_robust
-
+  OR_CI_robust <- exp(with(coef_res, c(beta, CI_L, CI_U)))
+  names(OR_CI_robust) <- c("Estimate", "Lower 95% CI", "Upper 95% CI")
+  OR_CI_robust
+}
 # Using sandwich package
 V.sw <- sandwich::vcovHC(weighted_OR) # white's estimator
 SD <- sqrt(V.sw[2, 2])
