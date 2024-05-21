@@ -32,7 +32,9 @@ Suggests:
     rmarkdown,
     dplyr,
     sandwich,
-    flexsurv
+    survminer,
+    flexsurv,
+    tibble
 VignetteBuilder:
     knitr
 biocViews:
