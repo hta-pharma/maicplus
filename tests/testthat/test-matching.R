@@ -93,3 +93,23 @@ test_that("estimate_weights works as expected with bootstrapping", {
   )
   expect_equal(result$boot[1:5, , 1], expected_matrix)
 })
+
+
+test_that("estimate_weights works when the input is a tibble", {
+  skip_if_not_installed("tibble")
+  load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
+  load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
+  ipd_centered <- center_ipd(ipd = ipd, agd = agd)
+  centered_colnames <- paste0(c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN"), "_CENTERED")
+  ipd_centered <- tibble::as_tibble(ipd_centered)
+  expect_output(
+    result <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames),
+    "converged"
+  )
+
+  expect_s3_class(result, "maicplus_estimate_weights")
+  expect_equal(sum(result$data$weights), 199.8422368)
+  expect_equal(sum(result$data$scaled_weights), 500)
+  expect_equal(result$ess, 166.3675302)
+  expect_null(result$boot)
+})
