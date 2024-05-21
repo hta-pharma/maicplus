@@ -16,7 +16,7 @@ report_table_binary(
 
 \item{weighted_result}{object res_AB}
 
-\item{eff_measure}{a string, binary effect measure, could be "OR", "RR", "RD“}
+\item{eff_measure}{a string, binary effect measure, could be "OR", "RR", "RD"}
 
 \item{tag}{a string, by default NULL, if specified, an extra 1st column is created in the output}
 }

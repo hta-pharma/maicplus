@@ -25,7 +25,7 @@ The methods described in this document are based on those originally described b
 described in the National Institute for Health and Care Excellence (NICE) Decision Support Unit (DSU) Technical Support
 Document (TSD) 18. [signorovitch2010; phillippo2016a]
 
-MAIC methods are often required when: 
+MAIC methods are often required when:
 
 * There is no common comparator treatment to link a clinical trial of a new intervention to clinical trials of other
 treatments in a given disease area. For example if the only study of a new intervention is a single arm trial with no
@@ -43,7 +43,7 @@ patients. Treatment effect modifiers are those variables that influence the rela
 to another. For example patients with a better performance status may experience a larger treatment benefit than those
 with a worse performance status. Under this assumption, every prognostic variable and every treatment effect modifier
 that is imbalanced between the two studies must be available. This assumption is generally considered very difficult to
-meet. [phillippo2016a] There are several ways of identifying prognostic variables/treatment effect modifiers to be 
+meet. [phillippo2016a] There are several ways of identifying prognostic variables/treatment effect modifiers to be
 used in the MAIC analyses, some of which include:
 
 * Clinical expertise (when available to a project)
@@ -55,7 +55,7 @@ treatment effect
 
 # Theory behind MAIC
 
-We will briefly go over the theory behind MAIC. For detailed information, see Signorovitch et al. 2010. 
+We will briefly go over the theory behind MAIC. For detailed information, see Signorovitch et al. 2010.
 
 Let us define $t_i$ to be the treatment patient $i$ received. We assume $t_i=0$ if the patient received intervention
 (IPD) and $t_i=1$ if the patient received comparator treatment. The causal effect of treatment $T=0$ vs $T=1$ on the
@@ -92,7 +92,7 @@ consistent estimate of the causal effect of intervention vs comparator treatment
 \]
 
 We could transform transform IPD by subtracting the aggregate data means (this is why centering is needed when
-preprocessing). 
+preprocessing).
 
 \[
 0=\sum_{i=1}^{n}x_{i}exp(x_{i}^{T}\hat{\beta})
@@ -111,7 +111,7 @@ Q''(\beta)=\sum_{i=1}^{n}x_ix_i^Texp(x_{i}^{T}\hat{\beta})
 \]
 
 Since $Q''(\beta)$ is positive-definite for all $\beta$, $Q(\beta)$ is convex and any finite solution from
-the equation is unique and corresponds to the global minimum of $Q(\beta)$. Thus, we can use optimization 
+the equation is unique and corresponds to the global minimum of $Q(\beta)$. Thus, we can use optimization
 methods to calculate $\beta$.
 
 # Example scenario
@@ -233,9 +233,9 @@ head(ipd_centered)
 ### How to handle standard deviation aggregate summary
 
 As described by Phillippo et al. 2016, balancing on both mean and standard deviation for continuous variables (where
-possible) may be considered in some cases. If a standard deviation is provided in the comparator population, 
-preprocessing is done so that in the target population, $E(X^2)$ is calculated using the variance formula 
-$Var(X)=E(X^{2})-E(X)^{2}$. This $E(X^2)$ in the target population is matched with the IPD level data, which is why 
+possible) may be considered in some cases. If a standard deviation is provided in the comparator population,
+preprocessing is done so that in the target population, $E(X^2)$ is calculated using the variance formula
+$Var(X)=E(X^{2})-E(X)^{2}$. This $E(X^2)$ in the target population is matched with the IPD level data, which is why
 $X^{2}$ was calculated during the preprocessing stage of IPD.
 
 ### How to handle median aggregate summary
@@ -265,7 +265,7 @@ plot(weighted_data)
 plot(weighted_data, ggplot = TRUE)
 ```
 
-Another check after the weights are calculated is to look at how the weighted covariates match with the aggregate data 
+Another check after the weights are calculated is to look at how the weighted covariates match with the aggregate data
 summary.
 
 ```{r}
@@ -276,7 +276,7 @@ outdata
 
 # Time to event analysis
 
-We first need to combine internal IPD data with pseudo comparator IPD. To obtain pseudo comparator IPD, we would 
+We first need to combine internal IPD data with pseudo comparator IPD. To obtain pseudo comparator IPD, we would
 digitize Kaplan Meier curves from the comparator study.
 
 ```{r}
@@ -335,7 +335,7 @@ There is also a `"ggplot"` option for Kaplan-Meier curves using `survminer` R pa
 
 We can then fit a cox regression model using the combined dataset. For the weight adjusted cox regression, we fit the
 model with robust standard errors.
-Along with the hazard ratios, we can also find median survival time using `medSurv_makeup` function. Then, 
+Along with the hazard ratios, we can also find median survival time using `medSurv_makeup` function. Then,
 `report_table_tte` function nicely combines the information together and create a result table.
 
 ```{r}
