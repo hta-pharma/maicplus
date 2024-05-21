@@ -1,6 +1,5 @@
 test_that("test binary case", {
   # load in prognostic IPD data and AgD
-  # devtools::load_all()
   load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
   load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
   ipd_centered <- center_ipd(ipd = ipd, agd = agd)
@@ -70,7 +69,6 @@ test_that("test binary case", {
 test_that("test time to event case", {
   # anchored example using maic_anchored for tte
   # library(flexsurv)
-  # devtools::load_all()
 
   # Read in relevant ADaM data and rename variables of interest
   adsl <- read.csv(system.file("extdata", "adsl.csv",

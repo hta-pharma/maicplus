@@ -1,5 +1,4 @@
 # load in prognostic IPD data and AgD
-devtools::load_all()
 load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
 load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
 ipd_centered <- center_ipd(ipd = ipd, agd = agd)

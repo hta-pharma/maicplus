@@ -2,7 +2,7 @@
 % Please edit documentation in R/binary-helper.R
 \name{get_pseudo_ipd_binary}
 \alias{get_pseudo_ipd_binary}
-\title{Helper funciton: create pseudo IPD given AgD binary}
+\title{Create pseudo IPD given aggregated binary data}
 \usage{
 get_pseudo_ipd_binary(binary_agd, format = c("stacked", "unstacked"))
 }
@@ -15,10 +15,7 @@ get_pseudo_ipd_binary(binary_agd, format = c("stacked", "unstacked"))
 a data.frame of pseudo binary IPD, with columns USUBJID, ARM, RESPONSE
 }
 \description{
-Helper funciton: create pseudo IPD given AgD binary
-}
-\details{
-Additional details...
+Create pseudo IPD given aggregated binary data
 }
 \examples{
 # example of unstacked
