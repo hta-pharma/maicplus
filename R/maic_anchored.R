@@ -226,9 +226,9 @@ maic_anchored_tte <- function(res,
 
   # make analysis report table
   res$inferential[["report_overall_robustCI"]] <- rbind(
-    report_table(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
-    report_table(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
-    report_table(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
+    report_table_tte(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
+    report_table_tte(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
+    report_table_tte(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
     c(
       paste0("** adj.", trt_ipd, " vs ", trt_agd),
       rep("-", 4),
@@ -244,9 +244,9 @@ maic_anchored_tte <- function(res,
     boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
     boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
     res$inferential[["report_overall_bootCI"]] <- rbind(
-      report_table(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
-      report_table(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
-      report_table(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
+      report_table_tte(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
+      report_table_tte(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
+      report_table_tte(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
       c(
         paste0("** adj.", trt_ipd, " vs ", trt_agd),
         rep("-", 4),

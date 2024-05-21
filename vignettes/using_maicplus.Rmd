@@ -336,7 +336,7 @@ There is also a `"ggplot"` option for Kaplan-Meier curves using `survminer` R pa
 We can then fit a cox regression model using the combined dataset. For the weight adjusted cox regression, we fit the
 model with robust standard errors.
 Along with the hazard ratios, we can also find median survival time using `medSurv_makeup` function. Then, 
-`report_table` function nicely combines the information together and create a result table.
+`report_table_tte` function nicely combines the information together and create a result table.
 
 ```{r}
 # Fit a Cox model with/without weights to estimate the HR
@@ -352,8 +352,8 @@ medSurv_out <- rbind(medSurv, medSurv_adj)
 medSurv_out
 
 rbind(
-  report_table(unweighted_cox, medSurv, tag = paste0("Before/", "Overall survival")),
-  report_table(weighted_cox, medSurv_adj, tag = paste0("After/", "Overall survival"))
+  report_table_tte(unweighted_cox, medSurv, tag = paste0("Before/", "Overall survival")),
+  report_table_tte(weighted_cox, medSurv_adj, tag = paste0("After/", "Overall survival"))
 )
 ```
 

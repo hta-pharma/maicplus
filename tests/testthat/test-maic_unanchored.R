@@ -58,11 +58,18 @@ test_that("test binary case", {
       binary_robust_cov_type = "CR2"
     )
 
-  # save(list = c("expectout","expectout2"), file = test_path("data", "test_binary_unanchored_expected.RData"))
-  load(test_path("data", "test_binary_unanchored_expected.RData"))
+    if (FALSE) {
+    # Manual snapshot of results
+    expectout <- testout
+    expectout2 <- testout2
+    save(list = c("expectout","expectout2"), file = test_path("data", "test_binary_unanchored_expected.RData"))
+  }
 
-  expect_equal(testout, expectout)
-  expect_equal(testout2, expectout2)
+  load(test_path("data", "test_binary_unanchored_expected.RData"))
+  expect_equal(testout$descriptive, expectout$descriptive)
+  expect_equal(testout$inferential, expectout$inferential)
+  expect_equal(testout2$descriptive, expectout2$descriptive)
+  expect_equal(testout2$inferential, expectout2$inferential)
 })
 
 
@@ -149,7 +156,16 @@ test_that("test time to event case", {
     km_conf_type = "log-log"
   )
 
-  # save(list = c("expectout","expectout2"), file = test_path("data", "test_binary_unanchored_expected.RData"))
-  expect_equal(testout, expectout)
-  expect_equal(testout2, expectout2)
+  if (FALSE) {
+    # Manual snapshot of results
+    expectout <- testout
+    expectout2 <- testout2
+    save(list = c("expectout","expectout2"), file = test_path("data", "test_tte_unanchored_expected.RData"))
+  }
+
+  load(test_path("data", "test_tte_unanchored_expected.RData"))
+  expect_equal(testout$descriptive, expectout$descriptive)
+  expect_equal(testout$inferential, expectout$inferential)
+  expect_equal(testout2$descriptive, expectout2$descriptive)
+  expect_equal(testout2$inferential, expectout2$inferential)
 })

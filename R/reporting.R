@@ -31,7 +31,8 @@ report_table_tte <- function(coxobj, medSurvobj, tag = NULL) {
     data.frame(
       "N" = N,
       "n.events(%)" = paste0(N.EVNT, "(", format(N.EVNT.PERC, nsmall = 1), ")"),
-      "median[95% CI]" = meds_report
+      "median[95% CI]" = meds_report,
+      check.names = FALSE
     )
   )
   desc_res <- cbind(desc_res[c(2, 1), ], "HR[95% CI]" = c(hr_res, ""), "p-Value" = c(hr_pval, ""))
