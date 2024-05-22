@@ -7,7 +7,7 @@
 #' @param ipd a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial
 #' @param pseudo_ipd a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or
 #'   from contingency table (for binary endpoint)
-#' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)
+#' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{ipd} (internal IPD)
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{pseudo_ipd} (pseudo IPD)
 #' @param trt_common a string, name of the common comparator in internal and external trial
 #' @param trt_var_ipd a string, column name in \code{ipd} that contains the treatment assignment
