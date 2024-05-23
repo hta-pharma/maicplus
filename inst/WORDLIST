@@ -3,7 +3,6 @@ ADaM
 AgD
 Azocar
 Bucher
-Bucher's
 Comparator
 DSU
 ECOG
@@ -29,7 +28,6 @@ agd
 agg
 al
 binarize
-ci
 comparator
 confounders
 csv
@@ -38,6 +36,7 @@ dummized
 et
 frac
 ggplot
+glm
 hta
 initializer
 ipd
@@ -52,3 +51,5 @@ signorovitch
 tte
 unanchored
 unscaled
+unstacked
+vcovHC

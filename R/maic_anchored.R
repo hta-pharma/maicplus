@@ -7,7 +7,7 @@
 #' @param ipd a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial
 #' @param pseudo_ipd a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or
 #'   from contingency table (for binary endpoint)
-#' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)
+#' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{ipd} (internal IPD)
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{pseudo_ipd} (pseudo IPD)
 #' @param trt_common a string, name of the common comparator in internal and external trial
 #' @param trt_var_ipd a string, column name in \code{ipd} that contains the treatment assignment
@@ -226,9 +226,9 @@ maic_anchored_tte <- function(res,
 
   # make analysis report table
   res$inferential[["report_overall_robustCI"]] <- rbind(
-    report_table(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
-    report_table(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
-    report_table(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
+    report_table_tte(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
+    report_table_tte(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
+    report_table_tte(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
     c(
       paste0("** adj.", trt_ipd, " vs ", trt_agd),
       rep("-", 4),
@@ -244,9 +244,9 @@ maic_anchored_tte <- function(res,
     boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
     boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
     res$inferential[["report_overall_bootCI"]] <- rbind(
-      report_table(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
-      report_table(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
-      report_table(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
+      report_table_tte(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
+      report_table_tte(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
+      report_table_tte(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
       c(
         paste0("** adj.", trt_ipd, " vs ", trt_agd),
         rep("-", 4),

@@ -21,13 +21,14 @@ Imports:
     DescTools,
     MASS,
     boot,
-    stringr
+    stringr,
+    lmtest,
+    cli
 Suggests:
     knitr,
     testthat (>= 2.0),
     ggplot2,
     rmarkdown,
-    clubSandwich,
     dplyr,
     sandwich,
     survminer,

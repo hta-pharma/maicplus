@@ -1,7 +1,6 @@
 # anchored example using maic_anchored for tte
 library(flexsurv)
-### IPD
-set.seed(1234)
+
 # Read in relevant ADaM data and rename variables of interest
 adsl <- read.csv(system.file("extdata", "adsl.csv",
   package = "maicplus",
@@ -46,7 +45,7 @@ match_res_boot <- estimate_weights(
   centered_colnames = grep("_CENTERED$", names(use_adsl)),
   start_val = 0,
   method = "BFGS",
-  n_boot_iteration = 1000,
+  n_boot_iteration = 500,
   set_seed_boot = 1234
 )
 

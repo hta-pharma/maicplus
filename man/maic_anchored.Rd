@@ -28,7 +28,7 @@ maic_anchored(
 \item{pseudo_ipd}{a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or
 from contingency table (for binary endpoint)}
 
-\item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)}
+\item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{ipd} (internal IPD)}
 
 \item{trt_agd}{a string, name of the interested investigation arm in external trial \code{pseudo_ipd} (pseudo IPD)}
 
