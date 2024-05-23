@@ -1,9 +1,9 @@
-pandoc: 3.1.13
+pandoc: '3.2'
 pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
   using_maicplus: using_maicplus.html
-last_built: 2024-05-17T11:34Z
+last_built: 2024-05-23T07:41Z
 urls:
   reference: https://hta-pharma.github.io/maicplus/main/reference
   article: https://hta-pharma.github.io/maicplus/main/articles
