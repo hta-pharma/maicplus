@@ -6,8 +6,8 @@ set.seed(2024)
 
 # create adsl_twt
 adsl <- read.csv(system.file("extdata", "adsl.csv",
-                             package = "maicplus",
-                             mustWork = TRUE
+  package = "maicplus",
+  mustWork = TRUE
 ))
 adsl$USUBJID <- paste0("xx", adsl$USUBJID)
 adsl2 <- adsl
@@ -18,8 +18,8 @@ adsl_twt <- rbind(adsl, adsl2)
 
 # create adtte_twt
 adtte <- read.csv(system.file("extdata", "adtte.csv",
-                              package = "maicplus",
-                              mustWork = TRUE
+  package = "maicplus",
+  mustWork = TRUE
 ))
 adtte$TIME <- adtte$AVAL
 adtte$EVENT <- adtte$EVNT
@@ -40,8 +40,8 @@ adtte_twt <- rbind(adtte, adtte2)
 data("agd")
 # create pseudo_ipd_twt
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
-                                   package = "maicplus",
-                                   mustWork = TRUE
+  package = "maicplus",
+  mustWork = TRUE
 ))
 pseudo_ipd$ARM <- "B"
 pseudo_ipd2 <- adtte2[, c("TIME", "EVENT", "ARM")]
@@ -60,16 +60,5 @@ centered_ipd_twt <- center_ipd(ipd = adsl_twt, agd = agd)
 
 ### Output
 usethis::use_data(adsl_twt, adtte_twt, pseudo_ipd_twt, centered_ipd_twt, adrs_sat,
-                  internal = FALSE, overwrite = TRUE
+  internal = FALSE, overwrite = TRUE
 )
-
-
-
-
-
-
-
-
-
-
-
