@@ -90,6 +90,7 @@ estimate_weights <- function(data,
   EM <- data[, centered_colnames, drop = FALSE]
   ind <- apply(EM, 1, function(xx) any(is.na(xx)))
   nr_missing <- sum(ind)
+  rows_with_missing <- which(ind)
   EM <- as.matrix(EM[!ind, , drop = FALSE])
 
   # estimate weights
@@ -100,6 +101,7 @@ estimate_weights <- function(data,
 
   # bootstrapping
   outboot <- if (is.null(n_boot_iteration)) {
+    boot_seed <- NULL
     NULL
   } else {
     # Make sure to leave '.Random.seed' as-is on exit
@@ -114,16 +116,16 @@ estimate_weights <- function(data,
     }))
     set.seed(set_seed_boot)
     rowid_in_data <- which(!ind)
-    vapply(
-      seq_len(n_boot_iteration),
-      FUN.VALUE = matrix(0, nrow = nrow(EM), ncol = 2),
-      FUN = function(i) {
-        boot_rows <- sample(x = nrow(EM), size = nrow(EM), replace = TRUE)
-        boot_EM <- EM[boot_rows, , drop = FALSE]
-        boot_opt <- optimise_weights(matrix = boot_EM, par = alpha, method = method, ...)
-        cbind("rowid" = rowid_in_data[boot_rows], "weight" = boot_opt$wt[, 1])
-      }
-    )
+    boot_statistic <- function(d, w) optimise_weights(d[w, ], par = alpha, method = method, ...)$wt[, 1]
+    boot_out <- boot(EM, statistic = boot_statistic, R = n_boot_iteration)
+
+    boot_array <- array(dim = list(nrow(EM), 3, n_boot_iteration))
+    dimnames(boot_array) <- list(NULL, c("rowid", "weight", "index"), NULL)
+    boot_array[, 1, ] <- t(rowid_in_data[boot.array(boot_out, TRUE)])
+    boot_array[, 2, ] <- t(boot_out$t)
+    boot_array[, 3, ] <- t(boot.array(boot_out, TRUE))
+    boot_seed <- boot_out$seed
+    boot_array
   }
 
   # append weights to data
@@ -142,7 +144,9 @@ estimate_weights <- function(data,
     nr_missing = nr_missing,
     ess = sum(wt)^2 / sum(wt^2),
     opt = opt1$opt,
-    boot = outboot
+    boot = outboot,
+    boot_seed = boot_seed,
+    rows_with_missing = rows_with_missing
   )
 
   class(outdata) <- c("maicplus_estimate_weights", "list")
