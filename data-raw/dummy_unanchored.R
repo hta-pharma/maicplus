@@ -18,7 +18,7 @@ adsl_sat <- adsl_sat[adsl_sat$USUBJID %in% adtte_sat$USUBJID, , drop = FALSE]
 
 ### AgD
 # Baseline aggregate data for the comparator population
-agd_sat <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
+agd <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
   package = "maicplus", mustWork = TRUE
 ))
 # for time-to-event endpoints, pseudo IPD from digitalized KM
@@ -38,6 +38,6 @@ adrs_sat <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus", mu
 adrs_sat$RESPONSE <- adrs_sat$AVAL
 
 ### Output
-usethis::use_data(adsl_sat, adtte_sat, agd_sat, pseudo_ipd_sat, centered_ipd_sat, adrs_sat,
+usethis::use_data(adsl_sat, adtte_sat, agd, pseudo_ipd_sat, centered_ipd_sat, adrs_sat,
   internal = FALSE, overwrite = TRUE
 )
