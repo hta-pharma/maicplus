@@ -102,6 +102,7 @@ estimate_weights <- function(data,
   # bootstrapping
   outboot <- if (is.null(n_boot_iteration)) {
     boot_seed <- NULL
+    boot_strata <- NULL
     NULL
   } else {
     # Make sure to leave '.Random.seed' as-is on exit
@@ -110,14 +111,16 @@ estimate_weights <- function(data,
     set.seed(set_seed_boot)
 
     rowid_in_data <- which(!ind)
+    arms <- factor(data$ARM[rowid_in_data])
     boot_statistic <- function(d, w) optimise_weights(d[w, ], par = alpha, method = method, ...)$wt[, 1]
-    boot_out <- boot(EM, statistic = boot_statistic, R = n_boot_iteration)
+    boot_out <- boot(EM, statistic = boot_statistic, R = n_boot_iteration, strata = arms)
 
     boot_array <- array(dim = list(nrow(EM), 2, n_boot_iteration))
     dimnames(boot_array) <- list(NULL, c("rowid", "weight"), NULL)
     boot_array[, 1, ] <- t(boot.array(boot_out, TRUE))
     boot_array[, 2, ] <- t(boot_out$t)
     boot_seed <- boot_out$seed
+    boot_strata <- boot_out$strata
     boot_array
   }
 
@@ -139,6 +142,7 @@ estimate_weights <- function(data,
     opt = opt1$opt,
     boot = outboot,
     boot_seed = boot_seed,
+    boot_strata = boot_strata,
     rows_with_missing = rows_with_missing
   )
 

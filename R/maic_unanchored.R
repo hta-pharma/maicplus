@@ -238,9 +238,6 @@ maic_unanchored_tte <- function(res,
     boot_ipd <- merge(boot_ipd_id, ipd, by = "USUBJID", all.x = TRUE)
     if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
 
-    tmp_boot_obj <- weights_object$boot
-    k <- dim(tmp_boot_obj)[3]
-
     stat_fun <- function(data, index, w_obj, pseudo_ipd) {
       boot_ipd <- data[index, ]
       r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
@@ -258,8 +255,9 @@ maic_unanchored_tte <- function(res,
     old_seed <- globalenv()$.Random.seed
     on.exit(suspendInterrupts(set_random_seed(old_seed)))
     set_random_seed(weights_object$boot_seed)
+    R <- dim(weights_object$boot)[3]
 
-    boot_res <- boot(boot_ipd, stat_fun, R = k, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
+    boot_res <- boot(boot_ipd, stat_fun, R = R, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
 
     l_u_index <- switch(boot_ci_type,
@@ -279,7 +277,6 @@ maic_unanchored_tte <- function(res,
       ci_u = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]),
       pval = NA
     )
-    ##### IG BOOT END
   } else {
     res$inferential[["boot_est"]] <- NULL
   }
@@ -356,9 +353,6 @@ maic_unanchored_binary <- function(res,
     boot_ipd <- merge(boot_ipd_id, ipd, by = "USUBJID", all.x = TRUE)
     if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
 
-    tmp_boot_obj <- weights_object$boot
-    k <- dim(tmp_boot_obj)[3]
-
     stat_fun <- function(data, index, w_obj, pseudo_ipd) {
       boot_ipd <- data[index, ]
       r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
@@ -376,8 +370,8 @@ maic_unanchored_binary <- function(res,
     old_seed <- globalenv()$.Random.seed
     on.exit(suspendInterrupts(set_random_seed(old_seed)))
     set_random_seed(weights_object$boot_seed)
-
-    boot_res <- boot(boot_ipd, stat_fun, R = k, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
+    R <- dim(weights_object$boot)[3]
+    boot_res <- boot(boot_ipd, stat_fun, R = R, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
 
     l_u_index <- switch(boot_ci_type,

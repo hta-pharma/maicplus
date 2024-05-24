@@ -19,6 +19,8 @@
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
 #'   'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
+#' @param boot_ci_type a string, one of `c("norm","basic", "stud", "perc", "bca")` to select the type of bootstrap
+#'   confidence interval. See [boot::boot.ci] for more details.
 #'
 #' @details For time-to-event analysis, it is required that input \code{ipd} and \code{pseudo_ipd} to have the following
 #'   columns. This function is not sensitive to upper or lower case of letters in column names.
@@ -47,7 +49,8 @@ maic_anchored <- function(weights_object,
                           eff_measure = c("HR", "OR", "RR", "RD", "Diff"),
                           # time to event specific args
                           time_scale = "months",
-                          km_conf_type = "log-log") {
+                          km_conf_type = "log-log",
+                          boot_ci_type = c("norm", "basic", "student", "percent", "bca")) {
   # ==> Initial Setup ------------------------------------------
   # create the hull for the output from this function
   res <- list(
@@ -114,6 +117,7 @@ maic_anchored <- function(weights_object,
     }
     eff_measure <- match.arg(eff_measure, choices = c("HR"), several.ok = FALSE)
   }
+  boot_ci_type <- match.arg(boot_ci_type)
   # else { # for continuous effect measure
   #   if (any(!c("USUBJID", "RESPONSE") %in% names(ipd))) {
   #   stop("ipd should have 'USUBJID', 'RESPONSE' columns at minimum")
@@ -151,7 +155,10 @@ maic_anchored <- function(weights_object,
 
   # ==> Inferential output ------------------------------------------
   result <- if (endpoint_type == "tte") {
-    maic_anchored_tte(res, ipd, km_conf_type, pseudo_ipd, time_scale, weights_object, endpoint_name, trt_ipd, trt_agd)
+    maic_anchored_tte(
+      res, ipd, km_conf_type, pseudo_ipd, time_scale, weights_object, endpoint_name, trt_ipd, trt_agd,
+      boot_ci_type
+    )
   } else {
     stop("Endpoint type ", endpoint_type, " currently unsupported.")
   }
@@ -170,7 +177,8 @@ maic_anchored_tte <- function(res,
                               weights_object,
                               endpoint_name,
                               trt_ipd,
-                              trt_agd) {
+                              trt_agd,
+                              boot_ci_type) {
   # Analysis table (Cox model) before and after matching, incl Median Survival Time
   # derive km w and w/o weights
   kmobj_ipd <- survfit(Surv(TIME, EVENT) ~ ARM, ipd, conf.type = km_conf_type)
@@ -208,20 +216,53 @@ maic_anchored_tte <- function(res,
   # get bootstrapped estimates if applicable
   res$inferential[["boot_est"]] <- NULL
   if (!is.null(weights_object$boot)) {
-    tmp_boot_obj <- weights_object$boot
-    k <- dim(tmp_boot_obj)[3]
-    tmp_boot_est <- sapply(seq_len(k), function(ii) {
-      boot_x <- tmp_boot_obj[, , ii]
-      boot_ipd_id <- weights_object$data$USUBJID[boot_x[, 1]]
-      boot_ipd <- ipd[match(boot_ipd_id, ipd$USUBJID), , drop = FALSE]
-      boot_ipd$weights <- boot_x[, 2]
+    keep_rows <- setdiff(seq_len(nrow(weights_object$data)), weights_object$rows_with_missing)
+    boot_ipd_id <- weights_object$data[keep_rows, "USUBJID", drop = FALSE]
 
-      # does not matter use robust se or not, point estimate will not change and calculation would be faster
-      boot_coxobj_ipd_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_ipd, weights = weights)
-      boot_AB_est <- summary(boot_coxobj_ipd_adj)$coef[1] - summary(coxobj_agd)$coef[1]
-      exp(boot_AB_est)
-    })
-    res$inferential[["boot_est"]] <- tmp_boot_est
+    boot_ipd <- merge(boot_ipd_id, ipd, by = "USUBJID", all.x = TRUE)
+    if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
+
+    stat_fun <- function(data, index, w_obj, pseudo_ipd) {
+      boot_ipd <- data[index, ]
+      r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
+      if (!is.na(r)) {
+        if (isFALSE(all.equal(index, w_obj$boot[, 1, r]))) stop("Bootstrap and weight indices don't match")
+        boot_ipd$weights <- w_obj$boot[, 2, r]
+      }
+      boot_dat <- rbind(boot_ipd, pseudo_ipd)
+      boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
+      boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_dat, weights = weights)
+      c(est = coef(boot_coxobj_dat_adj)[1] - coef(coxobj_agd)[1], var = vcov(boot_coxobj_dat_adj)[1, 1])
+    }
+
+    # Revert seed to how it was for weight bootstrap sampling
+    old_seed <- globalenv()$.Random.seed
+    on.exit(suspendInterrupts(set_random_seed(old_seed)))
+    set_random_seed(weights_object$boot_seed)
+
+    R <- dim(weights_object$boot)[3]
+    boot_res <- boot(boot_ipd, stat_fun,
+      R = R, w_obj = weights_object, pseudo_ipd = pseudo_ipd,
+      strata = weights_object$boot_strata
+    )
+    boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
+
+    l_u_index <- switch(boot_ci_type,
+      "norm" = list(2, 3, "normal"),
+      "basic" = list(4, 5, "basic"),
+      "stud" = list(4, 5, "student"),
+      "perc" = list(4, 5, "percent"),
+      "bca" = list(4, 5, "bca")
+    )
+
+    res$inferential[["boot_est"]] <- boot_res
+    boot_res_AB <- list(
+      est = exp(boot_res$t0[1]),
+      se = NA,
+      ci_l = exp(boot_ci[[l_u_index[[3]]]][l_u_index[[1]]]),
+      ci_u = exp(boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]),
+      pval = NA
+    )
   }
 
   # make analysis report table
@@ -239,10 +280,10 @@ maic_anchored_tte <- function(res,
   if (is.null(res$inferential[["boot_est"]])) {
     res$inferential[["report_overall_bootCI"]] <- NULL
   } else {
-    boot_res_AB <- res_AB
-    boot_logres_se <- sd(log(res$inferential[["boot_est"]]), na.rm = TRUE)
-    boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
-    boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
+    temp_boot_res <- res_AB
+    temp_boot_res$ci_l <- boot_res_AB$ci_l
+    temp_boot_res$ci_u <- boot_res_AB$ci_u
+
     res$inferential[["report_overall_bootCI"]] <- rbind(
       report_table_tte(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
       report_table_tte(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
@@ -250,7 +291,7 @@ maic_anchored_tte <- function(res,
       c(
         paste0("** adj.", trt_ipd, " vs ", trt_agd),
         rep("-", 4),
-        print(boot_res_AB, pval_digits = 3)
+        print(temp_boot_res, pval_digits = 3)
       )
     )
   }

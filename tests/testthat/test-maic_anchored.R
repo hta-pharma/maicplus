@@ -206,13 +206,18 @@ test_that("maic_anchored works for TTE using bootstrap SE", {
     result$inferential$report_overall_bootCI$`HR[95% CI]`,
     c(
       "0.22[0.19;0.26]", "", "0.16[0.11;0.24]", "", "0.57[0.48;0.68]",
-      "", "0.29 [0.22; 0.38]"
+      "", "0.29 [0.20; 0.38]"
     )
   )
 
-  expect_length(result$inferential$boot_est, 5)
   expect_equal(
-    quantile(result$inferential$boot_est, p = c(0.025, 0.5, 0.975)),
-    c(`2.5%` = 0.224505423383486, `50%` = 0.255147246438007, `97.5%` = 0.313359331451625)
+    result$inferential$boot_est$t,
+    matrix(
+      c(
+        -0.473643217943453, -0.0280612969274431, -0.292544997523232, -0.257912426911704, -0.332304813173113,
+        0.0243022844964305, 0.0180627341532462, 0.0160751359632564, 0.0182590931935275, 0.0215193429847375
+      ),
+      nrow = 5
+    )
   )
 })

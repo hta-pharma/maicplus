@@ -10,6 +10,7 @@ adsl <- read.csv(system.file("extdata", "adsl.csv",
 adsl$USUBJID <- paste0("xx", adsl$USUBJID)
 adsl2 <- adsl
 adsl2$USUBJID <- sample(size = nrow(adsl2), paste0("yy", adsl2$USUBJID), replace = FALSE)
+adsl2$ARM <- "C"
 adsl2 <- adsl2[order(adsl2$USUBJID), ]
 adsl <- rbind(adsl, adsl2)
 
