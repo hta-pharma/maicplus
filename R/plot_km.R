@@ -48,6 +48,10 @@ kmplot <- function(weights_object,
   trt_var_ipd <- toupper(trt_var_ipd)
   trt_var_agd <- toupper(trt_var_agd)
 
+  original_par <- par()
+  original_par <- original_par[!names(original_par) %in% c("pin", "cin", "cra", "csi", "cxy", "din", "page")]
+  on.exit(par(original_par))
+
   # pre check
   if (!"maicplus_estimate_weights" %in% class(weights_object)) {
     stop("weights_object should be an object returned by estimate_weights")
@@ -286,6 +290,10 @@ basic_kmplot <- function(kmdat,
                          use_line_types = NULL,
                          use_pch_cex = 0.65,
                          use_pch_alpha = 100) {
+  original_par <- par()
+  original_par <- original_par[!names(original_par) %in% c("pin", "cin", "cra", "csi", "cxy", "din", "page")]
+  on.exit(par(original_par))
+
   # precheck
   if (!length(subplot_heights) %in% c(0, (1 + show_risk_set))) {
     stop("length of subplot_heights should be ", (1 + show_risk_set))
