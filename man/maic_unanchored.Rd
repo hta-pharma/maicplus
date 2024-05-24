@@ -14,9 +14,11 @@ maic_unanchored(
   trt_var_agd = "ARM",
   endpoint_type = "tte",
   endpoint_name = "Time to Event Endpoint",
-  eff_measure = c("HR", "OR", "RR", "RD", "Diff"),
+  eff_measure = c("HR", "OR", "RR", "RD"),
+  boot_ci_is_quantile = FALSE,
   time_scale = "months",
-  km_conf_type = "log-log"
+  km_conf_type = "log-log",
+  binary_robust_cov_type = "HC3"
 )
 }
 \arguments{
@@ -39,14 +41,21 @@ from contingency table (for binary endpoint)}
 
 \item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
 
-\item{eff_measure}{a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk)
-for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case,
-otherwise "HR" is used.}
+\item{eff_measure}{a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint;
+"HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.}
+
+\item{boot_ci_is_quantile}{a logical, specify if the 95\% bootstrapped confidence interval should be derived by sample
+quantile. Default FALSE, which the estimates assumes to follow asymptotic normal (only if \code{eff_measure} is "RD") or
+log-normal with a variance that can be approximated by bootstrapped sample of the estimate. This default option may
+be handy when the number of bootstrap iterations is not big.}
 
 \item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
 'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days}
 
 \item{km_conf_type}{a string, pass to \code{conf.type} of \code{survfit}}
+
+\item{binary_robust_cov_type}{a string to pass to argument \code{type} of \link[sandwich:vcovHC]{sandwich::vcovHC}, see possible options
+in the documentation of that function. Default is \code{"HC3"}}
 }
 \value{
 A list, contains 'descriptive' and 'inferential'
