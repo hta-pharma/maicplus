@@ -16,10 +16,6 @@
 #'   "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.
 #' @param boot_ci_type a string, one of `c("norm","basic", "stud", "perc", "bca")` to select the type of bootstrap
 #'   confidence interval. See [boot::boot.ci] for more details.
-#' @param boot_ci_is_quantile a logical, specify if the 95% bootstrapped confidence interval should be derived by sample
-#'   quantile. Default FALSE, which the estimates assumes to follow asymptotic normal (only if `eff_measure` is "RD") or
-#'   log-normal with a variance that can be approximated by bootstrapped sample of the estimate. This default option may
-#'   be handy when the number of bootstrap iterations is not big.
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
 #'   'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days
@@ -201,7 +197,7 @@ maic_unanchored_tte <- function(res,
                                 time_scale,
                                 weights_object,
                                 endpoint_name,
-                                boot_ci_is_quantile,
+                                boot_ci_type,
                                 trt_ipd,
                                 trt_agd) {
   # ~~~ Descriptive table before and after matching
@@ -236,30 +232,54 @@ maic_unanchored_tte <- function(res,
 
   # : get bootstrapped estimates if applicable
   if (!is.null(weights_object$boot)) {
+    keep_rows <- setdiff(seq_len(nrow(weights_object$data)), weights_object$rows_with_missing)
+    boot_ipd_id <- weights_object$data[keep_rows, "USUBJID", drop = FALSE]
+
+    boot_ipd <- merge(boot_ipd_id, ipd, by = "USUBJID", all.x = TRUE)
+    if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
+
     tmp_boot_obj <- weights_object$boot
     k <- dim(tmp_boot_obj)[3]
 
-    cli::cli_progress_bar("Going through bootstrapped weights", total = k, .envir = .GlobalEnv)
-
-    tmp_boot_est <- sapply(1:k, function(ii) {
-      cli::cli_progress_update(.envir = .GlobalEnv)
-
-      boot_x <- tmp_boot_obj[, , ii]
-      boot_ipd_id <- weights_object$data$USUBJID[boot_x[, 1]]
-      boot_ipd <- ipd[match(boot_ipd_id, ipd$USUBJID), , drop = FALSE]
-      boot_ipd$weights <- boot_x[, 2]
-
+    stat_fun <- function(data, index, w_obj, pseudo_ipd) {
+      boot_ipd <- data[index, ]
+      r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
+      if (!is.na(r)) {
+        if (isFALSE(all.equal(index, w_obj$boot[, 1, r]))) stop("Bootstrap and weight indices don't match")
+        boot_ipd$weights <- w_obj$boot[, 2, r]
+      }
       boot_dat <- rbind(boot_ipd, pseudo_ipd)
       boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
-
       boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_dat, weights = weights)
-      boot_AB_est <- summary(boot_coxobj_dat_adj)$coef[1]
-      exp(boot_AB_est)
-    })
+      c(est = coef(boot_coxobj_dat_adj)[1], var = vcov(boot_coxobj_dat_adj)[1, 1])
+    }
 
-    cli::cli_progress_done(.envir = .GlobalEnv)
+    # Revert seed to how it was for weight bootstrap sampling
+    old_seed <- globalenv()$.Random.seed
+    on.exit(suspendInterrupts(set_random_seed(old_seed)))
+    set_random_seed(weights_object$boot_seed)
 
-    res$inferential[["boot_est"]] <- tmp_boot_est
+    boot_res <- boot(boot_ipd, stat_fun, R = k, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
+    boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
+
+    l_u_index <- switch(boot_ci_type,
+      "norm" = list(2, 3, "normal"),
+      "basic" = list(4, 5, "basic"),
+      "stud" = list(4, 5, "student"),
+      "perc" = list(4, 5, "percent"),
+      "bca" = list(4, 5, "bca")
+    )
+
+    res$inferential[["boot_est"]] <- boot_res
+    transform_estimate <- exp
+    boot_res_AB <- list(
+      est = transform_estimate(boot_res$t0[1]),
+      se = NA,
+      ci_l = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[1]]]),
+      ci_u = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]),
+      pval = NA
+    )
+    ##### IG BOOT END
   } else {
     res$inferential[["boot_est"]] <- NULL
   }
@@ -273,27 +293,12 @@ maic_unanchored_tte <- function(res,
   if (is.null(res$inferential[["boot_est"]])) {
     res$inferential[["report_overall_bootCI"]] <- NULL
   } else {
-    boot_res_AB <- res_AB
-    boot_logres_se <- sd(log(res$inferential[["boot_est"]]), na.rm = TRUE)
-    if (boot_ci_is_quantile) {
-      boot_res_AB$ci_l <- quantile(res$inferential[["boot_est"]], p = 0.025)
-      boot_res_AB$ci_u <- quantile(res$inferential[["boot_est"]], p = 0.975)
-    } else {
-      boot_res_AB$ci_l <- exp(log(boot_res_AB$est) + qnorm(0.025) * boot_logres_se)
-      boot_res_AB$ci_u <- exp(log(boot_res_AB$est) + qnorm(0.975) * boot_logres_se)
-    }
-    tmp_report_table_tte <- report_table_tte(coxobj_dat_adj,
-      medSurv_dat_adj,
-      tag = paste0("After matching/", endpoint_name)
-    )
-    tmp_report_table_tte$`HR[95% CI]`[1] <- paste0(
-      format(round(boot_res_AB$est, 2), nsmall = 2), "[",
-      format(round(boot_res_AB$ci_l, 2), nsmall = 2), ";",
-      format(round(boot_res_AB$ci_u, 2), nsmall = 2), "]"
-    )
+    report_boot <- report_table_tte(coxobj_dat_adj, medSurv_dat_adj, tag = paste0("After matching/", endpoint_name))
+    report_boot$`p-Value` <- NA
+    report_boot$`HR[95% CI]`[1] <- do.call(sprintf, args = c(list(fmt = "%.2f[%.2f;%.2f]"), boot_res_AB[1:3]))
     res$inferential[["report_overall_bootCI"]] <- rbind(
       report_table_tte(coxobj_dat, medSurv_dat, tag = paste0("Before matching/", endpoint_name)),
-      tmp_report_table_tte
+      report_boot
     )
   }
 
@@ -358,7 +363,7 @@ maic_unanchored_binary <- function(res,
       boot_ipd <- data[index, ]
       r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
       if (!is.na(r)) {
-        if (isFALSE(all.equal(index, w_obj$boot[, 3, r]))) stop("Bootstrap and weight indices don't match")
+        if (isFALSE(all.equal(index, w_obj$boot[, 1, r]))) stop("Bootstrap and weight indices don't match")
         boot_ipd$weights <- w_obj$boot[, 2, r]
       }
       boot_dat <- rbind(boot_ipd, pseudo_ipd)
@@ -368,16 +373,9 @@ maic_unanchored_binary <- function(res,
     }
 
     # Revert seed to how it was for weight bootstrap sampling
-    genv <- globalenv()
-    old_seed <- genv$.Random.seed
-    on.exit(suspendInterrupts({
-      if (is.null(old_seed)) {
-        rm(".Random.seed", envir = genv, inherits = FALSE)
-      } else {
-        assign(".Random.seed", value = old_seed, envir = genv, inherits = FALSE)
-      }
-    }))
-    assign(".Random.seed", value = weights_object$boot_seed, envir = genv, inherits = FALSE)
+    old_seed <- globalenv()$.Random.seed
+    on.exit(suspendInterrupts(set_random_seed(old_seed)))
+    set_random_seed(weights_object$boot_seed)
 
     boot_res <- boot(boot_ipd, stat_fun, R = k, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)

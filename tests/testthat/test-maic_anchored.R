@@ -1,4 +1,4 @@
-test_that("maic_unanchored works for TTE using robust SE", {
+test_that("maic_anchored works for TTE using robust SE", {
   library(flexsurv)
   ### IPD
   set.seed(1234)
@@ -112,7 +112,7 @@ test_that("maic_unanchored works for TTE using robust SE", {
 })
 
 
-test_that("maic_unanchored works for TTE using bootstrap SE", {
+test_that("maic_anchored works for TTE using bootstrap SE", {
   # anchored example using maic_anchored for tte
   library(flexsurv)
   ### IPD

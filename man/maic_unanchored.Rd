@@ -54,11 +54,6 @@ confidence interval. See \link[boot:boot.ci]{boot::boot.ci} for more details.}
 
 \item{binary_robust_cov_type}{a string to pass to argument \code{type} of \link[sandwich:vcovHC]{sandwich::vcovHC}, see possible options in the
 documentation of that function. Default is \code{"HC3"}}
-
-\item{boot_ci_is_quantile}{a logical, specify if the 95\% bootstrapped confidence interval should be derived by sample
-quantile. Default FALSE, which the estimates assumes to follow asymptotic normal (only if \code{eff_measure} is "RD") or
-log-normal with a variance that can be approximated by bootstrapped sample of the estimate. This default option may
-be handy when the number of bootstrap iterations is not big.}
 }
 \value{
 A list, contains 'descriptive' and 'inferential'

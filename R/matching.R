@@ -105,25 +105,18 @@ estimate_weights <- function(data,
     NULL
   } else {
     # Make sure to leave '.Random.seed' as-is on exit
-    genv <- globalenv()
-    old_seed <- genv$.Random.seed
-    on.exit(suspendInterrupts({
-      if (is.null(old_seed)) {
-        rm(".Random.seed", envir = genv, inherits = FALSE)
-      } else {
-        assign(".Random.seed", value = old_seed, envir = genv, inherits = FALSE)
-      }
-    }))
+    old_seed <- globalenv()$.Random.seed
+    on.exit(suspendInterrupts(set_random_seed(old_seed)))
     set.seed(set_seed_boot)
+
     rowid_in_data <- which(!ind)
     boot_statistic <- function(d, w) optimise_weights(d[w, ], par = alpha, method = method, ...)$wt[, 1]
     boot_out <- boot(EM, statistic = boot_statistic, R = n_boot_iteration)
 
-    boot_array <- array(dim = list(nrow(EM), 3, n_boot_iteration))
-    dimnames(boot_array) <- list(NULL, c("rowid", "weight", "index"), NULL)
-    boot_array[, 1, ] <- t(rowid_in_data[boot.array(boot_out, TRUE)])
+    boot_array <- array(dim = list(nrow(EM), 2, n_boot_iteration))
+    dimnames(boot_array) <- list(NULL, c("rowid", "weight"), NULL)
+    boot_array[, 1, ] <- t(boot.array(boot_out, TRUE))
     boot_array[, 2, ] <- t(boot_out$t)
-    boot_array[, 3, ] <- t(boot.array(boot_out, TRUE))
     boot_seed <- boot_out$seed
     boot_array
   }
