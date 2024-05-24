@@ -322,6 +322,11 @@ maic_unanchored_binary <- function(res,
     "RR" = poisson(link = "log"),
     "OR" = binomial(link = "logit")
   )
+  transform_estimate <- switch(eff_measure,
+    "RD" = function(x) x * 100,
+    "RR" = exp,
+    "OR" = exp
+  )
 
   # : fit glm for binary outcome and robust estimate with weights
   binobj_dat <- glm(RESPONSE ~ ARM, dat, family = glm_link)
@@ -333,23 +338,10 @@ maic_unanchored_binary <- function(res,
   res$inferential[["model_before"]] <- binobj_dat
   res$inferential[["model_after"]] <- binobj_dat_adj
 
-  mu <- bin_robust_coef[2, "Estimate"]
-  sig <- bin_robust_coef[2, "Std. Error"]
-  res_AB$ci_l <- bin_robust_ci[2, "2.5 %"]
-  res_AB$ci_u <- bin_robust_ci[2, "97.5 %"]
+  res_AB$est <- transform_estimate(bin_robust_coef[2, "Estimate"])
+  res_AB$ci_l <- transform_estimate(bin_robust_ci[2, "2.5 %"])
+  res_AB$ci_u <- transform_estimate(bin_robust_ci[2, "97.5 %"])
   res_AB$pval <- bin_robust_coef[2, "Pr(>|z|)"]
-
-  if (eff_measure %in% c("RR", "OR")) {
-    res_AB$est <- exp(mu)
-    res_AB$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parameterization
-    res_AB$ci_l <- exp(res_AB$ci_l)
-    res_AB$ci_u <- exp(res_AB$ci_u)
-  } else if (eff_measure == "RD") {
-    res_AB$est <- mu * 100
-    res_AB$se <- sig * 100
-    res_AB$ci_l <- res_AB$ci_l * 100
-    res_AB$ci_u <- res_AB$ci_u * 100
-  }
 
   # : get bootstrapped estimates if applicable
   if (!is.null(weights_object$boot)) {
@@ -364,19 +356,15 @@ maic_unanchored_binary <- function(res,
 
     stat_fun <- function(data, index, w_obj, pseudo_ipd) {
       boot_ipd <- data[index, ]
-
-      r <- dynGet("r", ifnotfound = NA)
+      r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
       if (!is.na(r)) {
         if (isFALSE(all.equal(index, w_obj$boot[, 3, r]))) stop("Bootstrap and weight indices don't match")
         boot_ipd$weights <- w_obj$boot[, 2, r]
       }
       boot_dat <- rbind(boot_ipd, pseudo_ipd)
       boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
-
       boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_dat, weights = weights, family = glm_link)
-      boot_bin_robust_cov <- sandwich::vcovHC(binobj_dat_adj, type = binary_robust_cov_type)
-      boot_bin_robust_coef <- lmtest::coeftest(boot_binobj_dat_adj, vcov. = boot_bin_robust_cov)
-      c(boot_bin_robust_coef[2, "Estimate"], boot_bin_robust_coef[2, "Std. Error"]^2)
+      c(est = coef(boot_binobj_dat_adj)[2], var = vcov(boot_binobj_dat_adj)[2, 2])
     }
 
     # Revert seed to how it was for weight bootstrap sampling
@@ -390,11 +378,25 @@ maic_unanchored_binary <- function(res,
       }
     }))
     assign(".Random.seed", value = weights_object$boot_seed, envir = genv, inherits = FALSE)
-    boot_res <- boot(boot_ipd, stat_fun, R = k, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
 
-    cli::cli_progress_done(.envir = .GlobalEnv)
+    boot_res <- boot(boot_ipd, stat_fun, R = k, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
+    boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
+
+    l_u_index <- switch(boot_ci_type,
+      "norm" = list(2, 3, "normal"),
+      "basic" = list(4, 5, "basic"),
+      "stud" = list(4, 5, "student"),
+      "perc" = list(4, 5, "percent"),
+      "bca" = list(4, 5, "bca")
+    )
 
     res$inferential[["boot_est"]] <- boot_res
+    boot_res_AB <- list(
+      est = transform_estimate(boot_res$t0[1]),
+      ci_l = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[1]]]),
+      ci_u = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]),
+      pval = NA
+    )
   } else {
     res$inferential[["boot_est"]] <- NULL
   }
@@ -413,53 +415,22 @@ maic_unanchored_binary <- function(res,
       eff_measure = eff_measure
     )
   )
-
   if (is.null(res$inferential[["boot_est"]])) {
     res$inferential[["report_overall_bootCI"]] <- NULL
   } else {
-    boot_res_AB <- list()
-    boot_res_AB$est <- res$inferential[["boot_est"]]$t0[1]
-    boot_ci <- boot.ci(
-      res$inferential[["boot_est"]],
-      type = boot_ci_type,
-      w_obj = weights_object,
-      pseudo_ipd = pseudo_ipd
-    )
-
-    l_u_index <- switch(boot_ci_type,
-      "norm" = list(2, 3, "normal"),
-      "basic" = list(4, 5, "basic"),
-      "stud" = list(4, 5, "student"),
-      "perc" = list(4, 5, "percent"),
-      "bca" = list(4, 5, "bca"),
-    )
-
-    boot_res_AB$ci_l <- boot_ci[[l_u_index[[3]]]][l_u_index[[1]]]
-    boot_res_AB$ci_u <- boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]
-
-    tmp_report_table_binary <- report_table_binary(
-      binobj_dat_adj,
-      res_AB,
-      tag = paste0("After matching/", endpoint_name),
-      eff_measure = eff_measure
-    )
-    tmp_report_table_binary[[paste0(eff_measure, "[95% CI]")]][1] <- paste0(
-      format(round(boot_res_AB$est, 2), nsmall = 2),
-      "[",
-      format(round(boot_res_AB$ci_l, 2), nsmall = 2),
-      ";",
-      format(round(boot_res_AB$ci_u, 2), nsmall = 2),
-      "]"
-    )
     res$inferential[["report_overall_bootCI"]] <- rbind(
       report_table_binary(
         binobj_dat,
         tag = paste0("Before matching/", endpoint_name),
         eff_measure = eff_measure
       ),
-      tmp_report_table_binary
+      report_table_binary(
+        binobj_dat_adj,
+        boot_res_AB,
+        tag = paste0("After matching/", endpoint_name),
+        eff_measure = eff_measure
+      )
     )
   }
-  # output
   res
 }
