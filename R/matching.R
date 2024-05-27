@@ -263,7 +263,9 @@ plot_weights_base <- function(weighted_data,
   }
 
   # plot
+  original_par <- par(no.readonly = TRUE)
   par(mgp = c(2.3, 0.5, 0), cex.axis = 0.9, cex.lab = 0.95, bty = "n")
+  on.exit(par(original_par))
   hist(wt, border = "white", col = bin_col, main = main_title, breaks = 20, yaxt = "n", xlab = "")
   axis(2, las = 1)
   abline(v = median(wt), lty = 2, col = vline_col, lwd = 2)
