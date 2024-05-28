@@ -17,7 +17,7 @@
 #'   procedure will not be triggered, and hence the element `"boot"` of output list object will be NULL.
 #' @param set_seed_boot a scalar, the random seed for conducting the bootstrapping, only relevant if
 #'   \code{n_boot_iteration} is not NULL. By default, use seed 1234
-#' @param ... all other arguments from \code{base::optim()}
+#' @param ... Additional `control` parameters passed to [stats::optim].
 #'
 #' @return a list with the following 4 elements,
 #' \describe{
@@ -162,6 +162,8 @@ estimate_weights <- function(data,
 optimise_weights <- function(matrix,
                              par = rep(0, ncol(matrix)),
                              method = "BFGS",
+                             maxit = 300,
+                             trace = 0,
                              ...) {
   if (!all(is.numeric(par) || is.finite(par), length(par) == ncol(matrix))) {
     stop("par must be a numeric vector with finite values of length equal to the number of columns in 'matrix'")
@@ -172,8 +174,15 @@ optimise_weights <- function(matrix,
     gr = function(alpha, X) colSums(sweep(X, 1, exp(X %*% alpha), "*")),
     X = matrix,
     method = method,
-    control = list(maxit = 300, trace = 2, ...)
+    control = list(maxit = maxit, trace = trace, ...)
   )
+  if (opt1$convergence != 0) {
+    warning(
+      "optim() did not converge. ",
+      opt1$message,
+      "\nSee ?optim for more information on convergence code: ", opt1$convergence
+    )
+  }
   list(
     opt = opt1,
     alpha = opt1$par,
