@@ -59,6 +59,6 @@ centered_ipd_twt <- center_ipd(ipd = adsl_twt, agd = agd)
 
 
 ### Output
-usethis::use_data(adsl_twt, adtte_twt, pseudo_ipd_twt, centered_ipd_twt, adrs_sat,
+usethis::use_data(adsl_twt, adtte_twt, pseudo_ipd_twt, centered_ipd_twt,
   internal = FALSE, overwrite = TRUE
 )
