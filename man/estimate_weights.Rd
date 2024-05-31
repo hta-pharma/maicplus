@@ -42,7 +42,7 @@ procedure will not be triggered, and hence the element \code{"boot"} of output l
 \item{set_seed_boot}{a scalar, the random seed for conducting the bootstrapping, only relevant if
 \code{n_boot_iteration} is not NULL. By default, use seed 1234}
 
-\item{...}{all other arguments from \code{base::optim()}}
+\item{...}{Additional \code{control} parameters passed to \link[stats:optim]{stats::optim}.}
 
 \item{x}{object from \link{estimate_weights}}
 
