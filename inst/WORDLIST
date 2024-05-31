@@ -30,6 +30,7 @@ ipd
 Kaplan
 MAIC
 multivariable
+optim
 pharma
 Phillippo
 phillippo
@@ -46,7 +47,10 @@ Texp
 TSD
 TTE
 tte
+<<<<<<< HEAD
 twt
+=======
+>>>>>>> main
 Unanchored
 unanchored
 Univariable
