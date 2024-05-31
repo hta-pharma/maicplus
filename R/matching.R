@@ -30,9 +30,10 @@
 #'   \item{ess}{effective sample size, square of sum divided by sum of squares}
 #'   \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
 #'   \item{boot}{a n by 2 by k array or NA, where n equals to number of rows in \code{data}, and k equals
-#'   \code{n_boot_iteration}. The 2 columns in the second dimension include a column of numeric indexes of the rows in
-#'   \code{data} that are selected at a bootstrapping iteration and a column of weights. \code{boot} is NA when argument
-#'   \code{n_boot_iteration} is set as NULL }
+#'      \code{n_boot_iteration}. The 2 columns in the second dimension include a column of numeric indexes of the rows
+#'      in \code{data} that are selected at a bootstrapping iteration and a column of weights. \code{boot} is NA when
+#'      argument \code{n_boot_iteration} is set as NULL
+#'   }
 #' }
 #'
 #' @examples
@@ -74,8 +75,8 @@ estimate_weights <- function(data,
     stop("'centered_colnames' should be either a numeric or character vector")
   }
 
-  ch3 <- sapply(seq_along(centered_colnames), function(ii) {
-    !is.numeric(data[, centered_colnames[ii]])
+  ch3 <- sapply(centered_colnames, function(ii) {
+    !is.numeric(data[[ii]])
   })
   if (any(ch3)) {
     stop(paste0(
@@ -262,7 +263,9 @@ plot_weights_base <- function(weighted_data,
   }
 
   # plot
+  original_par <- par(no.readonly = TRUE)
   par(mgp = c(2.3, 0.5, 0), cex.axis = 0.9, cex.lab = 0.95, bty = "n")
+  on.exit(par(original_par))
   hist(wt, border = "white", col = bin_col, main = main_title, breaks = 20, yaxt = "n", xlab = "")
   axis(2, las = 1)
   abline(v = median(wt), lty = 2, col = vline_col, lwd = 2)

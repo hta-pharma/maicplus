@@ -48,6 +48,9 @@ kmplot <- function(weights_object,
   trt_var_ipd <- toupper(trt_var_ipd)
   trt_var_agd <- toupper(trt_var_agd)
 
+  original_par <- par(no.readonly = TRUE)
+  on.exit(par(original_par))
+
   # pre check
   if (!"maicplus_estimate_weights" %in% class(weights_object)) {
     stop("weights_object should be an object returned by estimate_weights")
@@ -286,6 +289,9 @@ basic_kmplot <- function(kmdat,
                          use_line_types = NULL,
                          use_pch_cex = 0.65,
                          use_pch_alpha = 100) {
+  original_par <- par(no.readonly = TRUE)
+  on.exit(par(original_par))
+
   # precheck
   if (!length(subplot_heights) %in% c(0, (1 + show_risk_set))) {
     stop("length of subplot_heights should be ", (1 + show_risk_set))
@@ -514,7 +520,9 @@ ph_diagplot <- function(weights_object,
   zphobj_adj <- survival::cox.zph(coxobj_adj2, transform = zph_transform, global = FALSE)
 
   # making the plot
+  original_par <- par(no.readonly = TRUE)
   par(mfrow = c(3, 2), cex.lab = 0.85, cex.axis = 0.8, cex.main = 0.9)
+  on.exit(par(original_par))
   # log-cum-hazard plot
   ph_diagplot_lch(kmobj,
     time_scale = time_scale,
@@ -632,7 +640,9 @@ ph_diagplot_lch <- function(km_fit,
   t_range <- range(all.times)
   y_range <- range(log(do.call(rbind, clldat)$cumhaz))
 
+  original_par <- par(no.readonly = TRUE)
   par(mar = c(4, 4, 4, 1), bty = "n", tcl = -0.15, mgp = c(1.5, 0.3, 0))
+  on.exit(par(original_par))
   plot(0, 0,
     type = "n", xlab = paste0(ifelse(log_time, "Log-", ""), "Time in ", time_scale),
     ylab = "Log-Cumulative Hazard Rate",
@@ -707,7 +717,9 @@ ph_diagplot_schoenfeld <- function(coxobj,
   use_yrange <- range(schresid, uppband, lowband)
 
   # making the plot
+  original_par <- par(no.readonly = TRUE)
   par(bty = "n", mar = c(4, 4, 4, 1), tcl = -0.15, mgp = c(1.5, 0.3, 0))
+  on.exit(par(original_par))
   plot(schresid ~ plot_x,
     type = "n",
     yaxt = "n", ylim = use_yrange,

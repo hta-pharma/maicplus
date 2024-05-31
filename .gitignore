@@ -35,3 +35,4 @@ maicplus.Rcheck/
 maicplus*.tar.gz
 maicplus*.tgz
 inst/doc
+tests/testthat/*.pdf

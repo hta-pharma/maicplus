@@ -17,4 +17,5 @@ NULL
 #' @import stringr
 #' @import lubridate
 #' @importFrom utils stack
+#' @importFrom lmtest coeftest coefci
 NULL

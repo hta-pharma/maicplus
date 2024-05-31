@@ -1,7 +1,6 @@
 # anchored example using maic_anchored for tte
 library(flexsurv)
-### IPD
-set.seed(1234)
+
 # Read in relevant ADaM data and rename variables of interest
 adsl <- read.csv(system.file("extdata", "adsl.csv",
   package = "maicplus",
@@ -41,6 +40,15 @@ match_res <- estimate_weights(
   method = "BFGS"
 )
 
+match_res_boot <- estimate_weights(
+  data = use_adsl,
+  centered_colnames = grep("_CENTERED$", names(use_adsl)),
+  start_val = 0,
+  method = "BFGS",
+  n_boot_iteration = 500,
+  set_seed_boot = 1234
+)
+
 # inferential result
 result <- maic_unanchored(
   weights_object = match_res,
@@ -57,7 +65,28 @@ result <- maic_unanchored(
   km_conf_type = "log-log"
 )
 result$inferential$report_median_surv
-result$inferential$report_overall
+result$inferential$report_overall_robustCI
+result$inferential$report_overall_bootCI
+
+result_boot <- maic_unanchored(
+  weights_object = match_res_boot,
+  ipd = adtte,
+  pseudo_ipd = pseudo_ipd,
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
+  trt_ipd = "A",
+  trt_agd = "B",
+  endpoint_name = "Overall Survival",
+  endpoint_type = "tte",
+  eff_measure = "HR",
+  time_scale = "month",
+  km_conf_type = "log-log"
+)
+result_boot$inferential$report_median_surv
+result_boot$inferential$report_overall_robustCI
+result_boot$inferential$report_overall_bootCI
+quantile(result_boot$inferential$boot_est, p = 0.025)
+quantile(result_boot$inferential$boot_est, p = 0.975)
 
 ph_diagplot(
   weights_object = match_res,

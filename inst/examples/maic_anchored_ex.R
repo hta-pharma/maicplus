@@ -7,12 +7,19 @@ adsl <- read.csv(system.file("extdata", "adsl.csv",
   package = "maicplus",
   mustWork = TRUE
 ))
+adsl$USUBJID <- paste0("xx", adsl$USUBJID)
+adsl2 <- adsl
+adsl2$USUBJID <- sample(size = nrow(adsl2), paste0("yy", adsl2$USUBJID), replace = FALSE)
+adsl2 <- adsl2[order(adsl2$USUBJID), ]
+adsl <- rbind(adsl, adsl2)
+
 adtte <- read.csv(system.file("extdata", "adtte.csv",
   package = "maicplus",
   mustWork = TRUE
 ))
 adtte$TIME <- adtte$AVAL
 adtte$EVENT <- adtte$EVNT
+adtte$USUBJID <- paste0("xx", adtte$USUBJID)
 
 adtte2 <- adtte
 adtte2$ARM <- "C"
@@ -21,6 +28,7 @@ fit_C <- flexsurv::flexsurvspline(formula = Surv(TIME, EVENT) ~ 1, data = adtte2
 tmp <- simulate(fit_C, nsim = 1, seed = 1234, newdata = adtte2, censtime = max(adtte$TIME))
 adtte2$TIME <- tmp$time_1
 adtte2$EVENT <- tmp$event_1
+adtte2$USUBJID <- paste0("yy", adtte2$USUBJID)
 adtte <- rbind(adtte, adtte2)
 
 ### AgD
@@ -54,6 +62,15 @@ match_res <- estimate_weights(
   method = "BFGS"
 )
 
+match_res_boot <- estimate_weights(
+  data = use_adsl,
+  centered_colnames = grep("_CENTERED$", names(use_adsl)),
+  start_val = 0,
+  method = "BFGS",
+  n_boot_iteration = 1000,
+  set_seed_boot = 1234
+)
+
 # inferential result
 result <- maic_anchored(
   weights_object = match_res,
@@ -71,7 +88,29 @@ result <- maic_anchored(
   km_conf_type = "log-log"
 )
 result$inferential$report_median_surv
-result$inferential$report_overall
+result$inferential$report_overall_robustCI
+result$inferential$report_overall_bootCI
+
+result_boot <- maic_anchored(
+  weights_object = match_res_boot,
+  ipd = adtte,
+  trt_var_ipd = "ARM",
+  pseudo_ipd = pseudo_ipd,
+  trt_var_agd = "ARM",
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  endpoint_name = "Overall Survival",
+  endpoint_type = "tte",
+  eff_measure = "HR",
+  time_scale = "month",
+  km_conf_type = "log-log"
+)
+result_boot$inferential$report_median_surv
+result_boot$inferential$report_overall_robustCI
+result_boot$inferential$report_overall_bootCI
+quantile(result_boot$inferential$boot_est, p = 0.025)
+quantile(result_boot$inferential$boot_est, p = 0.975)
 
 ph_diagplot(
   weights_object = match_res,
