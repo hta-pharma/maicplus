@@ -3,7 +3,7 @@ pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
   using_maicplus: using_maicplus.html
-last_built: 2024-05-23T07:41Z
+last_built: 2024-05-31T09:46Z
 urls:
   reference: https://hta-pharma.github.io/maicplus/main/reference
   article: https://hta-pharma.github.io/maicplus/main/articles
