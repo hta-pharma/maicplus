@@ -69,7 +69,7 @@ adrs_sat
 }
 \description{
 These datasets contains adsl_sat, adtte_sat, adrs_sat,
-agd_sat (AgD of effect modifiers), pseudo_ipd_sat (AgD, tte data)
+agd (AgD of effect modifiers), pseudo_ipd_sat (AgD, tte data)
 }
 \keyword{dataset}
 \keyword{datasets}
