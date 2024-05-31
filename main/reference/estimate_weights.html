@@ -49,12 +49,6 @@ for ggplot is to plot unscaled and scaled weights on a same plot."><!-- mathjax 
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/main">main</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -142,7 +136,7 @@ procedure will not be triggered, and hence the element <code>"boot"</code> of ou
 
 
 <dt>...</dt>
-<dd><p>all other arguments from <code>base::optim()</code></p></dd>
+<dd><p>Additional <code>control</code> parameters passed to <a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim</a>.</p></dd>
 
 
 <dt>x</dt>
@@ -218,11 +212,6 @@ argument <code>n_boot_iteration</code> is set as NULL</p></dd>
 <span class="r-in"><span><span class="va">centered_colnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"AGE_SQUARED"</span>, <span class="st">"SEX_MALE"</span>, <span class="st">"ECOG0"</span>, <span class="st">"SMOKE"</span>, <span class="st">"N_PR_THER_MEDIAN"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">centered_colnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">centered_colnames</span>, <span class="st">"_CENTERED"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">weighted_data</span> <span class="op">&lt;-</span> <span class="fu">estimate_weights</span><span class="op">(</span>data <span class="op">=</span> <span class="va">ipd_centered</span>, centered_colnames <span class="op">=</span> <span class="va">centered_colnames</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> initial  value 500.000000 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> iter  10 value 215.753747</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> iter  20 value 199.844445</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> final  value 199.842237 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> converged</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"weighted_data.rda"</span>, package <span class="op">=</span> <span class="st">"maicplus"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">weighted_data</span><span class="op">)</span></span></span>
