@@ -222,17 +222,24 @@ maic_anchored_tte <- function(res,
     boot_ipd <- merge(boot_ipd_id, ipd, by = "USUBJID", all.x = TRUE)
     if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
 
-    stat_fun <- function(data, index, w_obj, pseudo_ipd) {
+    stat_fun <- function(data, index, w_obj) {
       boot_ipd <- data[index, ]
       r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
       if (!is.na(r)) {
         if (isFALSE(all.equal(index, w_obj$boot[, 1, r]))) stop("Bootstrap and weight indices don't match")
         boot_ipd$weights <- w_obj$boot[, 2, r]
       }
-      boot_dat <- rbind(boot_ipd, pseudo_ipd)
-      boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
-      boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_dat, weights = weights)
-      c(est = coef(boot_coxobj_dat_adj)[1] - coef(coxobj_agd)[1], var = vcov(boot_coxobj_dat_adj)[1, 1])
+      boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_ipd, weights = boot_ipd$weights, robust = TRUE)
+      boot_res_AC <- list(est = coef(boot_coxobj_dat_adj)[1], se = sqrt(vcov(boot_coxobj_dat_adj)[1, 1]))
+      boot_res_AB <- bucher(boot_res_AC, res_BC, conf_lv = 0.95)
+      c(
+        est_AB = boot_res_AB$est,
+        var_AB = boot_res_AB$se^2,
+        se_AB = boot_res_AB$se,
+        est_AC = boot_res_AC$est,
+        se_AC = boot_res_AC$se,
+        var_AC = boot_res_AC$se^2
+      )
     }
 
     # Revert seed to how it was for weight bootstrap sampling
@@ -241,11 +248,8 @@ maic_anchored_tte <- function(res,
     set_random_seed(weights_object$boot_seed)
 
     R <- dim(weights_object$boot)[3]
-    boot_res <- boot(boot_ipd, stat_fun,
-      R = R, w_obj = weights_object, pseudo_ipd = pseudo_ipd,
-      strata = weights_object$boot_strata
-    )
-    boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
+    boot_res <- boot(boot_ipd, stat_fun, R = R, w_obj = weights_object, strata = weights_object$boot_strata)
+    boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object)
 
     l_u_index <- switch(boot_ci_type,
       "norm" = list(2, 3, "normal"),
@@ -280,9 +284,10 @@ maic_anchored_tte <- function(res,
   if (is.null(res$inferential[["boot_est"]])) {
     res$inferential[["report_overall_bootCI"]] <- NULL
   } else {
-    temp_boot_res <- res_AB
+    temp_boot_res <- boot_res_AB
     temp_boot_res$ci_l <- boot_res_AB$ci_l
     temp_boot_res$ci_u <- boot_res_AB$ci_u
+    class(temp_boot_res) <- class(res_AB)
 
     res$inferential[["report_overall_bootCI"]] <- rbind(
       report_table_tte(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),

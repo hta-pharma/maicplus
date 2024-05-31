@@ -116,7 +116,7 @@ estimate_weights <- function(data,
     boot_out <- boot(EM, statistic = boot_statistic, R = n_boot_iteration, strata = arms)
 
     boot_array <- array(dim = list(nrow(EM), 2, n_boot_iteration))
-    dimnames(boot_array) <- list(NULL, c("rowid", "weight"), NULL)
+    dimnames(boot_array) <- list(sampled_patient = NULL, c("rowid", "weight"), bootstrap_iteration = NULL)
     boot_array[, 1, ] <- t(boot.array(boot_out, TRUE))
     boot_array[, 2, ] <- t(boot_out$t)
     boot_seed <- boot_out$seed
