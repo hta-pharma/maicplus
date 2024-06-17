@@ -30,6 +30,7 @@ tmp <- simulate(fit_C, nsim = 1, seed = 1234, newdata = adtte2, censtime = max(a
 adtte2$TIME <- tmp$time_1
 adtte2$EVENT <- tmp$event_1
 adtte2$USUBJID <- paste0("yy", adtte2$USUBJID)
+adtte2 <- adtte2[order(adtte2$USUBJID), ]
 adtte <- rbind(adtte, adtte2)
 
 ### AgD

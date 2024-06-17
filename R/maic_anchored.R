@@ -221,6 +221,7 @@ maic_anchored_tte <- function(res,
 
     boot_ipd <- merge(boot_ipd_id, ipd, by = "USUBJID", all.x = TRUE)
     if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
+    boot_ipd <- boot_ipd[match(boot_ipd$USUBJID, boot_ipd_id$USUBJID), ]
 
     stat_fun <- function(data, index, w_obj) {
       boot_ipd <- data[index, ]
