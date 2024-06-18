@@ -224,10 +224,10 @@ maic_anchored_tte <- function(res,
     boot_ipd <- boot_ipd[match(boot_ipd$USUBJID, boot_ipd_id$USUBJID), ]
 
     stat_fun <- function(data, index, w_obj) {
-      boot_ipd <- data[index, ]
       r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
       if (!is.na(r)) {
-        if (isFALSE(all.equal(index, w_obj$boot[, 1, r]))) stop("Bootstrap and weight indices don't match")
+        if (!all(index == w_obj$boot[, 1, r])) stop("Bootstrap and weight indices don't match")
+        boot_ipd <- data[w_obj$boot[, 1, r], ]
         boot_ipd$weights <- w_obj$boot[, 2, r]
       }
       boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_ipd, weights = boot_ipd$weights, robust = TRUE)

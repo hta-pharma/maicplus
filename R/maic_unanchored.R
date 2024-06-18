@@ -237,12 +237,13 @@ maic_unanchored_tte <- function(res,
 
     boot_ipd <- merge(boot_ipd_id, ipd, by = "USUBJID", all.x = TRUE)
     if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
+    boot_ipd <- boot_ipd[match(boot_ipd$USUBJID, boot_ipd_id$USUBJID), ]
 
     stat_fun <- function(data, index, w_obj, pseudo_ipd) {
       boot_ipd <- data[index, ]
       r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
       if (!is.na(r)) {
-        if (isFALSE(all.equal(index, w_obj$boot[, 1, r]))) stop("Bootstrap and weight indices don't match")
+        if (!all(index == w_obj$boot[, 1, r])) stop("Bootstrap and weight indices don't match")
         boot_ipd$weights <- w_obj$boot[, 2, r]
       }
       boot_dat <- rbind(boot_ipd, pseudo_ipd)
@@ -352,12 +353,13 @@ maic_unanchored_binary <- function(res,
 
     boot_ipd <- merge(boot_ipd_id, ipd, by = "USUBJID", all.x = TRUE)
     if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
+    boot_ipd <- boot_ipd[match(boot_ipd$USUBJID, boot_ipd_id$USUBJID), ]
 
     stat_fun <- function(data, index, w_obj, pseudo_ipd) {
       boot_ipd <- data[index, ]
       r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
       if (!is.na(r)) {
-        if (isFALSE(all.equal(index, w_obj$boot[, 1, r]))) stop("Bootstrap and weight indices don't match")
+        if (!all(index == w_obj$boot[, 1, r])) stop("Bootstrap and weight indices don't match")
         boot_ipd$weights <- w_obj$boot[, 2, r]
       }
       boot_dat <- rbind(boot_ipd, pseudo_ipd)

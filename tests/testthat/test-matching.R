@@ -90,7 +90,7 @@ test_that("estimate_weights works as expected with bootstrapping", {
       c(8.71745219703408e-05, 1.93529165335151e-08, 0.886392116942025, 1.42604077815808e-13, 0.802986096194834)
     ),
     dim = c(5L, 2L),
-    dimnames = list(NULL, c("rowid", "weight"))
+    dimnames = list("sampled_patient" = NULL, c("rowid", "weight"))
   )
   expect_equal(result$boot[1:5, , 1], expected_matrix)
 })
