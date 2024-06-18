@@ -5,9 +5,8 @@
 \alias{centered_ipd_twt}
 \title{Centered patient data from two arm trial}
 \format{
-A data frame with 1000 rows and 15 columns:
+A data frame with 1000 rows and 14 columns:
 \describe{
-\item{X}{}
 \item{USUBJID}{}
 \item{ARM}{}
 \item{AGE}{}

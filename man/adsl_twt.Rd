@@ -5,9 +5,8 @@
 \alias{adsl_twt}
 \title{Patient data from two arm trial}
 \format{
-A data frame with 1000 rows and 9 columns:
+A data frame with 1000 rows and 8 columns:
 \describe{
-\item{X}{The ID of the patients.}
 \item{USUBJID}{Unique subject identifiers for patients.}
 \item{ARM}{Assigned treatment arm.}
 \item{AGE}{Age in years at baseline.}

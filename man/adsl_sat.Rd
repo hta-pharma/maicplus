@@ -5,9 +5,8 @@
 \alias{adsl_sat}
 \title{Patient data from single arm study}
 \format{
-A data frame with 500 rows and 9 columns:
+a data frame with 500 rows and 8 columns:
 \describe{
-\item{X}{}
 \item{USUBJID}{}
 \item{ARM}{}
 \item{AGE}{}
