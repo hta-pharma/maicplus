@@ -18,7 +18,7 @@ maic_anchored(
   eff_measure = c("HR", "OR", "RR", "RD", "Diff"),
   time_scale = "months",
   km_conf_type = "log-log",
-  boot_ci_type = c("norm", "basic", "student", "percent", "bca")
+  boot_ci_type = c("norm", "basic", "stud", "perc", "bca")
 )
 }
 \arguments{

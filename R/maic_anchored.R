@@ -50,7 +50,7 @@ maic_anchored <- function(weights_object,
                           # time to event specific args
                           time_scale = "months",
                           km_conf_type = "log-log",
-                          boot_ci_type = c("norm", "basic", "student", "percent", "bca")) {
+                          boot_ci_type = c("norm", "basic", "stud", "perc", "bca")) {
   # ==> Initial Setup ------------------------------------------
   # create the hull for the output from this function
   res <- list(

@@ -47,7 +47,7 @@ maic_unanchored <- function(weights_object,
                             endpoint_type = "tte",
                             endpoint_name = "Time to Event Endpoint",
                             eff_measure = c("HR", "OR", "RR", "RD"),
-                            boot_ci_type = c("norm", "basic", "student", "percent", "bca"),
+                            boot_ci_type = c("norm", "basic", "stud", "perc", "bca"),
                             # time to event specific args
                             time_scale = "months",
                             km_conf_type = "log-log",
