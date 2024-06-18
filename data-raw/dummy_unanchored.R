@@ -1,5 +1,5 @@
 #### create datasets for unanchored case ####
-## adsl_sat, adtte_sat, adrs_sat, agd_sat (AgD of effect modifiers), pseudo_ipd_sat (AgD, tte data)
+## adsl_sat, adtte_sat, adrs_sat, agd (AgD of effect modifiers), pseudo_ipd_sat (AgD, tte data)
 
 devtools::load_all()
 # Read in relevant ADaM data and rename variables of interest
@@ -7,6 +7,7 @@ adsl_sat <- read.csv(system.file("extdata", "adsl.csv",
   package = "maicplus",
   mustWork = TRUE
 ))
+adsl_sat$X <- NULL
 adtte_sat <- read.csv(system.file("extdata", "adtte.csv",
   package = "maicplus",
   mustWork = TRUE
@@ -29,7 +30,7 @@ pseudo_ipd_sat <- read.csv(system.file("extdata", "psuedo_IPD.csv",
 pseudo_ipd_sat$ARM <- "B"
 
 ### Centered IPD
-agd_sat <- process_agd(agd_sat)
+agd <- process_agd(agd)
 adsl_sat <- dummize_ipd(adsl_sat, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
 centered_ipd_sat <- center_ipd(ipd = adsl_sat, agd = agd_sat)
 

@@ -9,6 +9,7 @@ adsl <- read.csv(system.file("extdata", "adsl.csv",
   package = "maicplus",
   mustWork = TRUE
 ))
+adsl$X <- NULL
 adsl$USUBJID <- paste0("xx", adsl$USUBJID)
 adsl2 <- adsl
 adtte2$ARM <- "C"
@@ -37,8 +38,9 @@ adtte2$USUBJID <- paste0("yy", adtte2$USUBJID)
 
 adtte_twt <- rbind(adtte, adtte2)
 
-
+# Make sure that agd is up-to-date!
 data("agd")
+
 # create pseudo_ipd_twt
 pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
   package = "maicplus",
