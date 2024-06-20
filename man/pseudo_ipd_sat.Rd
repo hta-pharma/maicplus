@@ -7,9 +7,9 @@
 \format{
 A data frame with 300 rows and 3 columns:
 \describe{
-\item{Time}{}
-\item{Event}{}
-\item{ARM}{}
+\item{Time}{Survival time in days.}
+\item{Event}{Event indicator \code{0}/\code{1}.}
+\item{ARM}{Assigned treatment arm, \code{"B"}.}
 }
 }
 \usage{

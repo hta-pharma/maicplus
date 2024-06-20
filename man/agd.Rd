@@ -7,15 +7,15 @@
 \format{
 A data frame with 3 rows and 9 columns:
 \describe{
-\item{STUDY}{}
-\item{ARM}{}
-\item{N}{}
-\item{AGE_MEAN}{}
-\item{AGE_MEDIAN}{}
-\item{AGE_SD}{}
-\item{SEX_MALE_COUNT}{}
-\item{ECOG0_COUNT}{}
-\item{SMOKE_COUNT}{}
+\item{STUDY}{The study name, Study_XXXX}
+\item{ARM}{Study arm name or total}
+\item{N}{Number of observations in study arm}
+\item{AGE_MEAN}{Mean age in study arm}
+\item{AGE_MEDIAN}{Median age in study arm}
+\item{AGE_SD}{TODO}
+\item{SEX_MALE_COUNT}{Number of male patients}
+\item{ECOG0_COUNT}{Number of patients with ECOG score TODO}
+\item{SMOKE_COUNT}{Number of smokers}
 }
 }
 \usage{

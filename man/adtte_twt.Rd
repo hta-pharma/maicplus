@@ -7,16 +7,16 @@
 \format{
 A data frame with 1000 rows and 10 columns:
 \describe{
-\item{USUBJID}{}
-\item{ARM}{}
-\item{EVNT}{}
-\item{AVAL}{}
-\item{AVALU}{}
-\item{PARAMCD}{}
-\item{PARAM}{}
-\item{CNSR}{}
-\item{TIME}{}
-\item{EVENT}{}
+\item{USUBJID}{Unique subject identifiers for patients.}
+\item{ARM}{Assigned treatment arm, \code{"A"}, \code{"C"}.}
+\item{EVNT}{Event indicator \code{0}/\code{1}.}
+\item{AVAL}{Analysis value which in this dataset overall survival time in days.}
+\item{AVALU}{Unit of \code{AVAL}.}
+\item{PARAMCD}{Parameter code of \code{AVAL}, \code{"OS"}.}
+\item{PARAM}{Parameter name of \code{AVAL}, \verb{"Overall Survival}.}
+\item{CNSR}{Censoring indicator \code{0}/\code{1}.}
+\item{TIME}{Survival time in days.}
+\item{EVENT}{Event indicator \code{0}/\code{1}.}
 }
 }
 \usage{
