@@ -35,7 +35,8 @@ Other unanchored datasets:
 \code{\link{adsl_sat}},
 \code{\link{adtte_sat}},
 \code{\link{agd}},
-\code{\link{pseudo_ipd_sat}}
+\code{\link{pseudo_ipd_sat}},
+\code{\link{weighted_sat}}
 }
 \concept{unanchored datasets}
 \keyword{dataset}

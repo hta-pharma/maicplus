@@ -73,17 +73,29 @@
 #' Binary outcome data from single arm trial
 #' @format A data frame with 500 rows and 5 columns:
 #'   \describe{
-#'     \item{USUBJID}{}
-#'     \item{ARM}{}
-#'     \item{AVAL}{}
-#'     \item{PARAM}{}
-#'     \item{RESPONSE}{}
+#'     \item{USUBJID}{Unique subject identifiers for patients.}
+#'     \item{ARM}{Assigned treatment arm.}
+#'     \item{AVAL}{Analysis value, in this dataset an indicator of response.}
+#'     \item{PARAM}{Parameter type of `AVAL`.}
+#'     \item{RESPONSE}{Indicator of response.}
 #'   }
 #' @family unanchored datasets
 #' @keywords dataset
 "adrs_sat"
 
-
+#' Weighted object for single arm trial data
+#' @format A `maicplus_estimate_weights` object created by [estimate_weights()] containing
+#'   \describe{
+#'     \item{data}{patient level data with weights}
+#'     \item{centered_colnames}{Columns used in MAIC}
+#'     \item{nr_missing}{Number of observations with missing data}
+#'     \item{ess}{Expected sample size}
+#'     \item{opt}{Information from `optim` from weight calculation}
+#'     \item{boot}{Parameters and bootstrap sample weights, `NULL` in this object}
+#'   }
+#' @family unanchored datasets
+#' @keywords dataset
+"weighted_sat"
 
 # aggregate data ------
 

@@ -93,17 +93,22 @@ for \code{ggplot} is to plot unscaled and scaled weights on a same plot.
 
 }}
 \examples{
-load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
-load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
-ipd_centered <- center_ipd(ipd = ipd, agd = agd)
-
-centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
-centered_colnames <- paste0(centered_colnames, "_CENTERED")
+data(agd)
+data(adsl_sat)
+ipd_centered <- center_ipd(ipd = adsl_sat, agd = process_agd(agd))
+centered_colnames <- grep("_CENTERED", colnames(ipd_centered), value = TRUE)
+centered_colnames
 weighted_data <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
+\donttest{
+# To later estimate bootstrap confidence intervals, we calculate the weights
+# for the bootstrap samples:
+weighted_data_boot <- estimate_weights(
+  data = ipd_centered, centered_colnames = centered_colnames, n_boot_iteration = 500
+)
+}
+plot(weighted_sat)
 
-load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
-plot(weighted_data)
-
-library(ggplot2)
-plot(weighted_data, ggplot = TRUE)
+if (requireNamespace("ggplot2")) {
+  plot(weighted_sat, ggplot = TRUE)
+}
 }

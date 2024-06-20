@@ -27,8 +27,8 @@ IPD and aggregate data variable names should match.
 }
 \examples{
 # load in IPD
-adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus", mustWork = TRUE))
-adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
+data(adsl_sat)
+adsl <- dummize_ipd(adsl_sat, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
 
 # Reading aggregate data by Excel
 target_pop <- read.csv(
@@ -37,7 +37,7 @@ target_pop <- read.csv(
 agd <- process_agd(target_pop)
 
 # Alternatively, you can specify aggregate data manually in data frame
-load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
+data(agd)
 ipd_centered <- center_ipd(ipd = adsl, agd = agd)
 
 }

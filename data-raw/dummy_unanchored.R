@@ -30,7 +30,7 @@ pseudo_ipd_sat <- read.csv(system.file("extdata", "psuedo_IPD.csv",
 pseudo_ipd_sat$ARM <- "B"
 
 ### Centered IPD
-agd <- process_agd(agd)
+agd_sat <- process_agd(agd)
 adsl_sat <- dummize_ipd(adsl_sat, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
 centered_ipd_sat <- center_ipd(ipd = adsl_sat, agd = agd_sat)
 
@@ -38,7 +38,13 @@ centered_ipd_sat <- center_ipd(ipd = adsl_sat, agd = agd_sat)
 adrs_sat <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus", mustWork = TRUE))
 adrs_sat$RESPONSE <- adrs_sat$AVAL
 
+## Example weighted TTE
+ipd_centered <- center_ipd(ipd = adsl_sat, agd = agd_sat)
+centered_colnames <- paste0(c("AGE", "AGE_MEDIAN", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE"), "_CENTERED")
+weighted_sat <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
+
+
 ### Output
-usethis::use_data(adsl_sat, adtte_sat, agd, pseudo_ipd_sat, centered_ipd_sat, adrs_sat,
+usethis::use_data(adsl_sat, adtte_sat, agd, pseudo_ipd_sat, centered_ipd_sat, adrs_sat, weighted_sat,
   internal = FALSE, overwrite = TRUE
 )

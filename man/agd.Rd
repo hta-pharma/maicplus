@@ -30,7 +30,8 @@ Other unanchored datasets:
 \code{\link{adsl_sat}},
 \code{\link{adtte_sat}},
 \code{\link{centered_ipd_sat}},
-\code{\link{pseudo_ipd_sat}}
+\code{\link{pseudo_ipd_sat}},
+\code{\link{weighted_sat}}
 
 Other anchored datasets: 
 \code{\link{adsl_twt}},

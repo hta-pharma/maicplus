@@ -30,7 +30,8 @@ Other unanchored datasets:
 \code{\link{adtte_sat}},
 \code{\link{agd}},
 \code{\link{centered_ipd_sat}},
-\code{\link{pseudo_ipd_sat}}
+\code{\link{pseudo_ipd_sat}},
+\code{\link{weighted_sat}}
 }
 \concept{unanchored datasets}
 \keyword{dataset}

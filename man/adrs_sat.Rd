@@ -7,11 +7,11 @@
 \format{
 A data frame with 500 rows and 5 columns:
 \describe{
-\item{USUBJID}{}
-\item{ARM}{}
-\item{AVAL}{}
-\item{PARAM}{}
-\item{RESPONSE}{}
+\item{USUBJID}{Unique subject identifiers for patients.}
+\item{ARM}{Assigned treatment arm.}
+\item{AVAL}{Analysis value, in this dataset an indicator of response.}
+\item{PARAM}{Parameter type of \code{AVAL}.}
+\item{RESPONSE}{Indicator of response.}
 }
 }
 \usage{
@@ -26,7 +26,8 @@ Other unanchored datasets:
 \code{\link{adtte_sat}},
 \code{\link{agd}},
 \code{\link{centered_ipd_sat}},
-\code{\link{pseudo_ipd_sat}}
+\code{\link{pseudo_ipd_sat}},
+\code{\link{weighted_sat}}
 }
 \concept{unanchored datasets}
 \keyword{dataset}

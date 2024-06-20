@@ -22,7 +22,7 @@ This would be especially useful if the variable has more than two factors.
 Note that the original variable is kept after a variable is dummized.
 }
 \examples{
-adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus", mustWork = TRUE))
-adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
+data(adsl_twt)
+dummize_ipd(adsl_twt, dummize_cols = c("SEX"), dummize_ref_level = c("Male"))
 
 }

@@ -24,7 +24,8 @@ Other unanchored datasets:
 \code{\link{adsl_sat}},
 \code{\link{adtte_sat}},
 \code{\link{agd}},
-\code{\link{centered_ipd_sat}}
+\code{\link{centered_ipd_sat}},
+\code{\link{weighted_sat}}
 }
 \concept{unanchored datasets}
 \keyword{dataset}

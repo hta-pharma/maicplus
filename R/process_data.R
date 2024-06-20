@@ -114,8 +114,8 @@ process_agd <- function(raw_agd) {
 #' @param dummize_ref_level vector of reference level of the variables to binarize
 #'
 #' @examples
-#' adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus", mustWork = TRUE))
-#' adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
+#' data(adsl_twt)
+#' dummize_ipd(adsl_twt, dummize_cols = c("SEX"), dummize_ref_level = c("Male"))
 #'
 #' @return ipd with dummized columns
 #' @export
@@ -152,8 +152,8 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level) {
 #' suffix is no longer accepted.
 #' @examples
 #' # load in IPD
-#' adsl <- read.csv(system.file("extdata", "adsl.csv", package = "maicplus", mustWork = TRUE))
-#' adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
+#' data(adsl_sat)
+#' adsl <- dummize_ipd(adsl_sat, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
 #'
 #' # Reading aggregate data by Excel
 #' target_pop <- read.csv(
@@ -162,7 +162,7 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level) {
 #' agd <- process_agd(target_pop)
 #'
 #' # Alternatively, you can specify aggregate data manually in data frame
-#' load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
+#' data(agd)
 #' ipd_centered <- center_ipd(ipd = adsl, agd = agd)
 #'
 #' @return centered ipd using aggregate level data averages

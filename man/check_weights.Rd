@@ -48,8 +48,6 @@ before and after adjustment.
 
 }}
 \examples{
-load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
-load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
-check_weights(weighted_data, agd)
+check_weights(weighted_sat, process_agd(agd))
 
 }
