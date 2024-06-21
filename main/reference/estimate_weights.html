@@ -49,12 +49,6 @@ for ggplot is to plot unscaled and scaled weights on a same plot."><!-- mathjax 
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/main">main</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -211,20 +205,30 @@ argument <code>n_boot_iteration</code> is set as NULL</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ipd.rda"</span>, package <span class="op">=</span> <span class="st">"maicplus"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"agd.rda"</span>, package <span class="op">=</span> <span class="st">"maicplus"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">ipd_centered</span> <span class="op">&lt;-</span> <span class="fu"><a href="center_ipd.html">center_ipd</a></span><span class="op">(</span>ipd <span class="op">=</span> <span class="va">ipd</span>, agd <span class="op">=</span> <span class="va">agd</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">centered_colnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"AGE_SQUARED"</span>, <span class="st">"SEX_MALE"</span>, <span class="st">"ECOG0"</span>, <span class="st">"SMOKE"</span>, <span class="st">"N_PR_THER_MEDIAN"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">centered_colnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">centered_colnames</span>, <span class="st">"_CENTERED"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">agd</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">adsl_sat</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ipd_centered</span> <span class="op">&lt;-</span> <span class="fu"><a href="center_ipd.html">center_ipd</a></span><span class="op">(</span>ipd <span class="op">=</span> <span class="va">adsl_sat</span>, agd <span class="op">=</span> <span class="fu"><a href="process_agd.html">process_agd</a></span><span class="op">(</span><span class="va">agd</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">centered_colnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"_CENTERED"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">ipd_centered</span><span class="op">)</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">centered_colnames</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "AGE_CENTERED"              "AGE_MEDIAN_CENTERED"      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "AGE_SQUARED_CENTERED"      "SEX_MALE_CENTERED"        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "ECOG0_CENTERED"            "SMOKE_CENTERED"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [7] "N_PR_THER_MEDIAN_CENTERED"</span>
 <span class="r-in"><span><span class="va">weighted_data</span> <span class="op">&lt;-</span> <span class="fu">estimate_weights</span><span class="op">(</span>data <span class="op">=</span> <span class="va">ipd_centered</span>, centered_colnames <span class="op">=</span> <span class="va">centered_colnames</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"weighted_data.rda"</span>, package <span class="op">=</span> <span class="st">"maicplus"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">weighted_data</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co"># To later estimate bootstrap confidence intervals, we calculate the weights</span></span></span>
+<span class="r-in"><span><span class="co"># for the bootstrap samples:</span></span></span>
+<span class="r-in"><span><span class="va">weighted_data_boot</span> <span class="op">&lt;-</span> <span class="fu">estimate_weights</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">ipd_centered</span>, centered_colnames <span class="op">=</span> <span class="va">centered_colnames</span>, n_boot_iteration <span class="op">=</span> <span class="fl">500</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">weighted_sat</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="estimate_weights-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">weighted_data</span>, ggplot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggplot2"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">weighted_sat</span>, ggplot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required namespace: ggplot2</span>
 <span class="r-plt img"><img src="estimate_weights-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
