@@ -37,6 +37,7 @@ adtte2$EVENT <- tmp$event_1
 adtte2$USUBJID <- paste0("yy", adtte2$USUBJID)
 
 adtte_twt <- rbind(adtte, adtte2)
+adtte_twt$EVNT <- NULL
 
 ### Binary
 adrs_twt1 <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus", mustWork = TRUE))

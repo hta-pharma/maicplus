@@ -15,7 +15,10 @@ adtte_sat <- read.csv(system.file("extdata", "adtte.csv",
 adtte_sat$TIME <- adtte_sat$AVAL
 adtte_sat$EVENT <- 1 - adtte_sat$CNSR
 adtte_sat <- adtte_sat[adtte_sat$ARM == "A", , drop = FALSE]
+adtte_sat$EVNT <- NULL
+
 adsl_sat <- adsl_sat[adsl_sat$USUBJID %in% adtte_sat$USUBJID, , drop = FALSE]
+
 
 ### AgD
 # Baseline aggregate data for the comparator population
