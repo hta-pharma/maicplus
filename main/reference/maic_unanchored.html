@@ -37,12 +37,6 @@ there is no common comparator arm in the internal and external trial)."><!-- mat
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/main">main</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -82,7 +76,7 @@ there is no common comparator arm in the internal and external trial).</p>
 <span>  endpoint_type <span class="op">=</span> <span class="st">"tte"</span>,</span>
 <span>  endpoint_name <span class="op">=</span> <span class="st">"Time to Event Endpoint"</span>,</span>
 <span>  eff_measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HR"</span>, <span class="st">"OR"</span>, <span class="st">"RR"</span>, <span class="st">"RD"</span><span class="op">)</span>,</span>
-<span>  boot_ci_is_quantile <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  boot_ci_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"norm"</span>, <span class="st">"basic"</span>, <span class="st">"stud"</span>, <span class="st">"perc"</span>, <span class="st">"bca"</span><span class="op">)</span>,</span>
 <span>  time_scale <span class="op">=</span> <span class="st">"months"</span>,</span>
 <span>  km_conf_type <span class="op">=</span> <span class="st">"log-log"</span>,</span>
 <span>  binary_robust_cov_type <span class="op">=</span> <span class="st">"HC3"</span></span>
@@ -133,11 +127,9 @@ from contingency table (for binary endpoint)</p></dd>
 "HR" for a time-to-event endpoint. By default is <code>NULL</code>, "OR" is used for binary case, otherwise "HR" is used.</p></dd>
 
 
-<dt>boot_ci_is_quantile</dt>
-<dd><p>a logical, specify if the 95% bootstrapped confidence interval should be derived by sample
-quantile. Default FALSE, which the estimates assumes to follow asymptotic normal (only if <code>eff_measure</code> is "RD") or
-log-normal with a variance that can be approximated by bootstrapped sample of the estimate. This default option may
-be handy when the number of bootstrap iterations is not big.</p></dd>
+<dt>boot_ci_type</dt>
+<dd><p>a string, one of <code>c("norm","basic", "stud", "perc", "bca")</code> to select the type of bootstrap
+confidence interval. See <a href="https://rdrr.io/pkg/boot/man/boot.ci.html" class="external-link">boot::boot.ci</a> for more details.</p></dd>
 
 
 <dt>time_scale</dt>
@@ -150,8 +142,8 @@ be handy when the number of bootstrap iterations is not big.</p></dd>
 
 
 <dt>binary_robust_cov_type</dt>
-<dd><p>a string to pass to argument <code>type</code> of <a href="https://sandwich.R-Forge.R-project.org/reference/vcovHC.html" class="external-link">sandwich::vcovHC</a>, see possible options
-in the documentation of that function. Default is <code>"HC3"</code></p></dd>
+<dd><p>a string to pass to argument <code>type</code> of <a href="https://sandwich.R-Forge.R-project.org/reference/vcovHC.html" class="external-link">sandwich::vcovHC</a>, see possible options in the
+documentation of that function. Default is <code>"HC3"</code></p></dd>
 
 </dl></div>
     <div class="section level2">

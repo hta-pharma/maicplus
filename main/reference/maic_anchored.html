@@ -37,12 +37,6 @@ is a common comparator arm in the internal and external trial)."><!-- mathjax --
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/main">main</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -84,7 +78,8 @@ is a common comparator arm in the internal and external trial).</p>
 <span>  endpoint_name <span class="op">=</span> <span class="st">"Time to Event Endpoint"</span>,</span>
 <span>  eff_measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HR"</span>, <span class="st">"OR"</span>, <span class="st">"RR"</span>, <span class="st">"RD"</span>, <span class="st">"Diff"</span><span class="op">)</span>,</span>
 <span>  time_scale <span class="op">=</span> <span class="st">"months"</span>,</span>
-<span>  km_conf_type <span class="op">=</span> <span class="st">"log-log"</span></span>
+<span>  km_conf_type <span class="op">=</span> <span class="st">"log-log"</span>,</span>
+<span>  boot_ci_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"norm"</span>, <span class="st">"basic"</span>, <span class="st">"stud"</span>, <span class="st">"perc"</span>, <span class="st">"bca"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -143,6 +138,11 @@ from contingency table (for binary endpoint)</p></dd>
 
 <dt>km_conf_type</dt>
 <dd><p>a string, pass to <code>conf.type</code> of <code>survfit</code></p></dd>
+
+
+<dt>boot_ci_type</dt>
+<dd><p>a string, one of <code>c("norm","basic", "stud", "perc", "bca")</code> to select the type of bootstrap
+confidence interval. See <a href="https://rdrr.io/pkg/boot/man/boot.ci.html" class="external-link">boot::boot.ci</a> for more details.</p></dd>
 
 </dl></div>
     <div class="section level2">
