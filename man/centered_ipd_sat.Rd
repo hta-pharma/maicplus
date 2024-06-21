@@ -18,7 +18,8 @@ A data frame with 500 rows and 14 columns:
 \item{AGE_CENTERED}{Age in years at baseline relative to average in aggregate data \link{agd}.}
 \item{AGE_MEDIAN_CENTERED}{\code{AGE} greater/less than \code{MEDIAN_AGE} in \link{agd} coded as \code{1}/\code{0} and then centered at
 0.5.}
-\item{AGE_SQUARED_CENTERED}{TODO}
+\item{AGE_SQUARED_CENTERED}{\code{AGE} squared and centered with respect to the \code{AGE} in \link{agd}. The squared age in the
+aggregate data is derived from the \eqn{E(X^2)} term in the variance formula.}
 \item{SEX_MALE_CENTERED}{\code{SEX_MALE} centered by the proportion of male patients in \link{agd}}
 \item{ECOG0_CENTERED}{\code{ECOG0} centered by the proportion of \code{ECOG0} in \link{agd}}
 \item{SMOKE_CENTERED}{\code{SMOKE} centered by the proportion of \code{SMOKE} in \link{agd}}

@@ -62,7 +62,8 @@
 #'     \item{AGE_CENTERED}{Age in years at baseline relative to average in aggregate data [agd].}
 #'     \item{AGE_MEDIAN_CENTERED}{`AGE` greater/less than `MEDIAN_AGE` in [agd] coded as `1`/`0` and then centered at
 #'      0.5.}
-#'     \item{AGE_SQUARED_CENTERED}{TODO}
+#'     \item{AGE_SQUARED_CENTERED}{`AGE` squared and centered with respect to the `AGE` in [agd]. The squared age in the
+#'       aggregate data is derived from the \eqn{E(X^2)} term in the variance formula.}
 #'     \item{SEX_MALE_CENTERED}{`SEX_MALE` centered by the proportion of male patients in [agd]}
 #'     \item{ECOG0_CENTERED}{`ECOG0` centered by the proportion of `ECOG0` in [agd]}
 #'     \item{SMOKE_CENTERED}{`SMOKE` centered by the proportion of `SMOKE` in [agd]}
@@ -196,7 +197,8 @@
 #'     \item{AGE_CENTERED}{Age in years at baseline relative to average in aggregate data [agd].}
 #'     \item{AGE_MEDIAN_CENTERED}{`AGE` greater/less than `MEDIAN_AGE` in [agd] coded as `1`/`0` and then centered at
 #'      0.5.}
-#'     \item{AGE_SQUARED_CENTERED}{TODO}
+#'     \item{AGE_SQUARED_CENTERED}{`AGE` squared and centered with respect to the `AGE` in [agd]. The squared age in the
+#'       aggregate data is derived from the \eqn{E(X^2)} term in the variance formula.}
 #'     \item{SEX_MALE_CENTERED}{`SEX_MALE` centered by the proportion of male patients in [agd]}
 #'     \item{ECOG0_CENTERED}{`ECOG0` centered by the proportion of `ECOG0` in [agd]}
 #'     \item{SMOKE_CENTERED}{`SMOKE` centered by the proportion of `SMOKE` in [agd]}
