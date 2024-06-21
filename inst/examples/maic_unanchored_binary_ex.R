@@ -3,7 +3,10 @@
 centered_ipd_sat
 centered_colnames <- grep("_CENTERED$", colnames(centered_ipd_sat), value = TRUE)
 weighted_data <- estimate_weights(data = centered_ipd_sat, centered_colnames = centered_colnames)
-weighted_data2 <- estimate_weights(data = centered_ipd_sat, centered_colnames = centered_colnames, n_boot_iteration = 500)
+weighted_data2 <- estimate_weights(
+  data = centered_ipd_sat, centered_colnames = centered_colnames,
+  n_boot_iteration = 500
+)
 
 # binary IPD
 adrs_sat
