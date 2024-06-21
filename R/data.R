@@ -22,7 +22,6 @@
 #'   \describe{
 #'     \item{USUBJID}{Unique subject identifiers for patients.}
 #'     \item{ARM}{Assigned treatment arm, `"A"`.}
-#'     \item{EVNT}{Event indicator `0`/`1`.}
 #'     \item{AVAL}{Analysis value which in this dataset overall survival time in days.}
 #'     \item{AVALU}{Unit of `AVAL`.}
 #'     \item{PARAMCD}{Paramater code of `AVAL`, `"OS"`.}
@@ -67,6 +66,7 @@
 #'     \item{SEX_MALE_CENTERED}{`SEX_MALE` centered by the proportion of male patients in [agd]}
 #'     \item{ECOG0_CENTERED}{`ECOG0` centered by the proportion of `ECOG0` in [agd]}
 #'     \item{SMOKE_CENTERED}{`SMOKE` centered by the proportion of `SMOKE` in [agd]}
+#'     \item{N_PR_THER_MEDIAN_CENTERED}{`N_PR_THER` centered by the median in [agd].}
 #'   }
 #' @family unanchored datasets
 #' @keywords dataset
@@ -116,6 +116,7 @@
 #'     \item{SEX_MALE_COUNT}{Number of male patients}
 #'     \item{ECOG0_COUNT}{Number of patients with ECOG score = 0}
 #'     \item{SMOKE_COUNT}{Number of smokers}
+#'     \item{N_PR_THER_MEDIAN}{Median number of prior therapies}
 #'   }
 #' @family unanchored datasets
 #' @family anchored datasets
@@ -147,7 +148,6 @@
 #'   \describe{
 #'     \item{USUBJID}{Unique subject identifiers for patients.}
 #'     \item{ARM}{Assigned treatment arm, `"A"`, `"C"`.}
-#'     \item{EVNT}{Event indicator `0`/`1`.}
 #'     \item{AVAL}{Analysis value which in this dataset overall survival time in days.}
 #'     \item{AVALU}{Unit of `AVAL`.}
 #'     \item{PARAMCD}{Parameter code of `AVAL`, `"OS"`.}
@@ -202,6 +202,7 @@
 #'     \item{SEX_MALE_CENTERED}{`SEX_MALE` centered by the proportion of male patients in [agd]}
 #'     \item{ECOG0_CENTERED}{`ECOG0` centered by the proportion of `ECOG0` in [agd]}
 #'     \item{SMOKE_CENTERED}{`SMOKE` centered by the proportion of `SMOKE` in [agd]}
+#'     \item{N_PR_THER_MEDIAN_CENTERED}{`N_PR_THER` centered by the median in [agd].}
 #'   }
 #' @keywords dataset
 #' @family anchored datasets

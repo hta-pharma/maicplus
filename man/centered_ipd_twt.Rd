@@ -23,6 +23,7 @@ aggregate data is derived from the \eqn{E(X^2)} term in the variance formula.}
 \item{SEX_MALE_CENTERED}{\code{SEX_MALE} centered by the proportion of male patients in \link{agd}}
 \item{ECOG0_CENTERED}{\code{ECOG0} centered by the proportion of \code{ECOG0} in \link{agd}}
 \item{SMOKE_CENTERED}{\code{SMOKE} centered by the proportion of \code{SMOKE} in \link{agd}}
+\item{N_PR_THER_MEDIAN_CENTERED}{\code{N_PR_THER} centered by the median in \link{agd}.}
 }
 }
 \usage{

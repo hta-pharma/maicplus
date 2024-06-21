@@ -16,6 +16,7 @@ A data frame with 3 rows and 9 columns:
 \item{SEX_MALE_COUNT}{Number of male patients}
 \item{ECOG0_COUNT}{Number of patients with ECOG score = 0}
 \item{SMOKE_COUNT}{Number of smokers}
+\item{N_PR_THER_MEDIAN}{Median number of prior therapies}
 }
 }
 \usage{

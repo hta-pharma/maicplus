@@ -9,7 +9,6 @@ A data frame with 500 rows and 10 columns:
 \describe{
 \item{USUBJID}{Unique subject identifiers for patients.}
 \item{ARM}{Assigned treatment arm, \code{"A"}.}
-\item{EVNT}{Event indicator \code{0}/\code{1}.}
 \item{AVAL}{Analysis value which in this dataset overall survival time in days.}
 \item{AVALU}{Unit of \code{AVAL}.}
 \item{PARAMCD}{Paramater code of \code{AVAL}, \code{"OS"}.}

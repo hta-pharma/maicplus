@@ -24,7 +24,7 @@ adtte <- read.csv(system.file("extdata", "adtte.csv",
   mustWork = TRUE
 ))
 adtte$TIME <- adtte$AVAL
-adtte$EVENT <- adtte$EVNT
+adtte$EVENT <- 1 - adtte$CNSR
 adtte$USUBJID <- paste0("xx", adtte$USUBJID)
 
 adtte2 <- adtte
