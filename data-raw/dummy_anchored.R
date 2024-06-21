@@ -12,7 +12,7 @@ adsl <- read.csv(system.file("extdata", "adsl.csv",
 adsl$X <- NULL
 adsl$USUBJID <- paste0("xx", adsl$USUBJID)
 adsl2 <- adsl
-adtte2$ARM <- "C"
+adsl2$ARM <- "C"
 adsl2$USUBJID <- sample(size = nrow(adsl2), paste0("yy", adsl2$USUBJID), replace = FALSE)
 adsl2 <- adsl2[order(adsl2$USUBJID), ]
 
@@ -38,6 +38,18 @@ adtte2$USUBJID <- paste0("yy", adtte2$USUBJID)
 
 adtte_twt <- rbind(adtte, adtte2)
 
+### Binary
+adrs_twt1 <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus", mustWork = TRUE))
+adrs_twt1$USUBJID <- paste0("xx", adrs_twt1$USUBJID)
+adrs_twt1$RESPONSE <- adrs_twt1$AVAL
+
+adrs_twt2 <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus", mustWork = TRUE))
+adrs_twt2$ARM <- "C"
+adrs_twt2$AVAL <- adrs_twt2$RESPONSE <- rbinom(nrow(adrs_twt2), size = 1, prob = 0.68)
+adrs_twt2$USUBJID <- paste0("yy", adrs_twt2$USUBJID)
+
+adrs_twt <- rbind(adrs_twt1, adrs_twt2)
+
 # Make sure that agd is up-to-date!
 data("agd")
 
@@ -62,6 +74,6 @@ centered_ipd_twt <- center_ipd(ipd = adsl_twt, agd = agd)
 
 
 ### Output
-usethis::use_data(adsl_twt, adtte_twt, pseudo_ipd_twt, centered_ipd_twt,
+usethis::use_data(adsl_twt, adtte_twt, pseudo_ipd_twt, centered_ipd_twt, adrs_twt,
   internal = FALSE, overwrite = TRUE
 )

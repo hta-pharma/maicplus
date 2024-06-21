@@ -60,7 +60,8 @@
 #'     \item{N_PR_THER}{Number of prior therapies received as integer `1, 2, 3, 4`.}
 #'     \item{SEX_MALE}{Indicator of `SEX == "Male"` as numeric `1`/`0`.}
 #'     \item{AGE_CENTERED}{Age in years at baseline relative to average in aggregate data [agd].}
-#'     \item{AGE_MEDIAN_CENTERED}{`AGE` greater/less than `MEDIAN_AGE` in [agd] coded as `1`/`0` and then centered.}
+#'     \item{AGE_MEDIAN_CENTERED}{`AGE` greater/less than `MEDIAN_AGE` in [agd] coded as `1`/`0` and then centered at
+#'      0.5.}
 #'     \item{AGE_SQUARED_CENTERED}{TODO}
 #'     \item{SEX_MALE_CENTERED}{`SEX_MALE` centered by the proportion of male patients in [agd]}
 #'     \item{ECOG0_CENTERED}{`ECOG0` centered by the proportion of `ECOG0` in [agd]}
@@ -158,6 +159,16 @@
 #' @keywords dataset
 "adtte_twt"
 
+#' Binary outcome data from two arm trial
+#' @format A data frame with 1000 rows and 5 columns:
+#'   \describe{
+#'     \item{USUBJID}{Unique subject identifiers for patients.}
+#'     \item{ARM}{Assigned treatment arm, `"A"`, `"C"`.}
+#'     \item{AVAL}{Analysis value, in this dataset an indicator of response.}
+#'     \item{PARAM}{Parameter type of `AVAL`.}
+#'     \item{RESPONSE}{Indicator of response.}
+#'   }
+"adrs_twt"
 
 #' Pseudo individual patient survival data from published two arm study
 #' @format A data frame with 800 rows and 3 columns:
@@ -183,7 +194,8 @@
 #'     \item{N_PR_THER}{Number of prior therapies received as integer `1, 2, 3, 4`.}
 #'     \item{SEX_MALE}{Indicator of `SEX == "Male"` as numeric `1`/`0`.}
 #'     \item{AGE_CENTERED}{Age in years at baseline relative to average in aggregate data [agd].}
-#'     \item{AGE_MEDIAN_CENTERED}{`AGE` greater/less than `MEDIAN_AGE` in [agd] coded as `1`/`0` and then centered.}
+#'     \item{AGE_MEDIAN_CENTERED}{`AGE` greater/less than `MEDIAN_AGE` in [agd] coded as `1`/`0` and then centered at
+#'      0.5.}
 #'     \item{AGE_SQUARED_CENTERED}{TODO}
 #'     \item{SEX_MALE_CENTERED}{`SEX_MALE` centered by the proportion of male patients in [agd]}
 #'     \item{ECOG0_CENTERED}{`ECOG0` centered by the proportion of `ECOG0` in [agd]}
