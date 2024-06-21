@@ -37,14 +37,19 @@
 #' }
 #'
 #' @examples
-#' load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
-#' load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
-#' ipd_centered <- center_ipd(ipd = ipd, agd = agd)
-#'
-#' centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
-#' centered_colnames <- paste0(centered_colnames, "_CENTERED")
+#' data(agd)
+#' data(adsl_sat)
+#' ipd_centered <- center_ipd(ipd = adsl_sat, agd = process_agd(agd))
+#' centered_colnames <- grep("_CENTERED", colnames(ipd_centered), value = TRUE)
+#' centered_colnames
 #' weighted_data <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
-#'
+#' \donttest{
+#' # To later estimate bootstrap confidence intervals, we calculate the weights
+#' # for the bootstrap samples:
+#' weighted_data_boot <- estimate_weights(
+#'   data = ipd_centered, centered_colnames = centered_colnames, n_boot_iteration = 500
+#' )
+#' }
 #' @export
 
 estimate_weights <- function(data,
@@ -199,10 +204,9 @@ optimise_weights <- function(matrix,
 #'
 #' @return list of ESS, ESS reduction, median value of scaled and unscaled weights, and missing count
 #' @examples
-#' \dontrun{
-#' load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
-#' calculate_weights_legend(weighted_data)
-#' }
+#' data("weighted_sat")
+#' calculate_weights_legend(weighted_sat)
+#' @export
 #' @keywords internal
 
 calculate_weights_legend <- function(weighted_data) {
@@ -362,11 +366,11 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
 #' @param bins (`ggplot` only) number of bin parameter to use
 #'
 #' @examples
-#' load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
-#' plot(weighted_data)
+#' plot(weighted_sat)
 #'
-#' library(ggplot2)
-#' plot(weighted_data, ggplot = TRUE)
+#' if (requireNamespace("ggplot2")) {
+#'   plot(weighted_sat, ggplot = TRUE)
+#' }
 #' @describeIn estimate_weights Plot method for estimate_weights objects
 #' @export
 
@@ -397,9 +401,7 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
 #' aggregated data following the same naming convention
 #'
 #' @examples
-#' load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
-#' load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
-#' check_weights(weighted_data, agd)
+#' check_weights(weighted_sat, process_agd(agd))
 #'
 #' @import DescTools
 #'

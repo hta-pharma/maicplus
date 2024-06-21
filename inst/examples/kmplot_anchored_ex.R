@@ -2,40 +2,19 @@
 
 ### IPD
 # Read in relevant ADaM data and rename variables of interest
-adsl <- read.csv(system.file("extdata", "adsl.csv",
-  package = "maicplus",
-  mustWork = TRUE
-))
-adtte <- read.csv(system.file("extdata", "adtte.csv",
-  package = "maicplus",
-  mustWork = TRUE
-))
-adtte$TIME <- adtte$AVAL
-adtte$EVENT <- adtte$EVNT
-adtte2 <- adtte
-adtte2$ARM <- "C"
-adtte2$TIME <- adtte2$TIME + 7
-adtte <- rbind(adtte, adtte2)
+adsl_twt
+adtte_twt
 
 ### AgD
 # Baseline aggregate data for the comparator population
-target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
-  package = "maicplus", mustWork = TRUE
-))
+agd
+
 # for time-to-event endpoints, pseudo IPD from digitalized KM
-pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
-  package = "maicplus",
-  mustWork = TRUE
-))
-pseudo_ipd$ARM <- "B"
-pseudo_ipd2 <- pseudo_ipd
-pseudo_ipd2$ARM <- "C"
-pseudo_ipd2$Time <- pseudo_ipd2$Time + 5
-pseudo_ipd <- rbind(pseudo_ipd, pseudo_ipd2)
+pseudo_ipd_twt
 
 #### prepare data
-target_pop <- process_agd(target_pop)
-adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
+target_pop <- process_agd(agd)
+adsl <- dummize_ipd(adsl_twt, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
 use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
 
 #### derive weights
@@ -49,9 +28,9 @@ match_res <- estimate_weights(
 # plot by trial
 kmplot(
   weights_object = match_res,
-  tte_ipd = adtte,
+  tte_ipd = adtte_twt,
   trt_var_ipd = "ARM",
-  tte_pseudo_ipd = pseudo_ipd,
+  tte_pseudo_ipd = pseudo_ipd_twt,
   trt_var_agd = "ARM",
   endpoint_name = "Overall Survival",
   trt_ipd = "A",
@@ -71,9 +50,9 @@ kmplot(
 # plot by arm
 kmplot(
   weights_object = match_res,
-  tte_ipd = adtte,
+  tte_ipd = adtte_twt,
   trt_var_ipd = "ARM",
-  tte_pseudo_ipd = pseudo_ipd,
+  tte_pseudo_ipd = pseudo_ipd_twt,
   trt_var_agd = "ARM",
   endpoint_name = "Overall Survival",
   trt_ipd = "A",
@@ -92,9 +71,9 @@ kmplot(
 # plot all
 kmplot(
   weights_object = match_res,
-  tte_ipd = adtte,
+  tte_ipd = adtte_twt,
   trt_var_ipd = "ARM",
-  tte_pseudo_ipd = pseudo_ipd,
+  tte_pseudo_ipd = pseudo_ipd_twt,
   trt_var_agd = "ARM",
   endpoint_name = "Overall Survival",
   trt_ipd = "A",

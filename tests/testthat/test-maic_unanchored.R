@@ -120,16 +120,21 @@ test_that("test time to event case", {
   use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
 
   #### derive weights
+  cols <- c(
+    "AGE_CENTERED", "AGE_MEDIAN_CENTERED", "AGE_SQUARED_CENTERED",
+    "SEX_MALE_CENTERED", "ECOG0_CENTERED", "SMOKE_CENTERED"
+  )
+  # cols <-  grep("_CENTERED$", names(use_adsl))
   match_res <- estimate_weights(
     data = use_adsl,
-    centered_colnames = grep("_CENTERED$", names(use_adsl)),
+    centered_colnames = cols,
     start_val = 0,
     method = "BFGS"
   )
 
   match_res_boot <- estimate_weights(
     data = use_adsl,
-    centered_colnames = grep("_CENTERED$", names(use_adsl)),
+    centered_colnames = cols,
     start_val = 0,
     method = "BFGS",
     n_boot_iteration = 500,
