@@ -8,6 +8,7 @@ weighted_data2 <- estimate_weights(data = centered_ipd_sat, centered_colnames = 
 # binary IPD
 adrs_sat
 
+
 # get dummy binary IPD
 pseudo_adrs <- get_pseudo_ipd_binary(
   binary_agd = data.frame(

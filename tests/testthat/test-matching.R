@@ -86,11 +86,11 @@ test_that("estimate_weights works as expected with bootstrapping", {
 
   expected_matrix <- structure(
     c(
-      c(411, 324, 61, 71, 361),
-      c(0.0001657791105167, 0.382238891368213, 1.41902681600543e-10, 5.04595364860806e-08, 0.434732317134287)
+      c(411, 71, 321, 150, 440),
+      c(8.71745219703408e-05, 1.93529165335151e-08, 0.886392116942025, 1.42604077815808e-13, 0.802986096194834)
     ),
     dim = c(5L, 2L),
-    dimnames = list(c("411", "324", "61", "71", "361"), c("rowid", "weight"))
+    dimnames = list("sampled_patient" = NULL, c("rowid", "weight"))
   )
   expect_equal(result$boot[1:5, , 1], expected_matrix)
 })

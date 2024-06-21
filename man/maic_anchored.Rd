@@ -17,7 +17,8 @@ maic_anchored(
   endpoint_name = "Time to Event Endpoint",
   eff_measure = c("HR", "OR", "RR", "RD", "Diff"),
   time_scale = "months",
-  km_conf_type = "log-log"
+  km_conf_type = "log-log",
+  boot_ci_type = c("norm", "basic", "stud", "perc", "bca")
 )
 }
 \arguments{
@@ -49,6 +50,9 @@ from contingency table (for binary endpoint)}
 'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days}
 
 \item{km_conf_type}{a string, pass to \code{conf.type} of \code{survfit}}
+
+\item{boot_ci_type}{a string, one of \code{c("norm","basic", "stud", "perc", "bca")} to select the type of bootstrap
+confidence interval. See \link[boot:boot.ci]{boot::boot.ci} for more details.}
 }
 \value{
 A list, contains 'descriptive' and 'inferential'

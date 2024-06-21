@@ -9,7 +9,10 @@ test_that("test binary case", {
   centered_colnames <- paste0(centered_colnames, "_CENTERED")
 
   weighted_data <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
-  weighted_data2 <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames, n_boot_iteration = 20)
+  weighted_data2 <- estimate_weights(
+    data = ipd_centered, centered_colnames = centered_colnames, n_boot_iteration = 20,
+    set_seed_boot = 1234
+  )
 
   # get dummy binary IPD
   adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus", mustWork = TRUE))
@@ -66,10 +69,18 @@ test_that("test binary case", {
   }
 
   load(test_path("data", "test_binary_unanchored_expected.RData"))
+
+  # Compare robust outputs
   expect_equal(testout$descriptive, expectout$descriptive)
   expect_equal(testout$inferential, expectout$inferential)
+  expect_equal(testout$inferential$model_before, expectout$inferential$model_before)
+  expect_equal(testout$inferential$model_after, expectout$inferential$model_after)
+
+  # Compare bootstrap outputs
   expect_equal(testout2$descriptive, expectout2$descriptive)
-  expect_equal(testout2$inferential, expectout2$inferential)
+  expect_equal(testout2$inferential$boot_est["t"], expectout2$inferential$boot_est["t"])
+  expect_equal(testout2$inferential$boot_est["seed"], expectout2$inferential$boot_est["seed"])
+  expect_equal(testout2$inferential$report_overall_bootCI, expectout2$inferential$report_overall_bootCI)
 })
 
 
@@ -164,8 +175,15 @@ test_that("test time to event case", {
   }
 
   load(test_path("data", "test_tte_unanchored_expected.RData"))
+  # Compare robust outputs
   expect_equal(testout$descriptive, expectout$descriptive)
   expect_equal(testout$inferential, expectout$inferential)
+  expect_equal(testout$inferential$model_before, expectout$inferential$model_before)
+  expect_equal(testout$inferential$model_after, expectout$inferential$model_after)
+
+  # Compare bootstrap outputs
   expect_equal(testout2$descriptive, expectout2$descriptive)
-  expect_equal(testout2$inferential, expectout2$inferential)
+  expect_equal(testout2$inferential$boot_est["t"], expectout2$inferential$boot_est["t"])
+  expect_equal(testout2$inferential$boot_est["seed"], expectout2$inferential$boot_est["seed"])
+  expect_equal(testout2$inferential$report_overall_bootCI, expectout2$inferential$report_overall_bootCI)
 })
