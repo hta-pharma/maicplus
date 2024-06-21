@@ -7,8 +7,8 @@
 #'     \item{ARM}{Assigned treatment arm.}
 #'     \item{AGE}{Age in years at baseline.}
 #'     \item{SEX}{Sex of patient recorded as character `"Male"`/`"Female"`.}
-#'     \item{SMOKE}{Smoking status at baseline as integer `0`/`1`.}
-#'     \item{ECOG0}{ECOG score at baseline as integer `0`/`1`.}
+#'     \item{SMOKE}{Smoking status at baseline as integer `1`/`0`.}
+#'     \item{ECOG0}{Indicator of ECOG score = 0 at baseline as integer `1`/`0`.}
 #'     \item{N_PR_THER}{Number of prior therapies received as integer `1, 2, 3, 4`.}
 #'     \item{SEX_MALE}{Indicator of `SEX == "Male"` as numeric `1`/`0`.}
 #'
@@ -55,16 +55,16 @@
 #'     \item{ARM}{Assigned treatment arm.}
 #'     \item{AGE}{Age in years at baseline.}
 #'     \item{SEX}{Sex of patient recorded as character `"Male"`/`"Female"`.}
-#'     \item{SMOKE}{Smoking status at baseline as integer `0`/`1`.}
-#'     \item{ECOG0}{ECOG score at baseline as integer `0`/`1`.}
+#'     \item{SMOKE}{Smoking status at baseline as integer `1`/`0`.}
+#'     \item{ECOG0}{Indicator of ECOG score = 0 at baseline as integer `1`/`0`.}
 #'     \item{N_PR_THER}{Number of prior therapies received as integer `1, 2, 3, 4`.}
 #'     \item{SEX_MALE}{Indicator of `SEX == "Male"` as numeric `1`/`0`.}
 #'     \item{AGE_CENTERED}{Age in years at baseline relative to average in aggregate data [agd].}
-#'     \item{AGE_MEDIAN_CENTERED}{Age greater/less than median age in [agd] coded as  TODO .}
+#'     \item{AGE_MEDIAN_CENTERED}{`AGE` greater/less than `MEDIAN_AGE` in [agd] coded as `1`/`0` and then centered.}
 #'     \item{AGE_SQUARED_CENTERED}{TODO}
-#'     \item{SEX_MALE_CENTERED}{TODO}
-#'     \item{ECOG0_CENTERED}{TODO}
-#'     \item{SMOKE_CENTERED}{TODO}
+#'     \item{SEX_MALE_CENTERED}{`SEX_MALE` centered by the proportion of male patients in [agd]}
+#'     \item{ECOG0_CENTERED}{`ECOG0` centered by the proportion of `ECOG0` in [agd]}
+#'     \item{SMOKE_CENTERED}{`SMOKE` centered by the proportion of `SMOKE` in [agd]}
 #'   }
 #' @family unanchored datasets
 #' @keywords dataset
@@ -110,9 +110,9 @@
 #'     \item{N}{Number of observations in study arm}
 #'     \item{AGE_MEAN}{Mean age in study arm}
 #'     \item{AGE_MEDIAN}{Median age in study arm}
-#'     \item{AGE_SD}{TODO}
+#'     \item{AGE_SD}{Standard deviation of age in study arm}
 #'     \item{SEX_MALE_COUNT}{Number of male patients}
-#'     \item{ECOG0_COUNT}{Number of patients with ECOG score TODO}
+#'     \item{ECOG0_COUNT}{Number of patients with ECOG score = 0}
 #'     \item{SMOKE_COUNT}{Number of smokers}
 #'   }
 #' @family unanchored datasets
@@ -130,9 +130,9 @@
 #'     \item{ARM}{Assigned treatment arm.}
 #'     \item{AGE}{Age in years at baseline.}
 #'     \item{SEX}{Sex of patient recorded as character "Male"/"Female"}
-#'     \item{SMOKE}{Smoking status at baseline as integer 0/1}
-#'     \item{ECOG0}{ECOG score at baseline as integer 0/1}
-#'     \item{N_PR_THER}{Number of prior therapies received as integer 1, 2, 3, 4}
+#'     \item{SMOKE}{Smoking status at baseline as integer `1`/`0`.}
+#'     \item{ECOG0}{Indicator of ECOG score = 0 at baseline as integer `1`/`0`.}
+#'     \item{N_PR_THER}{Number of prior therapies received as integer `1, 2, 3, 4`.}
 #'     \item{SEX_MALE}{Indicator of SEX == "Male" as numeric 1/0}
 #'   }
 #' @family anchored datasets
@@ -178,16 +178,16 @@
 #'     \item{ARM}{Assigned treatment arm.}
 #'     \item{AGE}{Age in years at baseline.}
 #'     \item{SEX}{Sex of patient recorded as character `"Male"`/`"Female"`.}
-#'     \item{SMOKE}{Smoking status at baseline as integer `0`/`1`.}
-#'     \item{ECOG0}{ECOG score at baseline as integer `0`/`1`.}
+#'     \item{SMOKE}{Smoking status at baseline as integer `1`/`0`.}
+#'     \item{ECOG0}{Indicator of ECOG score = 0 at baseline as integer `1`/`0`.}
 #'     \item{N_PR_THER}{Number of prior therapies received as integer `1, 2, 3, 4`.}
 #'     \item{SEX_MALE}{Indicator of `SEX == "Male"` as numeric `1`/`0`.}
 #'     \item{AGE_CENTERED}{Age in years at baseline relative to average in aggregate data [agd].}
-#'     \item{AGE_MEDIAN_CENTERED}{Age greater/less than median age in [agd] coded as  TODO .}
+#'     \item{AGE_MEDIAN_CENTERED}{`AGE` greater/less than `MEDIAN_AGE` in [agd] coded as `1`/`0` and then centered.}
 #'     \item{AGE_SQUARED_CENTERED}{TODO}
-#'     \item{SEX_MALE_CENTERED}{TODO}
-#'     \item{ECOG0_CENTERED}{TODO}
-#'     \item{SMOKE_CENTERED}{TODO}
+#'     \item{SEX_MALE_CENTERED}{`SEX_MALE` centered by the proportion of male patients in [agd]}
+#'     \item{ECOG0_CENTERED}{`ECOG0` centered by the proportion of `ECOG0` in [agd]}
+#'     \item{SMOKE_CENTERED}{`SMOKE` centered by the proportion of `SMOKE` in [agd]}
 #'   }
 #' @keywords dataset
 #' @family anchored datasets

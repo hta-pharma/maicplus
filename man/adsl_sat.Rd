@@ -11,8 +11,8 @@ a data frame with 500 rows and 8 columns:
 \item{ARM}{Assigned treatment arm.}
 \item{AGE}{Age in years at baseline.}
 \item{SEX}{Sex of patient recorded as character \code{"Male"}/\code{"Female"}.}
-\item{SMOKE}{Smoking status at baseline as integer \code{0}/\code{1}.}
-\item{ECOG0}{ECOG score at baseline as integer \code{0}/\code{1}.}
+\item{SMOKE}{Smoking status at baseline as integer \code{1}/\code{0}.}
+\item{ECOG0}{Indicator of ECOG score = 0 at baseline as integer \code{1}/\code{0}.}
 \item{N_PR_THER}{Number of prior therapies received as integer \verb{1, 2, 3, 4}.}
 \item{SEX_MALE}{Indicator of \code{SEX == "Male"} as numeric \code{1}/\code{0}.}
 

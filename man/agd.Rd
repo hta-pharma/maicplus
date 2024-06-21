@@ -12,9 +12,9 @@ A data frame with 3 rows and 9 columns:
 \item{N}{Number of observations in study arm}
 \item{AGE_MEAN}{Mean age in study arm}
 \item{AGE_MEDIAN}{Median age in study arm}
-\item{AGE_SD}{TODO}
+\item{AGE_SD}{Standard deviation of age in study arm}
 \item{SEX_MALE_COUNT}{Number of male patients}
-\item{ECOG0_COUNT}{Number of patients with ECOG score TODO}
+\item{ECOG0_COUNT}{Number of patients with ECOG score = 0}
 \item{SMOKE_COUNT}{Number of smokers}
 }
 }

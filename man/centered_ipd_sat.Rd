@@ -11,16 +11,16 @@ A data frame with 500 rows and 14 columns:
 \item{ARM}{Assigned treatment arm.}
 \item{AGE}{Age in years at baseline.}
 \item{SEX}{Sex of patient recorded as character \code{"Male"}/\code{"Female"}.}
-\item{SMOKE}{Smoking status at baseline as integer \code{0}/\code{1}.}
-\item{ECOG0}{ECOG score at baseline as integer \code{0}/\code{1}.}
+\item{SMOKE}{Smoking status at baseline as integer \code{1}/\code{0}.}
+\item{ECOG0}{Indicator of ECOG score = 0 at baseline as integer \code{1}/\code{0}.}
 \item{N_PR_THER}{Number of prior therapies received as integer \verb{1, 2, 3, 4}.}
 \item{SEX_MALE}{Indicator of \code{SEX == "Male"} as numeric \code{1}/\code{0}.}
 \item{AGE_CENTERED}{Age in years at baseline relative to average in aggregate data \link{agd}.}
-\item{AGE_MEDIAN_CENTERED}{Age greater/less than median age in \link{agd} coded as  TODO .}
+\item{AGE_MEDIAN_CENTERED}{\code{AGE} greater/less than \code{MEDIAN_AGE} in \link{agd} coded as \code{1}/\code{0} and then centered.}
 \item{AGE_SQUARED_CENTERED}{TODO}
-\item{SEX_MALE_CENTERED}{TODO}
-\item{ECOG0_CENTERED}{TODO}
-\item{SMOKE_CENTERED}{TODO}
+\item{SEX_MALE_CENTERED}{\code{SEX_MALE} centered by the proportion of male patients in \link{agd}}
+\item{ECOG0_CENTERED}{\code{ECOG0} centered by the proportion of \code{ECOG0} in \link{agd}}
+\item{SMOKE_CENTERED}{\code{SMOKE} centered by the proportion of \code{SMOKE} in \link{agd}}
 }
 }
 \usage{
