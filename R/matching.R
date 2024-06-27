@@ -17,7 +17,7 @@
 #'   procedure will not be triggered, and hence the element `"boot"` of output list object will be NULL.
 #' @param set_seed_boot a scalar, the random seed for conducting the bootstrapping, only relevant if
 #'   \code{n_boot_iteration} is not NULL. By default, use seed 1234
-#' @param ... all other arguments from \code{base::optim()}
+#' @param ... Additional `control` parameters passed to [stats::optim].
 #'
 #' @return a list with the following 4 elements,
 #' \describe{
@@ -75,8 +75,8 @@ estimate_weights <- function(data,
     stop("'centered_colnames' should be either a numeric or character vector")
   }
 
-  ch3 <- sapply(seq_along(centered_colnames), function(ii) {
-    !is.numeric(data[, centered_colnames[ii]])
+  ch3 <- sapply(centered_colnames, function(ii) {
+    !is.numeric(data[[ii]])
   })
   if (any(ch3)) {
     stop(paste0(
@@ -90,6 +90,7 @@ estimate_weights <- function(data,
   EM <- data[, centered_colnames, drop = FALSE]
   ind <- apply(EM, 1, function(xx) any(is.na(xx)))
   nr_missing <- sum(ind)
+  rows_with_missing <- which(ind)
   EM <- as.matrix(EM[!ind, , drop = FALSE])
 
   # estimate weights
@@ -100,30 +101,27 @@ estimate_weights <- function(data,
 
   # bootstrapping
   outboot <- if (is.null(n_boot_iteration)) {
+    boot_seed <- NULL
+    boot_strata <- NULL
     NULL
   } else {
     # Make sure to leave '.Random.seed' as-is on exit
-    genv <- globalenv()
-    old_seed <- genv$.Random.seed
-    on.exit(suspendInterrupts({
-      if (is.null(old_seed)) {
-        rm(".Random.seed", envir = genv, inherits = FALSE)
-      } else {
-        assign(".Random.seed", value = old_seed, envir = genv, inherits = FALSE)
-      }
-    }))
+    old_seed <- globalenv()$.Random.seed
+    on.exit(suspendInterrupts(set_random_seed(old_seed)))
     set.seed(set_seed_boot)
+
     rowid_in_data <- which(!ind)
-    vapply(
-      seq_len(n_boot_iteration),
-      FUN.VALUE = matrix(0, nrow = nrow(EM), ncol = 2),
-      FUN = function(i) {
-        boot_rows <- sample(x = nrow(EM), size = nrow(EM), replace = TRUE)
-        boot_EM <- EM[boot_rows, , drop = FALSE]
-        boot_opt <- optimise_weights(matrix = boot_EM, par = alpha, method = method, ...)
-        cbind("rowid" = rowid_in_data[boot_rows], "weight" = boot_opt$wt[, 1])
-      }
-    )
+    arms <- factor(data$ARM[rowid_in_data])
+    boot_statistic <- function(d, w) optimise_weights(d[w, ], par = alpha, method = method, ...)$wt[, 1]
+    boot_out <- boot(EM, statistic = boot_statistic, R = n_boot_iteration, strata = arms)
+
+    boot_array <- array(dim = list(nrow(EM), 2, n_boot_iteration))
+    dimnames(boot_array) <- list(sampled_patient = NULL, c("rowid", "weight"), bootstrap_iteration = NULL)
+    boot_array[, 1, ] <- t(boot.array(boot_out, TRUE))
+    boot_array[, 2, ] <- t(boot_out$t)
+    boot_seed <- boot_out$seed
+    boot_strata <- boot_out$strata
+    boot_array
   }
 
   # append weights to data
@@ -142,7 +140,10 @@ estimate_weights <- function(data,
     nr_missing = nr_missing,
     ess = sum(wt)^2 / sum(wt^2),
     opt = opt1$opt,
-    boot = outboot
+    boot = outboot,
+    boot_seed = boot_seed,
+    boot_strata = boot_strata,
+    rows_with_missing = rows_with_missing
   )
 
   class(outdata) <- c("maicplus_estimate_weights", "list")
@@ -162,6 +163,8 @@ estimate_weights <- function(data,
 optimise_weights <- function(matrix,
                              par = rep(0, ncol(matrix)),
                              method = "BFGS",
+                             maxit = 300,
+                             trace = 0,
                              ...) {
   if (!all(is.numeric(par) || is.finite(par), length(par) == ncol(matrix))) {
     stop("par must be a numeric vector with finite values of length equal to the number of columns in 'matrix'")
@@ -172,8 +175,15 @@ optimise_weights <- function(matrix,
     gr = function(alpha, X) colSums(sweep(X, 1, exp(X %*% alpha), "*")),
     X = matrix,
     method = method,
-    control = list(maxit = 300, trace = 2, ...)
+    control = list(maxit = maxit, trace = trace, ...)
   )
+  if (opt1$convergence != 0) {
+    warning(
+      "optim() did not converge. ",
+      opt1$message,
+      "\nSee ?optim for more information on convergence code: ", opt1$convergence
+    )
+  }
   list(
     opt = opt1,
     alpha = opt1$par,
@@ -263,7 +273,9 @@ plot_weights_base <- function(weighted_data,
   }
 
   # plot
+  original_par <- par(no.readonly = TRUE)
   par(mgp = c(2.3, 0.5, 0), cex.axis = 0.9, cex.lab = 0.95, bty = "n")
+  on.exit(par(original_par))
   hist(wt, border = "white", col = bin_col, main = main_title, breaks = 20, yaxt = "n", xlab = "")
   axis(2, las = 1)
   abline(v = median(wt), lty = 2, col = vline_col, lwd = 2)

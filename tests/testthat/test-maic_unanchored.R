@@ -1,6 +1,5 @@
-test_that("test binary case",{
+test_that("test binary case", {
   # load in prognostic IPD data and AgD
-  # devtools::load_all()
   load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
   load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
   ipd_centered <- center_ipd(ipd = ipd, agd = agd)
@@ -10,68 +9,92 @@ test_that("test binary case",{
   centered_colnames <- paste0(centered_colnames, "_CENTERED")
 
   weighted_data <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
-  weighted_data2 <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames, n_boot_iteration = 20)
-
+  weighted_data2 <- estimate_weights(
+    data = ipd_centered, centered_colnames = centered_colnames, n_boot_iteration = 20,
+    set_seed_boot = 1234
+  )
   # get dummy binary IPD
   adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus", mustWork = TRUE))
   adrs$RESPONSE <- adrs$AVAL
 
-  pseudo_adrs <- get_pseudo_ipd_binary(binary_agd = data.frame(ARM = rep("B",2),
-                                                               RESPONSE = c("YES","NO"),
-                                                               COUNT = c(280,120)),
-                                       format = "stacked")
+  pseudo_adrs <- get_pseudo_ipd_binary(
+    binary_agd = data.frame(
+      ARM = rep("B", 2),
+      RESPONSE = c("YES", "NO"),
+      COUNT = c(280, 120)
+    ),
+    format = "stacked"
+  )
 
   # unanchored binary MAIC, with CI based on sandwich estimator
   testout <-
-  maic_unanchored(weights_object = weighted_data,
-                  ipd = adrs,
-                  pseudo_ipd = pseudo_adrs,
-                  trt_ipd = "A",
-                  trt_agd = "B",
-                  trt_var_ipd = "ARM",
-                  trt_var_agd = "ARM",
-                  endpoint_type = "binary",
-                  endpoint_name = "Binary Endpoint",
-                  eff_measure = "RR",
-                  # binary specific args
-                  binary_robust_cov_type = "CR2")
+    maic_unanchored(
+      weights_object = weighted_data,
+      ipd = adrs,
+      pseudo_ipd = pseudo_adrs,
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_var_ipd = "ARM",
+      trt_var_agd = "ARM",
+      endpoint_type = "binary",
+      endpoint_name = "Binary Endpoint",
+      eff_measure = "RR",
+      # binary specific args
+      binary_robust_cov_type = "HC3"
+    )
 
   # unanchored binary MAIC, with bootstrapped CI
   testout2 <-
-  maic_unanchored(weights_object = weighted_data2,
-                  ipd = adrs,
-                  pseudo_ipd = pseudo_adrs,
-                  trt_ipd = "A",
-                  trt_agd = "B",
-                  trt_var_ipd = "ARM",
-                  trt_var_agd = "ARM",
-                  endpoint_type = "binary",
-                  endpoint_name = "Binary Endpoint",
-                  eff_measure = "RR",
-                  # binary specific args
-                  binary_robust_cov_type = "CR2")
+    maic_unanchored(
+      weights_object = weighted_data2,
+      ipd = adrs,
+      pseudo_ipd = pseudo_adrs,
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_var_ipd = "ARM",
+      trt_var_agd = "ARM",
+      endpoint_type = "binary",
+      endpoint_name = "Binary Endpoint",
+      eff_measure = "RR",
+      # binary specific args
+      binary_robust_cov_type = "HC3"
+    )
 
-  # save(list = c("expectout","expectout2"), file = file.path("inst","extdata", "test_binary_unanchored_expected.RData"))
-  load(system.file("extdata", "test_binary_unanchored_expected.RData", package = "maicplus", mustWork = TRUE))
+  if (FALSE) {
+    # Manual snapshot of results
+    expectout <- testout
+    expectout2 <- testout2
+    save(list = c("expectout", "expectout2"), file = test_path("data", "test_binary_unanchored_expected.RData"))
+  }
 
-  expect_equal(testout, expectout)
-  expect_equal(testout2, expectout2)
+  load(test_path("data", "test_binary_unanchored_expected.RData"))
+
+  # Compare robust outputs
+  expect_equal(testout$descriptive, expectout$descriptive)
+  expect_equal(testout$inferential, expectout$inferential)
+  expect_equal(testout$inferential$model_before, expectout$inferential$model_before)
+  expect_equal(testout$inferential$model_after, expectout$inferential$model_after)
+
+  # Compare bootstrap outputs
+  expect_equal(testout2$descriptive, expectout2$descriptive)
+  expect_equal(testout2$inferential$boot_est["t"], expectout2$inferential$boot_est["t"])
+  expect_equal(testout2$inferential$boot_est["seed"], expectout2$inferential$boot_est["seed"])
+  expect_equal(testout2$inferential$report_overall_bootCI, expectout2$inferential$report_overall_bootCI)
 })
 
 
 test_that("test time to event case", {
   # anchored example using maic_anchored for tte
   # library(flexsurv)
-  # devtools::load_all()
 
   # Read in relevant ADaM data and rename variables of interest
   adsl <- read.csv(system.file("extdata", "adsl.csv",
-                               package = "maicplus",
-                               mustWork = TRUE
+    package = "maicplus",
+    mustWork = TRUE
   ))
   adtte <- read.csv(system.file("extdata", "adtte.csv",
-                                package = "maicplus",
-                                mustWork = TRUE
+    package = "maicplus",
+    mustWork = TRUE
   ))
   adtte$TIME <- adtte$AVAL
   adtte$EVENT <- adtte$EVNT
@@ -81,12 +104,12 @@ test_that("test time to event case", {
   ### AgD
   # Baseline aggregate data for the comparator population
   target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
-                                     package = "maicplus", mustWork = TRUE
+    package = "maicplus", mustWork = TRUE
   ))
   # for time-to-event endpoints, pseudo IPD from digitalized KM
   pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
-                                     package = "maicplus",
-                                     mustWork = TRUE
+    package = "maicplus",
+    mustWork = TRUE
   ))
   pseudo_ipd$ARM <- "B"
 
@@ -143,26 +166,23 @@ test_that("test time to event case", {
     km_conf_type = "log-log"
   )
 
-  # save(list = c("expectout","expectout2"), file = file.path("inst","extdata", "test_tte_unanchored_expected.RData"))
-  expect_equal(testout, expectout)
-  expect_equal(testout2, expectout2)
+  if (FALSE) {
+    # Manual snapshot of results
+    expectout <- testout
+    expectout2 <- testout2
+    save(list = c("expectout", "expectout2"), file = test_path("data", "test_tte_unanchored_expected.RData"))
+  }
+
+  load(test_path("data", "test_tte_unanchored_expected.RData"))
+  # Compare robust outputs
+  expect_equal(testout$descriptive, expectout$descriptive)
+  expect_equal(testout$inferential, expectout$inferential)
+  expect_equal(testout$inferential$model_before, expectout$inferential$model_before)
+  expect_equal(testout$inferential$model_after, expectout$inferential$model_after)
+
+  # Compare bootstrap outputs
+  expect_equal(testout2$descriptive, expectout2$descriptive)
+  expect_equal(testout2$inferential$boot_est["t"], expectout2$inferential$boot_est["t"])
+  expect_equal(testout2$inferential$boot_est["seed"], expectout2$inferential$boot_est["seed"])
+  expect_equal(testout2$inferential$report_overall_bootCI, expectout2$inferential$report_overall_bootCI)
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

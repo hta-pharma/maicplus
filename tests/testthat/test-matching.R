@@ -28,7 +28,7 @@ test_that("optimise_weights works as expected", {
   set.seed(123)
   object <- matrix(c(age_centered = rnorm(20, sd = 2), biomarker_centered = rnorm(20, sd = 1)), nrow = 20)
   expect_output(
-    result <- optimise_weights(object, par = c(0, 0)),
+    result <- optimise_weights(object, par = c(0, 0), trace = 2),
     "converged"
   )
   expect_equal(result$alpha, c(-0.07702229, 0.06826333))
@@ -51,7 +51,7 @@ test_that("estimate_weights works as expected", {
   ipd_centered <- center_ipd(ipd = ipd, agd = agd)
   centered_colnames <- paste0(c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN"), "_CENTERED")
   expect_output(
-    result <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames),
+    result <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames, trace = 2),
     "converged"
   )
 
@@ -72,7 +72,8 @@ test_that("estimate_weights works as expected with bootstrapping", {
       data = ipd_centered,
       centered_colnames = centered_colnames,
       n_boot_iteration = 3,
-      set_seed = 999
+      set_seed = 999,
+      trace = 2
     ),
     "converged"
   )
@@ -85,11 +86,48 @@ test_that("estimate_weights works as expected with bootstrapping", {
 
   expected_matrix <- structure(
     c(
-      c(411, 324, 61, 71, 361),
-      c(0.0001657791105167, 0.382238891368213, 1.41902681600543e-10, 5.04595364860806e-08, 0.434732317134287)
+      c(411, 71, 321, 150, 440),
+      c(8.71745219703408e-05, 1.93529165335151e-08, 0.886392116942025, 1.42604077815808e-13, 0.802986096194834)
     ),
     dim = c(5L, 2L),
-    dimnames = list(c("411", "324", "61", "71", "361"), c("rowid", "weight"))
+    dimnames = list("sampled_patient" = NULL, c("rowid", "weight"))
   )
   expect_equal(result$boot[1:5, , 1], expected_matrix)
+})
+
+
+test_that("estimate_weights works when the input is a tibble", {
+  skip_if_not_installed("tibble")
+  load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
+  load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
+  ipd_centered <- center_ipd(ipd = ipd, agd = agd)
+  centered_colnames <- paste0(c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN"), "_CENTERED")
+  ipd_centered <- tibble::as_tibble(ipd_centered)
+  expect_output(
+    result <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames, trace = 2),
+    "converged"
+  )
+
+  expect_s3_class(result, "maicplus_estimate_weights")
+  expect_equal(sum(result$data$weights), 199.8422368)
+  expect_equal(sum(result$data$scaled_weights), 500)
+  expect_equal(result$ess, 166.3675302)
+  expect_null(result$boot)
+})
+
+
+test_that("estimate_weights prints errors about convergence", {
+  load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
+  load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
+  ipd_centered <- center_ipd(ipd = ipd, agd = agd)
+  centered_colnames <- paste0(c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN"), "_CENTERED")
+  expect_warning(
+    estimate_weights(data = ipd_centered, centered_colnames = centered_colnames, trace = 0, maxit = 3),
+    "did not converge"
+  )
+
+  expect_output(
+    estimate_weights(data = ipd_centered, centered_colnames = centered_colnames, trace = 0, maxit = 300),
+    NA
+  )
 })

@@ -31,7 +31,8 @@ report_table_tte <- function(coxobj, medSurvobj, tag = NULL) {
     data.frame(
       "N" = N,
       "n.events(%)" = paste0(N.EVNT, "(", format(N.EVNT.PERC, nsmall = 1), ")"),
-      "median[95% CI]" = meds_report
+      "median[95% CI]" = meds_report,
+      check.names = FALSE
     )
   )
   desc_res <- cbind(desc_res[c(2, 1), ], "HR[95% CI]" = c(hr_res, ""), "p-Value" = c(hr_pval, ""))
@@ -51,7 +52,7 @@ report_table_tte <- function(coxobj, medSurvobj, tag = NULL) {
 #'
 #' @param binobj object from glm()
 #' @param weighted_result object res_AB
-#' @param eff_measure a string, binary effect measure, could be "OR", "RR", "RD“
+#' @param eff_measure a string, binary effect measure, could be "OR", "RR", "RD"
 #' @param tag a string, by default NULL, if specified, an extra 1st column is created in the output
 #'
 #' @return a data frame with sample size, incidence rate, estimate of binary effect measure with

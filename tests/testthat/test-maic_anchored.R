@@ -1,4 +1,4 @@
-test_that("maic_unanchored works for TTE using robust SE", {
+test_that("maic_anchored works for TTE using robust SE", {
   library(flexsurv)
   ### IPD
   set.seed(1234)
@@ -97,22 +97,16 @@ test_that("maic_unanchored works for TTE using robust SE", {
   )
   expect_equal(
     result$inferential$report_overall_robustCI$`median[95% CI]`,
-    c(
-      "7.6[6.3;10.3]", "1.8[1.6; 2.0]", "12.2[10.2; NA]", " 1.8[ 1.5;2.4]",
-      "2.7[2.3;3.3]", "1.9[1.7;2.0]", "-"
-    )
+    c("7.6[6.3;10.3]", "1.8[1.6; 2.0]", "12.2[10.2; NA]", " 1.8[ 1.5;2.4]", "2.7[2.3;3.3]", "1.9[1.7;2.0]", "-")
   )
   expect_equal(
     result$inferential$report_overall_robustCI$`HR[95% CI]`,
-    c(
-      "0.22[0.19;0.26]", "", "0.16[0.11;0.24]", "", "0.57[0.48;0.68]",
-      "", "0.29 [0.19; 0.44]"
-    )
+    c("0.22[0.19;0.26]", "", "0.16[0.11;0.24]", "", "0.57[0.48;0.68]", "", "0.29 [0.19; 0.44]")
   )
 })
 
 
-test_that("maic_unanchored works for TTE using bootstrap SE", {
+test_that("maic_anchored works for TTE using bootstrap SE", {
   # anchored example using maic_anchored for tte
   library(flexsurv)
   ### IPD
@@ -197,22 +191,24 @@ test_that("maic_unanchored works for TTE using bootstrap SE", {
 
   expect_equal(
     result$inferential$report_overall_bootCI$`median[95% CI]`,
-    c(
-      "7.6[6.3;10.3]", "1.8[1.6; 2.0]", "12.2[10.2; NA]", " 1.8[ 1.5;2.4]",
-      "2.7[2.3;3.3]", "1.9[1.7;2.0]", "-"
-    )
+    c("7.6[6.3;10.3]", "1.8[1.6; 2.0]", "12.2[10.2; NA]", " 1.8[ 1.5;2.4]", "2.7[2.3;3.3]", "1.9[1.7;2.0]", "-")
   )
   expect_equal(
     result$inferential$report_overall_bootCI$`HR[95% CI]`,
-    c(
-      "0.22[0.19;0.26]", "", "0.16[0.11;0.24]", "", "0.57[0.48;0.68]",
-      "", "0.29 [0.22; 0.38]"
-    )
+    c("0.22[0.19;0.26]", "", "0.16[0.11;0.24]", "", "0.57[0.48;0.68]", "", "0.29 [0.26; 0.44]")
   )
 
-  expect_length(result$inferential$boot_est, 5)
-  expect_equal(
-    quantile(result$inferential$boot_est, p = c(0.025, 0.5, 0.975)),
-    c(`2.5%` = 0.224505423383486, `50%` = 0.255147246438007, `97.5%` = 0.313359331451625)
+  t_matrix_expected <- matrix(
+    c(
+      c(-1.24294307251997, -1.33792890159168, -1.57070441400606, -1.52456404275395, -1.40942511608976),
+      c(0.0471386881163452, 0.0413517501082777, 0.0410548744406873, 0.0390747454633873, 0.04529038893612),
+      c(0.217114458561251, 0.203351297286931, 0.202620024777136, 0.197673330177309, 0.212815386981581),
+      c(-1.80190829720242, -1.89689412627413, -2.12966963868851, -2.0835292674364, -1.96839034077221),
+      c(0.197156067436005, 0.181888913677451, 0.181070984012272, 0.175518011252044, 0.192411579034645),
+      c(0.0388705149268306, 0.0330835769187631, 0.0327867012511726, 0.0308065722738727, 0.0370222157466054)
+    ),
+    byrow = FALSE,
+    ncol = 6
   )
+  expect_equal(result$inferential$boot_est$t, t_matrix_expected)
 })

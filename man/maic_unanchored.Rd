@@ -15,10 +15,10 @@ maic_unanchored(
   endpoint_type = "tte",
   endpoint_name = "Time to Event Endpoint",
   eff_measure = c("HR", "OR", "RR", "RD"),
-  boot_ci_is_quantile = FALSE,
+  boot_ci_type = c("norm", "basic", "stud", "perc", "bca"),
   time_scale = "months",
   km_conf_type = "log-log",
-  binary_robust_cov_type = "CR2"
+  binary_robust_cov_type = "HC3"
 )
 }
 \arguments{
@@ -41,9 +41,11 @@ from contingency table (for binary endpoint)}
 
 \item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
 
-\item{eff_measure}{a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk)
-for a binary endpoint; "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case,
-otherwise "HR" is used.}
+\item{eff_measure}{a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint;
+"HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.}
+
+\item{boot_ci_type}{a string, one of \code{c("norm","basic", "stud", "perc", "bca")} to select the type of bootstrap
+confidence interval. See \link[boot:boot.ci]{boot::boot.ci} for more details.}
 
 \item{boot_ci_is_quantile}{a logical, specify if the 95\% bootstrapped confidence interval should be dervied by sample quantile. Default FALSE,
 which the estimates assumes to follow asymptotic normal (only if eff_measure is "RD") or log-normal with a variance that can be approximated
@@ -54,7 +56,8 @@ by bootstrapped sample of the estimate. This default option may be handy when th
 
 \item{km_conf_type}{a string, pass to \code{conf.type} of \code{survfit}}
 
-\item{binary_robust_cov_type}{a string to pass to argument "type" of \link[clubSandwich]{vcovCR}, see viable options in the documentation of that function. Default is "CR2"}
+\item{binary_robust_cov_type}{a string to pass to argument \code{type} of \link[sandwich:vcovHC]{sandwich::vcovHC}, see possible options in the
+documentation of that function. Default is \code{"HC3"}}
 }
 \value{
 A list, contains 'descriptive' and 'inferential'
