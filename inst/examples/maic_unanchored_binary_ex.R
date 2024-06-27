@@ -1,4 +1,5 @@
 # load in prognostic IPD data and AgD
+devtools::load_all()
 load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
 load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
 ipd_centered <- center_ipd(ipd = ipd, agd = agd)
@@ -8,7 +9,7 @@ centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR
 centered_colnames <- paste0(centered_colnames, "_CENTERED")
 
 weighted_data <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
-weighted_data2 <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames, n_boot_iteration = 400)
+weighted_data2 <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames, n_boot_iteration = 500)
 
 # get dummy binary IPD
 adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus", mustWork = TRUE))
