@@ -41,6 +41,12 @@
 #' result <- bucher(trt, com, conf_lv = 0.9)
 #' print(result, ci_digits = 3, pval_digits = 3)
 bucher <- function(trt, com, conf_lv = 0.95) {
+  if (!isTRUE(is.finite(trt$est))) stop("trt$est is not valid: ", trt$est)
+  if (!isTRUE(is.finite(trt$se))) stop("trt$se is not valid: ", trt$se)
+  if (!isTRUE(is.finite(com$est))) stop("com$est is not valid: ", com$est)
+  if (!isTRUE(is.finite(com$se))) stop("com$se is not valid: ", com$se)
+  if (conf_lv < 0 || 1 < conf_lv) stop("conf_lv must be in (0, 1): ", conf_lv)
+
   est <- trt$est - com$est
   se <- sqrt(trt$se^2 + com$se^2)
   ci_l <- est - stats::qnorm(0.5 + conf_lv / 2) * se

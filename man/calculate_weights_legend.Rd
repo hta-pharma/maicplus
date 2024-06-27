@@ -16,9 +16,7 @@ list of ESS, ESS reduction, median value of scaled and unscaled weights, and mis
 Calculates ESS reduction and median weights which is used to create legend for weights plot
 }
 \examples{
-\dontrun{
-load(system.file("extdata", "weighted_data.rda", package = "maicplus", mustWork = TRUE))
-calculate_weights_legend(weighted_data)
-}
+data("weighted_sat")
+calculate_weights_legend(weighted_sat)
 }
 \keyword{internal}

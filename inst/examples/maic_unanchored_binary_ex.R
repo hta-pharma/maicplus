@@ -1,20 +1,18 @@
-# load in prognostic IPD data and AgD
+# load in centered prognostic IPD data
 devtools::load_all()
-load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
-load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
-ipd_centered <- center_ipd(ipd = ipd, agd = agd)
 
-# estimate weights
-centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
-centered_colnames <- paste0(centered_colnames, "_CENTERED")
+centered_ipd_sat
+centered_colnames <- grep("_CENTERED$", colnames(centered_ipd_sat), value = TRUE)
+weighted_data <- estimate_weights(data = centered_ipd_sat, centered_colnames = centered_colnames)
+weighted_data2 <- estimate_weights(
+  data = centered_ipd_sat, centered_colnames = centered_colnames,
+  n_boot_iteration = 500
+)
 
-weighted_data <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
-weighted_data2 <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames, n_boot_iteration = 500)
+# binary IPD
+adrs_sat
 
 # get dummy binary IPD
-adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus", mustWork = TRUE))
-adrs$RESPONSE <- adrs$AVAL
-
 pseudo_adrs <- get_pseudo_ipd_binary(
   binary_agd = data.frame(
     ARM = rep("B", 2),
@@ -27,7 +25,7 @@ pseudo_adrs <- get_pseudo_ipd_binary(
 # unanchored binary MAIC, with CI based on sandwich estimator
 maic_unanchored(
   weights_object = weighted_data,
-  ipd = adrs,
+  ipd = adrs_sat,
   pseudo_ipd = pseudo_adrs,
   trt_ipd = "A",
   trt_agd = "B",
@@ -43,7 +41,7 @@ maic_unanchored(
 # unanchored binary MAIC, with bootstrapped CI
 maic_unanchored(
   weights_object = weighted_data2,
-  ipd = adrs,
+  ipd = adrs_sat,
   pseudo_ipd = pseudo_adrs,
   trt_ipd = "A",
   trt_agd = "B",
