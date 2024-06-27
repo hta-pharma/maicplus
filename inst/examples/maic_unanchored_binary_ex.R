@@ -1,4 +1,5 @@
 # load in centered prognostic IPD data
+devtools::load_all()
 
 centered_ipd_sat
 centered_colnames <- grep("_CENTERED$", colnames(centered_ipd_sat), value = TRUE)
@@ -10,7 +11,6 @@ weighted_data2 <- estimate_weights(
 
 # binary IPD
 adrs_sat
-
 
 # get dummy binary IPD
 pseudo_adrs <- get_pseudo_ipd_binary(
