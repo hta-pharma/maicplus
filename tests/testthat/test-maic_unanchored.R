@@ -13,7 +13,6 @@ test_that("test binary case", {
     data = ipd_centered, centered_colnames = centered_colnames, n_boot_iteration = 20,
     set_seed_boot = 1234
   )
-
   # get dummy binary IPD
   adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus", mustWork = TRUE))
   adrs$RESPONSE <- adrs$AVAL
