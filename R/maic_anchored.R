@@ -176,13 +176,15 @@ maic_anchored <- function(weights_object,
   # ==> Inferential output ------------------------------------------
   result <- if (endpoint_type == "tte") {
     maic_anchored_tte(
-      res, res_BC = NULL, ipd, pseudo_ipd, km_conf_type, time_scale, weights_object, endpoint_name, trt_ipd, trt_agd, boot_ci_type
+      res,
+      res_BC = NULL, ipd, pseudo_ipd, km_conf_type, time_scale, weights_object, endpoint_name, trt_ipd, trt_agd, boot_ci_type
     )
   } else if (endpoint_type == "binary") {
     maic_anchored_binary(
-      res, res_BC = NULL, ipd, pseudo_ipd, binary_robust_cov_type, weights_object, endpoint_name, eff_measure, trt_ipd, trt_agd, boot_ci_type
+      res,
+      res_BC = NULL, ipd, pseudo_ipd, binary_robust_cov_type, weights_object, endpoint_name, eff_measure, trt_ipd, trt_agd, boot_ci_type
     )
-  }else {
+  } else {
     stop("Endpoint type ", endpoint_type, " currently unsupported.")
   }
 
@@ -230,7 +232,7 @@ maic_anchored_tte <- function(res,
 
   # derive ipd exp arm vs agd exp arm via bucher
   res_AC <- as.list(summary(coxobj_ipd_adj)$coef)[c(1, 4)] # est, robust se
-  if(is.null(res_BC)) res_BC <- as.list(summary(coxobj_agd)$coef)[c(1, 3)] # est, se
+  if (is.null(res_BC)) res_BC <- as.list(summary(coxobj_agd)$coef)[c(1, 3)] # est, se
   names(res_AC) <- names(res_BC) <- c("est", "se")
 
   res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
@@ -380,7 +382,7 @@ maic_anchored_binary <- function(res,
   res_AC$ci_u <- bin_robust_ci[2, "97.5 %"]
   res_AC$pval <- bin_robust_coef[2, "Pr(>|z|)"]
 
-  if(is.null(res_BC)) res_BC <- as.list(summary(binobj_agd)$coefficients[c(2, 1:2)])
+  if (is.null(res_BC)) res_BC <- as.list(summary(binobj_agd)$coefficients[c(2, 1:2)])
   res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
 
   if (eff_measure %in% c("RR", "OR")) {
@@ -445,11 +447,11 @@ maic_anchored_binary <- function(res,
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object)
 
     l_u_index <- switch(boot_ci_type,
-                        "norm" = list(2, 3, "normal"),
-                        "basic" = list(4, 5, "basic"),
-                        "stud" = list(4, 5, "student"),
-                        "perc" = list(4, 5, "percent"),
-                        "bca" = list(4, 5, "bca")
+      "norm" = list(2, 3, "normal"),
+      "basic" = list(4, 5, "basic"),
+      "stud" = list(4, 5, "student"),
+      "perc" = list(4, 5, "percent"),
+      "bca" = list(4, 5, "bca")
     )
 
     res$inferential[["boot_est"]] <- boot_res

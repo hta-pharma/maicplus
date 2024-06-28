@@ -136,7 +136,8 @@ find_SE_from_CI <- function(CI_lower = NULL, CI_upper = NULL,
 print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
                                   exponentiate = FALSE, ...) {
   output <- reformat(x, ci_digits, pval_digits,
-                     show_pval = TRUE, exponentiate)
+    show_pval = TRUE, exponentiate
+  )
   print(output)
 }
 
@@ -161,31 +162,30 @@ reformat <- function(x, ci_digits = 2, pval_digits = 3,
   }
 
   a <- format(round(transform_this(x$est), ci_digits),
-              nsmall = ci_digits
+    nsmall = ci_digits
   )
   b <- format(round(transform_this(x$ci_l), ci_digits),
-              nsmall = ci_digits
+    nsmall = ci_digits
   )
   c <- format(round(transform_this(x$ci_u), ci_digits),
-              nsmall = ci_digits
+    nsmall = ci_digits
   )
   res <- paste0(a, " [", b, "; ", c, "]")
 
   disp_pval <- round(x$pval, pval_digits)
   disp_pval <-
     ifelse(disp_pval == 0,
-           paste0("<", 1 / (10^pval_digits)),
-           format(disp_pval, nsmall = pval_digits)
+      paste0("<", 1 / (10^pval_digits)),
+      format(disp_pval, nsmall = pval_digits)
     )
 
-  if(show_pval){
+  if (show_pval) {
     output <- c(res, disp_pval)
     names(output) <- c("result", "pvalue")
-  }else{
+  } else {
     output <- res
     names(output) <- "result"
   }
 
   output
 }
-
