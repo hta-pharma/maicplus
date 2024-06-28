@@ -15,10 +15,11 @@ maic_anchored(
   trt_var_agd = "ARM",
   endpoint_type = "tte",
   endpoint_name = "Time to Event Endpoint",
-  eff_measure = c("HR", "OR", "RR", "RD", "Diff"),
+  eff_measure = c("HR", "OR", "RR", "RD"),
+  boot_ci_type = c("norm", "basic", "stud", "perc", "bca"),
   time_scale = "months",
   km_conf_type = "log-log",
-  boot_ci_type = c("norm", "basic", "stud", "perc", "bca")
+  binary_robust_cov_type = "HC3"
 )
 }
 \arguments{
@@ -46,13 +47,16 @@ from contingency table (for binary endpoint)}
 \item{eff_measure}{a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint;
 "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.}
 
+\item{boot_ci_type}{a string, one of \code{c("norm","basic", "stud", "perc", "bca")} to select the type of bootstrap
+confidence interval. See \link[boot:boot.ci]{boot::boot.ci} for more details.}
+
 \item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
 'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days}
 
 \item{km_conf_type}{a string, pass to \code{conf.type} of \code{survfit}}
 
-\item{boot_ci_type}{a string, one of \code{c("norm","basic", "stud", "perc", "bca")} to select the type of bootstrap
-confidence interval. See \link[boot:boot.ci]{boot::boot.ci} for more details.}
+\item{binary_robust_cov_type}{a string to pass to argument \code{type} of \link[sandwich:vcovHC]{sandwich::vcovHC}, see possible options in the
+documentation of that function. Default is \code{"HC3"}}
 }
 \value{
 A list, contains 'descriptive' and 'inferential'

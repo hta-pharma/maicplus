@@ -47,10 +47,6 @@ from contingency table (for binary endpoint)}
 \item{boot_ci_type}{a string, one of \code{c("norm","basic", "stud", "perc", "bca")} to select the type of bootstrap
 confidence interval. See \link[boot:boot.ci]{boot::boot.ci} for more details.}
 
-\item{boot_ci_is_quantile}{a logical, specify if the 95\% bootstrapped confidence interval should be dervied by sample quantile. Default FALSE,
-which the estimates assumes to follow asymptotic normal (only if eff_measure is "RD") or log-normal with a variance that can be approximated
-by bootstrapped sample of the estimate. This default option may be handy when the number of bootstrap iterations is not big.}
-
 \item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
 'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days}
 
