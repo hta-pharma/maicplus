@@ -33,7 +33,10 @@
 #'   \item TIME - numeric column, observation time of the \code{EVENT}; unit in days
 #' }
 #'
-#' @importFrom survival survfit Surv
+#' @importFrom survival survfit Surv coxph
+#' @importFrom lmtest coeftest coefci
+#' @importFrom sandwich vcovHC
+#' @importFrom boot boot boot.ci
 #' @return A list, contains 'descriptive' and 'inferential'
 #' @export
 
