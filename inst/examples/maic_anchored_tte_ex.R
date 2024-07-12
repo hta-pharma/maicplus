@@ -1,4 +1,3 @@
-
 # Anchored example using maic_anchored() for time-to-event endpoints
 library(flexsurv)
 ### IPD
