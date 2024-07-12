@@ -1,5 +1,4 @@
 # load in centered prognostic IPD data
-devtools::load_all()
 
 centered_ipd_sat
 centered_colnames <- grep("_CENTERED$", colnames(centered_ipd_sat), value = TRUE)
