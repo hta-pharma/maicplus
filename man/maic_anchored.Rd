@@ -86,11 +86,9 @@ For binary outcomes:
 \examples{
 # anchored example using maic_anchored for binary outcome
 
-# Uses example data
-centered_ipd_twt # patient characteristics data
-adrs_twt # outcome data
+weighted_twt # weighted patient level-data
 
-# get dummy binary IPD
+# Reported summary data
 pseudo_adrs <- get_pseudo_ipd_binary(
   binary_agd = data.frame(
     ARM = c("B", "C", "B", "C"),
@@ -98,16 +96,6 @@ pseudo_adrs <- get_pseudo_ipd_binary(
     COUNT = c(280, 120, 200, 200)
   ),
   format = "stacked"
-)
-
-#### derive weights
-match_res <- estimate_weights(
-  data = centered_ipd_twt,
-  centered_colnames = grep("_CENTERED$", names(centered_ipd_twt)),
-  start_val = 0,
-  method = "BFGS",
-  n_boot_iteration = 10,
-  set_seed_boot = 1234
 )
 
 # inferential result
