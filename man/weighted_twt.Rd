@@ -12,14 +12,31 @@ A \code{maicplus_estimate_weights} object created by \code{\link[=estimate_weigh
 \item{nr_missing}{Number of observations with missing data}
 \item{ess}{Expected sample size}
 \item{opt}{Information from \code{optim} from weight calculation}
-\item{boot}{Parameters and bootstrap sample weights, \code{NULL} in this object}
+\item{boot}{Parameters and bootstrap sample weights for the 100 samples}
 }
 }
 \usage{
 weighted_twt
 }
 \description{
-Weighted object for two arm trial data
+The weighted patient data for a two arm trial generated from the centered patient data (\link{centered_ipd_twt}).
+It has weights calculated for 100 bootstrap samples.
+
+The object is generated using the following code:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{estimate_weights(
+  data = centered_ipd_twt,
+  centered_colnames = c(
+    "AGE_CENTERED",
+    "AGE_MEDIAN_CENTERED",
+    "AGE_SQUARED_CENTERED",
+    "SEX_MALE_CENTERED",
+    "ECOG0_CENTERED",
+    "SMOKE_CENTERED"
+    ),
+  n_boot_iteration = 100
+ )
+}\if{html}{\out{</div>}}
 }
 \seealso{
 Other anchored datasets: 
