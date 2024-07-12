@@ -208,6 +208,20 @@
 #' @family anchored datasets
 "centered_ipd_twt"
 
+#' Weighted object for two arm trial data
+#' @format A `maicplus_estimate_weights` object created by [estimate_weights()] containing
+#'   \describe{
+#'     \item{data}{patient level data with weights}
+#'     \item{centered_colnames}{Columns used in MAIC}
+#'     \item{nr_missing}{Number of observations with missing data}
+#'     \item{ess}{Expected sample size}
+#'     \item{opt}{Information from `optim` from weight calculation}
+#'     \item{boot}{Parameters and bootstrap sample weights, `NULL` in this object}
+#'   }
+#' @keywords dataset
+#' @family anchored datasets
+"weighted_twt"
+
 
 if (FALSE) {
   make_roxygen_data <- function(df) {
