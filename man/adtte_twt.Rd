@@ -29,7 +29,8 @@ Other anchored datasets:
 \code{\link{adsl_twt}},
 \code{\link{agd}},
 \code{\link{centered_ipd_twt}},
-\code{\link{pseudo_ipd_twt}}
+\code{\link{pseudo_ipd_twt}},
+\code{\link{weighted_twt}}
 }
 \concept{anchored datasets}
 \keyword{dataset}
