@@ -216,8 +216,28 @@
 #'     \item{nr_missing}{Number of observations with missing data}
 #'     \item{ess}{Expected sample size}
 #'     \item{opt}{Information from `optim` from weight calculation}
-#'     \item{boot}{Parameters and bootstrap sample weights, `NULL` in this object}
-#'   }
+#'     \item{boot}{Parameters and bootstrap sample weights for the 100 samples}
+#' }
+#' @description
+#' The weighted patient data for a two arm trial generated from the centered patient data ([centered_ipd_twt]).
+#' It has weights calculated for 100 bootstrap samples.
+#'
+#' The object is generated using the following code:
+#' ```
+#' estimate_weights(
+#'   data = centered_ipd_twt,
+#'   centered_colnames = c(
+#'     "AGE_CENTERED",
+#'     "AGE_MEDIAN_CENTERED",
+#'     "AGE_SQUARED_CENTERED",
+#'     "SEX_MALE_CENTERED",
+#'     "ECOG0_CENTERED",
+#'     "SMOKE_CENTERED"
+#'     ),
+#'   n_boot_iteration = 100
+#'  )
+#' ```
+#'
 #' @keywords dataset
 #' @family anchored datasets
 "weighted_twt"
