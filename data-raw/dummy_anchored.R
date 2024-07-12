@@ -74,7 +74,7 @@ adsl_twt <- dummize_ipd(adsl_twt, dummize_cols = c("SEX"), dummize_ref_level = c
 centered_ipd_twt <- center_ipd(ipd = adsl_twt, agd = agd)
 
 centered_colnames <- paste0(c("AGE", "AGE_MEDIAN", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE"), "_CENTERED")
-weighted_twt <- estimate_weights(data = centered_ipd_twt, centered_colnames = centered_colnames, n_boot_iteration = 1000)
+weighted_twt <- estimate_weights(data = centered_ipd_twt, centered_colnames = centered_colnames, n_boot_iteration = 100)
 
 
 ### Output
