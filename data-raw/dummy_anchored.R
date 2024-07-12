@@ -73,8 +73,11 @@ agd <- process_agd(agd)
 adsl_twt <- dummize_ipd(adsl_twt, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
 centered_ipd_twt <- center_ipd(ipd = adsl_twt, agd = agd)
 
+centered_colnames <- paste0(c("AGE", "AGE_MEDIAN", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE"), "_CENTERED")
+weighted_twt <- estimate_weights(data = centered_ipd_twt, centered_colnames = centered_colnames, n_boot_iteration = 100)
+
 
 ### Output
-usethis::use_data(adsl_twt, adtte_twt, pseudo_ipd_twt, centered_ipd_twt, adrs_twt,
+usethis::use_data(adsl_twt, adtte_twt, pseudo_ipd_twt, centered_ipd_twt, adrs_twt, weighted_twt,
   internal = FALSE, overwrite = TRUE
 )
