@@ -24,14 +24,21 @@
 #' @param binary_robust_cov_type a string to pass to argument `type` of [sandwich::vcovHC], see possible options in the
 #'   documentation of that function. Default is `"HC3"`
 #'
-#' @details For time-to-event analysis, it is required that input \code{ipd} and \code{pseudo_ipd} to have the following
+#' @details It is required that input \code{ipd} and \code{pseudo_ipd} to have the following
 #'   columns. This function is not sensitive to upper or lower case of letters in column names.
 #' \itemize{
 #'   \item USUBJID - character, unique subject ID
 #'   \item ARM - character or factor, treatment indicator, column name does not have to be 'ARM'. User specify in
 #'    \code{trt_var_ipd} and \code{trt_var_agd}
-#'   \item EVENT - numeric, 1 for censored/death, 0 for otherwise
+#'  }
+#'  For time-to-event analysis, the follow columns are required:
+#'  \itemize{
+#'   \item EVENT - numeric, `1` for censored/death, `0` otherwise
 #'   \item TIME - numeric column, observation time of the \code{EVENT}; unit in days
+#' }
+#' For binary outcomes:
+#' \itemize{
+#'   \item RESPONSE - numeric, `1` for event occurred, `0` otherwise
 #' }
 #'
 #' @importFrom survival survfit Surv coxph
@@ -39,6 +46,7 @@
 #' @importFrom sandwich vcovHC
 #' @importFrom boot boot boot.ci
 #' @return A list, contains 'descriptive' and 'inferential'
+#' @example inst/examples/maic_anchored_binary_ex.R
 #' @export
 
 maic_anchored <- function(weights_object,
@@ -177,12 +185,30 @@ maic_anchored <- function(weights_object,
   result <- if (endpoint_type == "tte") {
     maic_anchored_tte(
       res,
-      res_BC = NULL, ipd, pseudo_ipd, km_conf_type, time_scale, weights_object, endpoint_name, trt_ipd, trt_agd, boot_ci_type
+      res_BC = NULL,
+      ipd,
+      pseudo_ipd,
+      km_conf_type,
+      time_scale,
+      weights_object,
+      endpoint_name,
+      trt_ipd,
+      trt_agd,
+      boot_ci_type
     )
   } else if (endpoint_type == "binary") {
     maic_anchored_binary(
       res,
-      res_BC = NULL, ipd, pseudo_ipd, binary_robust_cov_type, weights_object, endpoint_name, eff_measure, trt_ipd, trt_agd, boot_ci_type
+      res_BC = NULL,
+      ipd,
+      pseudo_ipd,
+      binary_robust_cov_type,
+      weights_object,
+      endpoint_name,
+      eff_measure,
+      trt_ipd,
+      trt_agd,
+      boot_ci_type
     )
   } else {
     stop("Endpoint type ", endpoint_type, " currently unsupported.")
@@ -364,7 +390,7 @@ maic_anchored_binary <- function(res,
   # : fit glm for binary outcome and robust estimate with weights
   binobj_ipd <- glm(RESPONSE ~ ARM, ipd, family = glm_link)
   binobj_ipd_adj <- glm(RESPONSE ~ ARM, ipd, weights = weights, family = glm_link)
-  binobj_agd <- glm(RESPONSE ~ ARM, agd, family = glm_link)
+  binobj_agd <- glm(RESPONSE ~ ARM, pseudo_ipd, family = glm_link)
 
   bin_robust_cov <- sandwich::vcovHC(binobj_ipd_adj, type = binary_robust_cov_type)
   bin_robust_coef <- lmtest::coeftest(binobj_ipd_adj, vcov. = bin_robust_cov)
@@ -382,17 +408,19 @@ maic_anchored_binary <- function(res,
   res_AC$ci_u <- bin_robust_ci[2, "97.5 %"]
   res_AC$pval <- bin_robust_coef[2, "Pr(>|z|)"]
 
-  if (is.null(res_BC)) res_BC <- as.list(summary(binobj_agd)$coefficients[c(2, 1:2)])
+  if (is.null(res_BC)) {
+    res_BC <- list(est = coef(binobj_agd)[2], se = sqrt(vcov(binobj_agd)[2, 2]))
+  }
   res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
 
   if (eff_measure %in% c("RR", "OR")) {
-    res_AB$est <- exp(mu)
-    res_AB$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parameterization
+    res_AB$est <- exp(res_AB$est)
+    res_AB$se <- sqrt((exp(res_AB$se^2) - 1) * exp(2 * res_AB$est + res_AB$se^2)) # log normal parameterization
     res_AB$ci_l <- exp(res_AB$ci_l)
     res_AB$ci_u <- exp(res_AB$ci_u)
   } else if (eff_measure == "RD") {
-    res_AB$est <- mu * 100
-    res_AB$se <- sig * 100
+    res_AB$est <- res_AB$est * 100
+    res_AB$se <- res_AB$se * 100
     res_AB$ci_l <- res_AB$ci_l * 100
     res_AB$ci_u <- res_AB$ci_u * 100
   }
@@ -421,12 +449,6 @@ maic_anchored_binary <- function(res,
       boot_res_AC <- list(est = boot_AC_est, se = sqrt(boot_AC_var))
       boot_res_AB <- bucher(boot_res_AC, res_BC, conf_lv = 0.95)
 
-      if (eff_measure %in% c("RR", "OR")) {
-        boot_AB_est <- exp(boot_AB_est)
-      } else if (eff_measure == "RD") {
-        boot_AB_est <- boot_AB_est * 100
-      }
-
       c(
         est_AB = boot_res_AB$est,
         var_AB = boot_res_AB$se^2,
@@ -443,7 +465,14 @@ maic_anchored_binary <- function(res,
     set_random_seed(weights_object$boot_seed)
 
     R <- dim(weights_object$boot)[3]
-    boot_res <- boot(boot_ipd, stat_fun, R = R, w_obj = weights_object, eff_measure = eff_measure, strata = weights_object$boot_strata)
+    boot_res <- boot(
+      boot_ipd,
+      stat_fun,
+      R = R,
+      w_obj = weights_object,
+      eff_measure = eff_measure,
+      strata = weights_object$boot_strata
+    )
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object)
 
     l_u_index <- switch(boot_ci_type,
@@ -454,12 +483,18 @@ maic_anchored_binary <- function(res,
       "bca" = list(4, 5, "bca")
     )
 
+    transform_estimate <- switch(eff_measure,
+      "RD" = function(x) x * 100,
+      "RR" = exp,
+      "OR" = exp
+    )
+
     res$inferential[["boot_est"]] <- boot_res
     boot_res_AB <- list(
-      est = boot_res$t0[1],
+      est = transform_estimate(boot_res$t0[1]),
       se = NA,
-      ci_l = boot_ci[[l_u_index[[3]]]][l_u_index[[1]]],
-      ci_u = boot_ci[[l_u_index[[3]]]][l_u_index[[2]]],
+      ci_l = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[1]]]),
+      ci_u = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]),
       pval = NA
     )
   } else {
@@ -467,13 +502,14 @@ maic_anchored_binary <- function(res,
   }
 
   # : make analysis report table
+  tags <- paste0(c("IPD/", "weighted IPD/", "AgD/"), endpoint_name)
   res$inferential[["report_overall_robustCI"]] <- rbind(
-    report_table_binary(binobj_ipd, tag = paste0("IPD/", endpoint_name), eff_measure = eff_measure),
-    report_table_binary(binobj_ipd_adj, res_AB, tag = paste0("weighted IPD/", endpoint_name), eff_measure = eff_measure),
-    report_table_binary(binobj_agd, tag = paste0("AgD/", endpoint_name), eff_measure = eff_measure),
+    report_table_binary(binobj_ipd, tag = tags[1], eff_measure = eff_measure),
+    report_table_binary(binobj_ipd_adj, res_AB, tag = tags[2], eff_measure = eff_measure),
+    report_table_binary(binobj_agd, tag = tags[3], eff_measure = eff_measure),
     c(
       paste0("** adj.", trt_ipd, " vs ", trt_agd),
-      rep("--", 4),
+      rep("--", 3),
       reformat(res_AB, pval_digits = 3)
     )
   )
@@ -482,12 +518,12 @@ maic_anchored_binary <- function(res,
     res$inferential[["report_overall_bootCI"]] <- NULL
   } else {
     res$inferential[["report_overall_bootCI"]] <- rbind(
-      report_table_binary(binobj_ipd, tag = paste0("IPD/", endpoint_name), eff_measure = eff_measure),
-      report_table_binary(binobj_ipd_adj, boot_res_AB, tag = paste0("weighted IPD/", endpoint_name), eff_measure = eff_measure),
-      report_table_binary(binobj_agd, tag = paste0("AgD/", endpoint_name), eff_measure = eff_measure),
+      report_table_binary(binobj_ipd, tag = tags[1], eff_measure = eff_measure),
+      report_table_binary(binobj_ipd_adj, boot_res_AB, tag = tags[2], eff_measure = eff_measure),
+      report_table_binary(binobj_agd, tag = tags[3], eff_measure = eff_measure),
       c(
         paste0("** adj.", trt_ipd, " vs ", trt_agd),
-        rep("--", 4),
+        rep("--", 3),
         reformat(boot_res_AB, pval_digits = 3)
       )
     )

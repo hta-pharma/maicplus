@@ -66,13 +66,65 @@ This is a wrapper function to provide adjusted effect estimates and relevant sta
 is a common comparator arm in the internal and external trial).
 }
 \details{
-For time-to-event analysis, it is required that input \code{ipd} and \code{pseudo_ipd} to have the following
+It is required that input \code{ipd} and \code{pseudo_ipd} to have the following
 columns. This function is not sensitive to upper or lower case of letters in column names.
 \itemize{
 \item USUBJID - character, unique subject ID
 \item ARM - character or factor, treatment indicator, column name does not have to be 'ARM'. User specify in
 \code{trt_var_ipd} and \code{trt_var_agd}
-\item EVENT - numeric, 1 for censored/death, 0 for otherwise
+}
+For time-to-event analysis, the follow columns are required:
+\itemize{
+\item EVENT - numeric, \code{1} for censored/death, \code{0} otherwise
 \item TIME - numeric column, observation time of the \code{EVENT}; unit in days
 }
+For binary outcomes:
+\itemize{
+\item RESPONSE - numeric, \code{1} for event occurred, \code{0} otherwise
+}
+}
+\examples{
+# anchored example using maic_anchored for binary outcome
+
+# Uses example data
+centered_ipd_twt # patient characteristics data
+adrs_twt # outcome data
+
+# get dummy binary IPD
+pseudo_adrs <- get_pseudo_ipd_binary(
+  binary_agd = data.frame(
+    ARM = c("B", "C", "B", "C"),
+    RESPONSE = c("YES", "YES", "NO", "NO"),
+    COUNT = c(280, 120, 200, 200)
+  ),
+  format = "stacked"
+)
+
+#### derive weights
+match_res <- estimate_weights(
+  data = centered_ipd_twt,
+  centered_colnames = grep("_CENTERED$", names(centered_ipd_twt)),
+  start_val = 0,
+  method = "BFGS",
+  n_boot_iteration = 10,
+  set_seed_boot = 1234
+)
+
+# inferential result
+result <- maic_anchored(
+  weights_object = match_res,
+  ipd = adrs_twt,
+  trt_var_ipd = "ARM",
+  pseudo_ipd = pseudo_adrs,
+  trt_var_agd = "ARM",
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  endpoint_name = "Binary Event",
+  endpoint_type = "binary",
+  eff_measure = "OR"
+)
+
+result$inferential$report_overall_robustCI
+result$inferential$report_overall_bootCI
 }

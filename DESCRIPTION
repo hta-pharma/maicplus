@@ -22,14 +22,14 @@ Imports:
     MASS,
     boot,
     stringr,
-    lmtest
+    lmtest,
+    sandwich
 Suggests:
     knitr,
     testthat (>= 2.0),
     ggplot2,
     rmarkdown,
     dplyr,
-    sandwich,
     survminer,
     flexsurv,
     tibble
