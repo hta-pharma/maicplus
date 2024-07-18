@@ -34,6 +34,7 @@
 #'
 #' @importFrom survival survfit Surv
 #' @return A list, contains 'descriptive' and 'inferential'
+#' @example inst/examples/maic_anchored_tte_ex.R
 #' @export
 
 maic_anchored <- function(weights_object,
