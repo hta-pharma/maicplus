@@ -236,23 +236,26 @@ test_that("maic_anchored for binary case gives the expected result", {
   )
 
   # inferential result
-  result <- maic_anchored(
-    weights_object = weighted_twt,
-    ipd = adrs_twt,
-    trt_var_ipd = "ARM",
-    pseudo_ipd = pseudo_adrs,
-    trt_var_agd = "ARM",
-    trt_ipd = "A",
-    trt_agd = "B",
-    trt_common = "C",
-    endpoint_name = "Binary Event",
-    endpoint_type = "binary",
-    eff_measure = "OR"
+  expect_warning(
+    result <- maic_anchored(
+      weights_object = weighted_twt,
+      ipd = adrs_twt,
+      trt_var_ipd = "ARM",
+      pseudo_ipd = pseudo_adrs,
+      trt_var_agd = "ARM",
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_common = "C",
+      endpoint_name = "Binary Event",
+      endpoint_type = "binary",
+      eff_measure = "OR"
+    ),
+    "non-integer"
   )
 
   expect_equal(
     result$inferential$report_overall_robustCI$`OR[95% CI]`,
-    c("1.70[1.28;2.26]", "", "0.63[0.34;1.16]", "", "2.33[1.75;3.12]", "", "0.63 [0.34; 1.16]")
+    c("1.70[1.28;2.26]", "", "1.46[0.85;2.51]", "", "2.33[1.75;3.12]", "", "0.63 [0.34; 1.16]")
   )
   expect_equal(
     result$inferential$report_overall_robustCI$`n.events(%)`,
@@ -264,6 +267,6 @@ test_that("maic_anchored for binary case gives the expected result", {
   )
   expect_equal(
     result$inferential$report_overall_bootCI$`OR[95% CI]`,
-    c("1.70[1.28;2.26]", "", "0.63[0.27;0.68]", "", "2.33[1.75;3.12]", "", "0.63 [0.27; 0.68]")
+    c("1.70[1.28;2.26]", "", "1.46[0.63;1.58]", "", "2.33[1.75;3.12]", "", "0.63 [0.27; 0.68]")
   )
 })
