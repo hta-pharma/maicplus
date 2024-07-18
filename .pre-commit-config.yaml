@@ -42,8 +42,7 @@ repos:
           .*\.rds|
           .*\.Rds|
           .*\.sh|
-          .*\.RData|
-          .*\.svg
+          .*\.RData
           )$
       - id: lintr
       - id: readme-rmd-rendered
