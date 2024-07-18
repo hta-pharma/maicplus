@@ -222,3 +222,48 @@ test_that("maic_anchored works for TTE using bootstrap SE", {
   )
   expect_equal(result$inferential$boot_est$t, t_matrix_expected)
 })
+
+
+test_that("maic_anchored for binary case gives the expected result", {
+  # Reported summary data
+  pseudo_adrs <- get_pseudo_ipd_binary(
+    binary_agd = data.frame(
+      ARM = c("B", "C", "B", "C"),
+      RESPONSE = c("YES", "YES", "NO", "NO"),
+      COUNT = c(280, 120, 200, 200)
+    ),
+    format = "stacked"
+  )
+
+  # inferential result
+  result <- maic_anchored(
+    weights_object = weighted_twt,
+    ipd = adrs_twt,
+    trt_var_ipd = "ARM",
+    pseudo_ipd = pseudo_adrs,
+    trt_var_agd = "ARM",
+    trt_ipd = "A",
+    trt_agd = "B",
+    trt_common = "C",
+    endpoint_name = "Binary Event",
+    endpoint_type = "binary",
+    eff_measure = "OR"
+  )
+
+  expect_equal(
+    result$inferential$report_overall_robustCI$`OR[95% CI]`,
+    c("1.70[1.28;2.26]", "", "0.63[0.34;1.16]", "", "2.33[1.75;3.12]", "", "0.63 [0.34; 1.16]")
+  )
+  expect_equal(
+    result$inferential$report_overall_robustCI$`n.events(%)`,
+    c("390(78.0)", "338(67.6)", "128.8(25.8)", "115.1(23.0)", "280(58.3)", "120(37.5)", "--")
+  )
+  expect_equal(
+    result$inferential$report_overall_robustCI$N,
+    c("500", "500", "500", "500", "480", "320", "--")
+  )
+  expect_equal(
+    result$inferential$report_overall_bootCI$`OR[95% CI]`,
+    c("1.70[1.28;2.26]", "", "0.63[0.27;0.68]", "", "2.33[1.75;3.12]", "", "0.63 [0.27; 0.68]")
+  )
+})
