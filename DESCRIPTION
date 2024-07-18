@@ -32,7 +32,8 @@ Suggests:
     sandwich,
     survminer,
     flexsurv,
-    tibble
+    tibble,
+    vdiffr
 VignetteBuilder:
     knitr
 biocViews:
