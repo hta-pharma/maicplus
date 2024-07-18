@@ -106,7 +106,7 @@ kmplot2 <- function(weights_object,
       kmlist_1_2 <- list(
         setNames(
           all_km[c(4, 1, 3, 5)],
-          c(trt_ipd, trt_common, paste0(trt_ipd, " (weighted)"), paste0(trt_common, " (weighted)"))
+          c(trt_common, trt_ipd, paste0(trt_ipd, " (weighted)"), paste0(trt_common, " (weighted)"))
         ),
         setNames(all_km[c(6, 2)], c(trt_common, trt_agd))
       )
@@ -119,7 +119,7 @@ kmplot2 <- function(weights_object,
     if (km_layout %in% c("by_arm", "all")) {
       kmlist_3_4 <- list(
         setNames(all_km[c(2, 1, 3)], c(trt_agd, trt_ipd, paste0(trt_ipd, " (weighted)"))),
-        setNames(all_km[c(6, 4, 4)], paste(trt_common, c("(AgD)", "(IPD)", "(IPD,weighted)")))
+        setNames(all_km[c(6, 4, 5)], paste(trt_common, c("(AgD)", "(IPD)", "(IPD,weighted)")))
       )
       names(kmlist_3_4) <- c(
         paste0("Kaplan-Meier Curves \n(", trt_ipd, " vs ", trt_agd, ")"),
