@@ -100,7 +100,7 @@ pseudo_adrs <- get_pseudo_ipd_binary(
 
 # inferential result
 result <- maic_anchored(
-  weights_object = match_res,
+  weights_object = weighted_twt,
   ipd = adrs_twt,
   trt_var_ipd = "ARM",
   pseudo_ipd = pseudo_adrs,

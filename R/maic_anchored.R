@@ -418,11 +418,21 @@ maic_anchored_binary <- function(res,
     res_AB$se <- sqrt((exp(res_AB$se^2) - 1) * exp(2 * res_AB$est + res_AB$se^2)) # log normal parameterization
     res_AB$ci_l <- exp(res_AB$ci_l)
     res_AB$ci_u <- exp(res_AB$ci_u)
+
+    res_AC$est <- exp(res_AC$est)
+    res_AC$se <- sqrt((exp(res_AC$se^2) - 1) * exp(2 * res_AC$est + res_AC$se^2)) # log normal parameterization
+    res_AC$ci_l <- exp(res_AC$ci_l)
+    res_AC$ci_u <- exp(res_AC$ci_u)
   } else if (eff_measure == "RD") {
     res_AB$est <- res_AB$est * 100
     res_AB$se <- res_AB$se * 100
     res_AB$ci_l <- res_AB$ci_l * 100
     res_AB$ci_u <- res_AB$ci_u * 100
+
+    res_AC$est <- res_AC$est * 100
+    res_AC$se <- res_AC$se * 100
+    res_AC$ci_l <- res_AC$ci_l * 100
+    res_AC$ci_u <- res_AC$ci_u * 100
   }
 
   # : get bootstrapped estimates if applicable
@@ -497,6 +507,16 @@ maic_anchored_binary <- function(res,
       ci_u = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]),
       pval = NA
     )
+
+    # boot results for A v C
+    boot_ci_ac <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, index = c(4, 6))
+    boot_res_AC <- list(
+      est = transform_estimate(boot_res$t0[4]),
+      se = NA,
+      ci_l = transform_estimate(boot_ci_ac[[l_u_index[[3]]]][l_u_index[[1]]]),
+      ci_u = transform_estimate(boot_ci_ac[[l_u_index[[3]]]][l_u_index[[2]]]),
+      pval = NA
+    )
   } else {
     res$inferential[["boot_est"]] <- NULL
   }
@@ -505,7 +525,7 @@ maic_anchored_binary <- function(res,
   tags <- paste0(c("IPD/", "weighted IPD/", "AgD/"), endpoint_name)
   res$inferential[["report_overall_robustCI"]] <- rbind(
     report_table_binary(binobj_ipd, tag = tags[1], eff_measure = eff_measure),
-    report_table_binary(binobj_ipd_adj, res_AB, tag = tags[2], eff_measure = eff_measure),
+    report_table_binary(binobj_ipd_adj, res_AC, tag = tags[2], eff_measure = eff_measure),
     report_table_binary(binobj_agd, tag = tags[3], eff_measure = eff_measure),
     c(
       paste0("** adj.", trt_ipd, " vs ", trt_agd),
@@ -519,7 +539,7 @@ maic_anchored_binary <- function(res,
   } else {
     res$inferential[["report_overall_bootCI"]] <- rbind(
       report_table_binary(binobj_ipd, tag = tags[1], eff_measure = eff_measure),
-      report_table_binary(binobj_ipd_adj, boot_res_AB, tag = tags[2], eff_measure = eff_measure),
+      report_table_binary(binobj_ipd_adj, boot_res_AC, tag = tags[2], eff_measure = eff_measure),
       report_table_binary(binobj_agd, tag = tags[3], eff_measure = eff_measure),
       c(
         paste0("** adj.", trt_ipd, " vs ", trt_agd),
