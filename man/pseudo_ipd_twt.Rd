@@ -20,6 +20,7 @@ Pseudo individual patient survival data from published two arm study
 }
 \seealso{
 Other anchored datasets: 
+\code{\link{adrs_twt}},
 \code{\link{adsl_twt}},
 \code{\link{adtte_twt}},
 \code{\link{agd}},
