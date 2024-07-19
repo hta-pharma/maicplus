@@ -70,7 +70,6 @@ get_time_conversion <- function(factor = c("days", "weeks", "months", "years")) 
 #' @return Returns a numeric vector calculated from `times / get_time_conversion(factor = as)`
 #' @examples
 #' get_time_as(50, as = "months")
-
 get_time_as <- function(times, as = NULL) {
   if (is.null(as)) as <- settings_env$default_time_scale
   if (!is.numeric(times)) stop("times arguments must be numeric")

@@ -1,7 +1,7 @@
 #### create datasets for unanchored case ####
 ## adsl_sat, adtte_sat, adrs_sat, agd (AgD of effect modifiers), pseudo_ipd_sat (AgD, tte data)
 
-#devtools::load_all()
+# devtools::load_all()
 # Read in relevant ADaM data and rename variables of interest
 adsl_sat <- read.csv(system.file("extdata", "adsl.csv",
   package = "maicplus",

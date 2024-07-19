@@ -1,6 +1,6 @@
 #### create anchored example datasets ####
 
-#devtools::load_all()
+# devtools::load_all()
 library(flexsurv)
 set.seed(2024)
 

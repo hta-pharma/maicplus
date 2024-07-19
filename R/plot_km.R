@@ -458,7 +458,7 @@ basic_kmplot <- function(kmdat,
 #'
 #' @return a 3 by 2 plot, include log-cumulative hazard plot, time dependent hazard function and unscaled Schoenfeld
 #'   residual plot, before and after matching
-#'   
+#'
 #' @example inst/examples/ph_diagplot_unanchored_ex.R
 #' @example inst/examples/ph_diagplot_anchored_ex.R
 #' @export
@@ -615,7 +615,7 @@ ph_diagplot <- function(weights_object,
 #' @examples
 #' data(adtte_sat)
 #' data(pseudo_ipd_sat)
-#' combined_data <- rbind(adtte_sat[,c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
+#' combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
 #' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data, conf.type = "log-log")
 #' ph_diagplot_lch(kmobj,
 #'   time_scale = "month", log_time = TRUE,
@@ -692,7 +692,7 @@ ph_diagplot_lch <- function(km_fit,
 #' @examples
 #' data(adtte_sat)
 #' data(pseudo_ipd_sat)
-#' combined_data <- rbind(adtte_sat[,c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
+#' combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
 #' unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data)
 #' ph_diagplot_schoenfeld(unweighted_cox,
 #'   time_scale = "month", log_time = TRUE,
