@@ -5,11 +5,19 @@
 \alias{get_time_conversion}
 \title{Get and Set Time Conversion Factors}
 \usage{
-set_time_conversion(days = 1, weeks = 7, months = 365.25/12, years = 365.25)
+set_time_conversion(
+  default = "days",
+  days = 1,
+  weeks = 7,
+  months = 365.25/12,
+  years = 365.25
+)
 
 get_time_conversion(factor = c("days", "weeks", "months", "years"))
 }
 \arguments{
+\item{default}{The default time scale, commonly whichever has factor = 1}
+
 \item{days}{Factor to divide data time units to get time in days}
 
 \item{weeks}{Factor to divide data time units to get time in weeks}
@@ -27,11 +35,19 @@ No value returned. Conversion factors are stored internally and used within func
 Get and Set Time Conversion Factors
 }
 \examples{
-# Native time format is years
-set_time_conversion(days = 1 / 365.25, weeks = 1 / 52.17857, months = 1 / 12, years = 1)
+# The default time scale is days:
+set_time_conversion(default = "days", days = 1, weeks = 7, months = 365.25 / 12, years = 365.25)
 
-# Native time format is days
-set_time_conversion(days = 1, weeks = 7, months = 365.25 / 12, years = 365.25)
+
+# Set the default time scale to years
+set_time_conversion(
+  default = "years",
+  days = 1 / 365.25,
+  weeks = 1 / 52.17857,
+  months = 1 / 12,
+  years = 1
+)
+
 # Get time scale factors:
 get_time_conversion("years")
 get_time_conversion("weeks")

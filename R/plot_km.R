@@ -48,9 +48,6 @@ kmplot <- function(weights_object,
   trt_var_ipd <- toupper(trt_var_ipd)
   trt_var_agd <- toupper(trt_var_agd)
 
-  original_par <- par(no.readonly = TRUE)
-  on.exit(par(original_par))
-
   # pre check
   if (!"maicplus_estimate_weights" %in% class(weights_object)) {
     stop("weights_object should be an object returned by estimate_weights")
@@ -242,6 +239,7 @@ kmplot <- function(weights_object,
       )
     }
   }
+  invisible(NULL)
 }
 
 
@@ -279,8 +277,8 @@ kmplot <- function(weights_object,
 
 basic_kmplot <- function(kmdat,
                          endpoint_name = "Time to Event Endpoint",
-                         time_scale,
-                         time_grid,
+                         time_scale = NULL,
+                         time_grid = NULL,
                          show_risk_set = TRUE,
                          main_title = "Kaplan-Meier Curves",
                          subplot_heights = NULL,
@@ -289,9 +287,8 @@ basic_kmplot <- function(kmdat,
                          use_line_types = NULL,
                          use_pch_cex = 0.65,
                          use_pch_alpha = 100) {
-  original_par <- par(no.readonly = TRUE)
+  original_par <- par("bty", "tcl", "mgp", "cex.lab", "cex.axis", "cex.main", "mar")
   on.exit(par(original_par))
-
   # precheck
   if (!length(subplot_heights) %in% c(0, (1 + show_risk_set))) {
     stop("length of subplot_heights should be ", (1 + show_risk_set))
@@ -300,15 +297,17 @@ basic_kmplot <- function(kmdat,
     stop("kmdat$treatment needs to be a factor, its levels will be used in legend and title, first level is comparator")
   }
   if (nlevels(kmdat$treatment) > 4) stop("kmdat$treatment cannot have more than 4 levels")
-  if (is.null(time_grid) && show_risk_set) stop("please provide a numeric vector as time_grid to show risk set table")
 
   # set up x axis (time)
   if (is.null(time_grid)) {
     max_t <- max(kmdat$time)
     t_range <- c(0, get_time_as(max_t, time_scale) * 1.07)
+    time_grid <- pretty(t_range)
   } else {
     t_range <- c(0, max(time_grid))
   }
+
+
 
   # plat layout in par
   if (!suppress_plot_layout) {
@@ -434,6 +433,7 @@ basic_kmplot <- function(kmdat,
       legend = levels(kmdat$treatment)
     )
   }
+  invisible(NULL)
 }
 
 
@@ -520,8 +520,7 @@ ph_diagplot <- function(weights_object,
   zphobj_adj <- survival::cox.zph(coxobj_adj2, transform = zph_transform, global = FALSE)
 
   # making the plot
-  original_par <- par(no.readonly = TRUE)
-  par(mfrow = c(3, 2), cex.lab = 0.85, cex.axis = 0.8, cex.main = 0.9)
+  original_par <- par(mfrow = c(3, 2), cex.lab = 0.85, cex.axis = 0.8, cex.main = 0.9)
   on.exit(par(original_par))
   # log-cum-hazard plot
   ph_diagplot_lch(kmobj,
@@ -640,7 +639,7 @@ ph_diagplot_lch <- function(km_fit,
   t_range <- range(all.times)
   y_range <- range(log(do.call(rbind, clldat)$cumhaz))
 
-  original_par <- par(no.readonly = TRUE)
+  original_par <- par("mar", "bty", "tcl", "mgp")
   par(mar = c(4, 4, 4, 1), bty = "n", tcl = -0.15, mgp = c(1.5, 0.3, 0))
   on.exit(par(original_par))
   plot(0, 0,
@@ -717,8 +716,7 @@ ph_diagplot_schoenfeld <- function(coxobj,
   use_yrange <- range(schresid, uppband, lowband)
 
   # making the plot
-  original_par <- par(no.readonly = TRUE)
-  par(bty = "n", mar = c(4, 4, 4, 1), tcl = -0.15, mgp = c(1.5, 0.3, 0))
+  original_par <- par(bty = "n", mar = c(4, 4, 4, 1), tcl = -0.15, mgp = c(1.5, 0.3, 0))
   on.exit(par(original_par))
   plot(schresid ~ plot_x,
     type = "n",

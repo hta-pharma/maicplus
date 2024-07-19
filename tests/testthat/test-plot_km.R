@@ -1,5 +1,177 @@
+test_that("kmplot works by trial", {
+  make_plot <- function() {
+    kmplot(
+      weights_object = weighted_twt,
+      tte_ipd = adtte_twt,
+      tte_pseudo_ipd = pseudo_ipd_twt,
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_common = "C",
+      trt_var_ipd = "ARM",
+      trt_var_agd = "ARM",
+      endpoint_name = "Overall Survival",
+      km_conf_type = "log-log",
+      km_layout = "by_trial",
+      time_scale = "month",
+      time_grid = seq(0, 20, by = 2),
+      use_colors = NULL,
+      use_line_types = NULL,
+      use_pch_cex = 0.65,
+      use_pch_alpha = 100
+    )
+  }
+
+  expect_no_error(make_plot())
+  skip_if_not_installed("vdiffr")
+  vdiffr::expect_doppelganger(
+    title = "kmplot by_trial",
+    fig = make_plot()
+  )
+})
+
+test_that("kmplot works all", {
+  make_plot <- function() {
+    kmplot(
+      weights_object = weighted_twt,
+      tte_ipd = adtte_twt,
+      tte_pseudo_ipd = pseudo_ipd_twt,
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_common = "C",
+      trt_var_ipd = "ARM",
+      trt_var_agd = "ARM",
+      endpoint_name = "Overall Survival",
+      km_conf_type = "log-log",
+      km_layout = "all",
+      time_scale = "year",
+      time_grid = seq(0, 1.5, by = 0.25),
+      use_colors = NULL,
+      use_line_types = c(6, 3, 4, 5),
+      use_pch_cex = 0.65,
+      use_pch_alpha = 100
+    )
+  }
+
+  expect_no_error(make_plot())
+  skip_if_not_installed("vdiffr")
+  vdiffr::expect_doppelganger(
+    title = "kmplot_all",
+    fig = make_plot()
+  )
+})
+
+test_that("kmplot works by_arm", {
+  make_plot <- function() {
+    kmplot(
+      weights_object = weighted_twt,
+      tte_ipd = adtte_twt,
+      tte_pseudo_ipd = pseudo_ipd_twt,
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_common = "C",
+      trt_var_ipd = "ARM",
+      trt_var_agd = "ARM",
+      endpoint_name = "PFS",
+      km_conf_type = "log-log",
+      km_layout = "by_arm",
+      use_colors = c("red", "yellow", "orange"),
+      use_line_types = NULL,
+      use_pch_cex = 0.75,
+      use_pch_alpha = 85
+    )
+  }
+
+  expect_no_error(make_plot())
+  skip_if_not_installed("vdiffr")
+  vdiffr::expect_doppelganger(
+    title = "kmplot by_arm",
+    fig = make_plot()
+  )
+})
+
+
+
+test_that("ph_diagplot works for anchored data", {
+  expect_no_error(
+    ph_diagplot(
+      weights_object = weighted_twt,
+      tte_ipd = adtte_twt,
+      tte_pseudo_ipd = pseudo_ipd_twt,
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_common = "C",
+      trt_var_ipd = "ARM",
+      trt_var_agd = "ARM",
+      endpoint_name = "Time to Event Endpoint",
+      time_scale = "months",
+      zph_transform = "log",
+      zph_log_hazard = TRUE
+    )
+  )
+
+  skip_if_not_installed("vdiffr")
+  vdiffr::expect_doppelganger(
+    title = "ph_diagplot anchored",
+    fig = function() {
+      ph_diagplot(
+        weights_object = weighted_twt,
+        tte_ipd = adtte_twt,
+        tte_pseudo_ipd = pseudo_ipd_twt,
+        trt_ipd = "A",
+        trt_agd = "B",
+        trt_common = "C",
+        trt_var_ipd = "ARM",
+        trt_var_agd = "ARM",
+        endpoint_name = "Time to Event Endpoint",
+        time_scale = "years",
+        zph_transform = "log",
+        zph_log_hazard = TRUE
+      )
+    }
+  )
+})
+
+test_that("ph_diagplot works for unanchored data", {
+  expect_no_error(
+    ph_diagplot(
+      weights_object = weighted_sat,
+      tte_ipd = adtte_sat,
+      tte_pseudo_ipd = pseudo_ipd_sat,
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_var_ipd = "ARM",
+      trt_var_agd = "ARM",
+      endpoint_name = "Time to Event Endpoint",
+      time_scale = "days",
+      zph_transform = "log",
+      zph_log_hazard = FALSE
+    )
+  )
+
+  skip_if_not_installed("vdiffr")
+  vdiffr::expect_doppelganger(
+    title = "ph_diagplot unanchored",
+    fig = function() {
+      ph_diagplot(
+        weights_object = weighted_twt,
+        tte_ipd = adtte_twt,
+        tte_pseudo_ipd = pseudo_ipd_twt,
+        trt_ipd = "A",
+        trt_agd = "B",
+        trt_common = "C",
+        trt_var_ipd = "ARM",
+        trt_var_agd = "ARM",
+        endpoint_name = "Time to Event Endpoint",
+        time_scale = "weeks",
+        zph_transform = "log",
+        zph_log_hazard = TRUE
+      )
+    }
+  )
+})
+
 test_that("ph_diagplot_lch works without error", {
-  original_par <- par()
+  original_par <- par("mar", "bty", "tcl", "mgp")
   load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
   kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
   expect_no_error(
@@ -10,7 +182,7 @@ test_that("ph_diagplot_lch works without error", {
     )
   )
 
-  expect_equal(original_par, par())
+  expect_equal(original_par, par(names(original_par)))
 
   skip_if_not_installed("vdiffr")
   vdiffr::expect_doppelganger(
@@ -26,7 +198,7 @@ test_that("ph_diagplot_lch works without error", {
 })
 
 test_that("ph_diagplot_schoenfeld works without error", {
-  original_par <- par()
+  original_par <- par("bty", "mar", "tcl", "mgp")
   load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
   unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
   expect_no_error(
@@ -36,7 +208,7 @@ test_that("ph_diagplot_schoenfeld works without error", {
       endpoint_name = "OS", subtitle = "(Before Matching)"
     )
   )
-  expect_equal(original_par, par())
+  expect_equal(original_par, par(names(original_par)))
 
   skip_if_not_installed("vdiffr")
   vdiffr::expect_doppelganger(
@@ -46,87 +218,6 @@ test_that("ph_diagplot_schoenfeld works without error", {
         unweighted_cox,
         time_scale = "month", log_time = TRUE,
         endpoint_name = "OS", subtitle = "(Before Matching)"
-      )
-    }
-  )
-})
-
-test_that("kmplot2 works", {
-  skip_if_not_installed("vdiffr")
-
-  data(weighted_twt)
-  data(adtte_twt)
-  data(pseudo_ipd_twt)
-
-  # plot by trial
-  expect_warning(
-    vdiffr::expect_doppelganger(
-      title = "kmplot2_by_trial",
-      fig = function() {
-        kmplot2(
-          weights_object = weighted_twt,
-          tte_ipd = adtte_twt,
-          tte_pseudo_ipd = pseudo_ipd_twt,
-          trt_ipd = "A",
-          trt_agd = "B",
-          trt_common = "C",
-          trt_var_ipd = "ARM",
-          trt_var_agd = "ARM",
-          endpoint_name = "Overall Survival",
-          km_conf_type = "log-log",
-          km_layout = "by_trial",
-          time_scale = "month",
-          break_x_by = 2
-        )
-      }
-    ),
-    "select_"
-  )
-
-
-
-  # plot by arm
-  vdiffr::expect_doppelganger(
-    title = "kmplot2_by_am",
-    fig = function() {
-      kmplot2(
-        weights_object = weighted_twt,
-        tte_ipd = adtte_twt,
-        tte_pseudo_ipd = pseudo_ipd_twt,
-        trt_ipd = "A",
-        trt_agd = "B",
-        trt_common = "C",
-        trt_var_ipd = "ARM",
-        trt_var_agd = "ARM",
-        endpoint_name = "Overall Survival",
-        km_conf_type = "log-log",
-        km_layout = "by_arm",
-        time_scale = "month",
-        break_x_by = 2
-      )
-    }
-  )
-
-  # plot all
-  vdiffr::expect_doppelganger(
-    title = "kmplot2_all",
-    fig = function() {
-      kmplot2(
-        weights_object = weighted_twt,
-        tte_ipd = adtte_twt,
-        tte_pseudo_ipd = pseudo_ipd_twt,
-        trt_ipd = "A",
-        trt_agd = "B",
-        trt_common = "C",
-        trt_var_ipd = "ARM",
-        trt_var_agd = "ARM",
-        endpoint_name = "Overall Survival",
-        km_conf_type = "log-log",
-        km_layout = "all",
-        time_scale = "month",
-        break_x_by = 2,
-        xlim = c(0, 20),
-        show_risk_set = FALSE
       )
     }
   )
