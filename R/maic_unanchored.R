@@ -33,7 +33,10 @@
 #'   \item TIME - numeric column, observation time of the \code{EVENT}; unit in days
 #' }
 #'
-#' @importFrom survival survfit Surv
+#' @importFrom survival survfit Surv coxph
+#' @importFrom lmtest coeftest coefci
+#' @importFrom sandwich vcovHC
+#' @importFrom boot boot boot.ci
 #' @return A list, contains 'descriptive' and 'inferential'
 #' @export
 
@@ -109,7 +112,6 @@ maic_unanchored <- function(weights_object,
 
     if (any(!c("USUBJID", "RESPONSE") %in% names(ipd))) stop("ipd should have 'USUBJID', 'RESPONSE' columns at minimum")
     eff_measure <- match.arg(eff_measure, choices = c("OR", "RD", "RR"), several.ok = FALSE)
-
     binary_robust_cov_type <- match.arg(
       binary_robust_cov_type,
       choices = c("HC3", "const", "HC", "HC0", "HC1", "HC2", "HC4", "HC4m", "HC5")

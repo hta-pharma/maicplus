@@ -15,10 +15,11 @@ maic_anchored(
   trt_var_agd = "ARM",
   endpoint_type = "tte",
   endpoint_name = "Time to Event Endpoint",
-  eff_measure = c("HR", "OR", "RR", "RD", "Diff"),
+  eff_measure = c("HR", "OR", "RR", "RD"),
+  boot_ci_type = c("norm", "basic", "stud", "perc", "bca"),
   time_scale = "months",
   km_conf_type = "log-log",
-  boot_ci_type = c("norm", "basic", "stud", "perc", "bca")
+  binary_robust_cov_type = "HC3"
 )
 }
 \arguments{
@@ -46,13 +47,16 @@ from contingency table (for binary endpoint)}
 \item{eff_measure}{a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint;
 "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.}
 
+\item{boot_ci_type}{a string, one of \code{c("norm","basic", "stud", "perc", "bca")} to select the type of bootstrap
+confidence interval. See \link[boot:boot.ci]{boot::boot.ci} for more details.}
+
 \item{time_scale}{a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
 'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days}
 
 \item{km_conf_type}{a string, pass to \code{conf.type} of \code{survfit}}
 
-\item{boot_ci_type}{a string, one of \code{c("norm","basic", "stud", "perc", "bca")} to select the type of bootstrap
-confidence interval. See \link[boot:boot.ci]{boot::boot.ci} for more details.}
+\item{binary_robust_cov_type}{a string to pass to argument \code{type} of \link[sandwich:vcovHC]{sandwich::vcovHC}, see possible options in the
+documentation of that function. Default is \code{"HC3"}}
 }
 \value{
 A list, contains 'descriptive' and 'inferential'
@@ -62,13 +66,53 @@ This is a wrapper function to provide adjusted effect estimates and relevant sta
 is a common comparator arm in the internal and external trial).
 }
 \details{
-For time-to-event analysis, it is required that input \code{ipd} and \code{pseudo_ipd} to have the following
+It is required that input \code{ipd} and \code{pseudo_ipd} to have the following
 columns. This function is not sensitive to upper or lower case of letters in column names.
 \itemize{
 \item USUBJID - character, unique subject ID
 \item ARM - character or factor, treatment indicator, column name does not have to be 'ARM'. User specify in
 \code{trt_var_ipd} and \code{trt_var_agd}
-\item EVENT - numeric, 1 for censored/death, 0 for otherwise
+}
+For time-to-event analysis, the follow columns are required:
+\itemize{
+\item EVENT - numeric, \code{1} for censored/death, \code{0} otherwise
 \item TIME - numeric column, observation time of the \code{EVENT}; unit in days
 }
+For binary outcomes:
+\itemize{
+\item RESPONSE - numeric, \code{1} for event occurred, \code{0} otherwise
+}
+}
+\examples{
+# anchored example using maic_anchored for binary outcome
+
+weighted_twt # weighted patient level-data
+
+# Reported summary data
+pseudo_adrs <- get_pseudo_ipd_binary(
+  binary_agd = data.frame(
+    ARM = c("B", "C", "B", "C"),
+    RESPONSE = c("YES", "YES", "NO", "NO"),
+    COUNT = c(280, 120, 200, 200)
+  ),
+  format = "stacked"
+)
+
+# inferential result
+result <- maic_anchored(
+  weights_object = weighted_twt,
+  ipd = adrs_twt,
+  trt_var_ipd = "ARM",
+  pseudo_ipd = pseudo_adrs,
+  trt_var_agd = "ARM",
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  endpoint_name = "Binary Event",
+  endpoint_type = "binary",
+  eff_measure = "OR"
+)
+
+result$inferential$report_overall_robustCI
+result$inferential$report_overall_bootCI
 }

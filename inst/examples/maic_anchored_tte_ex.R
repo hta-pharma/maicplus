@@ -1,4 +1,4 @@
-# anchored example using maic_anchored for tte
+# Anchored example using maic_anchored() for time-to-event endpoints
 library(flexsurv)
 ### IPD
 set.seed(1234)
