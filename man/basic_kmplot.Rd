@@ -7,8 +7,8 @@
 basic_kmplot(
   kmdat,
   endpoint_name = "Time to Event Endpoint",
-  time_scale,
-  time_grid,
+  time_scale = NULL,
+  time_grid = NULL,
   show_risk_set = TRUE,
   main_title = "Kaplan-Meier Curves",
   subplot_heights = NULL,

@@ -4,12 +4,12 @@
 \alias{get_time_as}
 \title{Convert Time Values Using Scaling Factors}
 \usage{
-get_time_as(times, as = c("days", "weeks", "months", "years"))
+get_time_as(times, as = NULL)
 }
 \arguments{
 \item{times}{Numeric time values}
 
-\item{as}{A time scale to convert to}
+\item{as}{A time scale to convert to. One of "days", "weeks", "months", "years"}
 }
 \value{
 Returns a numeric vector calculated from \code{times / get_time_conversion(factor = as)}
