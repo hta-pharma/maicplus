@@ -1,41 +1,18 @@
-# anchored example using kmplot
-
-### IPD
-# Read in relevant ADaM data and rename variables of interest
-adsl_twt
-adtte_twt
-
-### AgD
-# Baseline aggregate data for the comparator population
-agd
-
-# for time-to-event endpoints, pseudo IPD from digitalized KM
-pseudo_ipd_twt
-
-#### prepare data
-target_pop <- process_agd(agd)
-adsl <- dummize_ipd(adsl_twt, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
-use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
-
-#### derive weights
-match_res <- estimate_weights(
-  data = use_adsl,
-  centered_colnames = grep("_CENTERED$", names(use_adsl)),
-  start_val = 0,
-  method = "BFGS"
-)
+data(weighted_twt)
+data(adtte_twt)
+data(pseudo_ipd_twt)
 
 # plot by trial
 kmplot(
-  weights_object = match_res,
+  weights_object = weighted_twt,
   tte_ipd = adtte_twt,
-  trt_var_ipd = "ARM",
   tte_pseudo_ipd = pseudo_ipd_twt,
-  trt_var_agd = "ARM",
-  endpoint_name = "Overall Survival",
   trt_ipd = "A",
   trt_agd = "B",
   trt_common = "C",
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
+  endpoint_name = "Overall Survival",
   km_conf_type = "log-log",
   km_layout = "by_trial",
   time_scale = "month",
@@ -46,18 +23,17 @@ kmplot(
   use_pch_alpha = 100
 )
 
-
 # plot by arm
 kmplot(
-  weights_object = match_res,
+  weights_object = weighted_twt,
   tte_ipd = adtte_twt,
-  trt_var_ipd = "ARM",
   tte_pseudo_ipd = pseudo_ipd_twt,
-  trt_var_agd = "ARM",
-  endpoint_name = "Overall Survival",
   trt_ipd = "A",
   trt_agd = "B",
   trt_common = "C",
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
+  endpoint_name = "Overall Survival",
   km_conf_type = "log-log",
   km_layout = "by_arm",
   time_scale = "month",
@@ -70,15 +46,15 @@ kmplot(
 
 # plot all
 kmplot(
-  weights_object = match_res,
+  weights_object = weighted_twt,
   tte_ipd = adtte_twt,
-  trt_var_ipd = "ARM",
   tte_pseudo_ipd = pseudo_ipd_twt,
-  trt_var_agd = "ARM",
-  endpoint_name = "Overall Survival",
   trt_ipd = "A",
   trt_agd = "B",
   trt_common = "C",
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
+  endpoint_name = "Overall Survival",
   km_conf_type = "log-log",
   km_layout = "all",
   time_scale = "month",

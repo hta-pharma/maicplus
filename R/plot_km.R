@@ -28,8 +28,8 @@
 #'     appended.
 #'   \item if "all", 2 by 2 plot, all plots in "by_trial" and "by_arm" without risk set table appended.
 #' }
-#' @example inst/examples/kmplot_anchored_ex.R
 #' @example inst/examples/kmplot_unanchored_ex.R
+#' @example inst/examples/kmplot_anchored_ex.R
 #' @export
 
 kmplot <- function(weights_object,
@@ -444,12 +444,12 @@ basic_kmplot <- function(kmdat,
 #'   "TIME" columns and a column indicating treatment assignment
 #' @param tte_pseudo_ipd a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event
 #'   endpoint), contain at least "EVENT", "TIME"
-#' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)
-#' @param trt_agd a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)
+#' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{tte_ipd} (real IPD)
+#' @param trt_agd a string, name of the interested investigation arm in external trial \code{tte_pseudo_ipd} (pseudo IPD)
 #' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL,
 #'   indicating unanchored case
-#' @param trt_var_ipd a string, column name in \code{dat_ipd} that contains the treatment assignment
-#' @param trt_var_agd a string, column name in \code{dat_ipd} that contains the treatment assignment
+#' @param trt_var_ipd a string, column name in \code{tte_ipd} that contains the treatment assignment
+#' @param trt_var_agd a string, column name in \code{tte_pseudo_ipd} that contains the treatment assignment
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or 'days'
 #' @param zph_transform a string, pass to \code{survival::cox.zph}, default is "log"
@@ -458,6 +458,9 @@ basic_kmplot <- function(kmdat,
 #'
 #' @return a 3 by 2 plot, include log-cumulative hazard plot, time dependent hazard function and unscaled Schoenfeld
 #'   residual plot, before and after matching
+#'   
+#' @example inst/examples/ph_diagplot_unanchored_ex.R
+#' @example inst/examples/ph_diagplot_anchored_ex.R
 #' @export
 ph_diagplot <- function(weights_object,
                         tte_ipd,
@@ -610,9 +613,10 @@ ph_diagplot <- function(weights_object,
 #' @param subtitle a character string, subtitle of the plot
 #' @param exclude_censor logical, should censored data point be plotted
 #' @examples
-#' library(survival)
-#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
-#' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+#' data(adtte_sat)
+#' data(pseudo_ipd_sat)
+#' combined_data <- rbind(adtte_sat[,c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
+#' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data, conf.type = "log-log")
 #' ph_diagplot_lch(kmobj,
 #'   time_scale = "month", log_time = TRUE,
 #'   endpoint_name = "OS", subtitle = "(Before Matching)"
@@ -686,9 +690,10 @@ ph_diagplot_lch <- function(km_fit,
 #' @param endpoint_name a character string, name of the endpoint
 #' @param subtitle a character string, subtitle of the plot
 #' @examples
-#' library(survival)
-#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
-#' unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
+#' data(adtte_sat)
+#' data(pseudo_ipd_sat)
+#' combined_data <- rbind(adtte_sat[,c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
+#' unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data)
 #' ph_diagplot_schoenfeld(unweighted_cox,
 #'   time_scale = "month", log_time = TRUE,
 #'   endpoint_name = "OS", subtitle = "(Before Matching)"

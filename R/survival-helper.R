@@ -7,18 +7,16 @@
 #' @param time_scale a character string, 'years', 'months', 'weeks' or 'days', time unit of median survival time
 #'
 #' @examples
-#' library(survival)
-#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
-#' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
-#' kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte,
-#'   weights = combined_data_tte$weights, conf.type = "log-log"
-#' )
+#' data(adtte_sat)
+#' data(pseudo_ipd_sat)
+#' 
+#' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data, conf.type = "log-log")
+#' kmdat <- do.call(rbind, survfit_makeup(kmobj))
+#' kmdat$treatment <- factor(kmdat$treatment)
 #'
 #' # Derive median survival time
 #' medSurv <- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")
-#' medSurv_adj <- medSurv_makeup(kmobj_adj, legend = "after matching", time_scale = "day")
-#' medSurv_out <- rbind(medSurv, medSurv_adj)
-#' medSurv_out
+#' medSurv
 #' @return a data frame with a index column 'type', median survival time and confidence interval
 #' @export
 
@@ -47,11 +45,11 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 #' @param single_trt_name name of treatment if no strata are specified in `km_fit`
 #'
 #' @examples
-#' \dontrun{
-#' load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
-#' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+#' data(adtte_sat)
+#' data(pseudo_ipd_sat)
+#' combined_data <- rbind(adtte_sat[,c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
+#' kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data, conf.type = "log-log")
 #' survfit_makeup(kmobj)
-#' }
 #' @return a list of data frames of variables from [survival::survfit()]. Data frame is divided by treatment.
 #' @export
 
