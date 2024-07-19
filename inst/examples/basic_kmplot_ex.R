@@ -1,4 +1,9 @@
-library(survival)
+
+data(adtte_sat)
+data(pseudo_ipd_sat)
+pseudo_ipd_sat$TIME <- "B"
+
+
 load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
 kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
 kmdat <- do.call(rbind, survfit_makeup(kmobj))
