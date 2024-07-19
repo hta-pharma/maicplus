@@ -102,7 +102,7 @@ test_that("maic_anchored works for TTE using robust SE", {
   )
   expect_equal(
     result$inferential$report_overall_robustCI$`median[95% CI]`,
-    c("7.6[6.3;10.3]", "1.8[1.6; 2.0]", "12.2[10.2; NA]", " 1.8[ 1.5;2.4]", "2.7[2.3;3.3]", "1.9[1.7;2.0]", "-")
+    c("7.6[6.3;10.3]", "1.8[1.6; 2.0]", "12.2[10.2; NA]", " 1.8[ 1.5;2.4]", "2.7[2.3;3.3]", "1.9[1.7;2.0]", "--")
   )
   expect_equal(
     result$inferential$report_overall_robustCI$`HR[95% CI]`,
@@ -201,7 +201,7 @@ test_that("maic_anchored works for TTE using bootstrap SE", {
 
   expect_equal(
     result$inferential$report_overall_bootCI$`median[95% CI]`,
-    c("7.6[6.3;10.3]", "1.8[1.6; 2.0]", "12.2[10.2; NA]", " 1.8[ 1.5;2.4]", "2.7[2.3;3.3]", "1.9[1.7;2.0]", "-")
+    c("7.6[6.3;10.3]", "1.8[1.6; 2.0]", "12.2[10.2; NA]", " 1.8[ 1.5;2.4]", "2.7[2.3;3.3]", "1.9[1.7;2.0]", "--")
   )
   expect_equal(
     result$inferential$report_overall_bootCI$`HR[95% CI]`,
@@ -210,15 +210,63 @@ test_that("maic_anchored works for TTE using bootstrap SE", {
 
   t_matrix_expected <- matrix(
     c(
-      c(-1.24294307251997, -1.33792890159168, -1.57070441400606, -1.52456404275395, -1.40942511608976),
-      c(0.0471386881163452, 0.0413517501082777, 0.0410548744406873, 0.0390747454633873, 0.04529038893612),
-      c(0.217114458561251, 0.203351297286931, 0.202620024777136, 0.197673330177309, 0.212815386981581),
-      c(-1.80190829720242, -1.89689412627413, -2.12966963868851, -2.0835292674364, -1.96839034077221),
-      c(0.197156067436005, 0.181888913677451, 0.181070984012272, 0.175518011252044, 0.192411579034645),
-      c(0.0388705149268306, 0.0330835769187631, 0.0327867012511726, 0.0308065722738727, 0.0370222157466054)
+      -1.24294307251997, -1.33792890159168, -1.57070441400606, -1.52456404275395, -1.40942511608976,
+      0.0466174371467349, 0.0408304991386674, 0.0405336234710769, 0.038553494493777, 0.0447691379665097,
+      0.215910715682976, 0.202065581281591, 0.201329638829152, 0.196350437977044, 0.211587187623707,
+      -1.80190829720242, -1.89689412627413, -2.12966963868851, -2.0835292674364, -1.96839034077221,
+      0.197156067436005, 0.181888913677451, 0.181070984012272, 0.175518011252044, 0.192411579034645,
+      0.0388705149268306, 0.0330835769187631, 0.0327867012511726, 0.0308065722738727, 0.0370222157466054
     ),
     byrow = FALSE,
     ncol = 6
   )
   expect_equal(result$inferential$boot_est$t, t_matrix_expected)
+})
+
+
+test_that("maic_anchored for binary case gives the expected result", {
+  # Reported summary data
+  pseudo_adrs <- get_pseudo_ipd_binary(
+    binary_agd = data.frame(
+      ARM = c("B", "C", "B", "C"),
+      RESPONSE = c("YES", "YES", "NO", "NO"),
+      COUNT = c(280, 120, 200, 200)
+    ),
+    format = "stacked"
+  )
+
+  # inferential result
+  expect_warning(
+    result <- maic_anchored(
+      weights_object = weighted_twt,
+      ipd = adrs_twt,
+      trt_var_ipd = "ARM",
+      pseudo_ipd = pseudo_adrs,
+      trt_var_agd = "ARM",
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_common = "C",
+      endpoint_name = "Binary Event",
+      endpoint_type = "binary",
+      eff_measure = "OR"
+    ),
+    "non-integer"
+  )
+
+  expect_equal(
+    result$inferential$report_overall_robustCI$`OR[95% CI]`,
+    c("1.70[1.28;2.26]", "", "1.46[0.85;2.51]", "", "2.33[1.75;3.12]", "", "0.63 [0.34; 1.16]")
+  )
+  expect_equal(
+    result$inferential$report_overall_robustCI$`n.events(%)`,
+    c("390(78.0)", "338(67.6)", "128.8(25.8)", "115.1(23.0)", "280(58.3)", "120(37.5)", "--")
+  )
+  expect_equal(
+    result$inferential$report_overall_robustCI$N,
+    c("500", "500", "500", "500", "480", "320", "--")
+  )
+  expect_equal(
+    result$inferential$report_overall_bootCI$`OR[95% CI]`,
+    c("1.70[1.28;2.26]", "", "1.46[0.63;1.58]", "", "2.33[1.75;3.12]", "", "0.63 [0.27; 0.68]")
+  )
 })

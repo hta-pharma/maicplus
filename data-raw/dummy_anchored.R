@@ -13,7 +13,7 @@ adsl$X <- NULL
 adsl$USUBJID <- paste0("xx", adsl$USUBJID)
 adsl2 <- adsl
 adsl2$ARM <- "C"
-adsl2$USUBJID <- sample(size = nrow(adsl2), paste0("yy", adsl2$USUBJID), replace = FALSE)
+adsl2$USUBJID <- sample(size = nrow(adsl2), sub("xx", "yy", adsl2$USUBJID), replace = FALSE)
 adsl2 <- adsl2[order(adsl2$USUBJID), ]
 
 adsl_twt <- rbind(adsl, adsl2)
@@ -34,7 +34,7 @@ fit_C <- flexsurv::flexsurvspline(formula = Surv(TIME, EVENT) ~ 1, data = adtte2
 tmp <- simulate(fit_C, nsim = 1, seed = 1234, newdata = adtte2, censtime = max(adtte$TIME))
 adtte2$TIME <- tmp$time_1
 adtte2$EVENT <- tmp$event_1
-adtte2$USUBJID <- paste0("yy", adtte2$USUBJID)
+adtte2$USUBJID <- sub("xx", "yy", adtte2$USUBJID)
 
 adtte_twt <- rbind(adtte, adtte2)
 adtte_twt$EVNT <- NULL
