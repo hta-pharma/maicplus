@@ -49,8 +49,8 @@ data(adtte_sat)
 data(pseudo_ipd_sat)
 
 kmobj_A <- survfit(Surv(TIME, EVENT) ~ ARM,
-                   data = adtte_sat,
-                   conf.type = "log-log"
+  data = adtte_sat,
+  conf.type = "log-log"
 )
 
 kmobj_B <- survfit(Surv(TIME, EVENT) ~ ARM,

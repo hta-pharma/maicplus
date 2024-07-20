@@ -38,7 +38,7 @@ a diagnosis plot for proportional hazard assumption, versus log-time (default) o
 \examples{
 data(adtte_sat)
 data(pseudo_ipd_sat)
-combined_data <- rbind(adtte_sat[,c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
+combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
 kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data, conf.type = "log-log")
 ph_diagplot_lch(kmobj,
   time_scale = "month", log_time = TRUE,
