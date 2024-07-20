@@ -1,5 +1,6 @@
 # anchored example using maic_anchored for tte
-library(flexsurv)
+
+
 
 # Read in relevant ADaM data and rename variables of interest
 adsl <- read.csv(system.file("extdata", "adsl.csv",
