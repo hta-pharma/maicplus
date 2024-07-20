@@ -2,7 +2,7 @@
 
 # devtools::load_all()
 library(flexsurv)
-set.seed(2024)
+set.seed(1234)
 
 # create adsl_twt
 adsl <- read.csv(system.file("extdata", "adsl.csv",
