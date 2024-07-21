@@ -445,7 +445,8 @@ basic_kmplot <- function(kmdat,
 #' @param tte_pseudo_ipd a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event
 #'   endpoint), contain at least "EVENT", "TIME"
 #' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{tte_ipd} (real IPD)
-#' @param trt_agd a string, name of the interested investigation arm in external trial \code{tte_pseudo_ipd} (pseudo IPD)
+#' @param trt_agd a string, name of the interested investigation arm in external trial 
+#' \code{tte_pseudo_ipd} (pseudo IPD)
 #' @param trt_common a string, name of the common comparator in internal and external trial, by default is NULL,
 #'   indicating unanchored case
 #' @param trt_var_ipd a string, column name in \code{tte_ipd} that contains the treatment assignment

@@ -30,7 +30,8 @@ endpoint), contain at least "EVENT", "TIME"}
 
 \item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{tte_ipd} (real IPD)}
 
-\item{trt_agd}{a string, name of the interested investigation arm in external trial \code{tte_pseudo_ipd} (pseudo IPD)}
+\item{trt_agd}{a string, name of the interested investigation arm in external trial
+\code{tte_pseudo_ipd} (pseudo IPD)}
 
 \item{trt_common}{a string, name of the common comparator in internal and external trial, by default is NULL,
 indicating unanchored case}
