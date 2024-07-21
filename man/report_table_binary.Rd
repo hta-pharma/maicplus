@@ -29,7 +29,6 @@ helper function: sort out a nice report table to summarize binary analysis resul
 }
 \examples{
 data(adrs_sat)
-
 testdat <- data.frame(Yes = 280, No = 120)
 rownames(testdat) <- "B"
 pseudo_ipd_binary_sat <- get_pseudo_ipd_binary(
