@@ -51,7 +51,7 @@ report_table_tte <- function(coxobj, medSurvobj, tag = NULL) {
 #' helper function: sort out a nice report table to summarize binary analysis results
 #'
 #' @param binobj object from glm()
-#' @param weighted_result weighted result object 
+#' @param weighted_result weighted result object
 #' @param eff_measure a string, binary effect measure, could be "OR", "RR", "RD"
 #' @param tag a string, by default NULL, if specified, an extra 1st column is created in the output
 #'

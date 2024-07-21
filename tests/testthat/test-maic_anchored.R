@@ -1,9 +1,8 @@
 test_that("maic_anchored works for TTE using robust SE", {
-  
   data(adtte_twt)
   data(pseudo_ipd_twt)
   data(centered_ipd_twt)
-  
+
   #### derive weights
   cols <- grep("_CENTERED$", names(centered_ipd_twt), value = TRUE)
   weighted_data <- estimate_weights(
@@ -12,7 +11,7 @@ test_that("maic_anchored works for TTE using robust SE", {
     start_val = 0,
     method = "BFGS"
   )
-  
+
   # inferential result
   result <- maic_anchored(
     weights_object = weighted_data,
@@ -29,7 +28,7 @@ test_that("maic_anchored works for TTE using robust SE", {
     time_scale = "month",
     km_conf_type = "log-log"
   )
-  
+
   testthat::expect_true(is.list(result["descriptive"]))
   testthat::expect_true(is.list(result["inferential"]))
   expect_equal(

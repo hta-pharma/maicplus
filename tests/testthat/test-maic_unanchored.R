@@ -1,9 +1,8 @@
 test_that("test binary case", {
-
   data(centered_ipd_sat)
   data(agd)
   agd <- process_agd(agd)
-    
+
   ipd_centered <- center_ipd(ipd = centered_ipd_sat, agd = agd)
 
   # estimate weights
@@ -85,24 +84,23 @@ test_that("test binary case", {
 
 
 test_that("test time to event case", {
-  
   data(centered_ipd_sat)
   data(agd)
   agd <- process_agd(agd)
-  
+
   ipd_centered <- center_ipd(ipd = centered_ipd_sat, agd = agd)
-  
+
   # estimate weights
   centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
   centered_colnames <- paste0(centered_colnames, "_CENTERED")
-  
+
   weighted_data <- estimate_weights(
     data = ipd_centered,
     centered_colnames = centered_colnames,
     start_val = 0,
     method = "BFGS"
   )
-  
+
   weighted_data_boot <- estimate_weights(
     data = ipd_centered,
     centered_colnames = centered_colnames,
@@ -111,7 +109,7 @@ test_that("test time to event case", {
     n_boot_iteration = 500,
     set_seed_boot = 1234
   )
-  
+
   # inferential result
   testout <- maic_unanchored(
     weights_object = weighted_data,
@@ -127,7 +125,7 @@ test_that("test time to event case", {
     time_scale = "month",
     km_conf_type = "log-log"
   )
-  
+
   testout2 <- maic_unanchored(
     weights_object = weighted_data_boot,
     ipd = adtte_sat,
@@ -142,21 +140,21 @@ test_that("test time to event case", {
     time_scale = "month",
     km_conf_type = "log-log"
   )
-  
+
   if (FALSE) {
     # Manual snapshot of results
     expectout <- testout
     expectout2 <- testout2
     save(list = c("expectout", "expectout2"), file = test_path("data", "test_tte_unanchored_expected.RData"))
   }
-  
+
   load(test_path("data", "test_tte_unanchored_expected.RData"))
   # Compare robust outputs
   expect_equal(testout$descriptive, expectout$descriptive)
   expect_equal(testout$inferential, expectout$inferential)
   expect_equal(testout$inferential$model_before, expectout$inferential$model_before)
   expect_equal(testout$inferential$model_after, expectout$inferential$model_after)
-  
+
   # Compare bootstrap outputs
   expect_equal(testout2$descriptive, expectout2$descriptive)
   expect_equal(testout2$inferential$boot_est["t"], expectout2$inferential$boot_est["t"])
