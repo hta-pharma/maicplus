@@ -26,8 +26,8 @@ by the aggregate data averages. This centering is needed in order to calculate w
 IPD and aggregate data variable names should match.
 }
 \examples{
-# load in IPD
 data(adsl_sat)
 data(agd)
+agd <- process_agd(agd)
 ipd_centered <- center_ipd(ipd = adsl_sat, agd = agd)
 }

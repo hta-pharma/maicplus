@@ -172,8 +172,10 @@ test_that("ph_diagplot works for unanchored data", {
 
 test_that("ph_diagplot_lch works without error", {
   original_par <- par("mar", "bty", "tcl", "mgp")
-  load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
-  kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+  data(adtte_sat)
+  data(pseudo_ipd_sat)
+  combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
+  kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data, conf.type = "log-log")
   expect_no_error(
     ph_diagplot_lch(
       kmobj,
@@ -199,8 +201,10 @@ test_that("ph_diagplot_lch works without error", {
 
 test_that("ph_diagplot_schoenfeld works without error", {
   original_par <- par("bty", "mar", "tcl", "mgp")
-  load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
-  unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
+  data(adtte_sat)
+  data(pseudo_ipd_sat)
+  combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
+  unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data)
   expect_no_error(
     ph_diagplot_schoenfeld(
       unweighted_cox,

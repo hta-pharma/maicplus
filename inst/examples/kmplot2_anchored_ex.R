@@ -1,4 +1,4 @@
-# anchored example using kmplot
+# anchored example using kmplot2
 
 data(weighted_twt)
 data(adtte_twt)

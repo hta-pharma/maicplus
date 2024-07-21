@@ -38,6 +38,7 @@
 #' @importFrom sandwich vcovHC
 #' @importFrom boot boot boot.ci
 #' @return A list, contains 'descriptive' and 'inferential'
+#' @example inst/examples/maic_anchored_ex.R
 #' @export
 
 maic_unanchored <- function(weights_object,

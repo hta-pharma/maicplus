@@ -87,7 +87,7 @@ kmplot2(
   break_x_by = 2,
   xlim = c(0, 20)
 )
-# anchored example using kmplot
+# anchored example using kmplot2
 
 data(weighted_twt)
 data(adtte_twt)

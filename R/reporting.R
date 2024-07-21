@@ -6,7 +6,7 @@
 #'
 #' @return a data frame with sample size, incidence rate, median survival time with 95% CI, hazard ratio estimate with
 #' 95% CI and Wald test of hazard ratio
-#'
+#' @example inst/examples/report_table_tte_ex.R
 #' @export
 
 report_table_tte <- function(coxobj, medSurvobj, tag = NULL) {
@@ -51,13 +51,13 @@ report_table_tte <- function(coxobj, medSurvobj, tag = NULL) {
 #' helper function: sort out a nice report table to summarize binary analysis results
 #'
 #' @param binobj object from glm()
-#' @param weighted_result object res_AB
+#' @param weighted_result weighted result object 
 #' @param eff_measure a string, binary effect measure, could be "OR", "RR", "RD"
 #' @param tag a string, by default NULL, if specified, an extra 1st column is created in the output
 #'
 #' @return a data frame with sample size, incidence rate, estimate of binary effect measure with
 #' 95% CI and Wald test of hazard ratio
-#'
+#' @example inst/examples/report_table_binary_ex.R
 #' @export
 
 report_table_binary <- function(binobj, weighted_result = NULL, eff_measure = c("OR", "RD", "RR"), tag = NULL) {

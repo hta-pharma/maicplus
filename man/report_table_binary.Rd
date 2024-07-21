@@ -14,7 +14,7 @@ report_table_binary(
 \arguments{
 \item{binobj}{object from glm()}
 
-\item{weighted_result}{object res_AB}
+\item{weighted_result}{weighted result object}
 
 \item{eff_measure}{a string, binary effect measure, could be "OR", "RR", "RD"}
 
@@ -26,4 +26,19 @@ a data frame with sample size, incidence rate, estimate of binary effect measure
 }
 \description{
 helper function: sort out a nice report table to summarize binary analysis results
+}
+\examples{
+data(adrs_sat)
+
+testdat <- data.frame(Yes = 280, No = 120)
+rownames(testdat) <- "B"
+pseudo_ipd_binary_sat <- get_pseudo_ipd_binary(
+  binary_agd = testdat,
+  format = "unstacked"
+)
+combined_data <- rbind(adrs_sat[, c("USUBJID", "RESPONSE", "ARM")], pseudo_ipd_binary_sat)
+combined_data$ARM <- as.factor(combined_data$ARM)
+
+binobj_dat <- glm(RESPONSE ~ ARM, combined_data, family = binomial(link = "logit"))
+report_table_binary(binobj_dat, eff_measure = "OR")
 }

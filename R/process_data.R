@@ -140,9 +140,9 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level) {
 #' should be followed by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP). Note that COUNT
 #' suffix is no longer accepted.
 #' @examples
-#' # load in IPD
 #' data(adsl_sat)
 #' data(agd)
+#' agd <- process_agd(agd)
 #' ipd_centered <- center_ipd(ipd = adsl_sat, agd = agd)
 #' @return centered ipd using aggregate level data averages
 #' @export
@@ -238,6 +238,7 @@ complete_agd <- function(use_agd) {
 #' @param trt values to include in treatment column
 #'
 #' @return a data frame that can be used as input to `survival::Surv`
+#' @keywords internal
 
 ext_tte_transfer <- function(dd, time_scale = "months", trt = NULL) {
   time_scale <- match.arg(time_scale, choices = c("years", "months", "weeks", "days"))
