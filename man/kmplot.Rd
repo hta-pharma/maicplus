@@ -84,7 +84,6 @@ kmplot(
   use_pch_cex = 0.65,
   use_pch_alpha = 100
 )
-
 # anchored example using kmplot
 data(weighted_twt)
 data(adtte_twt)

@@ -131,7 +131,6 @@ result_boot <- maic_unanchored(
 result_boot$inferential$report_median_surv
 result_boot$inferential$report_overall_robustCI
 result_boot$inferential$report_overall_bootCI
-
 # unanchored example using maic_unanchored for binary outcome
 data(centered_ipd_sat)
 data(adrs_sat)

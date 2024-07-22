@@ -107,7 +107,6 @@ result_tte <- maic_anchored(
 result_tte$inferential$report_median_surv
 result_tte$inferential$report_overall_robustCI
 result_tte$inferential$report_overall_bootCI
-
 # Anchored example using maic_anchored for binary outcome
 data(weighted_twt)
 data(adrs_twt)
