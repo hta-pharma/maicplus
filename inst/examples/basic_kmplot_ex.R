@@ -1,5 +1,4 @@
 library(survival)
-
 data(adtte_sat)
 data(pseudo_ipd_sat)
 
