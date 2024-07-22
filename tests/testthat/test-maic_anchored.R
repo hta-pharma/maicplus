@@ -56,11 +56,10 @@ test_that("maic_anchored works for TTE using robust SE", {
 })
 
 test_that("maic_anchored works for TTE using bootstrap SE", {
-  
   data(adtte_twt)
   data(pseudo_ipd_twt)
   data(centered_ipd_twt)
-  
+
   #### derive weights
   cols <- grep("_CENTERED$", names(centered_ipd_twt), value = TRUE)
   weighted_data_boot <- estimate_weights(
@@ -113,10 +112,9 @@ test_that("maic_anchored works for TTE using bootstrap SE", {
 
 
 test_that("maic_anchored for binary case gives the expected result", {
-  
   data(weighted_twt)
   data(adrs_twt)
-  
+
   # Reported summary data
   pseudo_adrs <- get_pseudo_ipd_binary(
     binary_agd = data.frame(

@@ -21,4 +21,3 @@ kmplot(
   use_pch_cex = 0.65,
   use_pch_alpha = 100
 )
-

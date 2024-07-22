@@ -18,4 +18,3 @@ kmplot2(
   break_x_by = 2,
   xlim = c(0, 20)
 )
-

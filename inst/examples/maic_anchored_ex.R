@@ -21,4 +21,3 @@ result_tte <- maic_anchored(
 result_tte$inferential$report_median_surv
 result_tte$inferential$report_overall_robustCI
 result_tte$inferential$report_overall_bootCI
-
