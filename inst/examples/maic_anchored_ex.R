@@ -1,5 +1,4 @@
 # Anchored example using maic_anchored for time-to-event data
-
 data(weighted_twt)
 data(adtte_twt)
 data(pseudo_ipd_twt)
@@ -22,3 +21,4 @@ result_tte <- maic_anchored(
 result_tte$inferential$report_median_surv
 result_tte$inferential$report_overall_robustCI
 result_tte$inferential$report_overall_bootCI
+

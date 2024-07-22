@@ -61,6 +61,8 @@ it can include up to 4 KM curves. This depends on number of levels in 'treatment
 \code{kmdat}
 }
 \examples{
+library(survival)
+
 data(adtte_sat)
 data(pseudo_ipd_sat)
 

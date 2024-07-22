@@ -45,6 +45,8 @@ it will be passed to \code{lty} of \code{lines()}}
 This function generates a basic KM plot using ggplot.
 }
 \examples{
+library(survival)
+
 data(adtte_sat)
 data(pseudo_ipd_sat)
 

@@ -21,6 +21,7 @@ a data frame with sample size, incidence rate, median survival time with 95\% CI
 helper function: sort out a nice report table to summarize survival analysis results
 }
 \examples{
+library(survival)
 data(adtte_sat)
 data(pseudo_ipd_sat)
 combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)

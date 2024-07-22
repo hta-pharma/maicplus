@@ -1,5 +1,4 @@
 # unanchored example using kmplot
-
 data(weighted_sat)
 data(adtte_sat)
 data(pseudo_ipd_sat)
@@ -22,3 +21,4 @@ kmplot(
   use_pch_cex = 0.65,
   use_pch_alpha = 100
 )
+

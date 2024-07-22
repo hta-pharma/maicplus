@@ -30,6 +30,7 @@ a plot of Schoenfeld residuals
 PH Diagnosis Plot of Schoenfeld residuals for a Cox model fit
 }
 \examples{
+library(survival)
 data(adtte_sat)
 data(pseudo_ipd_sat)
 combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)

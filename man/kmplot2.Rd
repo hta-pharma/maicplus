@@ -67,7 +67,6 @@ and it is used in those two functions.
 }
 \examples{
 # unanchored example using kmplot2
-
 data(weighted_sat)
 data(adtte_sat)
 data(pseudo_ipd_sat)
@@ -87,8 +86,8 @@ kmplot2(
   break_x_by = 2,
   xlim = c(0, 20)
 )
-# anchored example using kmplot2
 
+# anchored example using kmplot2
 data(weighted_twt)
 data(adtte_twt)
 data(pseudo_ipd_twt)

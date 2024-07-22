@@ -1,8 +1,6 @@
 # Anchored example using maic_anchored for binary outcome
-
 data(weighted_twt)
-data(adtte_twt)
-data(pseudo_ipd_twt)
+data(adrs_twt)
 
 # Reported summary data
 pseudo_adrs <- get_pseudo_ipd_binary(

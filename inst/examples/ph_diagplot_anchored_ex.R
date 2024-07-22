@@ -1,5 +1,4 @@
 # anchored example using ph_diagplot
-
 data(weighted_twt)
 data(adtte_twt)
 data(pseudo_ipd_twt)

@@ -1,3 +1,4 @@
+library(survival)
 data(adtte_sat)
 data(pseudo_ipd_sat)
 combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)

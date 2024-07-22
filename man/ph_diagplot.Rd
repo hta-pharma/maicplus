@@ -58,7 +58,6 @@ Diagnosis plot of proportional hazard assumption for anchored and unanchored
 }
 \examples{
 # unanchored example using ph_diagplot
-
 data(weighted_sat)
 data(adtte_sat)
 data(pseudo_ipd_sat)
@@ -78,7 +77,6 @@ ph_diagplot(
   zph_log_hazard = TRUE
 )
 # anchored example using ph_diagplot
-
 data(weighted_twt)
 data(adtte_twt)
 data(pseudo_ipd_twt)

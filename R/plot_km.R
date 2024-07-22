@@ -614,6 +614,7 @@ ph_diagplot <- function(weights_object,
 #' @param subtitle a character string, subtitle of the plot
 #' @param exclude_censor logical, should censored data point be plotted
 #' @examples
+#' library(survival)
 #' data(adtte_sat)
 #' data(pseudo_ipd_sat)
 #' combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
@@ -691,6 +692,7 @@ ph_diagplot_lch <- function(km_fit,
 #' @param endpoint_name a character string, name of the endpoint
 #' @param subtitle a character string, subtitle of the plot
 #' @examples
+#' library(survival)
 #' data(adtte_sat)
 #' data(pseudo_ipd_sat)
 #' combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)

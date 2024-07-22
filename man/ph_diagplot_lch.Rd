@@ -36,6 +36,7 @@ This plot is also known as log negative log survival rate.
 a diagnosis plot for proportional hazard assumption, versus log-time (default) or time
 }
 \examples{
+library(survival)
 data(adtte_sat)
 data(pseudo_ipd_sat)
 combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)

@@ -1,5 +1,4 @@
 # unanchored example using ph_diagplot
-
 data(weighted_sat)
 data(adtte_sat)
 data(pseudo_ipd_sat)

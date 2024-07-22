@@ -43,6 +43,7 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
 #' @param single_trt_name name of treatment if no strata are specified in `km_fit`
 #'
 #' @examples
+#' library(survival)
 #' data(adtte_sat)
 #' data(pseudo_ipd_sat)
 #' combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
