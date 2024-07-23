@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.786001147446931" branch-rate="0" lines-covered="1370" lines-valid="1743" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-07-22 11:27:11.54855">
+<coverage line-rate="0.786001147446931" branch-rate="0" lines-covered="1370" lines-valid="1743" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-07-23 14:15:45.28187">
   <sources>
     <source>/__w/maicplus/maicplus/maicplus</source>
   </sources>
@@ -3659,10 +3659,10 @@
             </method>
             <method name="get_time_as" signature="" line-rate="1" branch-rate="0" complexity="0">
               <lines>
-                <line number="73" hits="42" branch="false"/>
-                <line number="74" hits="1" branch="false"/>
-                <line number="75" hits="188" branch="false"/>
+                <line number="74" hits="42" branch="false"/>
+                <line number="75" hits="1" branch="false"/>
                 <line number="76" hits="188" branch="false"/>
+                <line number="77" hits="188" branch="false"/>
               </lines>
             </method>
           </methods>
@@ -3683,10 +3683,10 @@
             <line number="57" hits="0" branch="false"/>
             <line number="58" hits="0" branch="false"/>
             <line number="60" hits="190" branch="false"/>
-            <line number="73" hits="42" branch="false"/>
-            <line number="74" hits="1" branch="false"/>
-            <line number="75" hits="188" branch="false"/>
+            <line number="74" hits="42" branch="false"/>
+            <line number="75" hits="1" branch="false"/>
             <line number="76" hits="188" branch="false"/>
+            <line number="77" hits="188" branch="false"/>
           </lines>
         </class>
         <class name="utils.R" filename="R/utils.R" line-rate="0.25" branch-rate="0" complexity="0">
