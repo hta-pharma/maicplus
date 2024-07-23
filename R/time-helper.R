@@ -67,6 +67,7 @@ get_time_conversion <- function(factor = c("days", "weeks", "months", "years")) 
 #' @param as A time scale to convert to. One of "days", "weeks", "months", "years"
 #'
 #' @return Returns a numeric vector calculated from `times / get_time_conversion(factor = as)`
+#' @export
 #' @examples
 #' get_time_as(50, as = "months")
 get_time_as <- function(times, as = NULL) {
