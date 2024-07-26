@@ -22,6 +22,7 @@ Extract and display median survival time with confidence interval
 \examples{
 data(adtte_sat)
 data(pseudo_ipd_sat)
+library(survival)
 combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
 kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data, conf.type = "log-log")
 
