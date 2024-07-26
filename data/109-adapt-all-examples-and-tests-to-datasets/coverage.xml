@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.786001147446931" branch-rate="0" lines-covered="1370" lines-valid="1743" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-07-26 07:01:57.114286">
+<coverage line-rate="0.786001147446931" branch-rate="0" lines-covered="1370" lines-valid="1743" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2024-07-26 07:05:46.465517">
   <sources>
     <source>/__w/maicplus/maicplus/maicplus</source>
   </sources>
@@ -3561,28 +3561,27 @@
           <methods>
             <method name="medSurv_makeup" signature="" line-rate="1" branch-rate="0" complexity="0">
               <lines>
-                <line number="22" hits="10" branch="false"/>
-                <line number="25" hits="10" branch="false"/>
+                <line number="23" hits="10" branch="false"/>
                 <line number="26" hits="10" branch="false"/>
-                <line number="28" hits="10" branch="false"/>
+                <line number="27" hits="10" branch="false"/>
                 <line number="29" hits="10" branch="false"/>
                 <line number="30" hits="10" branch="false"/>
                 <line number="31" hits="10" branch="false"/>
-                <line number="33" hits="10" branch="false"/>
+                <line number="32" hits="10" branch="false"/>
                 <line number="34" hits="10" branch="false"/>
-                <line number="36" hits="10" branch="false"/>
+                <line number="35" hits="10" branch="false"/>
+                <line number="37" hits="10" branch="false"/>
               </lines>
             </method>
             <method name="survfit_makeup" signature="" line-rate="0.95" branch-rate="0" complexity="0">
               <lines>
-                <line number="57" hits="92" branch="false"/>
-                <line number="58" hits="20" branch="false"/>
+                <line number="58" hits="92" branch="false"/>
                 <line number="59" hits="20" branch="false"/>
-                <line number="60" hits="0" branch="false"/>
-                <line number="61" hits="20" branch="false"/>
-                <line number="63" hits="72" branch="false"/>
+                <line number="60" hits="20" branch="false"/>
+                <line number="61" hits="0" branch="false"/>
+                <line number="62" hits="20" branch="false"/>
                 <line number="64" hits="72" branch="false"/>
-                <line number="67" hits="92" branch="false"/>
+                <line number="65" hits="72" branch="false"/>
                 <line number="68" hits="92" branch="false"/>
                 <line number="69" hits="92" branch="false"/>
                 <line number="70" hits="92" branch="false"/>
@@ -3593,30 +3592,30 @@
                 <line number="75" hits="92" branch="false"/>
                 <line number="76" hits="92" branch="false"/>
                 <line number="77" hits="92" branch="false"/>
-                <line number="78" hits="20" branch="false"/>
-                <line number="79" hits="92" branch="false"/>
+                <line number="78" hits="92" branch="false"/>
+                <line number="79" hits="20" branch="false"/>
+                <line number="80" hits="92" branch="false"/>
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="22" hits="10" branch="false"/>
-            <line number="25" hits="10" branch="false"/>
+            <line number="23" hits="10" branch="false"/>
             <line number="26" hits="10" branch="false"/>
-            <line number="28" hits="10" branch="false"/>
+            <line number="27" hits="10" branch="false"/>
             <line number="29" hits="10" branch="false"/>
             <line number="30" hits="10" branch="false"/>
             <line number="31" hits="10" branch="false"/>
-            <line number="33" hits="10" branch="false"/>
+            <line number="32" hits="10" branch="false"/>
             <line number="34" hits="10" branch="false"/>
-            <line number="36" hits="10" branch="false"/>
-            <line number="57" hits="92" branch="false"/>
-            <line number="58" hits="20" branch="false"/>
+            <line number="35" hits="10" branch="false"/>
+            <line number="37" hits="10" branch="false"/>
+            <line number="58" hits="92" branch="false"/>
             <line number="59" hits="20" branch="false"/>
-            <line number="60" hits="0" branch="false"/>
-            <line number="61" hits="20" branch="false"/>
-            <line number="63" hits="72" branch="false"/>
+            <line number="60" hits="20" branch="false"/>
+            <line number="61" hits="0" branch="false"/>
+            <line number="62" hits="20" branch="false"/>
             <line number="64" hits="72" branch="false"/>
-            <line number="67" hits="92" branch="false"/>
+            <line number="65" hits="72" branch="false"/>
             <line number="68" hits="92" branch="false"/>
             <line number="69" hits="92" branch="false"/>
             <line number="70" hits="92" branch="false"/>
@@ -3627,8 +3626,9 @@
             <line number="75" hits="92" branch="false"/>
             <line number="76" hits="92" branch="false"/>
             <line number="77" hits="92" branch="false"/>
-            <line number="78" hits="20" branch="false"/>
-            <line number="79" hits="92" branch="false"/>
+            <line number="78" hits="92" branch="false"/>
+            <line number="79" hits="20" branch="false"/>
+            <line number="80" hits="92" branch="false"/>
           </lines>
         </class>
         <class name="time-helper.R" filename="R/time-helper.R" line-rate="0.85" branch-rate="0" complexity="0">
