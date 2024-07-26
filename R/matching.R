@@ -96,10 +96,10 @@ estimate_weights <- function(data,
     ))
   }
 
-  if(!is.null(boot_strata)) {
+  if (!is.null(boot_strata)) {
     ch4 <- boot_strata %in% names(data)
-    if(!all(ch4)) {
-       stop(paste("follow items in boot_strata does not exist in names(data):", paste(boot_strata[!ch4], collapse = ",")))
+    if (!all(ch4)) {
+      stop(paste("follow items in boot_strata does not exist in names(data):", paste(boot_strata[!ch4], collapse = ",")))
     }
   }
 
@@ -128,7 +128,7 @@ estimate_weights <- function(data,
     on.exit(suspendInterrupts(set_random_seed(old_seed)))
     set.seed(set_seed_boot)
 
-    if(!is.null(boot_strata)) {
+    if (!is.null(boot_strata)) {
       use_strata <- subset(data, subset = (!ind), select = boot_strata)
       use_strata <- apply(use_strata, 1, paste, collapse = "--") |> factor()
     } else {
