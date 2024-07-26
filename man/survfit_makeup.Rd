@@ -18,9 +18,10 @@ a list of data frames of variables from \code{\link[survival:survfit]{survival::
 Helper function to select set of variables used for Kaplan-Meier plot
 }
 \examples{
-\dontrun{
-load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
-kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+library(survival)
+data(adtte_sat)
+data(pseudo_ipd_sat)
+combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
+kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data, conf.type = "log-log")
 survfit_makeup(kmobj)
-}
 }

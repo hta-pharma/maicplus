@@ -31,8 +31,8 @@
 #'     appended.
 #'   \item if "all", 2 by 2 plot, all plots in "by_trial" and "by_arm" without risk set table appended.
 #' }
-#' @example inst/examples/kmplot2_anchored_ex.R
 #' @example inst/examples/kmplot2_unanchored_ex.R
+#' @example inst/examples/kmplot2_anchored_ex.R
 #' @export
 
 kmplot2 <- function(weights_object,
@@ -160,6 +160,7 @@ kmplot2 <- function(weights_object,
 #'   it will be passed to 'col' of \code{lines()}
 #' @param use_line_types a numeric vector of length up to 4, line type to the KM curves,
 #'   it will be passed to \code{lty} of \code{lines()}
+#' @example inst/examples/basic_kmplot2_ex.R
 #' @export
 
 basic_kmplot2 <- function(kmlist,

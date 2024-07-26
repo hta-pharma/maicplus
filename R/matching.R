@@ -37,17 +37,14 @@
 #' }
 #'
 #' @examples
-#' data(agd)
-#' data(adsl_sat)
-#' ipd_centered <- center_ipd(ipd = adsl_sat, agd = process_agd(agd))
-#' centered_colnames <- grep("_CENTERED", colnames(ipd_centered), value = TRUE)
-#' centered_colnames
-#' weighted_data <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
+#' data(centered_ipd_sat)
+#' centered_colnames <- grep("_CENTERED", colnames(centered_ipd_sat), value = TRUE)
+#' weighted_data <- estimate_weights(data = centered_ipd_sat, centered_colnames = centered_colnames)
 #' \donttest{
 #' # To later estimate bootstrap confidence intervals, we calculate the weights
 #' # for the bootstrap samples:
 #' weighted_data_boot <- estimate_weights(
-#'   data = ipd_centered, centered_colnames = centered_colnames, n_boot_iteration = 500
+#'   data = centered_ipd_sat, centered_colnames = centered_colnames, n_boot_iteration = 100
 #' )
 #' }
 #' @export
@@ -400,6 +397,8 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
 #' aggregated data following the same naming convention
 #'
 #' @examples
+#' data(weighted_sat)
+#' data(agd)
 #' check_weights(weighted_sat, process_agd(agd))
 #'
 #' @import DescTools

@@ -38,8 +38,8 @@
 #' Pseudo individual patient survival data from published study
 #' @format A data frame with 300 rows and 3 columns:
 #'   \describe{
-#'     \item{Time}{Survival time in days.}
-#'     \item{Event}{Event indicator `0`/`1`.}
+#'     \item{TIME}{Survival time in days.}
+#'     \item{EVENT}{Event indicator `0`/`1`.}
 #'     \item{ARM}{Assigned treatment arm, `"B"`.}
 #'   }
 #' @family unanchored datasets
@@ -169,13 +169,15 @@
 #'     \item{PARAM}{Parameter type of `AVAL`.}
 #'     \item{RESPONSE}{Indicator of response.}
 #'   }
+#' @family anchored datasets
+#' @keywords dataset
 "adrs_twt"
 
 #' Pseudo individual patient survival data from published two arm study
 #' @format A data frame with 800 rows and 3 columns:
 #'   \describe{
-#'     \item{Time}{Survival time in days.}
-#'     \item{Event}{Event indicator `0`/`1`.}
+#'     \item{TIME}{Survival time in days.}
+#'     \item{EVENT}{Event indicator `0`/`1`.}
 #'     \item{ARM}{Assigned treatment arm, `"B"`, `"C"`.}
 #'   }
 #' @family anchored datasets

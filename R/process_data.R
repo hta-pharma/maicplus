@@ -18,19 +18,8 @@
 #' by legal suffixes (i.e. MEAN, MEDIAN, SD, COUNT, or PROP).
 #'
 #' @examples
-#' target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
-#'   package = "maicplus", mustWork = TRUE
-#' ))
-#' target_pop2 <- read.csv(system.file("extdata", "aggregate_data_example_2.csv",
-#'   package = "maicplus", mustWork = TRUE
-#' ))
-#' target_pop3 <- read.csv(system.file("extdata", "aggregate_data_example_3.csv",
-#'   package = "maicplus", mustWork = TRUE
-#' ))
-#'
-#' target_pop <- process_agd(target_pop)
-#' target_pop2 <- process_agd(target_pop2)
-#' target_pop3 <- process_agd(target_pop3)
+#' data(agd)
+#' agd <- process_agd(agd)
 #'
 #' @return pre-processed aggregate level data
 #' @export
@@ -151,20 +140,10 @@ dummize_ipd <- function(raw_ipd, dummize_cols, dummize_ref_level) {
 #' should be followed by legal suffixes (i.e. MEAN, MEDIAN, SD, or PROP). Note that COUNT
 #' suffix is no longer accepted.
 #' @examples
-#' # load in IPD
 #' data(adsl_sat)
-#' adsl <- dummize_ipd(adsl_sat, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
-#'
-#' # Reading aggregate data by Excel
-#' target_pop <- read.csv(
-#'   system.file("extdata", "aggregate_data_example_1.csv", package = "maicplus", mustWork = TRUE)
-#' )
-#' agd <- process_agd(target_pop)
-#'
-#' # Alternatively, you can specify aggregate data manually in data frame
 #' data(agd)
-#' ipd_centered <- center_ipd(ipd = adsl, agd = agd)
-#'
+#' agd <- process_agd(agd)
+#' ipd_centered <- center_ipd(ipd = adsl_sat, agd = agd)
 #' @return centered ipd using aggregate level data averages
 #' @export
 
@@ -259,6 +238,7 @@ complete_agd <- function(use_agd) {
 #' @param trt values to include in treatment column
 #'
 #' @return a data frame that can be used as input to `survival::Surv`
+#' @keywords internal
 
 ext_tte_transfer <- function(dd, time_scale = "months", trt = NULL) {
   time_scale <- match.arg(time_scale, choices = c("years", "months", "weeks", "days"))

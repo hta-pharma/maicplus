@@ -31,8 +31,10 @@ PH Diagnosis Plot of Schoenfeld residuals for a Cox model fit
 }
 \examples{
 library(survival)
-load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
-unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
+data(adtte_sat)
+data(pseudo_ipd_sat)
+combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
+unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data)
 ph_diagplot_schoenfeld(unweighted_cox,
   time_scale = "month", log_time = TRUE,
   endpoint_name = "OS", subtitle = "(Before Matching)"

@@ -19,3 +19,4 @@ a data frame that can be used as input to \code{survival::Surv}
 \description{
 helper function: transform TTE ADaM data to suitable input for survival R package
 }
+\keyword{internal}

@@ -17,3 +17,6 @@ Returns a numeric vector calculated from \code{times / get_time_conversion(facto
 \description{
 Convert Time Values Using Scaling Factors
 }
+\examples{
+get_time_as(50, as = "months")
+}

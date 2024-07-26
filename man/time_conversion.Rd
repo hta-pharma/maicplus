@@ -38,7 +38,6 @@ Get and Set Time Conversion Factors
 # The default time scale is days:
 set_time_conversion(default = "days", days = 1, weeks = 7, months = 365.25 / 12, years = 365.25)
 
-
 # Set the default time scale to years
 set_time_conversion(
   default = "years",

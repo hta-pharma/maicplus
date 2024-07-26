@@ -66,59 +66,36 @@ The argument setting is similar to \code{maic_anchored} and \code{maic_unanchore
 and it is used in those two functions.
 }
 \examples{
-# anchored example using kmplot
+# unanchored example using kmplot2
+data(weighted_sat)
+data(adtte_sat)
+data(pseudo_ipd_sat)
 
-### IPD
-# Read in relevant ADaM data and rename variables of interest
-adsl <- read.csv(system.file("extdata", "adsl.csv",
-  package = "maicplus",
-  mustWork = TRUE
-))
-adtte <- read.csv(system.file("extdata", "adtte.csv",
-  package = "maicplus",
-  mustWork = TRUE
-))
-adtte$TIME <- adtte$AVAL
-adtte$EVENT <- adtte$EVNT
-adtte2 <- adtte
-adtte2$ARM <- "C"
-adtte2$TIME <- adtte2$TIME + 7
-adtte <- rbind(adtte, adtte2)
-
-### AgD
-# Baseline aggregate data for the comparator population
-target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
-  package = "maicplus", mustWork = TRUE
-))
-# for time-to-event endpoints, pseudo IPD from digitalized KM
-pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
-  package = "maicplus",
-  mustWork = TRUE
-))
-pseudo_ipd$ARM <- "B"
-pseudo_ipd2 <- pseudo_ipd
-pseudo_ipd2$ARM <- "C"
-pseudo_ipd2$Time <- pseudo_ipd2$Time + 5
-pseudo_ipd <- rbind(pseudo_ipd, pseudo_ipd2)
-
-#### prepare data
-target_pop <- process_agd(target_pop)
-adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
-use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
-
-#### derive weights
-match_res <- estimate_weights(
-  data = use_adsl,
-  centered_colnames = grep("_CENTERED$", names(use_adsl)),
-  start_val = 0,
-  method = "BFGS"
+kmplot2(
+  weights_object = weighted_sat,
+  tte_ipd = adtte_sat,
+  tte_pseudo_ipd = pseudo_ipd_sat,
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = NULL,
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
+  endpoint_name = "Overall Survival",
+  km_conf_type = "log-log",
+  time_scale = "month",
+  break_x_by = 2,
+  xlim = c(0, 20)
 )
+# anchored example using kmplot2
+data(weighted_twt)
+data(adtte_twt)
+data(pseudo_ipd_twt)
 
 # plot by trial
 kmplot2(
-  weights_object = match_res,
-  tte_ipd = adtte,
-  tte_pseudo_ipd = pseudo_ipd,
+  weights_object = weighted_twt,
+  tte_ipd = adtte_twt,
+  tte_pseudo_ipd = pseudo_ipd_twt,
   trt_ipd = "A",
   trt_agd = "B",
   trt_common = "C",
@@ -133,9 +110,9 @@ kmplot2(
 
 # plot by arm
 kmplot2(
-  weights_object = match_res,
-  tte_ipd = adtte,
-  tte_pseudo_ipd = pseudo_ipd,
+  weights_object = weighted_twt,
+  tte_ipd = adtte_twt,
+  tte_pseudo_ipd = pseudo_ipd_twt,
   trt_ipd = "A",
   trt_agd = "B",
   trt_common = "C",
@@ -150,9 +127,9 @@ kmplot2(
 
 # plot all
 kmplot2(
-  weights_object = match_res,
-  tte_ipd = adtte,
-  tte_pseudo_ipd = pseudo_ipd,
+  weights_object = weighted_twt,
+  tte_ipd = adtte_twt,
+  tte_pseudo_ipd = pseudo_ipd_twt,
   trt_ipd = "A",
   trt_agd = "B",
   trt_common = "C",
@@ -163,62 +140,7 @@ kmplot2(
   km_layout = "all",
   time_scale = "month",
   break_x_by = 2,
-  xlim = c(0, 20)
-)
-# unanchored example using maicplus_kmplot
-
-### IPD
-# Read in relevant ADaM data and rename variables of interest
-adsl <- read.csv(system.file("extdata", "adsl.csv",
-  package = "maicplus",
-  mustWork = TRUE
-))
-adtte <- read.csv(system.file("extdata", "adtte.csv",
-  package = "maicplus",
-  mustWork = TRUE
-))
-adtte$TIME <- adtte$AVAL
-adtte$EVENT <- adtte$EVNT
-
-### AgD
-# Baseline aggregate data for the comparator population
-target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
-  package = "maicplus", mustWork = TRUE
-))
-# for time-to-event endpoints, pseudo IPD from digitalized KM
-pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
-  package = "maicplus",
-  mustWork = TRUE
-))
-pseudo_ipd$ARM <- "B"
-
-#### prepare data
-target_pop <- process_agd(target_pop)
-adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
-use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
-
-#### derive weights
-match_res <- estimate_weights(
-  data = use_adsl,
-  centered_colnames = grep("_CENTERED$", names(use_adsl)),
-  start_val = 0,
-  method = "BFGS"
-)
-
-
-kmplot2(
-  weights_object = match_res,
-  tte_ipd = adtte,
-  tte_pseudo_ipd = pseudo_ipd,
-  trt_ipd = "A",
-  trt_agd = "B",
-  trt_common = NULL,
-  trt_var_ipd = "ARM",
-  trt_var_agd = "ARM",
-  endpoint_name = "Overall Survival",
-  km_conf_type = "log-log",
-  time_scale = "month",
-  break_x_by = 2,
-  xlim = c(0, 20)
+  xlim = c(0, 20),
+  show_risk_set = FALSE
 )
 }

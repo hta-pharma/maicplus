@@ -48,6 +48,8 @@ before and after adjustment.
 
 }}
 \examples{
+data(weighted_sat)
+data(agd)
 check_weights(weighted_sat, process_agd(agd))
 
 }

@@ -26,18 +26,8 @@ by the aggregate data averages. This centering is needed in order to calculate w
 IPD and aggregate data variable names should match.
 }
 \examples{
-# load in IPD
 data(adsl_sat)
-adsl <- dummize_ipd(adsl_sat, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
-
-# Reading aggregate data by Excel
-target_pop <- read.csv(
-  system.file("extdata", "aggregate_data_example_1.csv", package = "maicplus", mustWork = TRUE)
-)
-agd <- process_agd(target_pop)
-
-# Alternatively, you can specify aggregate data manually in data frame
 data(agd)
-ipd_centered <- center_ipd(ipd = adsl, agd = agd)
-
+agd <- process_agd(agd)
+ipd_centered <- center_ipd(ipd = adsl_sat, agd = agd)
 }

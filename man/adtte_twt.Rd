@@ -26,6 +26,7 @@ Survival data from two arm trial
 }
 \seealso{
 Other anchored datasets: 
+\code{\link{adrs_twt}},
 \code{\link{adsl_twt}},
 \code{\link{agd}},
 \code{\link{centered_ipd_twt}},

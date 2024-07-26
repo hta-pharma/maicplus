@@ -40,6 +40,7 @@ The object is generated using the following code:
 }
 \seealso{
 Other anchored datasets: 
+\code{\link{adrs_twt}},
 \code{\link{adsl_twt}},
 \code{\link{adtte_twt}},
 \code{\link{agd}},
