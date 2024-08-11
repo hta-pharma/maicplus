@@ -129,8 +129,7 @@ estimate_weights <- function(data,
     set.seed(set_seed_boot)
 
     if (!is.null(boot_strata)) {
-      use_strata <- subset(data, subset = (!ind), select = boot_strata)
-      use_strata <- apply(use_strata, 1, paste, collapse = "--") |> factor()
+      use_strata <- interaction(data[!ind, boot_strata])
     } else {
       use_strata <- rep(1, nrow(EM))
     }
