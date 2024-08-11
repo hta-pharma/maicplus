@@ -1,8 +1,8 @@
 #### create anchored example datasets ####
 
-devtools::load_all()
+# devtools::load_all()
 library(flexsurv)
-set.seed(2024)
+set.seed(1234)
 
 # create adsl_twt
 adsl <- read.csv(system.file("extdata", "adsl.csv",
@@ -67,6 +67,7 @@ pseudo_ipd2$Time <- tmp$time_1
 pseudo_ipd2$Event <- tmp$event_1
 
 pseudo_ipd_twt <- rbind(pseudo_ipd, pseudo_ipd2)
+colnames(pseudo_ipd_twt) <- c("TIME", "EVENT", "ARM")
 
 # create centered adsl_twt
 agd <- process_agd(agd)

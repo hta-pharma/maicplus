@@ -1,8 +1,9 @@
 test_that("test binary case", {
-  # load in prognostic IPD data and AgD
-  load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
-  load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
-  ipd_centered <- center_ipd(ipd = ipd, agd = agd)
+  data(centered_ipd_sat)
+  data(agd)
+  agd <- process_agd(agd)
+
+  ipd_centered <- center_ipd(ipd = centered_ipd_sat, agd = agd)
 
   # estimate weights
   centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
@@ -14,8 +15,7 @@ test_that("test binary case", {
     set_seed_boot = 1234
   )
   # get dummy binary IPD
-  adrs <- read.csv(system.file("extdata", "adrs.csv", package = "maicplus", mustWork = TRUE))
-  adrs$RESPONSE <- adrs$AVAL
+  data(adrs_sat)
 
   pseudo_adrs <- get_pseudo_ipd_binary(
     binary_agd = data.frame(
@@ -30,7 +30,7 @@ test_that("test binary case", {
   testout <-
     maic_unanchored(
       weights_object = weighted_data,
-      ipd = adrs,
+      ipd = adrs_sat,
       pseudo_ipd = pseudo_adrs,
       trt_ipd = "A",
       trt_agd = "B",
@@ -47,7 +47,7 @@ test_that("test binary case", {
   testout2 <-
     maic_unanchored(
       weights_object = weighted_data2,
-      ipd = adrs,
+      ipd = adrs_sat,
       pseudo_ipd = pseudo_adrs,
       trt_ipd = "A",
       trt_agd = "B",
@@ -84,56 +84,26 @@ test_that("test binary case", {
 
 
 test_that("test time to event case", {
-  # anchored example using maic_anchored for tte
-  # library(flexsurv)
+  data(centered_ipd_sat)
+  data(agd)
+  agd <- process_agd(agd)
 
-  # Read in relevant ADaM data and rename variables of interest
-  adsl <- read.csv(system.file("extdata", "adsl.csv",
-    package = "maicplus",
-    mustWork = TRUE
-  ))
-  adtte <- read.csv(system.file("extdata", "adtte.csv",
-    package = "maicplus",
-    mustWork = TRUE
-  ))
-  adtte$TIME <- adtte$AVAL
-  adtte$EVENT <- adtte$EVNT
-  adtte <- adtte[adtte$ARM == "A", , drop = FALSE]
-  adsl <- adsl[adsl$USUBJID %in% adtte$USUBJID, , drop = FALSE]
+  ipd_centered <- center_ipd(ipd = centered_ipd_sat, agd = agd)
 
-  ### AgD
-  # Baseline aggregate data for the comparator population
-  target_pop <- read.csv(system.file("extdata", "aggregate_data_example_1.csv",
-    package = "maicplus", mustWork = TRUE
-  ))
-  # for time-to-event endpoints, pseudo IPD from digitalized KM
-  pseudo_ipd <- read.csv(system.file("extdata", "psuedo_IPD.csv",
-    package = "maicplus",
-    mustWork = TRUE
-  ))
-  pseudo_ipd$ARM <- "B"
+  # estimate weights
+  centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+  centered_colnames <- paste0(centered_colnames, "_CENTERED")
 
-  #### prepare data
-  target_pop <- process_agd(target_pop)
-  adsl <- dummize_ipd(adsl, dummize_cols = c("SEX"), dummize_ref_level = c("Female"))
-  use_adsl <- center_ipd(ipd = adsl, agd = target_pop)
-
-  #### derive weights
-  cols <- c(
-    "AGE_CENTERED", "AGE_MEDIAN_CENTERED", "AGE_SQUARED_CENTERED",
-    "SEX_MALE_CENTERED", "ECOG0_CENTERED", "SMOKE_CENTERED"
-  )
-  # cols <-  grep("_CENTERED$", names(use_adsl))
-  match_res <- estimate_weights(
-    data = use_adsl,
-    centered_colnames = cols,
+  weighted_data <- estimate_weights(
+    data = ipd_centered,
+    centered_colnames = centered_colnames,
     start_val = 0,
     method = "BFGS"
   )
 
-  match_res_boot <- estimate_weights(
-    data = use_adsl,
-    centered_colnames = cols,
+  weighted_data_boot <- estimate_weights(
+    data = ipd_centered,
+    centered_colnames = centered_colnames,
     start_val = 0,
     method = "BFGS",
     n_boot_iteration = 500,
@@ -142,9 +112,9 @@ test_that("test time to event case", {
 
   # inferential result
   testout <- maic_unanchored(
-    weights_object = match_res,
-    ipd = adtte,
-    pseudo_ipd = pseudo_ipd,
+    weights_object = weighted_data,
+    ipd = adtte_sat,
+    pseudo_ipd = pseudo_ipd_sat,
     trt_var_ipd = "ARM",
     trt_var_agd = "ARM",
     trt_ipd = "A",
@@ -157,9 +127,9 @@ test_that("test time to event case", {
   )
 
   testout2 <- maic_unanchored(
-    weights_object = match_res_boot,
-    ipd = adtte,
-    pseudo_ipd = pseudo_ipd,
+    weights_object = weighted_data_boot,
+    ipd = adtte_sat,
+    pseudo_ipd = pseudo_ipd_sat,
     trt_var_ipd = "ARM",
     trt_var_agd = "ARM",
     trt_ipd = "A",

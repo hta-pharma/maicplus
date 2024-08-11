@@ -28,16 +28,17 @@ ph_diagplot(
 \item{tte_pseudo_ipd}{a data frame of pseudo IPD by digitized KM curves of external trial (for time-to-event
 endpoint), contain at least "EVENT", "TIME"}
 
-\item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{dat_igd} (real IPD)}
+\item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{tte_ipd} (real IPD)}
 
-\item{trt_agd}{a string, name of the interested investigation arm in external trial \code{dat_pseudo} (pseudo IPD)}
+\item{trt_agd}{a string, name of the interested investigation arm in external trial
+\code{tte_pseudo_ipd} (pseudo IPD)}
 
 \item{trt_common}{a string, name of the common comparator in internal and external trial, by default is NULL,
 indicating unanchored case}
 
-\item{trt_var_ipd}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
+\item{trt_var_ipd}{a string, column name in \code{tte_ipd} that contains the treatment assignment}
 
-\item{trt_var_agd}{a string, column name in \code{dat_ipd} that contains the treatment assignment}
+\item{trt_var_agd}{a string, column name in \code{tte_pseudo_ipd} that contains the treatment assignment}
 
 \item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
 
@@ -54,4 +55,44 @@ residual plot, before and after matching
 }
 \description{
 Diagnosis plot of proportional hazard assumption for anchored and unanchored
+}
+\examples{
+# unanchored example using ph_diagplot
+data(weighted_sat)
+data(adtte_sat)
+data(pseudo_ipd_sat)
+
+ph_diagplot(
+  weights_object = weighted_sat,
+  tte_ipd = adtte_sat,
+  tte_pseudo_ipd = pseudo_ipd_sat,
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = NULL,
+  endpoint_name = "Overall Survival",
+  time_scale = "week",
+  zph_transform = "log",
+  zph_log_hazard = TRUE
+)
+# anchored example using ph_diagplot
+data(weighted_twt)
+data(adtte_twt)
+data(pseudo_ipd_twt)
+
+ph_diagplot(
+  weights_object = weighted_twt,
+  tte_ipd = adtte_twt,
+  tte_pseudo_ipd = pseudo_ipd_twt,
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  endpoint_name = "Overall Survival",
+  time_scale = "week",
+  zph_transform = "log",
+  zph_log_hazard = TRUE
+)
 }
