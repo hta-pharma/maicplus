@@ -1,162 +1,52 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/404.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/articles/using_maicplus.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/index.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/adrs_sat.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/adrs_twt.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/adsl_sat.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/adsl_twt.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/adtte_sat.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/adtte_twt.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/agd.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/basic_kmplot.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/basic_kmplot2.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/bootstrap_HR.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/bucher.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/calculate_weights_legend.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/center_ipd.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/centered_ipd_sat.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/centered_ipd_twt.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/check_weights.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/complete_agd.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/dummize_ipd.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/ess_footnote_text.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/estimate_weights.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/ext_tte_transfer.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/find_SE_from_CI.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/generate_survival_data.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/get_pseudo_ipd_binary.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/get_time_as.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/kmplot.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/kmplot2.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/maic_anchored.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/maic_unanchored.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/maicplus-package.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/medSurv_makeup.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/ph_diagplot.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/ph_diagplot_lch.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/ph_diagplot_schoenfeld.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/plot_weights_base.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/plot_weights_ggplot.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/process_agd.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/pseudo_ipd_sat.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/pseudo_ipd_twt.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/reformat.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/report_table_binary.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/report_table_tte.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/survfit_makeup.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/time_conversion.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/weighted_sat.html</loc>
-  </url>
-  <url>
-    <loc>https://hta-pharma.github.io/maicplus/reference/weighted_twt.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://hta-pharma.github.io/maicplus/404.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/authors.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/index.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/news/index.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/adrs_sat.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/adrs_twt.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/adsl_sat.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/adsl_twt.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/adtte_sat.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/adtte_twt.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/agd.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/basic_kmplot.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/basic_kmplot2.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/bucher.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/calculate_weights_legend.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/center_ipd.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/centered_ipd_sat.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/centered_ipd_twt.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/check_weights.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/complete_agd.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/dummize_ipd.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/ess_footnote_text.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/estimate_weights.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/ext_tte_transfer.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/find_SE_from_CI.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/get_pseudo_ipd_binary.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/get_time_as.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/index.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/kmplot.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/kmplot2.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/maic_anchored.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/maic_unanchored.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/maicplus-package.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/medSurv_makeup.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/ph_diagplot.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/ph_diagplot_lch.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/ph_diagplot_schoenfeld.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/plot_weights_base.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/plot_weights_ggplot.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/process_agd.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/pseudo_ipd_sat.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/pseudo_ipd_twt.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/reformat.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/report_table_binary.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/report_table_tte.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/survfit_makeup.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/time_conversion.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/weighted_sat.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/reference/weighted_twt.html</loc></url>
 </urlset>
+
