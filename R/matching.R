@@ -99,7 +99,7 @@ estimate_weights <- function(data,
   if (!is.null(boot_strata)) {
     ch4 <- boot_strata %in% names(data)
     if (!all(ch4)) {
-      stop(paste("follow items in boot_strata does not exist in names(data):", paste(boot_strata[!ch4], collapse = ",")))
+      stop("Some variables in boot_strata are not in data:", toString(boot_strata[!ch4]))
     }
   }
 
