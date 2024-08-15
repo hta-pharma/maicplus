@@ -17,6 +17,9 @@
 #'   procedure will not be triggered, and hence the element `"boot"` of output list object will be NULL.
 #' @param set_seed_boot a scalar, the random seed for conducting the bootstrapping, only relevant if
 #'   \code{n_boot_iteration} is not NULL. By default, use seed 1234
+#' @param boot_strata a character vector of column names in \code{data} that defines the strata for bootstrapping.
+#'   This ensures that samples are drawn proportionally from each defined stratum. If \code{NULL},
+#'   no stratification during bootstrapping process. By default, it is "ARM"
 #' @param ... Additional `control` parameters passed to [stats::optim].
 #'
 #' @return a list with the following 4 elements,
@@ -29,13 +32,15 @@
 #'   modifiers}
 #'   \item{ess}{effective sample size, square of sum divided by sum of squares}
 #'   \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
+#'   \item{boot_strata}{'strata' from a boot::boot object}
+#'   \item{boot_seed}{column names in \code{data} of the stratification factors}
 #'   \item{boot}{a n by 2 by k array or NA, where n equals to number of rows in \code{data}, and k equals
 #'      \code{n_boot_iteration}. The 2 columns in the second dimension include a column of numeric indexes of the rows
 #'      in \code{data} that are selected at a bootstrapping iteration and a column of weights. \code{boot} is NA when
 #'      argument \code{n_boot_iteration} is set as NULL
 #'   }
 #' }
-#'
+#' @importFrom boot boot
 #' @examples
 #' data(centered_ipd_sat)
 #' centered_colnames <- grep("_CENTERED", colnames(centered_ipd_sat), value = TRUE)
@@ -55,6 +60,7 @@ estimate_weights <- function(data,
                              method = "BFGS",
                              n_boot_iteration = NULL,
                              set_seed_boot = 1234,
+                             boot_strata = "ARM",
                              ...) {
   # pre check
   ch1 <- is.data.frame(data)
@@ -87,6 +93,13 @@ estimate_weights <- function(data,
     ))
   }
 
+  if (!is.null(boot_strata)) {
+    ch4 <- boot_strata %in% names(data)
+    if (!all(ch4)) {
+      stop("Some variables in boot_strata are not in data: ", toString(boot_strata[!ch4]))
+    }
+  }
+
   # prepare data for optimization
   if (is.null(centered_colnames)) centered_colnames <- seq_len(ncol(data))
   EM <- data[, centered_colnames, drop = FALSE]
@@ -104,7 +117,7 @@ estimate_weights <- function(data,
   # bootstrapping
   outboot <- if (is.null(n_boot_iteration)) {
     boot_seed <- NULL
-    boot_strata <- NULL
+    boot_strata_out <- NULL
     NULL
   } else {
     # Make sure to leave '.Random.seed' as-is on exit
@@ -112,17 +125,20 @@ estimate_weights <- function(data,
     on.exit(suspendInterrupts(set_random_seed(old_seed)))
     set.seed(set_seed_boot)
 
-    rowid_in_data <- which(!ind)
-    arms <- factor(data$ARM[rowid_in_data])
+    if (!is.null(boot_strata)) {
+      use_strata <- interaction(data[!ind, boot_strata])
+    } else {
+      use_strata <- rep(1, nrow(EM))
+    }
     boot_statistic <- function(d, w) optimise_weights(d[w, ], par = alpha, method = method, ...)$wt[, 1]
-    boot_out <- boot(EM, statistic = boot_statistic, R = n_boot_iteration, strata = arms)
+    boot_out <- boot::boot(EM, statistic = boot_statistic, R = n_boot_iteration, strata = use_strata)
 
     boot_array <- array(dim = list(nrow(EM), 2, n_boot_iteration))
     dimnames(boot_array) <- list(sampled_patient = NULL, c("rowid", "weight"), bootstrap_iteration = NULL)
     boot_array[, 1, ] <- t(boot.array(boot_out, TRUE))
     boot_array[, 2, ] <- t(boot_out$t)
     boot_seed <- boot_out$seed
-    boot_strata <- boot_out$strata
+    boot_strata_out <- boot_out$strata
     boot_array
   }
 
@@ -144,7 +160,7 @@ estimate_weights <- function(data,
     opt = opt1$opt,
     boot = outboot,
     boot_seed = boot_seed,
-    boot_strata = boot_strata,
+    boot_strata = boot_strata_out,
     rows_with_missing = rows_with_missing
   )
 
