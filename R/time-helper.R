@@ -17,7 +17,6 @@ settings_env <- new.env()
 #' # The default time scale is days:
 #' set_time_conversion(default = "days", days = 1, weeks = 7, months = 365.25 / 12, years = 365.25)
 #'
-#'
 #' # Set the default time scale to years
 #' set_time_conversion(
 #'   default = "years",
@@ -68,7 +67,9 @@ get_time_conversion <- function(factor = c("days", "weeks", "months", "years")) 
 #' @param as A time scale to convert to. One of "days", "weeks", "months", "years"
 #'
 #' @return Returns a numeric vector calculated from `times / get_time_conversion(factor = as)`
-
+#' @export
+#' @examples
+#' get_time_as(50, as = "months")
 get_time_as <- function(times, as = NULL) {
   if (is.null(as)) as <- settings_env$default_time_scale
   if (!is.numeric(times)) stop("times arguments must be numeric")

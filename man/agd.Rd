@@ -35,6 +35,7 @@ Other unanchored datasets:
 \code{\link{weighted_sat}}
 
 Other anchored datasets: 
+\code{\link{adrs_twt}},
 \code{\link{adsl_twt}},
 \code{\link{adtte_twt}},
 \code{\link{centered_ipd_twt}},

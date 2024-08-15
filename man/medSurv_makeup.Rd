@@ -20,16 +20,13 @@ a data frame with a index column 'type', median survival time and confidence int
 Extract and display median survival time with confidence interval
 }
 \examples{
+data(adtte_sat)
+data(pseudo_ipd_sat)
 library(survival)
-load(system.file("extdata", "combined_data_tte.rda", package = "maicplus", mustWork = TRUE))
-kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
-kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte,
-  weights = combined_data_tte$weights, conf.type = "log-log"
-)
+combined_data <- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)
+kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data, conf.type = "log-log")
 
 # Derive median survival time
 medSurv <- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")
-medSurv_adj <- medSurv_makeup(kmobj_adj, legend = "after matching", time_scale = "day")
-medSurv_out <- rbind(medSurv, medSurv_adj)
-medSurv_out
+medSurv
 }

@@ -153,7 +153,7 @@ print.maicplus_bucher <- function(x, ci_digits = 2, pval_digits = 3,
 #' @param exponentiate whether the treatment effect and confidence
 #' interval should be exponentiated. This applies to relative
 #' treatment effects. Default is set to false.
-
+#' @keywords internal
 
 reformat <- function(x, ci_digits = 2, pval_digits = 3,
                      show_pval = TRUE, exponentiate = FALSE) {
