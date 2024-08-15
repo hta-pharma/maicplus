@@ -31,3 +31,4 @@ treatment effects. Default is set to false.}
 \description{
 Reformat \code{maicplus_bucher} alike object
 }
+\keyword{internal}

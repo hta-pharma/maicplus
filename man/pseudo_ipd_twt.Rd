@@ -7,8 +7,8 @@
 \format{
 A data frame with 800 rows and 3 columns:
 \describe{
-\item{Time}{Survival time in days.}
-\item{Event}{Event indicator \code{0}/\code{1}.}
+\item{TIME}{Survival time in days.}
+\item{EVENT}{Event indicator \code{0}/\code{1}.}
 \item{ARM}{Assigned treatment arm, \code{"B"}, \code{"C"}.}
 }
 }
@@ -20,6 +20,7 @@ Pseudo individual patient survival data from published two arm study
 }
 \seealso{
 Other anchored datasets: 
+\code{\link{adrs_twt}},
 \code{\link{adsl_twt}},
 \code{\link{adtte_twt}},
 \code{\link{agd}},
