@@ -12,7 +12,6 @@
 #' @param trt_common a string, name of the common comparator in internal and external trial
 #' @param trt_var_ipd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{ipd} that contains the treatment assignment
-#' @param ipd_is_treated logical, TRUE by default. FALSE means the treatment group in AgD should be taken as the treated group (nominator of the hazard ratio).
 #' @param endpoint_type a string, one out of the following "binary", "tte" (time to event)
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
@@ -59,7 +58,6 @@ maic_anchored <- function(weights_object,
                           trt_common,
                           trt_var_ipd = "ARM",
                           trt_var_agd = "ARM",
-                          ipd_is_treated = TRUE,
                           normalize_weight = FALSE,
                           endpoint_type = "tte",
                           endpoint_name = "Time to Event Endpoint",
@@ -187,12 +185,7 @@ maic_anchored <- function(weights_object,
   # * these line cannot be move prior to "dat <- rbind(ipd, pseudo_ipd)"
   ipd$ARM <- factor(ipd$ARM, levels = c(trt_common, trt_ipd))
   pseudo_ipd$ARM <- factor(pseudo_ipd$ARM, levels = c(trt_common, trt_agd))
-  if (ipd_is_treated) {
-    dat$ARM <- factor(dat$ARM, levels = c(trt_common, trt_agd, trt_ipd))
-  } else {
-    dat$ARM <- factor(dat$ARM, levels = c(trt_common, trt_ipd, trt_agd))
-  }
-
+  dat$ARM <- factor(dat$ARM, levels = c(trt_common, trt_agd, trt_ipd))
 
   # ==> Inferential output ------------------------------------------
   result <- if (endpoint_type == "tte") {
@@ -207,7 +200,6 @@ maic_anchored <- function(weights_object,
       endpoint_name,
       trt_ipd,
       trt_agd,
-      ipd_is_treated,
       boot_ci_type
     )
   } else if (endpoint_type == "binary") {
@@ -222,7 +214,6 @@ maic_anchored <- function(weights_object,
       eff_measure,
       trt_ipd,
       trt_agd,
-      ipd_is_treated,
       boot_ci_type
     )
   } else {
@@ -244,7 +235,6 @@ maic_anchored_tte <- function(res,
                               endpoint_name,
                               trt_ipd,
                               trt_agd,
-                              ipd_is_treated,
                               boot_ci_type) {
   # Analysis table (Cox model) before and after matching, incl Median Survival Time
   # derive km w and w/o weights
@@ -282,13 +272,8 @@ maic_anchored_tte <- function(res,
   names(res_AC_unadj) <- names(res_AC) <- names(res_BC) <- c("est", "se")
   res_AC_unadj <- c(res_AC_unadj, list(pval = summary(coxobj_ipd)$waldtest[3]))
 
-  if (ipd_is_treated) {
-    res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
-    res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
-  } else {
-    res_AB <- bucher(res_BC, res_AC, conf_lv = 0.95)
-    res_AB_unadj <- bucher(res_BC, res_AC_unadj, conf_lv = 0.95)
-  }
+  res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
+  res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
 
   res_AB$est <- exp(res_AB$est)
   res_AB$ci_l <- exp(res_AB$ci_l)
@@ -315,7 +300,7 @@ maic_anchored_tte <- function(res,
       }
       boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_ipd, weights = boot_ipd$weights, robust = TRUE)
       boot_res_AC <- list(est = coef(boot_coxobj_dat_adj)[1], se = sqrt(vcov(boot_coxobj_dat_adj)[1, 1]))
-      boot_res_AB <- bucher(boot_res_AC, res_BC, conf_lv = 0.95) # add in ipd_is_treated
+      boot_res_AB <- bucher(boot_res_AC, res_BC, conf_lv = 0.95)
       c(
         est_AB = boot_res_AB$est,
         var_AB = boot_res_AB$se^2,
@@ -413,7 +398,6 @@ maic_anchored_binary <- function(res,
                                  eff_measure,
                                  trt_ipd,
                                  trt_agd,
-                                 ipd_is_treated,
                                  boot_ci_type) {
   # ~~~ Analysis table
   # : set up proper link
@@ -474,13 +458,8 @@ maic_anchored_binary <- function(res,
   }
 
   # derive AB
-  if(ipd_is_treated){
-    res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
-    res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
-  }else{
-    res_AB <- bucher(res_BC, res_AC, conf_lv = 0.95)
-    res_AB_unadj <- bucher(res_BC, res_AC_unadj, conf_lv = 0.95)
-  }
+  res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
+  res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
 
   # transform
   transform_ratio <- function(resobj){
