@@ -12,6 +12,7 @@
 #' @param trt_common a string, name of the common comparator in internal and external trial
 #' @param trt_var_ipd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{ipd} that contains the treatment assignment
+#' @param ipd_is_treated logical, TRUE by default. FALSE means the treatment group in AgD should be taken as the treated group (nominator of the hazard ratio).
 #' @param endpoint_type a string, one out of the following "binary", "tte" (time to event)
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
@@ -58,6 +59,8 @@ maic_anchored <- function(weights_object,
                           trt_common,
                           trt_var_ipd = "ARM",
                           trt_var_agd = "ARM",
+                          ipd_is_treated = TRUE,
+                          normalize_weight = FALSE,
                           endpoint_type = "tte",
                           endpoint_name = "Time to Event Endpoint",
                           eff_measure = c("HR", "OR", "RR", "RD"),
@@ -150,7 +153,11 @@ maic_anchored <- function(weights_object,
   pseudo_ipd <- pseudo_ipd[pseudo_ipd$ARM %in% c(trt_agd, trt_common), , drop = TRUE]
 
   # : assign weights to real and pseudo ipd
-  ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+  if (normalize_weight) {
+    ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+  } else {
+    ipd$weights <- weights_object$data$scaled_weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+  }
   pseudo_ipd$weights <- 1
   if (!"USUBJID" %in% names(pseudo_ipd)) pseudo_ipd$USUBJID <- paste0("ID", seq_len(nrow(pseudo_ipd)))
 
@@ -180,7 +187,12 @@ maic_anchored <- function(weights_object,
   # * these line cannot be move prior to "dat <- rbind(ipd, pseudo_ipd)"
   ipd$ARM <- factor(ipd$ARM, levels = c(trt_common, trt_ipd))
   pseudo_ipd$ARM <- factor(pseudo_ipd$ARM, levels = c(trt_common, trt_agd))
-  dat$ARM <- factor(dat$ARM, levels = c(trt_common, trt_agd, trt_ipd))
+  if (ipd_is_treated) {
+    dat$ARM <- factor(dat$ARM, levels = c(trt_common, trt_agd, trt_ipd))
+  } else {
+    dat$ARM <- factor(dat$ARM, levels = c(trt_common, trt_ipd, trt_agd))
+  }
+
 
   # ==> Inferential output ------------------------------------------
   result <- if (endpoint_type == "tte") {
@@ -195,6 +207,7 @@ maic_anchored <- function(weights_object,
       endpoint_name,
       trt_ipd,
       trt_agd,
+      ipd_is_treated,
       boot_ci_type
     )
   } else if (endpoint_type == "binary") {
@@ -209,6 +222,7 @@ maic_anchored <- function(weights_object,
       eff_measure,
       trt_ipd,
       trt_agd,
+      ipd_is_treated,
       boot_ci_type
     )
   } else {
@@ -230,12 +244,14 @@ maic_anchored_tte <- function(res,
                               endpoint_name,
                               trt_ipd,
                               trt_agd,
+                              ipd_is_treated,
                               boot_ci_type) {
   # Analysis table (Cox model) before and after matching, incl Median Survival Time
   # derive km w and w/o weights
   kmobj_ipd <- survfit(Surv(TIME, EVENT) ~ ARM, ipd, conf.type = km_conf_type)
   kmobj_ipd_adj <- survfit(Surv(TIME, EVENT) ~ ARM, ipd, weights = ipd$weights, conf.type = km_conf_type)
   kmobj_agd <- survfit(Surv(TIME, EVENT) ~ ARM, pseudo_ipd, conf.type = km_conf_type)
+
   res$descriptive[["survfit_ipd_before"]] <- survfit_makeup(kmobj_ipd)
   res$descriptive[["survfit_ipd_after"]] <- survfit_makeup(kmobj_ipd_adj)
   res$descriptive[["survfit_pseudo"]] <- survfit_makeup(kmobj_agd)
@@ -245,7 +261,8 @@ maic_anchored_tte <- function(res,
   medSurv_agd <- medSurv_makeup(kmobj_agd, legend = "AgD, external", time_scale = time_scale)
   medSurv_out <- rbind(medSurv_ipd, medSurv_ipd_adj, medSurv_agd)
 
-  res$inferential[["report_median_surv"]] <- medSurv_out
+  medSurv_out <- cbind(medSurv_out[, 1:6], `events%` = medSurv_out$events * 100 / medSurv_out$n.max, medSurv_out[7:ncol(medSurv_out)])
+  res$descriptive[["summary"]] <- medSurv_out
 
   # ~~~ Analysis table (Cox model) before and after matching
   # fit PH Cox regression model
@@ -258,14 +275,27 @@ maic_anchored_tte <- function(res,
   res$inferential[["agd_model"]] <- coxobj_agd
 
   # derive ipd exp arm vs agd exp arm via bucher
+  res_AC_unadj <- as.list(summary(coxobj_ipd)$coef)[c(1, 3)] # est, se
   res_AC <- as.list(summary(coxobj_ipd_adj)$coef)[c(1, 4)] # est, robust se
   if (is.null(res_BC)) res_BC <- as.list(summary(coxobj_agd)$coef)[c(1, 3)] # est, se
-  names(res_AC) <- names(res_BC) <- c("est", "se")
 
-  res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
+  names(res_AC_unadj) <- names(res_AC) <- names(res_BC) <- c("est", "se")
+  res_AC_unadj <- c(res_AC_unadj, list(pval = summary(coxobj_ipd)$waldtest[3]))
+
+  if (ipd_is_treated) {
+    res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
+    res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
+  } else {
+    res_AB <- bucher(res_BC, res_AC, conf_lv = 0.95)
+    res_AB_unadj <- bucher(res_BC, res_AC_unadj, conf_lv = 0.95)
+  }
+
   res_AB$est <- exp(res_AB$est)
   res_AB$ci_l <- exp(res_AB$ci_l)
   res_AB$ci_u <- exp(res_AB$ci_u)
+  res_AB_unadj$est <- exp(res_AB_unadj$est)
+  res_AB_unadj$ci_l <- exp(res_AB_unadj$ci_l)
+  res_AB_unadj$ci_u <- exp(res_AB_unadj$ci_u)
 
   # : get bootstrapped estimates if applicable
   if (!is.null(weights_object$boot)) {
@@ -285,7 +315,7 @@ maic_anchored_tte <- function(res,
       }
       boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_ipd, weights = boot_ipd$weights, robust = TRUE)
       boot_res_AC <- list(est = coef(boot_coxobj_dat_adj)[1], se = sqrt(vcov(boot_coxobj_dat_adj)[1, 1]))
-      boot_res_AB <- bucher(boot_res_AC, res_BC, conf_lv = 0.95)
+      boot_res_AB <- bucher(boot_res_AC, res_BC, conf_lv = 0.95) # add in ipd_is_treated
       c(
         est_AB = boot_res_AB$est,
         var_AB = boot_res_AB$se^2,
@@ -313,7 +343,7 @@ maic_anchored_tte <- function(res,
       "bca" = list(4, 5, "bca")
     )
 
-    res$inferential[["boot_est"]] <- boot_res
+    out_boot_res <- boot_res
     boot_res_AB <- list(
       est = exp(boot_res$t0[1]),
       se = NA,
@@ -322,40 +352,51 @@ maic_anchored_tte <- function(res,
       pval = NA
     )
   } else {
-    res$inferential[["boot_est"]] <- NULL
+    out_boot_res <- NULL
+    boot_res_AB <- NULL
   }
 
-  # : make analysis report table
-  res$inferential[["report_overall_robustCI"]] <- rbind(
-    report_table_tte(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
-    report_table_tte(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
-    report_table_tte(coxobj_agd, medSurv_agd, tag = paste0("Agd/", endpoint_name)),
-    c(
-      paste0("** adj.", trt_ipd, " vs ", trt_agd),
-      rep("--", 4),
-      reformat(res_AB, pval_digits = 3)
-    )
+  # : report all raw fitted obj
+  res$inferential[["fit"]] <- list(
+    kmobj_ipd = kmobj_ipd,
+    kmobj_ipd_adj = kmobj_ipd_adj,
+    kmobj_agd = kmobj_agd,
+    coxobj_ipd = coxobj_ipd,
+    coxobj_ipd_adj = coxobj_ipd,
+    coxobj_agd = coxobj_agd,
+    res_AB = res_AB,
+    boot_res = out_boot_res,
+    boot_res_AB = boot_res_AB
   )
 
-  if (is.null(res$inferential[["boot_est"]])) {
-    res$inferential[["report_overall_bootCI"]] <- NULL
-  } else {
-    temp_boot_res <- boot_res_AB
-    temp_boot_res$ci_l <- boot_res_AB$ci_l
-    temp_boot_res$ci_u <- boot_res_AB$ci_u
-    class(temp_boot_res) <- class(res_AB)
-
-    res$inferential[["report_overall_bootCI"]] <- rbind(
-      report_table_tte(coxobj_ipd, medSurv_ipd, tag = paste0("IPD/", endpoint_name)),
-      report_table_tte(coxobj_ipd_adj, medSurv_ipd_adj, tag = paste0("weighted IPD/", endpoint_name)),
-      report_table_tte(coxobj_agd, medSurv_agd, tag = paste0("AgD/", endpoint_name)),
-      c(
-        paste0("** adj.", trt_ipd, " vs ", trt_agd),
-        rep("--", 4),
-        reformat(boot_res_AB, pval_digits = 3)
-      )
+  # : compile HR result
+  res$inferential[["summary"]] <- data.frame(
+    case = c("AC", "adjusted_AC", "BC", "AB", "adjusted_AB"),
+    HR = c(
+      summary(coxobj_ipd)$conf.int[1],
+      summary(coxobj_ipd_adj)$conf.int[1],
+      summary(coxobj_agd)$conf.int[1],
+      res_AB_unadj$est, res_AB$est
+    ),
+    LCL = c(
+      summary(coxobj_ipd)$conf.int[3],
+      summary(coxobj_ipd_adj)$conf.int[3],
+      summary(coxobj_agd)$conf.int[3],
+      res_AB_unadj$ci_l, res_AB$ci_l
+    ),
+    UCL = c(
+      summary(coxobj_ipd)$conf.int[4],
+      summary(coxobj_ipd_adj)$conf.int[4],
+      summary(coxobj_agd)$conf.int[4],
+      res_AB_unadj$ci_u, res_AB$ci_u
+    ),
+    pval = c(
+      summary(coxobj_ipd)$waldtest[3],
+      summary(coxobj_ipd_adj)$waldtest[3],
+      summary(coxobj_agd)$waldtest[3],
+      res_AB_unadj$pval, res_AB$pval
     )
-  }
+  )
 
   # output
   res
@@ -372,6 +413,7 @@ maic_anchored_binary <- function(res,
                                  eff_measure,
                                  trt_ipd,
                                  trt_agd,
+                                 ipd_is_treated,
                                  boot_ci_type) {
   # ~~~ Analysis table
   # : set up proper link
@@ -401,6 +443,10 @@ maic_anchored_binary <- function(res,
   res$inferential[["ipd_model_after"]] <- binobj_ipd_adj
   res$inferential[["agd_model"]] <- binobj_ipd
 
+  # : make general summary
+  browser()
+  res$descriptive[["summary"]] <- NULL
+
   # derive ipd exp arm vs agd exp arm via bucher
   res_AC <- res_template
   res_AC$est <- bin_robust_coef[2, "Estimate"]
@@ -409,31 +455,61 @@ maic_anchored_binary <- function(res,
   res_AC$ci_u <- bin_robust_ci[2, "97.5 %"]
   res_AC$pval <- bin_robust_coef[2, "Pr(>|z|)"]
 
+  # unadjusted AC
+  res_AC_unadj <- res_template
+  res_AC_unadj$est <- summary(binobj_ipd)$coefficients[2, "Estimate"]
+  res_AC_unadj$se <- summary(binobj_ipd)$coefficients[2, "Std. Error"]
+  res_AC_unadj$ci_l <- confint.default(binobj_ipd)[2, "2.5 %"]
+  res_AC_unadj$ci_u <- confint.default(binobj_ipd)[2, "97.5 %"]
+  res_AC_unadj$pval <- summary(binobj_ipd)$coefficients[2, "Pr(>|z|)"]
+
+  # BC
   if (is.null(res_BC)) {
-    res_BC <- list(est = coef(binobj_agd)[2], se = sqrt(vcov(binobj_agd)[2, 2]))
+    res_BC <- res_template
+    res_BC$est <- summary(binobj_agd)$coefficients[2, "Estimate"]
+    res_BC$se <- summary(binobj_agd)$coefficients[2, "Std. Error"]
+    res_BC$ci_l <- confint.default(binobj_agd)[2, "2.5 %"]
+    res_BC$ci_u <- confint.default(binobj_agd)[2, "97.5 %"]
+    res_BC$pval <- summary(binobj_agd)$coefficients[2, "Pr(>|z|)"]
   }
-  res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
+
+  # derive AB
+  if(ipd_is_treated){
+    res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
+    res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
+  }else{
+    res_AB <- bucher(res_BC, res_AC, conf_lv = 0.95)
+    res_AB_unadj <- bucher(res_BC, res_AC_unadj, conf_lv = 0.95)
+  }
+
+  # transform
+  transform_ratio <- function(resobj){
+    resobj$est <- exp(resobj$est)
+    resobj$se <- sqrt((exp(resobj$se^2) - 1) * exp(2 * resobj$est + resobj$se^2)) # log normal parameterization
+    resobj$ci_l <- exp(resobj$ci_l)
+    resobj$ci_u <- exp(resobj$ci_u)
+    resobj
+  }
+  transform_absolute <- function(resobj){
+    resobj$est <- resobj$est * 100
+    resobj$se <- resobj$se * 100
+    resobj$ci_l <- resobj$ci_l * 100
+    resobj$ci_u <- resobj$ci_u * 100
+    resobj
+  }
 
   if (eff_measure %in% c("RR", "OR")) {
-    res_AB$est <- exp(res_AB$est)
-    res_AB$se <- sqrt((exp(res_AB$se^2) - 1) * exp(2 * res_AB$est + res_AB$se^2)) # log normal parameterization
-    res_AB$ci_l <- exp(res_AB$ci_l)
-    res_AB$ci_u <- exp(res_AB$ci_u)
-
-    res_AC$est <- exp(res_AC$est)
-    res_AC$se <- sqrt((exp(res_AC$se^2) - 1) * exp(2 * res_AC$est + res_AC$se^2)) # log normal parameterization
-    res_AC$ci_l <- exp(res_AC$ci_l)
-    res_AC$ci_u <- exp(res_AC$ci_u)
+    res_AB <- transform_ratio(res_AB)
+    res_AB_unadj <- transform_ratio(res_AB_unadj)
+    res_AC <- transform_ratio(res_AC)
+    res_AC_unadj <- transform_ratio(res_AC_unadj)
+    res_BC <- transform_ratio(res_BC)
   } else if (eff_measure == "RD") {
-    res_AB$est <- res_AB$est * 100
-    res_AB$se <- res_AB$se * 100
-    res_AB$ci_l <- res_AB$ci_l * 100
-    res_AB$ci_u <- res_AB$ci_u * 100
-
-    res_AC$est <- res_AC$est * 100
-    res_AC$se <- res_AC$se * 100
-    res_AC$ci_l <- res_AC$ci_l * 100
-    res_AC$ci_u <- res_AC$ci_u * 100
+    res_AB <- transform_absolute(res_AB)
+    res_AB_unadj <- transform_absolute(res_AB_unadj)
+    res_AC <- transform_absolute(res_AC)
+    res_AC_unadj <- transform_absolute(res_AC_unadj)
+    res_BC <- transform_absolute(res_BC)
   }
 
   # : get bootstrapped estimates if applicable
@@ -522,7 +598,22 @@ maic_anchored_binary <- function(res,
     res$inferential[["boot_est"]] <- NULL
   }
 
-  # : make analysis report table
+  # : report all raw fitted obj
+  res$inferential[["fit"]] <- list(
+    kmobj_ipd = kmobj_ipd,
+    kmobj_ipd_adj = kmobj_ipd_adj,
+    kmobj_agd = kmobj_agd,
+    coxobj_ipd = coxobj_ipd,
+    coxobj_ipd_adj = coxobj_ipd,
+    coxobj_agd = coxobj_agd,
+    res_AB = res_AB,
+    boot_res = out_boot_res,
+    boot_res_AB = boot_res_AB
+  )
+
+  # : make unround table
+
+  # : make print-ready analysis report table
   tags <- paste0(c("IPD/", "weighted IPD/", "AgD/"), endpoint_name)
   res$inferential[["report_overall_robustCI"]] <- rbind(
     report_table_binary(binobj_ipd, tag = tags[1], eff_measure = eff_measure),

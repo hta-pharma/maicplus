@@ -170,7 +170,7 @@ reformat <- function(x, ci_digits = 2, pval_digits = 3,
   c <- format(round(transform_this(x$ci_u), ci_digits),
     nsmall = ci_digits
   )
-  res <- paste0(a, " [", b, "; ", c, "]")
+  res <- paste0(a, "[", b, "; ", c, "]")
 
   disp_pval <- round(x$pval, pval_digits)
   disp_pval <-
