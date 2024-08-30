@@ -155,6 +155,7 @@ kmplot2 <- function(weights_object,
 #' @param main_title a string, main title of the KM plot
 #' @param break_x_by bin parameter for \code{survminer}
 #' @param censor indicator to include censor information
+#' @param xlab label name for x-axis of the plot
 #' @param xlim x limit for the x-axis of the plot
 #' @param use_colors a character vector of length up to 4, colors to the KM curves,
 #'   it will be passed to 'col' of \code{lines()}
