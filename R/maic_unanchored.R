@@ -65,7 +65,7 @@ maic_unanchored <- function(weights_object,
     inferential = list()
   )
 
-  res_AB <- list(
+  res_AB_unadj <- res_AB <- list(
     est = NA,
     se = NA,
     ci_l = NA,
@@ -174,12 +174,12 @@ maic_unanchored <- function(weights_object,
 
   result <- if (endpoint_type == "tte") {
     maic_unanchored_tte(
-      res, res_AB, dat, ipd, pseudo_ipd, km_conf_type, time_scale,
+      res, res_AB, res_AB_unadj, dat, ipd, pseudo_ipd, km_conf_type, time_scale,
       weights_object, endpoint_name, boot_ci_type, trt_ipd, trt_agd
     )
   } else if (endpoint_type == "binary") {
     maic_unanchored_binary(
-      res, res_AB, dat, ipd, pseudo_ipd, binary_robust_cov_type,
+      res, res_AB, res_AB_unadj, dat, ipd, pseudo_ipd, binary_robust_cov_type,
       weights_object, endpoint_name, eff_measure, boot_ci_type, trt_ipd, trt_agd
     )
   } else {
@@ -194,6 +194,7 @@ maic_unanchored <- function(weights_object,
 
 maic_unanchored_tte <- function(res,
                                 res_AB,
+                                res_AB_unadj,
                                 dat,
                                 ipd,
                                 pseudo_ipd,
@@ -214,7 +215,7 @@ maic_unanchored_tte <- function(res,
   medSurv_dat <- medSurv_makeup(kmobj_dat, legend = "Before matching", time_scale = time_scale)
   medSurv_dat_adj <- medSurv_makeup(kmobj_dat_adj, legend = "After matching", time_scale = time_scale)
   medSurv_out <- rbind(medSurv_dat, medSurv_dat_adj)
-  medSurv_out <- cbind(trt_ind = c("C","B","A")[match(medSurv_out$treatment,levels(dat$ARM))], medSurv_out)
+  medSurv_out <- cbind(trt_ind = c("B","A")[match(medSurv_out$treatment,levels(dat$ARM))], medSurv_out)
 
   res$descriptive[["summary"]] <- medSurv_out
 
@@ -242,7 +243,7 @@ maic_unanchored_tte <- function(res,
   res_AB_unadj$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parametrization
   res_AB_unadj$ci_l <- summary(coxobj_dat)$conf.int[3]
   res_AB_unadj$ci_u <- summary(coxobj_dat)$conf.int[4]
-  res_AB_unadj$pval <- summary(coxobj_dat)$coef[6]
+  res_AB_unadj$pval <- summary(coxobj_dat)$coef[5]
 
   # : get bootstrapped estimates if applicable
   if (!is.null(weights_object$boot)) {
@@ -310,23 +311,22 @@ maic_unanchored_tte <- function(res,
     boot_res_AB = boot_res_AB
   )
 
-  # : make analysis report table
-  res$inferential[["report_overall_robustCI"]] <- rbind(
-    report_table_tte(coxobj_dat, medSurv_dat, tag = paste0("Before matching/", endpoint_name)),
-    report_table_tte(coxobj_dat_adj, medSurv_dat_adj, tag = paste0("After matching/", endpoint_name))
-  )
-
-  if (is.null(res$inferential[["boot_est"]])) {
-    res$inferential[["report_overall_bootCI"]] <- NULL
-  } else {
-    report_boot <- report_table_tte(coxobj_dat_adj, medSurv_dat_adj, tag = paste0("After matching/", endpoint_name))
-    report_boot$`p-Value` <- NA
-    report_boot$`HR[95% CI]`[1] <- do.call(sprintf, args = c(list(fmt = "%.2f[%.2f;%.2f]"), boot_res_AB[1:3]))
-    res$inferential[["report_overall_bootCI"]] <- rbind(
-      report_table_tte(coxobj_dat, medSurv_dat, tag = paste0("Before matching/", endpoint_name)),
-      report_boot
+  # : compile HR result
+  res$inferential[["summary"]] <- data.frame(
+    case = c("AB", "adjusted_AB"),
+    HR = c(
+      res_AB_unadj$est, res_AB$est
+    ),
+    LCL = c(
+      res_AB_unadj$ci_l, res_AB$ci_l
+    ),
+    UCL = c(
+      res_AB_unadj$ci_u, res_AB$ci_u
+    ),
+    pval = c(
+      res_AB_unadj$pval, res_AB$pval
     )
-  }
+  )
 
   # output
   res
@@ -336,6 +336,7 @@ maic_unanchored_tte <- function(res,
 
 maic_unanchored_binary <- function(res,
                                    res_AB,
+                                   res_AB_unadj,
                                    dat,
                                    ipd,
                                    pseudo_ipd,

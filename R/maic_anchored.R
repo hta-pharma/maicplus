@@ -635,6 +635,7 @@ maic_anchored_binary <- function(res,
       res_AB_unadj$pval
     )
   )
+  names(res$inferential[["summary"]])[2] <- eff_measure
 
   # output
   res
