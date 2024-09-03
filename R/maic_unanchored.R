@@ -363,6 +363,7 @@ maic_unanchored_binary <- function(res,
   # : fit glm for binary outcome and robust estimate with weights
   binobj_dat <- glm(RESPONSE ~ ARM, dat, family = glm_link)
   binobj_dat_adj <- glm(RESPONSE ~ ARM, dat, weights = weights, family = glm_link)
+
   bin_robust_cov <- sandwich::vcovHC(binobj_dat_adj, type = binary_robust_cov_type)
   bin_robust_coef <- lmtest::coeftest(binobj_dat_adj, vcov. = bin_robust_cov)
   bin_robust_ci <- lmtest::coefci(binobj_dat_adj, vcov. = bin_robust_cov)
@@ -370,10 +371,53 @@ maic_unanchored_binary <- function(res,
   res$inferential[["model_before"]] <- binobj_dat
   res$inferential[["model_after"]] <- binobj_dat_adj
 
-  res_AB$est <- transform_estimate(bin_robust_coef[2, "Estimate"])
-  res_AB$ci_l <- transform_estimate(bin_robust_ci[2, "2.5 %"])
-  res_AB$ci_u <- transform_estimate(bin_robust_ci[2, "97.5 %"])
+  # : make general summary
+  glmDesc_ipd <- glm_makeup(binobj_dat, legend = "Before matching", weighted = FALSE)
+  glmDesc_ipd_adj <- glm_makeup(binobj_dat_adj, legend = "After matching", weighted = TRUE)
+  glmDesc <- rbind(glmDesc_ipd, glmDesc_ipd_adj)
+  glmDesc <- cbind(trt_ind = c("B","A")[match(glmDesc$treatment,levels(dat$ARM))], glmDesc)
+  rownames(glmDesc) <- NULL
+  res$descriptive[["summary"]] <- glmDesc
+
+  # : derive adjusted estimate
+  res_AB <- res_template
+  res_AB$est <- bin_robust_coef[2, "Estimate"]
+  res_AB$se <- bin_robust_coef[2, "Std. Error"]
+  res_AB$ci_l <- bin_robust_ci[2, "2.5 %"]
+  res_AB$ci_u <- bin_robust_ci[2, "97.5 %"]
   res_AB$pval <- bin_robust_coef[2, "Pr(>|z|)"]
+
+  # : derive unadjusted estimate
+  res_AB_unadj <- res_template
+  res_AB_unadj$est <- summary(binobj_ipd)$coefficients[2, "Estimate"]
+  res_AB_unadj$se <- summary(binobj_ipd)$coefficients[2, "Std. Error"]
+  res_AB_unadj$ci_l <- confint.default(binobj_ipd)[2, "2.5 %"]
+  res_AB_unadj$ci_u <- confint.default(binobj_ipd)[2, "97.5 %"]
+  res_AB_unadj$pval <- summary(binobj_ipd)$coefficients[2, "Pr(>|z|)"]
+
+  # : transform
+  transform_ratio <- function(resobj){
+    resobj$est <- exp(resobj$est)
+    resobj$se <- sqrt((exp(resobj$se^2) - 1) * exp(2 * resobj$est + resobj$se^2)) # log normal parameterization
+    resobj$ci_l <- exp(resobj$ci_l)
+    resobj$ci_u <- exp(resobj$ci_u)
+    resobj
+  }
+  transform_absolute <- function(resobj){
+    resobj$est <- resobj$est * 100
+    resobj$se <- resobj$se * 100
+    resobj$ci_l <- resobj$ci_l * 100
+    resobj$ci_u <- resobj$ci_u * 100
+    resobj
+  }
+
+  if (eff_measure %in% c("RR", "OR")) {
+    res_AB <- transform_ratio(res_AB)
+    res_AB_unadj <- transform_ratio(res_AB_unadj)
+  } else if (eff_measure == "RD") {
+    res_AB <- transform_absolute(res_AB)
+    res_AB_unadj <- transform_absolute(res_AB_unadj)
+  }
 
   # : get bootstrapped estimates if applicable
   if (!is.null(weights_object$boot)) {
@@ -421,39 +465,46 @@ maic_unanchored_binary <- function(res,
       pval = NA
     )
   } else {
+    boot_res_AB <- NULL
     res$inferential[["boot_est"]] <- NULL
   }
 
-  # : make analysis report table
-  res$inferential[["report_overall_robustCI"]] <- rbind(
-    report_table_binary(
-      binobj_dat,
-      tag = paste0("Before matching/", endpoint_name),
-      eff_measure = eff_measure
+  # : report all raw fitted obj
+  res$inferential[["fit"]] <- list(
+    binobj_ipd = binobj_ipd,
+    binobj_ipd_adj = binobj_ipd_adj,
+    binobj_agd = binobj_agd,
+    res_AC = res_AC,
+    res_AC_unadj = res_AC_unadj,
+    res_BC = res_BC,
+    res_AB = res_AB,
+    res_AB_unadj = res_AB_unadj,
+    boot_res_AC = boot_res_AC,
+    boot_res_AB = boot_res_AB
+  )
+
+  # : compile binary effect estimate result
+  res$inferential[["summary"]] <- data.frame(
+    case = c("AB", "adjusted_AB"),
+    EST = c(
+      res_AB$est,
+      res_AB_unadj$est
     ),
-    report_table_binary(
-      binobj_dat_adj,
-      res_AB,
-      tag = paste0("After matching/", endpoint_name),
-      eff_measure = eff_measure
+    LCL = c(
+      res_AB$ci_l,
+      res_AB_unadj$ci_l
+    ),
+    UCL = c(
+      res_AB$ci_u,
+      res_AB_unadj$ci_u
+    ),
+    pval = c(
+      res_AB$pval,
+      res_AB_unadj$pval
     )
   )
-  if (is.null(res$inferential[["boot_est"]])) {
-    res$inferential[["report_overall_bootCI"]] <- NULL
-  } else {
-    res$inferential[["report_overall_bootCI"]] <- rbind(
-      report_table_binary(
-        binobj_dat,
-        tag = paste0("Before matching/", endpoint_name),
-        eff_measure = eff_measure
-      ),
-      report_table_binary(
-        binobj_dat_adj,
-        boot_res_AB,
-        tag = paste0("After matching/", endpoint_name),
-        eff_measure = eff_measure
-      )
-    )
-  }
+  names(res$inferential[["summary"]])[2] <- eff_measure
+
+  # : output
   res
 }
