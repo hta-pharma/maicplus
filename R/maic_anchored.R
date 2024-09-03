@@ -332,7 +332,6 @@ maic_anchored_tte <- function(res,
       "bca" = list(4, 5, "bca")
     )
 
-    out_boot_res <- boot_res
     boot_res_AB <- list(
       est = exp(boot_res$t0[1]),
       se = NA,
@@ -341,7 +340,7 @@ maic_anchored_tte <- function(res,
       pval = NA
     )
   } else {
-    out_boot_res <- NULL
+    boot_res <- NULL
     boot_res_AB <- NULL
   }
 
@@ -351,10 +350,10 @@ maic_anchored_tte <- function(res,
     kmobj_ipd_adj = kmobj_ipd_adj,
     kmobj_agd = kmobj_agd,
     coxobj_ipd = coxobj_ipd,
-    coxobj_ipd_adj = coxobj_ipd,
+    coxobj_ipd_adj = coxobj_ipd_adj,
     coxobj_agd = coxobj_agd,
     res_AB = res_AB,
-    boot_res = out_boot_res,
+    boot_res = boot_res,
     boot_res_AB = boot_res_AB
   )
 

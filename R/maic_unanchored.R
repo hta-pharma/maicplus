@@ -214,18 +214,19 @@ maic_unanchored_tte <- function(res,
   medSurv_dat <- medSurv_makeup(kmobj_dat, legend = "Before matching", time_scale = time_scale)
   medSurv_dat_adj <- medSurv_makeup(kmobj_dat_adj, legend = "After matching", time_scale = time_scale)
   medSurv_out <- rbind(medSurv_dat, medSurv_dat_adj)
+  medSurv_out <- cbind(trt_ind = c("C","B","A")[match(medSurv_out$treatment,levels(dat$ARM))], medSurv_out)
 
-  res$inferential[["report_median_surv"]] <- medSurv_out
+  res$descriptive[["summary"]] <- medSurv_out
 
   # ~~~ Analysis table (Cox model) before and after matching
   # : fit PH Cox regression model
   coxobj_dat <- coxph(Surv(TIME, EVENT) ~ ARM, dat)
   coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, dat, weights = weights, robust = TRUE)
 
-  res$inferential[["coxph_before"]] <- coxobj_dat
-  res$inferential[["coxph_after"]] <- coxobj_dat_adj
+  res$inferential[["ipd_model_before"]] <- coxobj_dat
+  res$inferential[["ipd_model_after"]] <- coxobj_dat_adj
 
-  # : derive ipd exp arm vs agd exp arm
+  # : derive adjusted estimate for ipd exp arm vs agd exp arm
   res_AB$est <- summary(coxobj_dat_adj)$conf.int[1]
   mu <- summary(coxobj_dat_adj)$coef[1]
   sig <- summary(coxobj_dat_adj)$coef[4]
@@ -233,6 +234,15 @@ maic_unanchored_tte <- function(res,
   res_AB$ci_l <- summary(coxobj_dat_adj)$conf.int[3]
   res_AB$ci_u <- summary(coxobj_dat_adj)$conf.int[4]
   res_AB$pval <- summary(coxobj_dat_adj)$coef[6]
+
+  # : derive unadjusted estimate
+  res_AB_unadj$est <- summary(coxobj_dat)$conf.int[1]
+  mu <- summary(coxobj_dat)$coef[1]
+  sig <- summary(coxobj_dat)$coef[4]
+  res_AB_unadj$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parametrization
+  res_AB_unadj$ci_l <- summary(coxobj_dat)$conf.int[3]
+  res_AB_unadj$ci_u <- summary(coxobj_dat)$conf.int[4]
+  res_AB_unadj$pval <- summary(coxobj_dat)$coef[6]
 
   # : get bootstrapped estimates if applicable
   if (!is.null(weights_object$boot)) {
@@ -283,8 +293,22 @@ maic_unanchored_tte <- function(res,
       pval = NA
     )
   } else {
+    boot_res_AB <- NULL
+    boot_res <- NULL
     res$inferential[["boot_est"]] <- NULL
   }
+
+  # : report all raw fitted obj
+  res$inferential[["fit"]] <- list(
+    kmobj_dat = kmobj_dat,
+    kmobj_dat_adj = kmobj_dat_adj,
+    coxobj_dat = coxobj_dat,
+    coxobj_dat_adj = coxobj_dat_adj,
+    res_AB = res_AB,
+    res_AB_unadj = res_AB_unadj,
+    boot_res = boot_res,
+    boot_res_AB = boot_res_AB
+  )
 
   # : make analysis report table
   res$inferential[["report_overall_robustCI"]] <- rbind(
