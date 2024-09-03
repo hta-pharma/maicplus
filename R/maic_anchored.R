@@ -254,7 +254,7 @@ maic_anchored_tte <- function(res,
   medSurv_agd <- medSurv_makeup(kmobj_agd, legend = "AgD, external", time_scale = time_scale)
   medSurv_out <- rbind(medSurv_ipd, medSurv_ipd_adj, medSurv_agd)
   medSurv_out <- cbind(medSurv_out[, 1:6], `events%` = medSurv_out$events * 100 / medSurv_out$n.max, medSurv_out[7:ncol(medSurv_out)])
-  medSurv_out <- cbind(trt_ind = c("C","B","A")[match(medSurv_out$treatment,levels(dat$ARM))], medSurv_out)
+  medSurv_out <- cbind(trt_ind = c("C", "B", "A")[match(medSurv_out$treatment, levels(dat$ARM))], medSurv_out)
 
   res$descriptive[["summary"]] <- medSurv_out
 
@@ -436,7 +436,7 @@ maic_anchored_binary <- function(res,
   glmDesc_ipd_adj <- glm_makeup(binobj_ipd_adj, legend = "IPD, after matching", weighted = TRUE)
   glmDesc_agd <- glm_makeup(binobj_agd, legend = "AgD, external", weighted = FALSE)
   glmDesc <- rbind(glmDesc_ipd, glmDesc_ipd_adj, glmDesc_agd)
-  glmDesc <- cbind(trt_ind = c("C","B","A")[match(glmDesc$treatment,levels(dat$ARM))], glmDesc)
+  glmDesc <- cbind(trt_ind = c("C", "B", "A")[match(glmDesc$treatment, levels(dat$ARM))], glmDesc)
   rownames(glmDesc) <- NULL
   res$descriptive[["summary"]] <- glmDesc
 
@@ -471,14 +471,14 @@ maic_anchored_binary <- function(res,
   res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
 
   # transform
-  transform_ratio <- function(resobj){
+  transform_ratio <- function(resobj) {
     resobj$est <- exp(resobj$est)
     resobj$se <- sqrt((exp(resobj$se^2) - 1) * exp(2 * resobj$est + resobj$se^2)) # log normal parameterization
     resobj$ci_l <- exp(resobj$ci_l)
     resobj$ci_u <- exp(resobj$ci_u)
     resobj
   }
-  transform_absolute <- function(resobj){
+  transform_absolute <- function(resobj) {
     resobj$est <- resobj$est * 100
     resobj$se <- resobj$se * 100
     resobj$ci_l <- resobj$ci_l * 100

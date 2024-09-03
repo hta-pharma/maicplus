@@ -215,7 +215,7 @@ maic_unanchored_tte <- function(res,
   medSurv_dat <- medSurv_makeup(kmobj_dat, legend = "Before matching", time_scale = time_scale)
   medSurv_dat_adj <- medSurv_makeup(kmobj_dat_adj, legend = "After matching", time_scale = time_scale)
   medSurv_out <- rbind(medSurv_dat, medSurv_dat_adj)
-  medSurv_out <- cbind(trt_ind = c("B","A")[match(medSurv_out$treatment,levels(dat$ARM))], medSurv_out)
+  medSurv_out <- cbind(trt_ind = c("B", "A")[match(medSurv_out$treatment, levels(dat$ARM))], medSurv_out)
 
   res$descriptive[["summary"]] <- medSurv_out
 
@@ -375,7 +375,7 @@ maic_unanchored_binary <- function(res,
   glmDesc_dat <- glm_makeup(binobj_dat, legend = "Before matching", weighted = FALSE)
   glmDesc_dat_adj <- glm_makeup(binobj_dat_adj, legend = "After matching", weighted = TRUE)
   glmDesc <- rbind(glmDesc_dat, glmDesc_dat_adj)
-  glmDesc <- cbind(trt_ind = c("B","A")[match(glmDesc$treatment,levels(dat$ARM))], glmDesc)
+  glmDesc <- cbind(trt_ind = c("B", "A")[match(glmDesc$treatment, levels(dat$ARM))], glmDesc)
   rownames(glmDesc) <- NULL
   res$descriptive[["summary"]] <- glmDesc
 
@@ -394,14 +394,14 @@ maic_unanchored_binary <- function(res,
   res_AB_unadj$pval <- summary(binobj_dat)$coefficients[2, "Pr(>|z|)"]
 
   # : transform
-  transform_ratio <- function(resobj){
+  transform_ratio <- function(resobj) {
     resobj$est <- exp(resobj$est)
     resobj$se <- sqrt((exp(resobj$se^2) - 1) * exp(2 * resobj$est + resobj$se^2)) # log normal parameterization
     resobj$ci_l <- exp(resobj$ci_l)
     resobj$ci_u <- exp(resobj$ci_u)
     resobj
   }
-  transform_absolute <- function(resobj){
+  transform_absolute <- function(resobj) {
     resobj$est <- resobj$est * 100
     resobj$se <- resobj$se * 100
     resobj$ci_l <- resobj$ci_l * 100
