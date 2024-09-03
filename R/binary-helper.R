@@ -84,3 +84,35 @@ get_pseudo_ipd_binary <- function(binary_agd, format = c("stacked", "unstacked")
   # output
   tmpipd
 }
+
+
+#' Title
+#'
+#' @param binobj
+#' @param legend
+#' @param weighted
+#'
+#' @return a dataframe
+#' @export
+
+glm_makeup <- function(binobj, legend = "before matching", weighted = FALSE){
+  ARM <- levels(binobj$data$ARM)
+  if (!weighted) {
+    N <- tapply(binobj$data$USUBJID, binobj$data$ARM, length)
+    N.EVNT <- tapply(binobj$data$RESPONSE, binobj$data$ARM, sum)
+  } else {
+    N <- tapply(binobj$data$weights, binobj$data$ARM, length)
+    N.EVNT <- tapply(binobj$data$weights * binobj$data$RESPONSE, binobj$data$ARM, sum)
+  }
+  N.EVNT.PERC <- N.EVNT * 100 / N
+  N.EVNT <- N.EVNT
+
+  data.frame(treatment = ARM,
+             type = rep(legend),
+             n = N,
+             n.missing = ,
+             events = N.EVNT,
+             `events%` = N.EVNT.PERC)
+}
+
+

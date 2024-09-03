@@ -192,6 +192,7 @@ maic_anchored <- function(weights_object,
     maic_anchored_tte(
       res,
       res_BC = NULL,
+      dat,
       ipd,
       pseudo_ipd,
       km_conf_type,
@@ -206,6 +207,7 @@ maic_anchored <- function(weights_object,
     maic_anchored_binary(
       res,
       res_BC = NULL,
+      dat,
       ipd,
       pseudo_ipd,
       binary_robust_cov_type,
@@ -227,6 +229,7 @@ maic_anchored <- function(weights_object,
 # MAIC inference functions for TTE outcome type ------------
 maic_anchored_tte <- function(res,
                               res_BC = NULL,
+                              dat,
                               ipd,
                               pseudo_ipd,
                               km_conf_type,
@@ -250,8 +253,9 @@ maic_anchored_tte <- function(res,
   medSurv_ipd_adj <- medSurv_makeup(kmobj_ipd_adj, legend = "IPD, after matching", time_scale = time_scale)
   medSurv_agd <- medSurv_makeup(kmobj_agd, legend = "AgD, external", time_scale = time_scale)
   medSurv_out <- rbind(medSurv_ipd, medSurv_ipd_adj, medSurv_agd)
-
   medSurv_out <- cbind(medSurv_out[, 1:6], `events%` = medSurv_out$events * 100 / medSurv_out$n.max, medSurv_out[7:ncol(medSurv_out)])
+  medSurv_out <- cbind(trt_ind = c("C","B","A")[match(medSurv_out$treatment,levels(dat$ARM))], medSurv_out)
+
   res$descriptive[["summary"]] <- medSurv_out
 
   # ~~~ Analysis table (Cox model) before and after matching
@@ -390,6 +394,7 @@ maic_anchored_tte <- function(res,
 # MAIC inference functions for Binary outcome type ------------
 maic_anchored_binary <- function(res,
                                  res_BC = NULL,
+                                 dat,
                                  ipd,
                                  pseudo_ipd,
                                  binary_robust_cov_type,

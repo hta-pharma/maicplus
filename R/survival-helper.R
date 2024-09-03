@@ -27,7 +27,7 @@ medSurv_makeup <- function(km_fit, legend = "before matching", time_scale) {
   km_fit[, 5:ncol(km_fit)] <- get_time_as(km_fit[, 5:ncol(km_fit)], time_scale)
 
   toyadd <- data.frame(
-    treatment = gsub("treatment=", "", rownames(km_fit)),
+    treatment = gsub("ARM=", "", rownames(km_fit)),
     type = rep(legend, 2)
   )
 
