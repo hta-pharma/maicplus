@@ -433,8 +433,12 @@ maic_anchored_binary <- function(res,
   res$inferential[["agd_model"]] <- binobj_ipd
 
   # : make general summary
-  browser()
-  res$descriptive[["summary"]] <- NULL
+  glmDesc_ipd <- glm_makeup(binobj_ipd, legend = "IPD, before matching", weighted = FALSE)
+  glmDesc_ipd_adj <- glm_makeup(binobj_ipd_adj, legend = "IPD, after matching", weighted = TRUE)
+  glmDesc_agd <- glm_makeup(binobj_agd, legend = "AgD, external", weighted = FALSE)
+  glmDesc <- rbind(glmDesc_ipd, glmDesc_ipd_adj, glmDesc_agd)
+  glmDesc <- cbind(trt_ind = c("C","B","A")[match(glmDesc$treatment,levels(dat$ARM))], glmDesc)
+  res$descriptive[["summary"]] <- glmDesc
 
   # derive ipd exp arm vs agd exp arm via bucher
   res_AC <- res_template
@@ -579,51 +583,57 @@ maic_anchored_binary <- function(res,
       pval = NA
     )
   } else {
+    boot_res_AC <- NULL
+    boot_res_AB <- NULL
     res$inferential[["boot_est"]] <- NULL
   }
 
   # : report all raw fitted obj
   res$inferential[["fit"]] <- list(
-    kmobj_ipd = kmobj_ipd,
-    kmobj_ipd_adj = kmobj_ipd_adj,
-    kmobj_agd = kmobj_agd,
-    coxobj_ipd = coxobj_ipd,
-    coxobj_ipd_adj = coxobj_ipd,
-    coxobj_agd = coxobj_agd,
+    binobj_ipd = binobj_ipd,
+    binobj_ipd_adj = binobj_ipd_adj,
+    binobj_agd = binobj_agd,
+    res_AC = res_AC,
+    res_AC_unadj = res_AC_unadj,
+    res_BC = res_BC,
     res_AB = res_AB,
-    boot_res = out_boot_res,
+    res_AB_unadj = res_AB_unadj,
+    boot_res_AC = boot_res_AC,
     boot_res_AB = boot_res_AB
   )
 
-  # : make unround table
-
-  # : make print-ready analysis report table
-  tags <- paste0(c("IPD/", "weighted IPD/", "AgD/"), endpoint_name)
-  res$inferential[["report_overall_robustCI"]] <- rbind(
-    report_table_binary(binobj_ipd, tag = tags[1], eff_measure = eff_measure),
-    report_table_binary(binobj_ipd_adj, res_AC, tag = tags[2], eff_measure = eff_measure),
-    report_table_binary(binobj_agd, tag = tags[3], eff_measure = eff_measure),
-    c(
-      paste0("** adj.", trt_ipd, " vs ", trt_agd),
-      rep("--", 3),
-      reformat(res_AB, pval_digits = 3)
+  # : compile binary effect estimate result
+  res$inferential[["summary"]] <- data.frame(
+    case = c("AC", "adjusted_AC", "BC", "AB", "adjusted_AB"),
+    EST = c(
+      res_AC$est,
+      res_AC_unadj$est,
+      res_BC$est,
+      res_AB$est,
+      res_AB_unadj$est
+    ),
+    LCL = c(
+      res_AC$ci_l,
+      res_AC_unadj$ci_l,
+      res_BC$ci_l,
+      res_AB$ci_l,
+      res_AB_unadj$ci_l
+    ),
+    UCL = c(
+      res_AC$ci_u,
+      res_AC_unadj$ci_u,
+      res_BC$ci_u,
+      res_AB$ci_u,
+      res_AB_unadj$ci_u
+    ),
+    pval = c(
+      res_AC$pval,
+      res_AC_unadj$pval,
+      res_BC$pval,
+      res_AB$pval,
+      res_AB_unadj$pval
     )
   )
-
-  if (is.null(res$inferential[["boot_est"]])) {
-    res$inferential[["report_overall_bootCI"]] <- NULL
-  } else {
-    res$inferential[["report_overall_bootCI"]] <- rbind(
-      report_table_binary(binobj_ipd, tag = tags[1], eff_measure = eff_measure),
-      report_table_binary(binobj_ipd_adj, boot_res_AC, tag = tags[2], eff_measure = eff_measure),
-      report_table_binary(binobj_agd, tag = tags[3], eff_measure = eff_measure),
-      c(
-        paste0("** adj.", trt_ipd, " vs ", trt_agd),
-        rep("--", 3),
-        reformat(boot_res_AB, pval_digits = 3)
-      )
-    )
-  }
 
   # output
   res

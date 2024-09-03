@@ -27,5 +27,5 @@ result_binary <- maic_anchored(
   eff_measure = "OR"
 )
 
-result_binary$inferential$report_overall_robustCI
-result_binary$inferential$report_overall_bootCI
+result_binary$descriptive$summary
+result_binary$inferential$summary

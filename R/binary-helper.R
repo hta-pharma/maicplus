@@ -110,9 +110,9 @@ glm_makeup <- function(binobj, legend = "before matching", weighted = FALSE){
   data.frame(treatment = ARM,
              type = rep(legend),
              n = N,
-             n.missing = ,
              events = N.EVNT,
-             `events%` = N.EVNT.PERC)
+             `events%` = N.EVNT.PERC,
+             check.names = FALSE)
 }
 
 
