@@ -362,7 +362,7 @@ maic_unanchored_binary <- function(res,
 
   # : fit glm for binary outcome and robust estimate with weights
   binobj_dat <- glm(RESPONSE ~ ARM, dat, family = glm_link)
-  binobj_dat_adj <- glm(RESPONSE ~ ARM, dat, weights = weights, family = glm_link)
+  binobj_dat_adj <- glm(RESPONSE ~ ARM, dat, weights = weights, family = glm_link) |> suppressWarnings()
 
   bin_robust_cov <- sandwich::vcovHC(binobj_dat_adj, type = binary_robust_cov_type)
   bin_robust_coef <- lmtest::coeftest(binobj_dat_adj, vcov. = bin_robust_cov)
@@ -372,15 +372,14 @@ maic_unanchored_binary <- function(res,
   res$inferential[["model_after"]] <- binobj_dat_adj
 
   # : make general summary
-  glmDesc_ipd <- glm_makeup(binobj_dat, legend = "Before matching", weighted = FALSE)
-  glmDesc_ipd_adj <- glm_makeup(binobj_dat_adj, legend = "After matching", weighted = TRUE)
-  glmDesc <- rbind(glmDesc_ipd, glmDesc_ipd_adj)
+  glmDesc_dat <- glm_makeup(binobj_dat, legend = "Before matching", weighted = FALSE)
+  glmDesc_dat_adj <- glm_makeup(binobj_dat_adj, legend = "After matching", weighted = TRUE)
+  glmDesc <- rbind(glmDesc_dat, glmDesc_dat_adj)
   glmDesc <- cbind(trt_ind = c("B","A")[match(glmDesc$treatment,levels(dat$ARM))], glmDesc)
   rownames(glmDesc) <- NULL
   res$descriptive[["summary"]] <- glmDesc
 
   # : derive adjusted estimate
-  res_AB <- res_template
   res_AB$est <- bin_robust_coef[2, "Estimate"]
   res_AB$se <- bin_robust_coef[2, "Std. Error"]
   res_AB$ci_l <- bin_robust_ci[2, "2.5 %"]
@@ -388,12 +387,11 @@ maic_unanchored_binary <- function(res,
   res_AB$pval <- bin_robust_coef[2, "Pr(>|z|)"]
 
   # : derive unadjusted estimate
-  res_AB_unadj <- res_template
-  res_AB_unadj$est <- summary(binobj_ipd)$coefficients[2, "Estimate"]
-  res_AB_unadj$se <- summary(binobj_ipd)$coefficients[2, "Std. Error"]
-  res_AB_unadj$ci_l <- confint.default(binobj_ipd)[2, "2.5 %"]
-  res_AB_unadj$ci_u <- confint.default(binobj_ipd)[2, "97.5 %"]
-  res_AB_unadj$pval <- summary(binobj_ipd)$coefficients[2, "Pr(>|z|)"]
+  res_AB_unadj$est <- summary(binobj_dat)$coefficients[2, "Estimate"]
+  res_AB_unadj$se <- summary(binobj_dat)$coefficients[2, "Std. Error"]
+  res_AB_unadj$ci_l <- confint.default(binobj_dat)[2, "2.5 %"]
+  res_AB_unadj$ci_u <- confint.default(binobj_dat)[2, "97.5 %"]
+  res_AB_unadj$pval <- summary(binobj_dat)$coefficients[2, "Pr(>|z|)"]
 
   # : transform
   transform_ratio <- function(resobj){
@@ -437,7 +435,7 @@ maic_unanchored_binary <- function(res,
       }
       boot_dat <- rbind(boot_ipd, pseudo_ipd)
       boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
-      boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_dat, weights = weights, family = glm_link)
+      boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_dat, weights = weights, family = glm_link) |> suppressWarnings()
       c(est = coef(boot_binobj_dat_adj)[2], var = vcov(boot_binobj_dat_adj)[2, 2])
     }
 
@@ -471,15 +469,10 @@ maic_unanchored_binary <- function(res,
 
   # : report all raw fitted obj
   res$inferential[["fit"]] <- list(
-    binobj_ipd = binobj_ipd,
-    binobj_ipd_adj = binobj_ipd_adj,
-    binobj_agd = binobj_agd,
-    res_AC = res_AC,
-    res_AC_unadj = res_AC_unadj,
-    res_BC = res_BC,
+    binobj_dat = binobj_dat,
+    binobj_dat_adj = binobj_dat_adj,
     res_AB = res_AB,
     res_AB_unadj = res_AB_unadj,
-    boot_res_AC = boot_res_AC,
     boot_res_AB = boot_res_AB
   )
 
