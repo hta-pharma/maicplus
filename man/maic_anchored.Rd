@@ -13,6 +13,7 @@ maic_anchored(
   trt_common,
   trt_var_ipd = "ARM",
   trt_var_agd = "ARM",
+  normalize_weight = FALSE,
   endpoint_type = "tte",
   endpoint_name = "Time to Event Endpoint",
   eff_measure = c("HR", "OR", "RR", "RD"),
@@ -104,9 +105,8 @@ result_tte <- maic_anchored(
   time_scale = "month",
   km_conf_type = "log-log",
 )
-result_tte$inferential$report_median_surv
-result_tte$inferential$report_overall_robustCI
-result_tte$inferential$report_overall_bootCI
+result_tte$descriptive$summary
+result_tte$inferential$summary
 # Anchored example using maic_anchored for binary outcome
 data(weighted_twt)
 data(adrs_twt)
@@ -136,6 +136,6 @@ result_binary <- maic_anchored(
   eff_measure = "OR"
 )
 
-result_binary$inferential$report_overall_robustCI
-result_binary$inferential$report_overall_bootCI
+result_binary$descriptive$summary
+result_binary$inferential$summary
 }
