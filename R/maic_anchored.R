@@ -420,8 +420,9 @@ maic_anchored_binary <- function(res,
 
   # : fit glm for binary outcome and robust estimate with weights
   binobj_ipd <- glm(RESPONSE ~ ARM, ipd, family = glm_link)
-  binobj_ipd_adj <- glm(RESPONSE ~ ARM, ipd, weights = weights, family = glm_link)
+  binobj_ipd_adj <- glm(RESPONSE ~ ARM, ipd, weights = weights, family = glm_link) |> suppressWarnings()
   binobj_agd <- glm(RESPONSE ~ ARM, pseudo_ipd, family = glm_link)
+
 
   bin_robust_cov <- sandwich::vcovHC(binobj_ipd_adj, type = binary_robust_cov_type)
   bin_robust_coef <- lmtest::coeftest(binobj_ipd_adj, vcov. = bin_robust_cov)
@@ -437,6 +438,7 @@ maic_anchored_binary <- function(res,
   glmDesc_agd <- glm_makeup(binobj_agd, legend = "AgD, external", weighted = FALSE)
   glmDesc <- rbind(glmDesc_ipd, glmDesc_ipd_adj, glmDesc_agd)
   glmDesc <- cbind(trt_ind = c("C","B","A")[match(glmDesc$treatment,levels(dat$ARM))], glmDesc)
+  rownames(glmDesc) <- NULL
   res$descriptive[["summary"]] <- glmDesc
 
   # derive ipd exp arm vs agd exp arm via bucher
@@ -516,7 +518,7 @@ maic_anchored_binary <- function(res,
         boot_ipd$weights <- w_obj$boot[, 2, r]
       }
 
-      boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_ipd, weights = boot_ipd$weights, family = glm_link)
+      boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_ipd, weights = boot_ipd$weights, family = glm_link) |> suppressWarnings()
       boot_AC_est <- coef(boot_binobj_dat_adj)[2]
       boot_AC_var <- vcov(boot_binobj_dat_adj)[2, 2]
 
