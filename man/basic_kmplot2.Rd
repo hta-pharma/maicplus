@@ -12,6 +12,7 @@ basic_kmplot2(
   main_title = "Kaplan-Meier Curves",
   break_x_by = NULL,
   censor = TRUE,
+  xlab = "Time",
   xlim = NULL,
   use_colors = NULL,
   use_line_types = NULL
@@ -32,6 +33,8 @@ last line of title}
 \item{break_x_by}{bin parameter for \code{survminer}}
 
 \item{censor}{indicator to include censor information}
+
+\item{xlab}{label name for x-axis of the plot}
 
 \item{xlim}{x limit for the x-axis of the plot}
 

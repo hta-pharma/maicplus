@@ -155,6 +155,7 @@ kmplot2 <- function(weights_object,
 #' @param main_title a string, main title of the KM plot
 #' @param break_x_by bin parameter for \code{survminer}
 #' @param censor indicator to include censor information
+#' @param xlab label name for x-axis of the plot
 #' @param xlim x limit for the x-axis of the plot
 #' @param use_colors a character vector of length up to 4, colors to the KM curves,
 #'   it will be passed to 'col' of \code{lines()}
@@ -170,6 +171,7 @@ basic_kmplot2 <- function(kmlist,
                           main_title = "Kaplan-Meier Curves",
                           break_x_by = NULL,
                           censor = TRUE,
+                          xlab = "Time",
                           xlim = NULL,
                           use_colors = NULL,
                           use_line_types = NULL) {
@@ -195,7 +197,7 @@ basic_kmplot2 <- function(kmlist,
     break.x.by = break_x_by,
     censor = censor,
     censor.size = 2,
-    xlab = "Time",
+    xlab = xlab,
     ylab = endpoint_name,
     legend.title = "Treatment",
     legend = c(0.85, 0.82),
