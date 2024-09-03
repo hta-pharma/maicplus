@@ -224,8 +224,8 @@ maic_unanchored_tte <- function(res,
   coxobj_dat <- coxph(Surv(TIME, EVENT) ~ ARM, dat)
   coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, dat, weights = weights, robust = TRUE)
 
-  res$inferential[["ipd_model_before"]] <- coxobj_dat
-  res$inferential[["ipd_model_after"]] <- coxobj_dat_adj
+  res$inferential[["model_before"]] <- coxobj_dat
+  res$inferential[["model_after"]] <- coxobj_dat_adj
 
   # : derive adjusted estimate for ipd exp arm vs agd exp arm
   res_AB$est <- summary(coxobj_dat_adj)$conf.int[1]

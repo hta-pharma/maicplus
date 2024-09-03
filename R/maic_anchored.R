@@ -423,7 +423,6 @@ maic_anchored_binary <- function(res,
   binobj_ipd_adj <- glm(RESPONSE ~ ARM, ipd, weights = weights, family = glm_link) |> suppressWarnings()
   binobj_agd <- glm(RESPONSE ~ ARM, pseudo_ipd, family = glm_link)
 
-
   bin_robust_cov <- sandwich::vcovHC(binobj_ipd_adj, type = binary_robust_cov_type)
   bin_robust_coef <- lmtest::coeftest(binobj_ipd_adj, vcov. = bin_robust_cov)
   bin_robust_ci <- lmtest::coefci(binobj_ipd_adj, vcov. = bin_robust_cov)
