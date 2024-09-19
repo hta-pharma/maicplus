@@ -268,10 +268,6 @@ maic_anchored_tte <- function(res,
   coxobj_ipd_adj <- coxph(Surv(TIME, EVENT) ~ ARM, ipd, weights = weights, robust = TRUE)
   coxobj_agd <- coxph(Surv(TIME, EVENT) ~ ARM, pseudo_ipd)
 
-  res$inferential[["ipd_model_before"]] <- coxobj_ipd
-  res$inferential[["ipd_model_after"]] <- coxobj_ipd_adj
-  res$inferential[["agd_model"]] <- coxobj_agd
-
   # derive ipd exp arm vs agd exp arm via bucher
   res_AC_unadj <- as.list(summary(coxobj_ipd)$coef)[c(1, 3)] # est, se
   res_AC <- as.list(summary(coxobj_ipd_adj)$coef)[c(1, 4)] # est, robust se
@@ -366,13 +362,17 @@ maic_anchored_tte <- function(res,
 
   # : report all raw fitted obj
   res$inferential[["fit"]] <- list(
-    kmobj_ipd = kmobj_ipd,
-    kmobj_ipd_adj = kmobj_ipd_adj,
-    kmobj_agd = kmobj_agd,
-    coxobj_ipd = coxobj_ipd,
-    coxobj_ipd_adj = coxobj_ipd_adj,
-    coxobj_agd = coxobj_agd,
+    km_before_ipd = kmobj_ipd,
+    km_after_ipd = kmobj_ipd_adj,
+    km_agd = kmobj_agd,
+    model_before_ipd = coxobj_ipd,
+    model_after_ipd = coxobj_ipd_adj,
+    model_agd = coxobj_agd,
+    res_AC = res_AC,
+    res_AC_unadj = res_AC_unadj,
+    res_BC = res_BC,
     res_AB = res_AB,
+    res_AB_unadj = res_AB_unadj,
     boot_res = boot_res,
     boot_res_AB = boot_res_AB
   )
@@ -447,10 +447,6 @@ maic_anchored_binary <- function(res,
   bin_robust_cov <- sandwich::vcovHC(binobj_ipd_adj, type = binary_robust_cov_type)
   bin_robust_coef <- lmtest::coeftest(binobj_ipd_adj, vcov. = bin_robust_cov)
   bin_robust_ci <- lmtest::coefci(binobj_ipd_adj, vcov. = bin_robust_cov)
-
-  res$inferential[["ipd_model_before"]] <- binobj_ipd
-  res$inferential[["ipd_model_after"]] <- binobj_ipd_adj
-  res$inferential[["agd_model"]] <- binobj_ipd
 
   # : make general summary
   glmDesc_ipd <- glm_makeup(binobj_ipd, legend = "IPD, before matching", weighted = FALSE)
@@ -595,7 +591,6 @@ maic_anchored_binary <- function(res,
       "OR" = exp
     )
 
-    res$inferential[["boot_est"]] <- boot_res
     boot_res_AB <- list(
       est = transform_estimate(boot_res$t0[1]),
       se = NA,
@@ -616,19 +611,20 @@ maic_anchored_binary <- function(res,
   } else {
     boot_res_AC <- NULL
     boot_res_AB <- NULL
-    res$inferential[["boot_est"]] <- NULL
+    boot_res <- NULL
   }
 
   # : report all raw fitted obj
   res$inferential[["fit"]] <- list(
-    binobj_ipd = binobj_ipd,
-    binobj_ipd_adj = binobj_ipd_adj,
-    binobj_agd = binobj_agd,
+    model_before_ipd = binobj_ipd,
+    model_after_ipd = binobj_ipd_adj,
+    model_agd = binobj_agd,
     res_AC = res_AC,
     res_AC_unadj = res_AC_unadj,
     res_BC = res_BC,
     res_AB = res_AB,
     res_AB_unadj = res_AB_unadj,
+    boot_res = boot_res,
     boot_res_AC = boot_res_AC,
     boot_res_AB = boot_res_AB
   )
