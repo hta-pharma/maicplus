@@ -2,16 +2,32 @@
 % Please edit documentation in R/binary-helper.R
 \name{glm_makeup}
 \alias{glm_makeup}
-\title{Title}
+\title{Helper function to summarize outputs from glm fit}
 \usage{
 glm_makeup(binobj, legend = "before matching", weighted = FALSE)
 }
 \arguments{
-\item{weighted}{}
-}
-\value{
-a dataframe
+\item{binobj}{returned object from \code{stats::glm}}
+
+\item{legend}{label to indicate the binary fit}
+
+\item{weighted}{logical flag indicating whether weights have been applied in the glm fit}
 }
 \description{
-Title
+Helper function to summarize outputs from glm fit
+}
+\examples{
+data(adrs_sat)
+pseudo_adrs <- get_pseudo_ipd_binary(
+binary_agd = data.frame(
+ARM = rep("B", 2),
+RESPONSE = c("YES", "NO"),
+COUNT = c(280, 120)
+),
+format = "stacked")
+pseudo_adrs$RESPONSE <- as.numeric(pseudo_adrs$RESPONSE)
+combined_data <- rbind(adrs_sat[,c("USUBJID", "ARM", "RESPONSE")], pseudo_adrs)
+combined_data$ARM <- as.factor(combined_data$ARM)
+binobj_dat <- stats::glm(RESPONSE ~ ARM, combined_data, family = binomial("logit"))
+glm_makeup(binobj_dat)
 }
