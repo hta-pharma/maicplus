@@ -11,6 +11,7 @@
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{pseudo_ipd} (pseudo IPD)
 #' @param trt_var_ipd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{ipd} that contains the treatment assignment
+#' @param normalize_weight logical, default is \code{FALSE}. If \code{TRUE}, \code{scaled_weights} (normalized weights) in \code{weights_object$data} will be used.
 #' @param endpoint_type a string, one out of the following "binary", "tte" (time to event)
 #' @param eff_measure a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint;
 #'   "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.
@@ -49,6 +50,7 @@ maic_unanchored <- function(weights_object,
                             trt_agd,
                             trt_var_ipd = "ARM",
                             trt_var_agd = "ARM",
+                            normalize_weight = FALSE,
                             endpoint_type = "tte",
                             endpoint_name = "Time to Event Endpoint",
                             eff_measure = c("HR", "OR", "RR", "RD"),
@@ -136,7 +138,11 @@ maic_unanchored <- function(weights_object,
   pseudo_ipd <- pseudo_ipd[pseudo_ipd$ARM == trt_agd, , drop = TRUE]
 
   # : assign weights to real and pseudo ipd
-  ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+  if(normalize_weight){
+    ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+  }else{
+    ipd$weights <- weights_object$data$scaled_weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+  }
   pseudo_ipd$weights <- 1
 
   # : necessary formatting for pseudo ipd
@@ -175,12 +181,12 @@ maic_unanchored <- function(weights_object,
   result <- if (endpoint_type == "tte") {
     maic_unanchored_tte(
       res, res_AB, res_AB_unadj, dat, ipd, pseudo_ipd, km_conf_type, time_scale,
-      weights_object, endpoint_name, boot_ci_type, trt_ipd, trt_agd
+      weights_object, endpoint_name, normalize_weight, boot_ci_type, trt_ipd, trt_agd
     )
   } else if (endpoint_type == "binary") {
     maic_unanchored_binary(
       res, res_AB, res_AB_unadj, dat, ipd, pseudo_ipd, binary_robust_cov_type,
-      weights_object, endpoint_name, eff_measure, boot_ci_type, trt_ipd, trt_agd
+      weights_object, endpoint_name, normalize_weight, eff_measure, boot_ci_type, trt_ipd, trt_agd
     )
   } else {
     stop("Endpoint type ", endpoint_type, " currently unsupported.")
@@ -202,6 +208,7 @@ maic_unanchored_tte <- function(res,
                                 time_scale,
                                 weights_object,
                                 endpoint_name,
+                                normalize_weight,
                                 boot_ci_type,
                                 trt_ipd,
                                 trt_agd) {
@@ -254,12 +261,13 @@ maic_unanchored_tte <- function(res,
     if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
     boot_ipd <- boot_ipd[match(boot_ipd$USUBJID, boot_ipd_id$USUBJID), ]
 
-    stat_fun <- function(data, index, w_obj, pseudo_ipd) {
+    stat_fun <- function(data, index, w_obj, pseudo_ipd, normalize) {
       boot_ipd <- data[index, ]
       r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
       if (!is.na(r)) {
         if (!all(index == w_obj$boot[, 1, r])) stop("Bootstrap and weight indices don't match")
         boot_ipd$weights <- w_obj$boot[, 2, r]
+        if (normalize) boot_ipd$weights <- boot_ipd$weights / mean(boot_ipd$weights, na.rm = TRUE)
       }
       boot_dat <- rbind(boot_ipd, pseudo_ipd)
       boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
@@ -273,7 +281,14 @@ maic_unanchored_tte <- function(res,
     set_random_seed(weights_object$boot_seed)
     R <- dim(weights_object$boot)[3]
 
-    boot_res <- boot(boot_ipd, stat_fun, R = R, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
+    boot_res <- boot(
+      boot_ipd,
+      stat_fun,
+      R = R,
+      w_obj = weights_object,
+      pseudo_ipd = pseudo_ipd,
+      normalize = normalize_weight
+    )
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
 
     l_u_index <- switch(boot_ci_type,
@@ -343,6 +358,7 @@ maic_unanchored_binary <- function(res,
                                    binary_robust_cov_type,
                                    weights_object,
                                    endpoint_name,
+                                   normalize_weight,
                                    eff_measure,
                                    boot_ci_type,
                                    trt_ipd,
@@ -426,12 +442,13 @@ maic_unanchored_binary <- function(res,
     if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
     boot_ipd <- boot_ipd[match(boot_ipd$USUBJID, boot_ipd_id$USUBJID), ]
 
-    stat_fun <- function(data, index, w_obj, pseudo_ipd) {
+    stat_fun <- function(data, index, w_obj, pseudo_ipd, normalize) {
       boot_ipd <- data[index, ]
       r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
       if (!is.na(r)) {
         if (!all(index == w_obj$boot[, 1, r])) stop("Bootstrap and weight indices don't match")
         boot_ipd$weights <- w_obj$boot[, 2, r]
+        if (normalize) boot_ipd$weights <- boot_ipd$weights / mean(boot_ipd$weights, na.rm = TRUE)
       }
       boot_dat <- rbind(boot_ipd, pseudo_ipd)
       boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
@@ -444,7 +461,14 @@ maic_unanchored_binary <- function(res,
     on.exit(suspendInterrupts(set_random_seed(old_seed)))
     set_random_seed(weights_object$boot_seed)
     R <- dim(weights_object$boot)[3]
-    boot_res <- boot(boot_ipd, stat_fun, R = R, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
+    boot_res <- boot(
+      boot_ipd,
+      stat_fun,
+      R = R,
+      w_obj = weights_object,
+      pseudo_ipd = pseudo_ipd,
+      normalize = normalize_weight
+    )
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
 
     l_u_index <- switch(boot_ci_type,
