@@ -123,7 +123,7 @@ glm_makeup <- function(binobj, legend = "before matching", weighted = FALSE) {
     type = legend,
     n = N,
     events = N.EVNT,
-    `events%` = N.EVNT.PERC,
+    events_pct = N.EVNT.PERC,
     check.names = FALSE
   )
 }
