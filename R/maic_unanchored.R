@@ -287,7 +287,8 @@ maic_unanchored_tte <- function(res,
       R = R,
       w_obj = weights_object,
       pseudo_ipd = pseudo_ipd,
-      normalize = normalize_weight
+      normalize = normalize_weight,
+      strata = weights_object$boot_strata
     )
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
 
@@ -467,7 +468,8 @@ maic_unanchored_binary <- function(res,
       R = R,
       w_obj = weights_object,
       pseudo_ipd = pseudo_ipd,
-      normalize = normalize_weight
+      normalize = normalize_weight,
+      strata = weights_object$boot_strata
     )
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
 
