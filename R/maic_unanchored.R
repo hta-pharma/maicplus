@@ -231,9 +231,6 @@ maic_unanchored_tte <- function(res,
   coxobj_dat <- coxph(Surv(TIME, EVENT) ~ ARM, dat)
   coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, dat, weights = weights, robust = TRUE)
 
-  res$inferential[["model_before"]] <- coxobj_dat
-  res$inferential[["model_after"]] <- coxobj_dat_adj
-
   # : derive adjusted estimate for ipd exp arm vs agd exp arm
   res_AB$est <- summary(coxobj_dat_adj)$conf.int[1]
   mu <- summary(coxobj_dat_adj)$coef[1]
@@ -300,7 +297,6 @@ maic_unanchored_tte <- function(res,
       "bca" = list(4, 5, "bca")
     )
 
-    res$inferential[["boot_est"]] <- boot_res
     transform_estimate <- exp
     boot_res_AB <- list(
       est = transform_estimate(boot_res$t0[1]),
@@ -312,15 +308,14 @@ maic_unanchored_tte <- function(res,
   } else {
     boot_res_AB <- NULL
     boot_res <- NULL
-    res$inferential[["boot_est"]] <- NULL
   }
 
   # : report all raw fitted obj
   res$inferential[["fit"]] <- list(
-    kmobj_dat = kmobj_dat,
-    kmobj_dat_adj = kmobj_dat_adj,
-    coxobj_dat = coxobj_dat,
-    coxobj_dat_adj = coxobj_dat_adj,
+    km_before = kmobj_dat,
+    km_after = kmobj_dat_adj,
+    model_before = coxobj_dat,
+    model_after = coxobj_dat_adj,
     res_AB = res_AB,
     res_AB_unadj = res_AB_unadj,
     boot_res = boot_res,
@@ -384,9 +379,6 @@ maic_unanchored_binary <- function(res,
   bin_robust_cov <- sandwich::vcovHC(binobj_dat_adj, type = binary_robust_cov_type)
   bin_robust_coef <- lmtest::coeftest(binobj_dat_adj, vcov. = bin_robust_cov)
   bin_robust_ci <- lmtest::coefci(binobj_dat_adj, vcov. = bin_robust_cov)
-
-  res$inferential[["model_before"]] <- binobj_dat
-  res$inferential[["model_after"]] <- binobj_dat_adj
 
   # : make general summary
   glmDesc_dat <- glm_makeup(binobj_dat, legend = "Before matching", weighted = FALSE)
@@ -481,7 +473,6 @@ maic_unanchored_binary <- function(res,
       "bca" = list(4, 5, "bca")
     )
 
-    res$inferential[["boot_est"]] <- boot_res
     boot_res_AB <- list(
       est = transform_estimate(boot_res$t0[1]),
       ci_l = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[1]]]),
@@ -490,15 +481,15 @@ maic_unanchored_binary <- function(res,
     )
   } else {
     boot_res_AB <- NULL
-    res$inferential[["boot_est"]] <- NULL
   }
 
   # : report all raw fitted obj
   res$inferential[["fit"]] <- list(
-    binobj_dat = binobj_dat,
-    binobj_dat_adj = binobj_dat_adj,
+    model_before = binobj_dat,
+    model_after = binobj_dat_adj,
     res_AB = res_AB,
     res_AB_unadj = res_AB_unadj,
+    boot_res = boot_res,
     boot_res_AB = boot_res_AB
   )
 
@@ -506,20 +497,20 @@ maic_unanchored_binary <- function(res,
   res$inferential[["summary"]] <- data.frame(
     case = c("AB", "adjusted_AB"),
     EST = c(
-      res_AB$est,
-      res_AB_unadj$est
+      res_AB_unadj$est,
+      res_AB$est
     ),
     LCL = c(
-      res_AB$ci_l,
-      res_AB_unadj$ci_l
+      res_AB_unadj$ci_l,
+      res_AB$ci_l
     ),
     UCL = c(
-      res_AB$ci_u,
-      res_AB_unadj$ci_u
+      res_AB_unadj$ci_u,
+      res_AB$ci_u
     ),
     pval = c(
-      res_AB$pval,
-      res_AB_unadj$pval
+      res_AB_unadj$pval,
+      res_AB$pval
     )
   )
   names(res$inferential[["summary"]])[2] <- eff_measure
