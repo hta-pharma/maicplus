@@ -41,6 +41,8 @@ from contingency table (for binary endpoint)}
 
 \item{trt_var_agd}{a string, column name in \code{ipd} that contains the treatment assignment}
 
+\item{normalize_weight}{logical, default is \code{FALSE}. If \code{TRUE}, \code{scaled_weights} (normalized weights) in \code{weights_object$data} will be used.}
+
 \item{endpoint_type}{a string, one out of the following "binary", "tte" (time to event)}
 
 \item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
