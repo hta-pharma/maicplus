@@ -306,10 +306,10 @@ maic_anchored_tte <- function(res,
         boot_ipd <- data[w_obj$boot[, 1, r], ]
         boot_ipd$weights <- w_obj$boot[, 2, r]
 
-        if(normalize) {
-          boot_ipd <- split(boot_ipd, f=boot_ipd$ARM)
-          boot_ipd <- lapply(boot_ipd, function(td){
-            td$weights <- td$weights/mean(td$weights, na.rm=TRUE)
+        if (normalize) {
+          boot_ipd <- split(boot_ipd, f = boot_ipd$ARM)
+          boot_ipd <- lapply(boot_ipd, function(td) {
+            td$weights <- td$weights / mean(td$weights, na.rm = TRUE)
             td
           })
           boot_ipd <- do.call(rbind, boot_ipd)
@@ -537,10 +537,10 @@ maic_anchored_binary <- function(res,
         boot_ipd <- data[w_obj$boot[, 1, r], ]
         boot_ipd$weights <- w_obj$boot[, 2, r]
 
-        if(normalize) {
-          boot_ipd <- split(boot_ipd, f=boot_ipd$ARM)
-          boot_ipd <- lapply(boot_ipd, function(td){
-            td$weights <- td$weights/mean(td$weights, na.rm=TRUE)
+        if (normalize) {
+          boot_ipd <- split(boot_ipd, f = boot_ipd$ARM)
+          boot_ipd <- lapply(boot_ipd, function(td) {
+            td$weights <- td$weights / mean(td$weights, na.rm = TRUE)
             td
           })
           boot_ipd <- do.call(rbind, boot_ipd)
