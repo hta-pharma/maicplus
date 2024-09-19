@@ -138,9 +138,9 @@ maic_unanchored <- function(weights_object,
   pseudo_ipd <- pseudo_ipd[pseudo_ipd$ARM == trt_agd, , drop = TRUE]
 
   # : assign weights to real and pseudo ipd
-  if(normalize_weight){
+  if (normalize_weight) {
     ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
-  }else{
+  } else {
     ipd$weights <- weights_object$data$scaled_weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
   }
   pseudo_ipd$weights <- 1
