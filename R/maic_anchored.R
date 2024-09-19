@@ -12,6 +12,7 @@
 #' @param trt_common a string, name of the common comparator in internal and external trial
 #' @param trt_var_ipd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{ipd} that contains the treatment assignment
+#' @param normalize_weight logical, default is \code{FALSE}. If \code{TRUE}, \code{scaled_weights} (normalized weights) in \code{weights_object$data} will be used.
 #' @param endpoint_type a string, one out of the following "binary", "tte" (time to event)
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
@@ -199,6 +200,7 @@ maic_anchored <- function(weights_object,
       time_scale,
       weights_object,
       endpoint_name,
+      normalize_weight,
       trt_ipd,
       trt_agd,
       boot_ci_type
@@ -213,6 +215,7 @@ maic_anchored <- function(weights_object,
       binary_robust_cov_type,
       weights_object,
       endpoint_name,
+      normalize_weight,
       eff_measure,
       trt_ipd,
       trt_agd,
@@ -236,6 +239,7 @@ maic_anchored_tte <- function(res,
                               time_scale,
                               weights_object,
                               endpoint_name,
+                              normalize_weight,
                               trt_ipd,
                               trt_agd,
                               boot_ci_type) {
@@ -295,12 +299,21 @@ maic_anchored_tte <- function(res,
     if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
     boot_ipd <- boot_ipd[match(boot_ipd$USUBJID, boot_ipd_id$USUBJID), ]
 
-    stat_fun <- function(data, index, w_obj) {
+    stat_fun <- function(data, index, w_obj, normalize) {
       r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
       if (!is.na(r)) {
         if (!all(index == w_obj$boot[, 1, r])) stop("Bootstrap and weight indices don't match")
         boot_ipd <- data[w_obj$boot[, 1, r], ]
         boot_ipd$weights <- w_obj$boot[, 2, r]
+
+        if(normalize) {
+          boot_ipd <- split(boot_ipd, f=boot_ipd$ARM)
+          boot_ipd <- lapply(boot_ipd, function(td){
+            td$weights <- td$weights/mean(td$weights, na.rm=TRUE)
+            td
+          })
+          boot_ipd <- do.call(rbind, boot_ipd)
+        }
       }
       boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_ipd, weights = boot_ipd$weights, robust = TRUE)
       boot_res_AC <- list(est = coef(boot_coxobj_dat_adj)[1], se = sqrt(vcov(boot_coxobj_dat_adj)[1, 1]))
@@ -321,7 +334,14 @@ maic_anchored_tte <- function(res,
     set_random_seed(weights_object$boot_seed)
 
     R <- dim(weights_object$boot)[3]
-    boot_res <- boot(boot_ipd, stat_fun, R = R, w_obj = weights_object, strata = weights_object$boot_strata)
+    boot_res <- boot(
+      boot_ipd,
+      stat_fun,
+      R = R,
+      w_obj = weights_object,
+      normalize = normalize_weight,
+      strata = weights_object$boot_strata
+    )
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object)
 
     l_u_index <- switch(boot_ci_type,
@@ -399,6 +419,7 @@ maic_anchored_binary <- function(res,
                                  binary_robust_cov_type,
                                  weights_object,
                                  endpoint_name,
+                                 normalize_weight,
                                  eff_measure,
                                  trt_ipd,
                                  trt_agd,
@@ -509,12 +530,21 @@ maic_anchored_binary <- function(res,
     if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
     boot_ipd <- boot_ipd[match(boot_ipd$USUBJID, boot_ipd_id$USUBJID), ]
 
-    stat_fun <- function(data, index, w_obj, eff_measure) {
+    stat_fun <- function(data, index, w_obj, eff_measure, normalize) {
       r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
       if (!is.na(r)) {
         if (!all(index == w_obj$boot[, 1, r])) stop("Bootstrap and weight indices don't match")
         boot_ipd <- data[w_obj$boot[, 1, r], ]
         boot_ipd$weights <- w_obj$boot[, 2, r]
+
+        if(normalize) {
+          boot_ipd <- split(boot_ipd, f=boot_ipd$ARM)
+          boot_ipd <- lapply(boot_ipd, function(td){
+            td$weights <- td$weights/mean(td$weights, na.rm=TRUE)
+            td
+          })
+          boot_ipd <- do.call(rbind, boot_ipd)
+        }
       }
 
       boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_ipd, weights = boot_ipd$weights, family = glm_link) |> suppressWarnings()
@@ -546,6 +576,7 @@ maic_anchored_binary <- function(res,
       R = R,
       w_obj = weights_object,
       eff_measure = eff_measure,
+      normalize = normalize_weight,
       strata = weights_object$boot_strata
     )
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object)
