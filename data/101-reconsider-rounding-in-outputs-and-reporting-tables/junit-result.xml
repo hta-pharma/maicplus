@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="bucher" timestamp="2024-09-19T19:56:39Z" hostname="343503696fc7" tests="9" skipped="0" failures="1" errors="0" time="0.108">
+  <testsuite name="bucher" timestamp="2024-09-19T20:08:50Z" hostname="e25cabd94afa" tests="9" skipped="0" failures="1" errors="0" time="0.105">
     <testcase time="0.0109999999999999" classname="bucher" name="bucher_works_as_expected"/>
-    <testcase time="0.0430000000000001" classname="bucher" name="bucher_works_when_difference_in_trt_effects_is_positive"/>
+    <testcase time="0.0410000000000001" classname="bucher" name="bucher_works_when_difference_in_trt_effects_is_positive"/>
     <testcase time="0.018" classname="bucher" name="bucher_errors_on_bad_input"/>
     <testcase time="0.00600000000000001" classname="bucher" name="bucher_errors_on_bad_input"/>
+    <testcase time="0.00499999999999989" classname="bucher" name="bucher_errors_on_bad_input"/>
     <testcase time="0.00600000000000001" classname="bucher" name="bucher_errors_on_bad_input"/>
     <testcase time="0.00499999999999989" classname="bucher" name="bucher_errors_on_bad_input"/>
-    <testcase time="0.00500000000000012" classname="bucher" name="bucher_errors_on_bad_input"/>
-    <testcase time="0.00499999999999989" classname="bucher" name="find_SE_from_CI_works_as_expected"/>
+    <testcase time="0.004" classname="bucher" name="find_SE_from_CI_works_as_expected"/>
     <testcase time="0.00900000000000012" classname="bucher" name="bucher_print_works_as_expected">
       <failure type="failure" message="`result` not equal to `expected`. ('test-bucher.R:67:3')">`result` not equal to `expected`.
 1/2 mismatches
@@ -16,22 +16,22 @@ x[1]: "-0.17[-0.61; 0.28]"
 y[1]: "-0.17 [-0.61; 0.28]"</failure>
     </testcase>
   </testsuite>
-  <testsuite name="get_pseudo_ipd_binary" timestamp="2024-09-19T19:56:39Z" hostname="343503696fc7" tests="2" skipped="0" failures="0" errors="0" time="0.05">
+  <testsuite name="get_pseudo_ipd_binary" timestamp="2024-09-19T20:08:50Z" hostname="e25cabd94afa" tests="2" skipped="0" failures="0" errors="0" time="0.051">
     <testcase time="0.0449999999999999" classname="get_pseudo_ipd_binary" name="generate_pseudo_binary_IPD_given_unstacked_table_as_input"/>
-    <testcase time="0.00499999999999989" classname="get_pseudo_ipd_binary" name="generate_pseudo_binary_IPD_given_stacked_table_as_input"/>
+    <testcase time="0.00600000000000001" classname="get_pseudo_ipd_binary" name="generate_pseudo_binary_IPD_given_stacked_table_as_input"/>
   </testsuite>
-  <testsuite name="maic_anchored" timestamp="2024-09-19T19:56:39Z" hostname="343503696fc7" tests="14" skipped="0" failures="12" errors="0" time="0.686">
-    <testcase time="0.0820000000000001" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_robust_SE"/>
-    <testcase time="0.002" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_robust_SE"/>
-    <testcase time="0.00500000000000012" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_robust_SE">
+  <testsuite name="maic_anchored" timestamp="2024-09-19T20:08:50Z" hostname="e25cabd94afa" tests="14" skipped="0" failures="12" errors="0" time="0.666">
+    <testcase time="0.079" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_robust_SE"/>
+    <testcase time="0.00300000000000011" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_robust_SE"/>
+    <testcase time="0.004" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_robust_SE">
       <failure type="failure" message="result$inferential$report_median_surv$rmean not equal to c(...). ('test-maic_anchored.R:34:3')">result$inferential$report_median_surv$rmean not equal to c(...).
 target is NULL, current is numeric</failure>
     </testcase>
-    <testcase time="0.0189999999999999" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_robust_SE">
+    <testcase time="0.02" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_robust_SE">
       <failure type="failure" message="result$inferential$report_median_surv$`se(rmean)` not equal to c(...). ('test-maic_anchored.R:41:3')">result$inferential$report_median_surv$`se(rmean)` not equal to c(...).
 target is NULL, current is numeric</failure>
     </testcase>
-    <testcase time="0.0129999999999999" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_robust_SE">
+    <testcase time="0.012" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_robust_SE">
       <failure type="failure" message="result$inferential$report_overall_robustCI$`median[95% CI]` not equal to c(...). ('test-maic_anchored.R:48:3')">result$inferential$report_overall_robustCI$`median[95% CI]` not equal to c(...).
 target is NULL, current is character</failure>
     </testcase>
@@ -39,40 +39,40 @@ target is NULL, current is character</failure>
       <failure type="failure" message="result$inferential$report_overall_robustCI$`HR[95% CI]` not equal to c(...). ('test-maic_anchored.R:52:3')">result$inferential$report_overall_robustCI$`HR[95% CI]` not equal to c(...).
 target is NULL, current is character</failure>
     </testcase>
-    <testcase time="0.103" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_bootstrap_SE">
+    <testcase time="0.101" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_bootstrap_SE">
       <failure type="failure" message="result$inferential$report_overall_bootCI$`median[95% CI]` not equal to c(...). ('test-maic_anchored.R:90:3')">result$inferential$report_overall_bootCI$`median[95% CI]` not equal to c(...).
 target is NULL, current is character</failure>
     </testcase>
-    <testcase time="0.0130000000000001" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_bootstrap_SE">
+    <testcase time="0.0129999999999999" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_bootstrap_SE">
       <failure type="failure" message="result$inferential$report_overall_bootCI$`HR[95% CI]` not equal to c(...). ('test-maic_anchored.R:94:3')">result$inferential$report_overall_bootCI$`HR[95% CI]` not equal to c(...).
 target is NULL, current is character</failure>
     </testcase>
-    <testcase time="0.014" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_bootstrap_SE">
+    <testcase time="0.012" classname="maic_anchored" name="maic_anchored_works_for_TTE_using_bootstrap_SE">
       <failure type="failure" message="result$inferential$boot_est$t not equal to `t_matrix_expected`. ('test-maic_anchored.R:110:3')">result$inferential$boot_est$t not equal to `t_matrix_expected`.
 target is NULL, current is matrix</failure>
     </testcase>
-    <testcase time="0.372" classname="maic_anchored" name="maic_anchored_for_binary_case_gives_the_expected_result">
+    <testcase time="0.36" classname="maic_anchored" name="maic_anchored_for_binary_case_gives_the_expected_result">
       <failure type="failure" message="`... &lt;- NULL` did not produce any warnings. ('test-maic_anchored.R:129:3')">`... &lt;- NULL` did not produce any warnings.</failure>
     </testcase>
     <testcase time="0.0129999999999999" classname="maic_anchored" name="maic_anchored_for_binary_case_gives_the_expected_result">
       <failure type="failure" message="result$inferential$report_overall_robustCI$`OR[95% CI]` not equal to c(...). ('test-maic_anchored.R:146:3')">result$inferential$report_overall_robustCI$`OR[95% CI]` not equal to c(...).
 target is NULL, current is character</failure>
     </testcase>
-    <testcase time="0.0129999999999999" classname="maic_anchored" name="maic_anchored_for_binary_case_gives_the_expected_result">
+    <testcase time="0.012" classname="maic_anchored" name="maic_anchored_for_binary_case_gives_the_expected_result">
       <failure type="failure" message="result$inferential$report_overall_robustCI$`n.events(%)` not equal to c(...). ('test-maic_anchored.R:150:3')">result$inferential$report_overall_robustCI$`n.events(%)` not equal to c(...).
 target is NULL, current is character</failure>
     </testcase>
-    <testcase time="0.012" classname="maic_anchored" name="maic_anchored_for_binary_case_gives_the_expected_result">
+    <testcase time="0.0129999999999999" classname="maic_anchored" name="maic_anchored_for_binary_case_gives_the_expected_result">
       <failure type="failure" message="result$inferential$report_overall_robustCI$N not equal to c(&quot;500&quot;, &quot;500&quot;, &quot;500&quot;, &quot;500&quot;, &quot;480&quot;, &quot;320&quot;, &quot;--&quot;). ('test-maic_anchored.R:154:3')">result$inferential$report_overall_robustCI$N not equal to c("500", "500", "500", "500", "480", "320", "--").
 target is NULL, current is character</failure>
     </testcase>
-    <testcase time="0.0129999999999999" classname="maic_anchored" name="maic_anchored_for_binary_case_gives_the_expected_result">
+    <testcase time="0.012" classname="maic_anchored" name="maic_anchored_for_binary_case_gives_the_expected_result">
       <failure type="failure" message="result$inferential$report_overall_bootCI$`OR[95% CI]` not equal to c(...). ('test-maic_anchored.R:158:3')">result$inferential$report_overall_bootCI$`OR[95% CI]` not equal to c(...).
 target is NULL, current is character</failure>
     </testcase>
   </testsuite>
-  <testsuite name="maic_unanchored" timestamp="2024-09-19T19:56:40Z" hostname="343503696fc7" tests="16" skipped="0" failures="10" errors="0" time="3.298">
-    <testcase time="0.195" classname="maic_unanchored" name="test_binary_case">
+  <testsuite name="maic_unanchored" timestamp="2024-09-19T20:08:51Z" hostname="e25cabd94afa" tests="16" skipped="0" failures="12" errors="0" time="3.089">
+    <testcase time="0.184" classname="maic_unanchored" name="test_binary_case">
       <failure type="failure" message="testout$descriptive not equal to expectout$descriptive. ('test-maic_unanchored.R:73:3')">testout$descriptive not equal to expectout$descriptive.
 names for target but not for current
 Length mismatch: comparison on first 0 components</failure>
@@ -81,33 +81,51 @@ Length mismatch: comparison on first 0 components</failure>
       <failure type="failure" message="testout$inferential not equal to expectout$inferential. ('test-maic_unanchored.R:74:3')">testout$inferential not equal to expectout$inferential.
 Names: 1 string mismatch
 Length mismatch: comparison on first 3 components
-Component 3: Names: 5 string mismatches
-Component 3: Attributes: &lt; names for current but not for target &gt;
-Component 3: Attributes: &lt; Length mismatch: comparison on first 0 components &gt;
-Component 3: Length mismatch: comparison on first 5 components
-Component 3: Component 1: Modes: list, character
-Component 3: Component 1: names for target but not for current
-Component 3: Component 1: Attributes: &lt; Modes: list, NULL &gt;
+Component "model_before": Component "data": Component "weights": Mean relative difference: 0.6011471
+Component "model_after": Component "effects": Mean relative difference: 0.1757257
+Component "model_after": Component "R": Mean relative difference: 0.2835928
+Component "model_after": Component "qr": Component "qr": Mean relative difference: 0.2528719
+Component "model_after": Component "qr": Component "qraux": Mean relative difference: 0.005028504
+Component "model_after": Component "deviance": Mean relative difference: 0.3273709
+Component "model_after": Component "aic": Mean relative difference: 0.3340802
 ...</failure>
     </testcase>
-    <testcase time="0.02" classname="maic_unanchored" name="test_binary_case"/>
-    <testcase time="0.0110000000000001" classname="maic_unanchored" name="test_binary_case"/>
-    <testcase time="0.00499999999999989" classname="maic_unanchored" name="test_binary_case">
+    <testcase time="0.0209999999999999" classname="maic_unanchored" name="test_binary_case">
+      <failure type="failure" message="testout$inferential$model_before not equal to expectout$inferential$model_before. ('test-maic_unanchored.R:75:3')">testout$inferential$model_before not equal to expectout$inferential$model_before.
+Component "data": Component "weights": Mean relative difference: 0.6011471</failure>
+    </testcase>
+    <testcase time="0.0210000000000004" classname="maic_unanchored" name="test_binary_case">
+      <failure type="failure" message="testout$inferential$model_after not equal to expectout$inferential$model_after. ('test-maic_unanchored.R:76:3')">testout$inferential$model_after not equal to expectout$inferential$model_after.
+Component "effects": Mean relative difference: 0.1757257
+Component "R": Mean relative difference: 0.2835928
+Component "qr": Component "qr": Mean relative difference: 0.2528719
+Component "qr": Component "qraux": Mean relative difference: 0.005028504
+Component "deviance": Mean relative difference: 0.3273709
+Component "aic": Mean relative difference: 0.3340802
+Component "null.deviance": Mean relative difference: 0.3273851
+Component "weights": Mean relative difference: 0.3374321
+Component "prior.weights": Mean relative difference: 0.6011471
+...</failure>
+    </testcase>
+    <testcase time="0.012" classname="maic_unanchored" name="test_binary_case">
       <failure type="failure" message="testout2$descriptive not equal to expectout2$descriptive. ('test-maic_unanchored.R:79:3')">testout2$descriptive not equal to expectout2$descriptive.
 names for target but not for current
 Length mismatch: comparison on first 0 components</failure>
     </testcase>
-    <testcase time="0.0110000000000001" classname="maic_unanchored" name="test_binary_case"/>
+    <testcase time="0.0089999999999999" classname="maic_unanchored" name="test_binary_case"/>
     <testcase time="0.00199999999999978" classname="maic_unanchored" name="test_binary_case"/>
     <testcase time="0.004" classname="maic_unanchored" name="test_binary_case">
       <failure type="failure" message="testout2$inferential$report_overall_bootCI not equal to expectout2$inferential$report_overall_bootCI. ('test-maic_unanchored.R:82:3')">testout2$inferential$report_overall_bootCI not equal to expectout2$inferential$report_overall_bootCI.
 target is NULL, current is data.frame</failure>
     </testcase>
-    <testcase time="2.939" classname="maic_unanchored" name="test_time_to_event_case">
+    <testcase time="2.734" classname="maic_unanchored" name="test_time_to_event_case">
       <failure type="failure" message="testout$descriptive not equal to expectout$descriptive. ('test-maic_unanchored.R:153:3')">testout$descriptive not equal to expectout$descriptive.
-Length mismatch: comparison on first 2 components</failure>
+Length mismatch: comparison on first 2 components
+Component "survfit_after": Component "A": Component "n.risk": Mean relative difference: 0.6011471
+Component "survfit_after": Component "A": Component "n.event": Mean relative difference: 0.6011471
+Component "survfit_after": Component "A": Component "censor": Mean relative difference: 0.6011471</failure>
     </testcase>
-    <testcase time="0.0179999999999998" classname="maic_unanchored" name="test_time_to_event_case">
+    <testcase time="0.016" classname="maic_unanchored" name="test_time_to_event_case">
       <failure type="failure" message="testout$inferential not equal to expectout$inferential. ('test-maic_unanchored.R:154:3')">testout$inferential not equal to expectout$inferential.
 Names: 4 string mismatches
 Component 1: Names: 11 string mismatches
@@ -120,7 +138,7 @@ Component 1: Component 1: names for target but not for current
 Component 1: Component 1: target is numeric, current is character
 ...</failure>
     </testcase>
-    <testcase time="0.0130000000000008" classname="maic_unanchored" name="test_time_to_event_case">
+    <testcase time="0.0119999999999996" classname="maic_unanchored" name="test_time_to_event_case">
       <failure type="failure" message="testout$inferential$model_before not equal to expectout$inferential$model_before. ('test-maic_unanchored.R:155:3')">testout$inferential$model_before not equal to expectout$inferential$model_before.
 Modes: list, NULL
 Lengths: 21, 0
@@ -131,7 +149,7 @@ Attributes: &lt; names for target but not for current &gt;
 Attributes: &lt; current is not list-like &gt;
 current is not list-like</failure>
     </testcase>
-    <testcase time="0.0139999999999993" classname="maic_unanchored" name="test_time_to_event_case">
+    <testcase time="0.0120000000000005" classname="maic_unanchored" name="test_time_to_event_case">
       <failure type="failure" message="testout$inferential$model_after not equal to expectout$inferential$model_after. ('test-maic_unanchored.R:156:3')">testout$inferential$model_after not equal to expectout$inferential$model_after.
 Modes: list, NULL
 Lengths: 24, 0
@@ -142,96 +160,99 @@ Attributes: &lt; names for target but not for current &gt;
 Attributes: &lt; current is not list-like &gt;
 current is not list-like</failure>
     </testcase>
-    <testcase time="0.016" classname="maic_unanchored" name="test_time_to_event_case">
+    <testcase time="0.0139999999999993" classname="maic_unanchored" name="test_time_to_event_case">
       <failure type="failure" message="testout2$descriptive not equal to expectout2$descriptive. ('test-maic_unanchored.R:159:3')">testout2$descriptive not equal to expectout2$descriptive.
-Length mismatch: comparison on first 2 components</failure>
+Length mismatch: comparison on first 2 components
+Component "survfit_after": Component "A": Component "n.risk": Mean relative difference: 0.6011471
+Component "survfit_after": Component "A": Component "n.event": Mean relative difference: 0.6011471
+Component "survfit_after": Component "A": Component "censor": Mean relative difference: 0.6011471</failure>
     </testcase>
-    <testcase time="0.0110000000000001" classname="maic_unanchored" name="test_time_to_event_case"/>
-    <testcase time="0.00100000000000033" classname="maic_unanchored" name="test_time_to_event_case"/>
-    <testcase time="0.00499999999999989" classname="maic_unanchored" name="test_time_to_event_case">
+    <testcase time="0.0100000000000007" classname="maic_unanchored" name="test_time_to_event_case"/>
+    <testcase time="0.000999999999999446" classname="maic_unanchored" name="test_time_to_event_case"/>
+    <testcase time="0.00400000000000045" classname="maic_unanchored" name="test_time_to_event_case">
       <failure type="failure" message="testout2$inferential$report_overall_bootCI not equal to expectout2$inferential$report_overall_bootCI. ('test-maic_unanchored.R:162:3')">testout2$inferential$report_overall_bootCI not equal to expectout2$inferential$report_overall_bootCI.
 target is NULL, current is data.frame</failure>
     </testcase>
   </testsuite>
-  <testsuite name="matching" timestamp="2024-09-19T19:56:43Z" hostname="343503696fc7" tests="26" skipped="0" failures="0" errors="0" time="0.202">
-    <testcase time="0.0169999999999995" classname="matching" name="ess_footnote_text_works"/>
-    <testcase time="0.00500000000000078" classname="matching" name="calculate_weights_legend_works"/>
-    <testcase time="0.00599999999999934" classname="matching" name="optimise_weights_works_as_expected"/>
-    <testcase time="0.00100000000000033" classname="matching" name="optimise_weights_works_as_expected"/>
+  <testsuite name="matching" timestamp="2024-09-19T20:08:54Z" hostname="e25cabd94afa" tests="26" skipped="0" failures="0" errors="0" time="0.186">
+    <testcase time="0.0149999999999997" classname="matching" name="ess_footnote_text_works"/>
+    <testcase time="0.00400000000000045" classname="matching" name="calculate_weights_legend_works"/>
+    <testcase time="0.00499999999999989" classname="matching" name="optimise_weights_works_as_expected"/>
     <testcase time="0.00199999999999978" classname="matching" name="optimise_weights_works_as_expected"/>
-    <testcase time="0.00999999999999979" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.00200000000000067" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00100000000000033" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.00899999999999945" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00199999999999978" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00100000000000033" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00100000000000033" classname="matching" name="estimate_weights_works_as_expected"/>
     <testcase time="0.000999999999999446" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.00100000000000033" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.00100000000000033" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.00299999999999923" classname="matching" name="estimate_weights_works_as_expected"/>
-    <testcase time="0.016" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
-    <testcase time="0.00200000000000067" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00300000000000011" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.0150000000000006" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
     <testcase time="0.000999999999999446" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
     <testcase time="0.00100000000000033" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
-    <testcase time="0.00699999999999967" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00600000000000023" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.000999999999999446" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
     <testcase time="0.00100000000000033" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
     <testcase time="0.00199999999999978" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
-    <testcase time="0.101" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
+    <testcase time="0.0940000000000003" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
+    <testcase time="0.00199999999999978" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
     <testcase time="0.00100000000000033" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
     <testcase time="0.000999999999999446" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
-    <testcase time="0.00200000000000067" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
-    <testcase time="0.000999999999999446" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
+    <testcase time="0.00100000000000033" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
     <testcase time="0.00300000000000011" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
     <testcase time="0.00800000000000001" classname="matching" name="estimate_weights_prints_errors_about_convergence"/>
-    <testcase time="0.00600000000000023" classname="matching" name="estimate_weights_prints_errors_about_convergence"/>
+    <testcase time="0.00499999999999989" classname="matching" name="estimate_weights_prints_errors_about_convergence"/>
   </testsuite>
-  <testsuite name="plot_km" timestamp="2024-09-19T19:56:43Z" hostname="343503696fc7" tests="16" skipped="7" failures="0" errors="0" time="1.004">
-    <testcase time="0.0709999999999997" classname="plot_km" name="kmplot_works_by_trial"/>
-    <testcase time="0.0550000000000006" classname="plot_km" name="kmplot_works_by_trial">
+  <testsuite name="plot_km" timestamp="2024-09-19T20:08:54Z" hostname="e25cabd94afa" tests="16" skipped="7" failures="0" errors="0" time="0.946">
+    <testcase time="0.0679999999999996" classname="plot_km" name="kmplot_works_by_trial"/>
+    <testcase time="0.0529999999999999" classname="plot_km" name="kmplot_works_by_trial">
       <skipped message="Reason: On CRAN ('test-plot_km.R:26:3')"/>
     </testcase>
-    <testcase time="0.0579999999999998" classname="plot_km" name="kmplot_works_all"/>
-    <testcase time="0.0499999999999998" classname="plot_km" name="kmplot_works_all">
+    <testcase time="0.0550000000000006" classname="plot_km" name="kmplot_works_all"/>
+    <testcase time="0.0469999999999997" classname="plot_km" name="kmplot_works_all">
       <skipped message="Reason: On CRAN ('test-plot_km.R:57:3')"/>
     </testcase>
-    <testcase time="0.0700000000000003" classname="plot_km" name="kmplot_works_by_arm"/>
-    <testcase time="0.0459999999999994" classname="plot_km" name="kmplot_works_by_arm">
+    <testcase time="0.0640000000000001" classname="plot_km" name="kmplot_works_by_arm"/>
+    <testcase time="0.0419999999999998" classname="plot_km" name="kmplot_works_by_arm">
       <skipped message="Reason: On CRAN ('test-plot_km.R:86:3')"/>
     </testcase>
-    <testcase time="0.151000000000001" classname="plot_km" name="ph_diagplot_works_for_anchored_data"/>
-    <testcase time="0.130999999999999" classname="plot_km" name="ph_diagplot_works_for_anchored_data">
+    <testcase time="0.149" classname="plot_km" name="ph_diagplot_works_for_anchored_data"/>
+    <testcase time="0.133999999999999" classname="plot_km" name="ph_diagplot_works_for_anchored_data">
       <skipped message="Reason: On CRAN ('test-plot_km.R:113:3')"/>
     </testcase>
-    <testcase time="0.134" classname="plot_km" name="ph_diagplot_works_for_unanchored_data"/>
-    <testcase time="0.129" classname="plot_km" name="ph_diagplot_works_for_unanchored_data">
+    <testcase time="0.116000000000001" classname="plot_km" name="ph_diagplot_works_for_unanchored_data"/>
+    <testcase time="0.116" classname="plot_km" name="ph_diagplot_works_for_unanchored_data">
       <skipped message="Reason: On CRAN ('test-plot_km.R:152:3')"/>
     </testcase>
-    <testcase time="0.0440000000000005" classname="plot_km" name="ph_diagplot_lch_works_without_error"/>
-    <testcase time="0.00199999999999978" classname="plot_km" name="ph_diagplot_lch_works_without_error"/>
-    <testcase time="0.00800000000000001" classname="plot_km" name="ph_diagplot_lch_works_without_error">
+    <testcase time="0.0410000000000004" classname="plot_km" name="ph_diagplot_lch_works_without_error"/>
+    <testcase time="0.000999999999999446" classname="plot_km" name="ph_diagplot_lch_works_without_error"/>
+    <testcase time="0.00700000000000056" classname="plot_km" name="ph_diagplot_lch_works_without_error">
       <skipped message="Reason: On CRAN ('test-plot_km.R:190:3')"/>
     </testcase>
-    <testcase time="0.032" classname="plot_km" name="ph_diagplot_schoenfeld_works_without_error"/>
+    <testcase time="0.0359999999999996" classname="plot_km" name="ph_diagplot_schoenfeld_works_without_error"/>
     <testcase time="0.00199999999999978" classname="plot_km" name="ph_diagplot_schoenfeld_works_without_error"/>
-    <testcase time="0.0209999999999999" classname="plot_km" name="ph_diagplot_schoenfeld_works_without_error">
+    <testcase time="0.0150000000000006" classname="plot_km" name="ph_diagplot_schoenfeld_works_without_error">
       <skipped message="Reason: On CRAN ('test-plot_km.R:218:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="plot_km2" timestamp="2024-09-19T19:56:44Z" hostname="343503696fc7" tests="1" skipped="1" failures="0" errors="0" time="1.855">
-    <testcase time="1.855" classname="plot_km2" name="kmplot2_works">
+  <testsuite name="plot_km2" timestamp="2024-09-19T20:08:55Z" hostname="e25cabd94afa" tests="1" skipped="1" failures="0" errors="0" time="1.702">
+    <testcase time="1.702" classname="plot_km2" name="kmplot2_works">
       <skipped message="Reason: On CRAN ('test-plot_km2.R:9:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="time-helper" timestamp="2024-09-19T19:56:46Z" hostname="343503696fc7" tests="10" skipped="0" failures="0" errors="0" time="0.034">
-    <testcase time="0.016" classname="time_helper" name="setting_time_factors_works"/>
+  <testsuite name="time-helper" timestamp="2024-09-19T20:08:57Z" hostname="e25cabd94afa" tests="10" skipped="0" failures="0" errors="0" time="0.036">
+    <testcase time="0.0190000000000001" classname="time_helper" name="setting_time_factors_works"/>
+    <testcase time="0.00199999999999889" classname="time_helper" name="setting_time_factors_works"/>
     <testcase time="0.00100000000000122" classname="time_helper" name="setting_time_factors_works"/>
     <testcase time="0.000999999999999446" classname="time_helper" name="setting_time_factors_works"/>
-    <testcase time="0.00200000000000067" classname="time_helper" name="setting_time_factors_works"/>
     <testcase time="0.000999999999999446" classname="time_helper" name="setting_time_factors_works"/>
     <testcase time="0.000999999999999446" classname="time_helper" name="setting_time_factors_works"/>
-    <testcase time="0.00200000000000067" classname="time_helper" name="setting_time_factors_works"/>
     <testcase time="0.000999999999999446" classname="time_helper" name="setting_time_factors_works"/>
-    <testcase time="0.00500000000000078" classname="time_helper" name="setting_time_factors_works"/>
+    <testcase time="0.00100000000000122" classname="time_helper" name="setting_time_factors_works"/>
+    <testcase time="0.00499999999999901" classname="time_helper" name="setting_time_factors_works"/>
     <testcase time="0.00399999999999956" classname="time_helper" name="setting_time_factors_works"/>
   </testsuite>
-  <testsuite name="utils" timestamp="2024-09-19T19:56:46Z" hostname="343503696fc7" tests="2" skipped="0" failures="0" errors="0" time="0.007">
-    <testcase time="0.00600000000000023" classname="utils" name="set_random_seed_works"/>
-    <testcase time="0.00100000000000122" classname="utils" name="set_random_seed_works"/>
+  <testsuite name="utils" timestamp="2024-09-19T20:08:57Z" hostname="e25cabd94afa" tests="2" skipped="0" failures="0" errors="0" time="0.006">
+    <testcase time="0.00500000000000078" classname="utils" name="set_random_seed_works"/>
+    <testcase time="0.000999999999999446" classname="utils" name="set_random_seed_works"/>
   </testsuite>
 </testsuites>
