@@ -86,14 +86,25 @@ get_pseudo_ipd_binary <- function(binary_agd, format = c("stacked", "unstacked")
 }
 
 
-#' Title
+#' Helper function to summarize outputs from glm fit
 #'
-#' @param binobj
-#' @param legend
-#' @param weighted
-#'
-#' @return a dataframe
-#' @export
+#' @param binobj returned object from \code{stats::glm}
+#' @param legend label to indicate the binary fit
+#' @param weighted logical flag indicating whether weights have been applied in the glm fit
+#' @examples
+#' data(adrs_sat)
+#' pseudo_adrs <- get_pseudo_ipd_binary(
+#' binary_agd = data.frame(
+#' ARM = rep("B", 2),
+#' RESPONSE = c("YES", "NO"),
+#' COUNT = c(280, 120)
+#' ),
+#' format = "stacked")
+#' pseudo_adrs$RESPONSE <- as.numeric(pseudo_adrs$RESPONSE)
+#' combined_data <- rbind(adrs_sat[,c("USUBJID", "ARM", "RESPONSE")], pseudo_adrs)
+#' combined_data$ARM <- as.factor(combined_data$ARM)
+#' binobj_dat <- stats::glm(RESPONSE ~ ARM, combined_data, family = binomial("logit"))
+#' glm_makeup(binobj_dat)
 
 glm_makeup <- function(binobj, legend = "before matching", weighted = FALSE) {
   ARM <- levels(binobj$data$ARM)
