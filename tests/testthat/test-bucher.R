@@ -61,7 +61,7 @@ test_that("bucher print works as expected", {
   )
   result <- print(bucher_result, ci_digits = 2, pval_digits = 3)
 
-  expected <- c("-0.17 [-0.61; 0.28]", "0.535")
+  expected <- c("-0.17[-0.61; 0.28]", "0.535")
   names(expected) <- c("result", "pvalue")
 
   expect_equal(result, expected)

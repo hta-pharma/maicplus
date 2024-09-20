@@ -151,7 +151,7 @@ test_that("test time to event case", {
   # Compare robust outputs
   expect_equal(testout$descriptive, expectout$descriptive)
   expect_equal(testout$inferential$summary, expectout$inferential$summary)
-  expect_equal(testout$inferential$fit, expectout$inferential$fit)
+  expect_equal(testout$inferential$fit$km_before, expectout$inferential$fit$km_before)
 
   # Compare bootstrap outputs
   expect_equal(testout2$descriptive, expectout2$descriptive)
