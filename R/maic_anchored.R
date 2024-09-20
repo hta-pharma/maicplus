@@ -12,7 +12,7 @@
 #' @param trt_common a string, name of the common comparator in internal and external trial
 #' @param trt_var_ipd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{ipd} that contains the treatment assignment
-#' @param normalize_weight logical, default is \code{FALSE}. If \code{TRUE}, 
+#' @param normalize_weight logical, default is \code{FALSE}. If \code{TRUE},
 #'   \code{scaled_weights} (normalized weights) in \code{weights_object$data} will be used.
 #' @param endpoint_type a string, one out of the following "binary", "tte" (time to event)
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
@@ -258,9 +258,10 @@ maic_anchored_tte <- function(res,
   medSurv_ipd_adj <- medSurv_makeup(kmobj_ipd_adj, legend = "IPD, after matching", time_scale = time_scale)
   medSurv_agd <- medSurv_makeup(kmobj_agd, legend = "AgD, external", time_scale = time_scale)
   medSurv_out <- rbind(medSurv_ipd, medSurv_ipd_adj, medSurv_agd)
-  medSurv_out <- cbind(medSurv_out[, 1:6], 
-                       `events%` = medSurv_out$events * 100 / medSurv_out$n.max, 
-                       medSurv_out[7:ncol(medSurv_out)])
+  medSurv_out <- cbind(medSurv_out[, 1:6],
+    `events%` = medSurv_out$events * 100 / medSurv_out$n.max,
+    medSurv_out[7:ncol(medSurv_out)]
+  )
   medSurv_out <- cbind(trt_ind = c("C", "B", "A")[match(medSurv_out$treatment, levels(dat$ARM))], medSurv_out)
 
   res$descriptive[["summary"]] <- medSurv_out
@@ -546,9 +547,10 @@ maic_anchored_binary <- function(res,
         }
       }
 
-      boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_ipd, 
-                                 weights = boot_ipd$weights, 
-                                 family = glm_link) |> suppressWarnings()
+      boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_ipd,
+        weights = boot_ipd$weights,
+        family = glm_link
+      ) |> suppressWarnings()
       boot_AC_est <- coef(boot_binobj_dat_adj)[2]
       boot_AC_var <- vcov(boot_binobj_dat_adj)[2, 2]
 
