@@ -152,7 +152,7 @@ test_that("test time to event case", {
   expect_equal(testout$descriptive, expectout$descriptive)
   expect_equal(testout$inferential$summary, expectout$inferential$summary)
   expect_equal(testout$inferential$fit, expectout$inferential$fit)
-  
+
   # Compare bootstrap outputs
   expect_equal(testout2$descriptive, expectout2$descriptive)
   expect_equal(testout2$inferential$fit$boot_est["t"], expectout2$inferential$fit$boot_est["t"])
