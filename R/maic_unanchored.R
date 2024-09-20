@@ -139,9 +139,9 @@ maic_unanchored <- function(weights_object,
 
   # : assign weights to real and pseudo ipd
   if (normalize_weight) {
-    ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
-  } else {
     ipd$weights <- weights_object$data$scaled_weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+  } else {
+    ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]    
   }
   pseudo_ipd$weights <- 1
 
@@ -243,7 +243,7 @@ maic_unanchored_tte <- function(res,
   # : derive unadjusted estimate
   res_AB_unadj$est <- summary(coxobj_dat)$conf.int[1]
   mu <- summary(coxobj_dat)$coef[1]
-  sig <- summary(coxobj_dat)$coef[4]
+  sig <- summary(coxobj_dat)$coef[3]
   res_AB_unadj$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parametrization
   res_AB_unadj$ci_l <- summary(coxobj_dat)$conf.int[3]
   res_AB_unadj$ci_u <- summary(coxobj_dat)$conf.int[4]
