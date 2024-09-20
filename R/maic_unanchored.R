@@ -481,6 +481,7 @@ maic_unanchored_binary <- function(res,
     )
   } else {
     boot_res_AB <- NULL
+    boot_res <- NULL
   }
 
   # : report all raw fitted obj

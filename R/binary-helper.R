@@ -106,6 +106,8 @@ get_pseudo_ipd_binary <- function(binary_agd, format = c("stacked", "unstacked")
 #' combined_data$ARM <- as.factor(combined_data$ARM)
 #' binobj_dat <- stats::glm(RESPONSE ~ ARM, combined_data, family = binomial("logit"))
 #' glm_makeup(binobj_dat)
+#' @export
+
 glm_makeup <- function(binobj, legend = "before matching", weighted = FALSE) {
   ARM <- levels(binobj$data$ARM)
   if (!weighted) {
