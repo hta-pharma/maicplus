@@ -278,8 +278,10 @@ maic_anchored_tte <- function(res,
   if (is.null(res_BC)) res_BC <- as.list(summary(coxobj_agd)$coef)[c(1, 3)] # est, se
 
   names(res_AC_unadj) <- names(res_AC) <- names(res_BC) <- c("est", "se")
-  res_AC_unadj <- c(res_AC_unadj, list(pval = summary(coxobj_ipd)$waldtest[3]))
-
+  res_AC_unadj <- c(res_AC_unadj, list(pval = as.vector(summary(coxobj_ipd)$waldtest[3])))
+  res_AC <- c(res_AC, list(pval = as.vector(summary(coxobj_ipd_adj)$waldtest[3])))
+  res_BC <- c(res_BC, list(pval = as.vector(summary(coxobj_agd)$waldtest[3])))
+  
   res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
   res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
 
