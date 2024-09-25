@@ -96,6 +96,40 @@ test_that("estimate_weights works as expected with bootstrapping", {
 })
 
 
+test_that("estimate_weights works as expected with alternative bootstrap strata", {
+  load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
+  load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
+  ipd_centered <- center_ipd(ipd = ipd, agd = agd)
+  centered_colnames <- paste0(c("AGE", "AGE_SQUARED", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN"), "_CENTERED")
+  expect_output(
+    result <- estimate_weights(
+      data = ipd_centered,
+      centered_colnames = centered_colnames,
+      n_boot_iteration = 3,
+      set_seed = 999,
+      trace = 2,
+      boot_strata = c("ARM", "SEX")
+    ),
+    "converged"
+  )
+
+  expect_s3_class(result, "maicplus_estimate_weights")
+  expect_equal(sum(result$data$weights), 206.83843133)
+
+  expect_error(
+    result <- estimate_weights(
+      data = ipd_centered,
+      centered_colnames = centered_colnames,
+      n_boot_iteration = 3,
+      set_seed = 999,
+      trace = 2,
+      boot_strata = "FISH"
+    ),
+    "boot_strata are not in data"
+  )
+})
+
+
 test_that("estimate_weights works when the input is a tibble", {
   skip_if_not_installed("tibble")
   load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))

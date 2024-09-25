@@ -12,6 +12,7 @@ estimate_weights(
   method = "BFGS",
   n_boot_iteration = NULL,
   set_seed_boot = 1234,
+  boot_strata = "ARM",
   ...
 )
 
@@ -42,6 +43,10 @@ procedure will not be triggered, and hence the element \code{"boot"} of output l
 \item{set_seed_boot}{a scalar, the random seed for conducting the bootstrapping, only relevant if
 \code{n_boot_iteration} is not NULL. By default, use seed 1234}
 
+\item{boot_strata}{a character vector of column names in \code{data} that defines the strata for bootstrapping.
+This ensures that samples are drawn proportionally from each defined stratum. If \code{NULL},
+no stratification during bootstrapping process. By default, it is "ARM"}
+
 \item{...}{Additional \code{control} parameters passed to \link[stats:optim]{stats::optim}.}
 
 \item{x}{object from \link{estimate_weights}}
@@ -69,6 +74,8 @@ effect modifiers}
 modifiers}
 \item{ess}{effective sample size, square of sum divided by sum of squares}
 \item{opt}{R object returned by \code{base::optim()}, for assess convergence and other details}
+\item{boot_strata}{'strata' from a boot::boot object}
+\item{boot_seed}{column names in \code{data} of the stratification factors}
 \item{boot}{a n by 2 by k array or NA, where n equals to number of rows in \code{data}, and k equals
 \code{n_boot_iteration}. The 2 columns in the second dimension include a column of numeric indexes of the rows
 in \code{data} that are selected at a bootstrapping iteration and a column of weights. \code{boot} is NA when
