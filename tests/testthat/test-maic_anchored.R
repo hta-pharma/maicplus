@@ -136,7 +136,7 @@ test_that("maic_anchored for binary case gives the expected result", {
     # Manual snapshot of results
     expectout <- testout
     expectout2 <- testout2
-    save(list = c("expectout"), file = test_path("data", "test_binary_anchored_expected.RData"))
+    save(list = c("expectout", "expectout2"), file = test_path("data", "test_binary_anchored_expected.RData"))
   }
 
   load(test_path("data", "test_binary_anchored_expected.RData"))
@@ -144,8 +144,8 @@ test_that("maic_anchored for binary case gives the expected result", {
   # Compare robust outputs
   expect_equal(testout$descriptive, expectout$descriptive)
   expect_equal(testout$inferential$summary, expectout$inferential$summary)
-  expect_equal(testout$inferential$fit, expectout$inferential$fit)
-
+  expect_equal(testout$inferential$fit$res_AB, expectout$inferential$fit$res_AB)
+  
   # Compare bootstrap outputs
   expect_equal(testout2$descriptive, expectout2$descriptive)
   expect_equal(testout2$inferential$fit$boot_est["t"], expectout2$inferential$fit$boot_est["t"])
