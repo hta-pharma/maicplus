@@ -145,7 +145,7 @@ test_that("maic_anchored for binary case gives the expected result", {
   expect_equal(testout$descriptive, expectout$descriptive)
   expect_equal(testout$inferential$summary, expectout$inferential$summary)
   expect_equal(testout$inferential$fit$res_AB, expectout$inferential$fit$res_AB)
-  
+
   # Compare bootstrap outputs
   expect_equal(testout2$descriptive, expectout2$descriptive)
   expect_equal(testout2$inferential$fit$boot_est["t"], expectout2$inferential$fit$boot_est["t"])
