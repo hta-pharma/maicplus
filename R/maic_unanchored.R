@@ -300,7 +300,7 @@ maic_unanchored_tte <- function(res,
 
     transform_estimate <- exp
     boot_res_AB <- list(
-      est = transform_estimate(boot_res$t0[1]),
+      est = as.vector(transform_estimate(boot_res$t0[1])),
       se = NA,
       ci_l = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[1]]]),
       ci_u = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]),
@@ -475,7 +475,8 @@ maic_unanchored_binary <- function(res,
     )
 
     boot_res_AB <- list(
-      est = transform_estimate(boot_res$t0[1]),
+      est = as.vector(transform_estimate(boot_res$t0[1])),
+      se = NA,
       ci_l = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[1]]]),
       ci_u = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]),
       pval = NA

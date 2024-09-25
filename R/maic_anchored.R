@@ -278,10 +278,19 @@ maic_anchored_tte <- function(res,
   if (is.null(res_BC)) res_BC <- as.list(summary(coxobj_agd)$coef)[c(1, 3)] # est, se
 
   names(res_AC_unadj) <- names(res_AC) <- names(res_BC) <- c("est", "se")
-  res_AC_unadj <- c(res_AC_unadj, list(pval = as.vector(summary(coxobj_ipd)$waldtest[3])))
-  res_AC <- c(res_AC, list(pval = as.vector(summary(coxobj_ipd_adj)$waldtest[3])))
-  res_BC <- c(res_BC, list(pval = as.vector(summary(coxobj_agd)$waldtest[3])))
-
+  
+  res_AC_unadj$ci_l <- summary(coxobj_ipd)$conf.int[3]
+  res_AC_unadj$ci_u <- summary(coxobj_ipd)$conf.int[4]
+  res_AC_unadj$pval <- as.vector(summary(coxobj_ipd)$waldtest[3])
+  
+  res_AC$ci_l <- summary(coxobj_ipd_adj)$conf.int[3]
+  res_AC$ci_u <- summary(coxobj_ipd_adj)$conf.int[4]
+  res_AC$pval <- as.vector(summary(coxobj_ipd_adj)$waldtest[3])
+  
+  res_BC$ci_l <- summary(coxobj_agd)$conf.int[3]
+  res_BC$ci_u <- summary(coxobj_agd)$conf.int[4]
+  res_BC$pval <- as.vector(summary(coxobj_agd)$waldtest[3])
+  
   res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
   res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
 
@@ -355,15 +364,26 @@ maic_anchored_tte <- function(res,
     )
 
     boot_res_AB <- list(
-      est = exp(boot_res$t0[1]),
+      est = as.vector(exp(boot_res$t0[1])),
       se = NA,
       ci_l = exp(boot_ci[[l_u_index[[3]]]][l_u_index[[1]]]),
       ci_u = exp(boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]),
       pval = NA
     )
+    
+    # boot results for A v C
+    boot_ci_ac <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, index = c(4, 6))
+    boot_res_AC <- list(
+      est = as.vector(exp(boot_res$t0[4])),
+      se = NA,
+      ci_l = exp(boot_ci_ac[[l_u_index[[3]]]][l_u_index[[1]]]),
+      ci_u = exp(boot_ci_ac[[l_u_index[[3]]]][l_u_index[[2]]]),
+      pval = NA
+    )
   } else {
     boot_res <- NULL
     boot_res_AB <- NULL
+    boot_res_AC <- NULL
   }
 
   # : report all raw fitted obj
@@ -380,6 +400,7 @@ maic_anchored_tte <- function(res,
     res_AB = res_AB,
     res_AB_unadj = res_AB_unadj,
     boot_res = boot_res,
+    boot_res_AC = boot_res_AC,
     boot_res_AB = boot_res_AB
   )
 
@@ -601,7 +622,7 @@ maic_anchored_binary <- function(res,
     )
 
     boot_res_AB <- list(
-      est = transform_estimate(boot_res$t0[1]),
+      est = as.vector(transform_estimate(boot_res$t0[1])),
       se = NA,
       ci_l = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[1]]]),
       ci_u = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]),
@@ -611,7 +632,7 @@ maic_anchored_binary <- function(res,
     # boot results for A v C
     boot_ci_ac <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, index = c(4, 6))
     boot_res_AC <- list(
-      est = transform_estimate(boot_res$t0[4]),
+      est = as.vector(transform_estimate(boot_res$t0[4])),
       se = NA,
       ci_l = transform_estimate(boot_ci_ac[[l_u_index[[3]]]][l_u_index[[1]]]),
       ci_u = transform_estimate(boot_ci_ac[[l_u_index[[3]]]][l_u_index[[2]]]),
