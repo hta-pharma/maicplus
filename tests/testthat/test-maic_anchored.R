@@ -144,8 +144,8 @@ test_that("maic_anchored for binary case gives the expected result", {
   # Compare robust outputs
   expect_equal(testout$descriptive, expectout$descriptive)
   expect_equal(testout$inferential$summary, expectout$inferential$summary)
-  expect_equal(print(testout$inferential$fit$res_AB, ci_digits = 5, pval_digits = 5), 
-               print(expectout$inferential$fit$res_AB, ci_digits = 5, pval_digits = 5))
+  expect_equal(print(testout$inferential$fit$res_AB, ci_digits = 5, pval_digits = 5)$result, 
+               print(expectout$inferential$fit$res_AB, ci_digits = 5, pval_digits = 5)$result)
   
   # Compare bootstrap outputs
   expect_equal(testout2$descriptive, expectout2$descriptive)
