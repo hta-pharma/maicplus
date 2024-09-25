@@ -278,19 +278,19 @@ maic_anchored_tte <- function(res,
   if (is.null(res_BC)) res_BC <- as.list(summary(coxobj_agd)$coef)[c(1, 3)] # est, se
 
   names(res_AC_unadj) <- names(res_AC) <- names(res_BC) <- c("est", "se")
-  
+
   res_AC_unadj$ci_l <- summary(coxobj_ipd)$conf.int[3]
   res_AC_unadj$ci_u <- summary(coxobj_ipd)$conf.int[4]
   res_AC_unadj$pval <- as.vector(summary(coxobj_ipd)$waldtest[3])
-  
+
   res_AC$ci_l <- summary(coxobj_ipd_adj)$conf.int[3]
   res_AC$ci_u <- summary(coxobj_ipd_adj)$conf.int[4]
   res_AC$pval <- as.vector(summary(coxobj_ipd_adj)$waldtest[3])
-  
+
   res_BC$ci_l <- summary(coxobj_agd)$conf.int[3]
   res_BC$ci_u <- summary(coxobj_agd)$conf.int[4]
   res_BC$pval <- as.vector(summary(coxobj_agd)$waldtest[3])
-  
+
   res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
   res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
 
@@ -370,7 +370,7 @@ maic_anchored_tte <- function(res,
       ci_u = exp(boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]),
       pval = NA
     )
-    
+
     # boot results for A v C
     boot_ci_ac <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, index = c(4, 6))
     boot_res_AC <- list(
