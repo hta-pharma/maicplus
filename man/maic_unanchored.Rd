@@ -12,6 +12,7 @@ maic_unanchored(
   trt_agd,
   trt_var_ipd = "ARM",
   trt_var_agd = "ARM",
+  normalize_weights = FALSE,
   endpoint_type = "tte",
   endpoint_name = "Time to Event Endpoint",
   eff_measure = c("HR", "OR", "RR", "RD"),
@@ -36,6 +37,9 @@ from contingency table (for binary endpoint)}
 \item{trt_var_ipd}{a string, column name in \code{ipd} that contains the treatment assignment}
 
 \item{trt_var_agd}{a string, column name in \code{ipd} that contains the treatment assignment}
+
+\item{normalize_weights}{logical, default is \code{FALSE}. If \code{TRUE},
+\code{scaled_weights} (normalized weights) in \code{weights_object$data} will be used.}
 
 \item{endpoint_type}{a string, one out of the following "binary", "tte" (time to event)}
 
@@ -111,8 +115,8 @@ result <- maic_unanchored(
   time_scale = "month",
   km_conf_type = "log-log"
 )
-result$inferential$report_median_surv
-result$inferential$report_overall_robustCI
+result$descriptive$summary
+result$inferential$summary
 
 result_boot <- maic_unanchored(
   weights_object = weighted_data2,
@@ -128,9 +132,8 @@ result_boot <- maic_unanchored(
   time_scale = "month",
   km_conf_type = "log-log"
 )
-result_boot$inferential$report_median_surv
-result_boot$inferential$report_overall_robustCI
-result_boot$inferential$report_overall_bootCI
+result$descriptive$summary
+result$inferential$summary
 # unanchored example using maic_unanchored for binary outcome
 data(centered_ipd_sat)
 data(adrs_sat)

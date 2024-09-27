@@ -18,6 +18,5 @@ result_tte <- maic_anchored(
   time_scale = "month",
   km_conf_type = "log-log",
 )
-result_tte$inferential$report_median_surv
-result_tte$inferential$report_overall_robustCI
-result_tte$inferential$report_overall_bootCI
+result_tte$descriptive$summary
+result_tte$inferential$summary

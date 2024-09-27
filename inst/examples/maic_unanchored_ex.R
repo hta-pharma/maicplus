@@ -35,8 +35,8 @@ result <- maic_unanchored(
   time_scale = "month",
   km_conf_type = "log-log"
 )
-result$inferential$report_median_surv
-result$inferential$report_overall_robustCI
+result$descriptive$summary
+result$inferential$summary
 
 result_boot <- maic_unanchored(
   weights_object = weighted_data2,
@@ -52,6 +52,5 @@ result_boot <- maic_unanchored(
   time_scale = "month",
   km_conf_type = "log-log"
 )
-result_boot$inferential$report_median_surv
-result_boot$inferential$report_overall_robustCI
-result_boot$inferential$report_overall_bootCI
+result$descriptive$summary
+result$inferential$summary

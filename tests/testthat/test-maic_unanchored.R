@@ -71,15 +71,14 @@ test_that("test binary case", {
 
   # Compare robust outputs
   expect_equal(testout$descriptive, expectout$descriptive)
-  expect_equal(testout$inferential, expectout$inferential)
-  expect_equal(testout$inferential$model_before, expectout$inferential$model_before)
-  expect_equal(testout$inferential$model_after, expectout$inferential$model_after)
+  expect_equal(testout$inferential$summary, expectout$inferential$summary)
+  expect_equal(testout$inferential$fit, expectout$inferential$fit)
 
   # Compare bootstrap outputs
   expect_equal(testout2$descriptive, expectout2$descriptive)
-  expect_equal(testout2$inferential$boot_est["t"], expectout2$inferential$boot_est["t"])
-  expect_equal(testout2$inferential$boot_est["seed"], expectout2$inferential$boot_est["seed"])
-  expect_equal(testout2$inferential$report_overall_bootCI, expectout2$inferential$report_overall_bootCI)
+  expect_equal(testout2$inferential$fit$boot_est["t"], expectout2$inferential$fit$boot_est["t"])
+  expect_equal(testout2$inferential$fit$boot_est["seed"], expectout2$inferential$fit$boot_est["seed"])
+  expect_equal(testout2$inferential$boot_res_AB, expectout2$inferential$boot_res_AB)
 })
 
 
@@ -151,13 +150,12 @@ test_that("test time to event case", {
   load(test_path("data", "test_tte_unanchored_expected.RData"))
   # Compare robust outputs
   expect_equal(testout$descriptive, expectout$descriptive)
-  expect_equal(testout$inferential, expectout$inferential)
-  expect_equal(testout$inferential$model_before, expectout$inferential$model_before)
-  expect_equal(testout$inferential$model_after, expectout$inferential$model_after)
+  expect_equal(testout$inferential$summary, expectout$inferential$summary)
+  expect_equal(testout$inferential$fit$res_AB, expectout$inferential$fit$res_AB)
 
   # Compare bootstrap outputs
   expect_equal(testout2$descriptive, expectout2$descriptive)
-  expect_equal(testout2$inferential$boot_est["t"], expectout2$inferential$boot_est["t"])
-  expect_equal(testout2$inferential$boot_est["seed"], expectout2$inferential$boot_est["seed"])
-  expect_equal(testout2$inferential$report_overall_bootCI, expectout2$inferential$report_overall_bootCI)
+  expect_equal(testout2$inferential$fit$boot_est["t"], expectout2$inferential$fit$boot_est["t"])
+  expect_equal(testout2$inferential$fit$boot_est["seed"], expectout2$inferential$fit$boot_est["seed"])
+  expect_equal(testout2$inferential$boot_res_AB, expectout2$inferential$boot_res_AB)
 })

@@ -13,6 +13,7 @@ maic_anchored(
   trt_common,
   trt_var_ipd = "ARM",
   trt_var_agd = "ARM",
+  normalize_weights = FALSE,
   endpoint_type = "tte",
   endpoint_name = "Time to Event Endpoint",
   eff_measure = c("HR", "OR", "RR", "RD"),
@@ -39,6 +40,9 @@ from contingency table (for binary endpoint)}
 \item{trt_var_ipd}{a string, column name in \code{ipd} that contains the treatment assignment}
 
 \item{trt_var_agd}{a string, column name in \code{ipd} that contains the treatment assignment}
+
+\item{normalize_weights}{logical, default is \code{FALSE}. If \code{TRUE},
+\code{scaled_weights} (normalized weights) in \code{weights_object$data} will be used.}
 
 \item{endpoint_type}{a string, one out of the following "binary", "tte" (time to event)}
 
@@ -104,9 +108,8 @@ result_tte <- maic_anchored(
   time_scale = "month",
   km_conf_type = "log-log",
 )
-result_tte$inferential$report_median_surv
-result_tte$inferential$report_overall_robustCI
-result_tte$inferential$report_overall_bootCI
+result_tte$descriptive$summary
+result_tte$inferential$summary
 # Anchored example using maic_anchored for binary outcome
 data(weighted_twt)
 data(adrs_twt)
@@ -136,6 +139,6 @@ result_binary <- maic_anchored(
   eff_measure = "OR"
 )
 
-result_binary$inferential$report_overall_robustCI
-result_binary$inferential$report_overall_bootCI
+result_binary$descriptive$summary
+result_binary$inferential$summary
 }
