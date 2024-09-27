@@ -12,7 +12,7 @@
 #' @param trt_common a string, name of the common comparator in internal and external trial
 #' @param trt_var_ipd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{ipd} that contains the treatment assignment
-#' @param normalize_weight logical, default is \code{FALSE}. If \code{TRUE},
+#' @param normalize_weights logical, default is \code{FALSE}. If \code{TRUE},
 #'   \code{scaled_weights} (normalized weights) in \code{weights_object$data} will be used.
 #' @param endpoint_type a string, one out of the following "binary", "tte" (time to event)
 #' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
@@ -60,7 +60,7 @@ maic_anchored <- function(weights_object,
                           trt_common,
                           trt_var_ipd = "ARM",
                           trt_var_agd = "ARM",
-                          normalize_weight = FALSE,
+                          normalize_weights = FALSE,
                           endpoint_type = "tte",
                           endpoint_name = "Time to Event Endpoint",
                           eff_measure = c("HR", "OR", "RR", "RD"),
@@ -153,7 +153,7 @@ maic_anchored <- function(weights_object,
   pseudo_ipd <- pseudo_ipd[pseudo_ipd$ARM %in% c(trt_agd, trt_common), , drop = TRUE]
 
   # : assign weights to real and pseudo ipd
-  if (normalize_weight) {
+  if (normalize_weights) {
     ipd$weights <- weights_object$data$scaled_weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
   } else {
     ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
@@ -201,7 +201,7 @@ maic_anchored <- function(weights_object,
       time_scale,
       weights_object,
       endpoint_name,
-      normalize_weight,
+      normalize_weights,
       trt_ipd,
       trt_agd,
       boot_ci_type
@@ -216,7 +216,7 @@ maic_anchored <- function(weights_object,
       binary_robust_cov_type,
       weights_object,
       endpoint_name,
-      normalize_weight,
+      normalize_weights,
       eff_measure,
       trt_ipd,
       trt_agd,
@@ -240,7 +240,7 @@ maic_anchored_tte <- function(res,
                               time_scale,
                               weights_object,
                               endpoint_name,
-                              normalize_weight,
+                              normalize_weights,
                               trt_ipd,
                               trt_agd,
                               boot_ci_type) {
@@ -279,17 +279,20 @@ maic_anchored_tte <- function(res,
 
   names(res_AC_unadj) <- names(res_AC) <- names(res_BC) <- c("est", "se")
 
-  res_AC_unadj$ci_l <- summary(coxobj_ipd)$conf.int[3]
-  res_AC_unadj$ci_u <- summary(coxobj_ipd)$conf.int[4]
-  res_AC_unadj$pval <- as.vector(summary(coxobj_ipd)$waldtest[3])
+  coxobj_ipd_summary <- summary(coxobj_ipd)
+  res_AC_unadj$ci_l <- coxobj_ipd_summary$conf.int[3]
+  res_AC_unadj$ci_u <- coxobj_ipd_summary$conf.int[4]
+  res_AC_unadj$pval <- as.vector(coxobj_ipd_summary$waldtest[3])
 
-  res_AC$ci_l <- summary(coxobj_ipd_adj)$conf.int[3]
-  res_AC$ci_u <- summary(coxobj_ipd_adj)$conf.int[4]
-  res_AC$pval <- as.vector(summary(coxobj_ipd_adj)$waldtest[3])
+  coxobj_ipd_adj_summary <- summary(coxobj_ipd_adj)
+  res_AC$ci_l <- coxobj_ipd_adj_summary$conf.int[3]
+  res_AC$ci_u <- coxobj_ipd_adj_summary$conf.int[4]
+  res_AC$pval <- as.vector(coxobj_ipd_adj_summary$waldtest[3])
 
-  res_BC$ci_l <- summary(coxobj_agd)$conf.int[3]
-  res_BC$ci_u <- summary(coxobj_agd)$conf.int[4]
-  res_BC$pval <- as.vector(summary(coxobj_agd)$waldtest[3])
+  coxobj_agd_summary <- summary(coxobj_agd)
+  res_BC$ci_l <- coxobj_agd_summary$conf.int[3]
+  res_BC$ci_u <- coxobj_agd_summary$conf.int[4]
+  res_BC$pval <- as.vector(coxobj_agd_summary$waldtest[3])
 
   res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
   res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
@@ -318,12 +321,11 @@ maic_anchored_tte <- function(res,
         boot_ipd$weights <- w_obj$boot[, 2, r]
 
         if (normalize) {
-          boot_ipd <- split(boot_ipd, f = boot_ipd$ARM)
-          boot_ipd <- lapply(boot_ipd, function(td) {
-            td$weights <- td$weights / mean(td$weights, na.rm = TRUE)
-            td
-          })
-          boot_ipd <- do.call(rbind, boot_ipd)
+          boot_ipd$weights <- ave(
+            boot_ipd$weights,
+            boot_ipd$ARM,
+            FUN = function(w) w / mean(w, na.rm = TRUE)
+          )
         }
       }
       boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_ipd, weights = boot_ipd$weights, robust = TRUE)
@@ -350,10 +352,10 @@ maic_anchored_tte <- function(res,
       stat_fun,
       R = R,
       w_obj = weights_object,
-      normalize = normalize_weight,
+      normalize = normalize_weights,
       strata = weights_object$boot_strata
     )
-    boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object)
+    boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, normalize = normalize_weights)
 
     l_u_index <- switch(boot_ci_type,
       "norm" = list(2, 3, "normal"),
@@ -446,7 +448,7 @@ maic_anchored_binary <- function(res,
                                  binary_robust_cov_type,
                                  weights_object,
                                  endpoint_name,
-                                 normalize_weight,
+                                 normalize_weights,
                                  eff_measure,
                                  trt_ipd,
                                  trt_agd,
@@ -468,7 +470,7 @@ maic_anchored_binary <- function(res,
 
   # : fit glm for binary outcome and robust estimate with weights
   binobj_ipd <- glm(RESPONSE ~ ARM, ipd, family = glm_link)
-  binobj_ipd_adj <- glm(RESPONSE ~ ARM, ipd, weights = weights, family = glm_link) |> suppressWarnings()
+  binobj_ipd_adj <- suppressWarnings(glm(RESPONSE ~ ARM, ipd, weights = weights, family = glm_link))
   binobj_agd <- glm(RESPONSE ~ ARM, pseudo_ipd, family = glm_link)
 
   bin_robust_cov <- sandwich::vcovHC(binobj_ipd_adj, type = binary_robust_cov_type)
@@ -515,21 +517,6 @@ maic_anchored_binary <- function(res,
   res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
 
   # transform
-  transform_ratio <- function(resobj) {
-    resobj$est <- exp(resobj$est)
-    resobj$se <- sqrt((exp(resobj$se^2) - 1) * exp(2 * resobj$est + resobj$se^2)) # log normal parameterization
-    resobj$ci_l <- exp(resobj$ci_l)
-    resobj$ci_u <- exp(resobj$ci_u)
-    resobj
-  }
-  transform_absolute <- function(resobj) {
-    resobj$est <- resobj$est * 100
-    resobj$se <- resobj$se * 100
-    resobj$ci_l <- resobj$ci_l * 100
-    resobj$ci_u <- resobj$ci_u * 100
-    resobj
-  }
-
   if (eff_measure %in% c("RR", "OR")) {
     res_AB <- transform_ratio(res_AB)
     res_AB_unadj <- transform_ratio(res_AB_unadj)
@@ -561,19 +548,17 @@ maic_anchored_binary <- function(res,
         boot_ipd$weights <- w_obj$boot[, 2, r]
 
         if (normalize) {
-          boot_ipd <- split(boot_ipd, f = boot_ipd$ARM)
-          boot_ipd <- lapply(boot_ipd, function(td) {
-            td$weights <- td$weights / mean(td$weights, na.rm = TRUE)
-            td
-          })
-          boot_ipd <- do.call(rbind, boot_ipd)
+          boot_ipd$weights <- ave(
+            boot_ipd$weights,
+            boot_ipd$ARM,
+            FUN = function(w) w / mean(w, na.rm = TRUE)
+          )
         }
       }
 
-      boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_ipd,
-        weights = boot_ipd$weights,
-        family = glm_link
-      ) |> suppressWarnings()
+      boot_binobj_dat_adj <- suppressWarnings(
+        glm(RESPONSE ~ ARM, boot_ipd, weights = boot_ipd$weights, family = glm_link)
+      )
       boot_AC_est <- coef(boot_binobj_dat_adj)[2]
       boot_AC_var <- vcov(boot_binobj_dat_adj)[2, 2]
 
@@ -602,7 +587,7 @@ maic_anchored_binary <- function(res,
       R = R,
       w_obj = weights_object,
       eff_measure = eff_measure,
-      normalize = normalize_weight,
+      normalize = normalize_weights,
       strata = weights_object$boot_strata
     )
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object)

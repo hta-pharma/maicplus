@@ -13,7 +13,7 @@ maic_anchored(
   trt_common,
   trt_var_ipd = "ARM",
   trt_var_agd = "ARM",
-  normalize_weight = FALSE,
+  normalize_weights = FALSE,
   endpoint_type = "tte",
   endpoint_name = "Time to Event Endpoint",
   eff_measure = c("HR", "OR", "RR", "RD"),
@@ -41,7 +41,7 @@ from contingency table (for binary endpoint)}
 
 \item{trt_var_agd}{a string, column name in \code{ipd} that contains the treatment assignment}
 
-\item{normalize_weight}{logical, default is \code{FALSE}. If \code{TRUE},
+\item{normalize_weights}{logical, default is \code{FALSE}. If \code{TRUE},
 \code{scaled_weights} (normalized weights) in \code{weights_object$data} will be used.}
 
 \item{endpoint_type}{a string, one out of the following "binary", "tte" (time to event)}

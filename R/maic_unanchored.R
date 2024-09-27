@@ -11,7 +11,7 @@
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{pseudo_ipd} (pseudo IPD)
 #' @param trt_var_ipd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{ipd} that contains the treatment assignment
-#' @param normalize_weight logical, default is \code{FALSE}. If \code{TRUE},
+#' @param normalize_weights logical, default is \code{FALSE}. If \code{TRUE},
 #'   \code{scaled_weights} (normalized weights) in \code{weights_object$data} will be used.
 #' @param endpoint_type a string, one out of the following "binary", "tte" (time to event)
 #' @param eff_measure a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint;
@@ -51,7 +51,7 @@ maic_unanchored <- function(weights_object,
                             trt_agd,
                             trt_var_ipd = "ARM",
                             trt_var_agd = "ARM",
-                            normalize_weight = FALSE,
+                            normalize_weights = FALSE,
                             endpoint_type = "tte",
                             endpoint_name = "Time to Event Endpoint",
                             eff_measure = c("HR", "OR", "RR", "RD"),
@@ -139,7 +139,7 @@ maic_unanchored <- function(weights_object,
   pseudo_ipd <- pseudo_ipd[pseudo_ipd$ARM == trt_agd, , drop = TRUE]
 
   # : assign weights to real and pseudo ipd
-  if (normalize_weight) {
+  if (normalize_weights) {
     ipd$weights <- weights_object$data$scaled_weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
   } else {
     ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
@@ -182,12 +182,12 @@ maic_unanchored <- function(weights_object,
   result <- if (endpoint_type == "tte") {
     maic_unanchored_tte(
       res, res_AB, res_AB_unadj, dat, ipd, pseudo_ipd, km_conf_type, time_scale,
-      weights_object, endpoint_name, normalize_weight, boot_ci_type, trt_ipd, trt_agd
+      weights_object, endpoint_name, normalize_weights, boot_ci_type, trt_ipd, trt_agd
     )
   } else if (endpoint_type == "binary") {
     maic_unanchored_binary(
       res, res_AB, res_AB_unadj, dat, ipd, pseudo_ipd, binary_robust_cov_type,
-      weights_object, endpoint_name, normalize_weight, eff_measure, boot_ci_type, trt_ipd, trt_agd
+      weights_object, endpoint_name, normalize_weights, eff_measure, boot_ci_type, trt_ipd, trt_agd
     )
   } else {
     stop("Endpoint type ", endpoint_type, " currently unsupported.")
@@ -209,7 +209,7 @@ maic_unanchored_tte <- function(res,
                                 time_scale,
                                 weights_object,
                                 endpoint_name,
-                                normalize_weight,
+                                normalize_weights,
                                 boot_ci_type,
                                 trt_ipd,
                                 trt_agd) {
@@ -285,7 +285,7 @@ maic_unanchored_tte <- function(res,
       R = R,
       w_obj = weights_object,
       pseudo_ipd = pseudo_ipd,
-      normalize = normalize_weight,
+      normalize = normalize_weights,
       strata = weights_object$boot_strata
     )
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
@@ -326,18 +326,10 @@ maic_unanchored_tte <- function(res,
   # : compile HR result
   res$inferential[["summary"]] <- data.frame(
     case = c("AB", "adjusted_AB"),
-    HR = c(
-      res_AB_unadj$est, res_AB$est
-    ),
-    LCL = c(
-      res_AB_unadj$ci_l, res_AB$ci_l
-    ),
-    UCL = c(
-      res_AB_unadj$ci_u, res_AB$ci_u
-    ),
-    pval = c(
-      res_AB_unadj$pval, res_AB$pval
-    )
+    HR = c(res_AB_unadj$est, res_AB$est),
+    LCL = c(res_AB_unadj$ci_l, res_AB$ci_l),
+    UCL = c(res_AB_unadj$ci_u, res_AB$ci_u),
+    pval = c(res_AB_unadj$pval, res_AB$pval)
   )
 
   # output
@@ -355,7 +347,7 @@ maic_unanchored_binary <- function(res,
                                    binary_robust_cov_type,
                                    weights_object,
                                    endpoint_name,
-                                   normalize_weight,
+                                   normalize_weights,
                                    eff_measure,
                                    boot_ci_type,
                                    trt_ipd,
@@ -397,28 +389,14 @@ maic_unanchored_binary <- function(res,
   res_AB$pval <- bin_robust_coef[2, "Pr(>|z|)"]
 
   # : derive unadjusted estimate
-  res_AB_unadj$est <- summary(binobj_dat)$coefficients[2, "Estimate"]
-  res_AB_unadj$se <- summary(binobj_dat)$coefficients[2, "Std. Error"]
+  binobj_dat_summary <- summary(binobj_dat)
+  res_AB_unadj$est <- binobj_dat_summary$coefficients[2, "Estimate"]
+  res_AB_unadj$se <- binobj_dat_summary$coefficients[2, "Std. Error"]
   res_AB_unadj$ci_l <- confint.default(binobj_dat)[2, "2.5 %"]
   res_AB_unadj$ci_u <- confint.default(binobj_dat)[2, "97.5 %"]
-  res_AB_unadj$pval <- summary(binobj_dat)$coefficients[2, "Pr(>|z|)"]
+  res_AB_unadj$pval <- binobj_dat_summary$coefficients[2, "Pr(>|z|)"]
 
   # : transform
-  transform_ratio <- function(resobj) {
-    resobj$est <- exp(resobj$est)
-    resobj$se <- sqrt((exp(resobj$se^2) - 1) * exp(2 * resobj$est + resobj$se^2)) # log normal parameterization
-    resobj$ci_l <- exp(resobj$ci_l)
-    resobj$ci_u <- exp(resobj$ci_u)
-    resobj
-  }
-  transform_absolute <- function(resobj) {
-    resobj$est <- resobj$est * 100
-    resobj$se <- resobj$se * 100
-    resobj$ci_l <- resobj$ci_l * 100
-    resobj$ci_u <- resobj$ci_u * 100
-    resobj
-  }
-
   if (eff_measure %in% c("RR", "OR")) {
     res_AB <- transform_ratio(res_AB)
     res_AB_unadj <- transform_ratio(res_AB_unadj)
@@ -461,7 +439,7 @@ maic_unanchored_binary <- function(res,
       R = R,
       w_obj = weights_object,
       pseudo_ipd = pseudo_ipd,
-      normalize = normalize_weight,
+      normalize = normalize_weights,
       strata = weights_object$boot_strata
     )
     boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
