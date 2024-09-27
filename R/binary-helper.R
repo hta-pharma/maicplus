@@ -107,25 +107,20 @@ get_pseudo_ipd_binary <- function(binary_agd, format = c("stacked", "unstacked")
 #' binobj_dat <- stats::glm(RESPONSE ~ ARM, combined_data, family = binomial("logit"))
 #' glm_makeup(binobj_dat)
 #' @export
-
 glm_makeup <- function(binobj, legend = "before matching", weighted = FALSE) {
-  ARM <- levels(binobj$data$ARM)
+  arm <- levels(binobj$data$ARM)
   if (!weighted) {
-    N <- tapply(binobj$data$USUBJID, binobj$data$ARM, length)
-    N.EVNT <- tapply(binobj$data$RESPONSE, binobj$data$ARM, sum)
+    n <- tapply(binobj$data$USUBJID, binobj$data$ARM, length)
+    n_event <- tapply(binobj$data$RESPONSE, binobj$data$ARM, sum)
   } else {
-    N <- tapply(binobj$data$weights, binobj$data$ARM, length)
-    N.EVNT <- tapply(binobj$data$weights * binobj$data$RESPONSE, binobj$data$ARM, sum)
+    n <- tapply(binobj$data$weights, binobj$data$ARM, length)
+    n_event <- tapply(binobj$data$weights * binobj$data$RESPONSE, binobj$data$ARM, sum)
   }
-  N.EVNT.PERC <- N.EVNT * 100 / N
-  N.EVNT <- N.EVNT
-
   data.frame(
-    treatment = ARM,
+    treatment = arm,
     type = legend,
-    n = N,
-    events = N.EVNT,
-    events_pct = N.EVNT.PERC,
-    check.names = FALSE
+    n = n,
+    events = n_event,
+    events_pct = n_event * 100 / n
   )
 }
