@@ -171,7 +171,7 @@ medSurv_out
 
 # Using bootstrap to calculate standard errors
 
-If bootstrap standard errors are preferred, we need to specify the number of bootstrap iteration (`n_boot_iteration`) in `estimate_weights` function and proceed fitting `maic_unanchored` function. Then, the outputs include bootstrapped CI. Different types of bootstrap CI can be found by using parameter `boot_ci_type`. See `boot.ci` in `boot` package for more details.
+If bootstrap standard errors are preferred, we need to specify the number of bootstrap iteration (`n_boot_iteration`) in `estimate_weights` function and proceed fitting `maic_unanchored` function. Then, the outputs include bootstrapped CI. Different types of bootstrap CI can be found by specifying the parameter `boot_ci_type`. See `boot.ci` in `boot` package for more details.
 
 ```{r}
 weighted_data2 <- estimate_weights(
