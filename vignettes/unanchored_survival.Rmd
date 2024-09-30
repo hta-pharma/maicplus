@@ -104,8 +104,8 @@ There are two summaries available in the result: descriptive and inferential. In
 result$descriptive$summary
 
 # Not shown due to long output
-#result$descriptive$survfit_before
-#result$descriptive$survfit_after
+# result$descriptive$survfit_before
+# result$descriptive$survfit_after
 ```
 
 In the inferential section, we have the fitted models stored (i.e. `survfit` and `coxph`) and the results from the `coxph` models (i.e. hazard ratios and CI). Note that the p-values summarized are from `coxph` model Wald test and not from a log-rank test. Here is the overall summary.

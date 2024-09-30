@@ -76,7 +76,7 @@ centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR
 centered_colnames <- paste0(centered_colnames, "_CENTERED")
 
 weighted_data <- estimate_weights(
-  data = centered_ipd_sat, 
+  data = centered_ipd_sat,
   centered_colnames = centered_colnames
 )
 
@@ -157,8 +157,8 @@ bin_robust_ci <- lmtest::coefci(binobj_dat_adj, vcov. = bin_robust_cov)
 bin_robust_ci
 exp(bin_robust_ci)
 
-exp(summary(binobj_dat)$coef[2,"Estimate"])
-exp(summary(binobj_dat_adj)$coef[2,"Estimate"])
+exp(summary(binobj_dat)$coef[2, "Estimate"])
+exp(summary(binobj_dat_adj)$coef[2, "Estimate"])
 ```
 
 # Using bootstrap to calculate standard errors

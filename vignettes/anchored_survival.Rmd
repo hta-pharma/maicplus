@@ -149,7 +149,8 @@ pseudo_ipd$ARM <- stats::relevel(as.factor(pseudo_ipd$ARM), ref = "C")
 # Fit a Cox model with/without weights to estimate the HR
 unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = ipd)
 weighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM,
-  data = ipd, weights = weights, robust = TRUE)
+  data = ipd, weights = weights, robust = TRUE
+)
 coxobj_agd <- coxph(Surv(TIME, EVENT) ~ ARM, pseudo_ipd)
 
 unweighted_cox
@@ -170,7 +171,8 @@ res_AB
 
 kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, ipd, conf.type = "log-log")
 kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM,
-  ipd, weights = ipd$weights, conf.type = "log-log"
+  ipd,
+  weights = ipd$weights, conf.type = "log-log"
 )
 
 # Derive median survival time

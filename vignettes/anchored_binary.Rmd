@@ -72,7 +72,7 @@ centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR
 centered_colnames <- paste0(centered_colnames, "_CENTERED")
 
 weighted_data <- estimate_weights(
-  data = centered_ipd_twt, 
+  data = centered_ipd_twt,
   centered_colnames = centered_colnames
 )
 
@@ -152,8 +152,8 @@ bin_robust_cov <- sandwich::vcovHC(binobj_dat_adj, type = "HC3")
 bin_robust_coef <- lmtest::coeftest(binobj_dat_adj, vcov. = bin_robust_cov)
 bin_robust_ci <- lmtest::coefci(binobj_dat_adj, vcov. = bin_robust_cov)
 
-exp(summary(binobj_dat)$coef[2,"Estimate"])
-exp(summary(binobj_dat_adj)$coef[2,"Estimate"])
+exp(summary(binobj_dat)$coef[2, "Estimate"])
+exp(summary(binobj_dat_adj)$coef[2, "Estimate"])
 
 bin_robust_ci
 exp(bin_robust_ci)
