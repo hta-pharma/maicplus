@@ -8,7 +8,7 @@ Description: The maicplus package facilitates performing matching adjusted indir
  (MAIC) analysis where the endpoint of interest is either time-to-event
  (e.g. overall survival) or binary (e.g. objective tumor response).
 License: Apache License 2.0
-URL: https://github.com/hta-pharma/maicplus/ https://hta-pharma.github.io/maicplus
+URL: https://github.com/hta-pharma/maicplus/ https://hta-pharma.github.io/maicplus/
 BugReports: https://github.com/hta-pharma/maicplus/issues
 Depends:
     R (>= 3.6)
