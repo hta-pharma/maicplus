@@ -11,7 +11,8 @@ The maicplus package facilitates performing matching adjusted indirect compariso
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/hta-pharma/maicplus/ https://hta-pharma.github.io/maicplus/}
+  \item \url{https://github.com/hta-pharma/maicplus/}
+  \item \url{https://hta-pharma.github.io/maicplus/}
   \item Report bugs at \url{https://github.com/hta-pharma/maicplus/issues}
 }
 
