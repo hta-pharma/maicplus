@@ -1,0 +1,168 @@
+---
+title: "Anchored Binary Analysis"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: references.bib
+csl: biomedicine.csl
+vignette: >
+  %\VignetteIndexEntry{Anchored Binary Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Loading R packages
+
+```{r}
+# install.packages("maicplus")
+library(maicplus)
+```
+
+Additional R packages for this vignette:
+
+```{r}
+library(dplyr)
+```
+
+# Illustration using example data
+
+This example reads in `centered_ipd_twt` data that was created in `calculating_weights` vignette and uses `adrs_twt` dataset to run binary outcome analysis using the `maic_anchored` function by specifying `endpoint_type = "binary"`.
+
+```{r}
+data(centered_ipd_twt)
+data(adrs_twt)
+
+centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+centered_colnames <- paste0(centered_colnames, "_CENTERED")
+
+weighted_data <- estimate_weights(
+  data = centered_ipd_twt,
+  centered_colnames = centered_colnames
+)
+
+# get dummy binary IPD
+pseudo_adrs <- get_pseudo_ipd_binary(
+  binary_agd = data.frame(
+    ARM = c("B", "C", "B", "C"),
+    RESPONSE = c("YES", "YES", "NO", "NO"),
+    COUNT = c(280, 120, 200, 200)
+  ),
+  format = "stacked"
+)
+
+result <- maic_anchored(
+  weights_object = weighted_data,
+  ipd = adrs_twt,
+  pseudo_ipd = pseudo_adrs,
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  normalize_weight = FALSE,
+  endpoint_type = "binary",
+  endpoint_name = "Binary Endpoint",
+  eff_measure = "OR",
+  # binary specific args
+  binary_robust_cov_type = "HC3"
+)
+```
+
+There are two summaries available in the result: descriptive and inferential. In the descriptive section, we have summaries of events.
+
+```{r}
+result$descriptive
+```
+
+In the inferential section, we have the fitted models stored (i.e. logistic regression) and the results from the `glm` models (i.e. odds ratios and CI).
+
+```{r}
+result$inferential$summary
+```
+
+Here are model and results before adjustment.
+
+```{r}
+result$inferential$fit$model_before
+result$inferential$fit$res_AC_unadj
+result$inferential$fit$res_AB_unadj
+```
+
+Here are model and results after adjustment.
+
+```{r}
+result$inferential$fit$model_after
+result$inferential$fit$res_AC
+result$inferential$fit$res_AB
+```
+
+```{r, echo = FALSE, eval = FALSE}
+# heuristic check
+# merge in adrs with ipd_matched
+
+ipd <- adrs_twt
+ipd$weights <- weighted_data$data$weights[match(weighted_data$data$USUBJID, ipd$USUBJID)]
+
+pseudo_ipd <- pseudo_adrs
+pseudo_ipd$weights <- 1
+
+# Change the reference treatment to C
+ipd$ARM <- stats::relevel(as.factor(ipd$ARM), ref = "C")
+pseudo_ipd$ARM <- stats::relevel(as.factor(pseudo_ipd$ARM), ref = "C")
+
+binobj_dat <- glm(RESPONSE ~ ARM, ipd, family = binomial(link = "logit"))
+binobj_dat_adj <- glm(RESPONSE ~ ARM, ipd, weights = weights, family = binomial(link = "logit")) |> suppressWarnings()
+binobj_agd <- glm(RESPONSE ~ ARM, pseudo_ipd, family = binomial(link = "logit"))
+
+bin_robust_cov <- sandwich::vcovHC(binobj_dat_adj, type = "HC3")
+bin_robust_coef <- lmtest::coeftest(binobj_dat_adj, vcov. = bin_robust_cov)
+bin_robust_ci <- lmtest::coefci(binobj_dat_adj, vcov. = bin_robust_cov)
+
+exp(summary(binobj_dat)$coef[2, "Estimate"])
+exp(summary(binobj_dat_adj)$coef[2, "Estimate"])
+
+bin_robust_ci
+exp(bin_robust_ci)
+
+res_AC <- res_BC <- list()
+res_AC$est <- bin_robust_coef[2, "Estimate"]
+res_AC$se <- bin_robust_coef[2, "Std. Error"]
+
+res_BC$est <- summary(binobj_agd)$coefficients[2, "Estimate"]
+res_BC$se <- summary(binobj_agd)$coefficients[2, "Std. Error"]
+
+res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
+print(res_AB, exponentiate = TRUE)
+```
+
+# Using bootstrap to calculate standard errors
+
+If bootstrap standard errors are preferred, we need to specify the number of bootstrap iteration (`n_boot_iteration`) in `estimate_weights` function and proceed fitting `maic_anchored` function. Then, the outputs include bootstrapped CI. Different types of bootstrap CI can be found by using parameter `boot_ci_type`.
+
+```{r}
+weighted_data2 <- estimate_weights(
+  data = centered_ipd_twt,
+  centered_colnames = centered_colnames,
+  n_boot_iteration = 100,
+  set_seed_boot = 1234
+)
+
+result_boot <- maic_anchored(
+  weights_object = weighted_data2,
+  ipd = adrs_twt,
+  pseudo_ipd = pseudo_adrs,
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  normalize_weight = FALSE,
+  endpoint_type = "binary",
+  endpoint_name = "Binary Endpoint",
+  eff_measure = "OR",
+  boot_ci_type = "perc",
+  # binary specific args
+  binary_robust_cov_type = "HC3"
+)
+
+result_boot$inferential$fit$boot_res_AB
+```

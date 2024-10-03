@@ -1,0 +1,85 @@
+---
+title: "Introduction"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: references.bib
+csl: biomedicine.csl
+vignette: >
+  %\VignetteIndexEntry{Introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+Health technology assessments and appraisals necessitate dependable estimations of relative treatment effects to guide reimbursement determinations. In instances where direct comparative evidence is lacking, yet both treatments under scrutiny have been separately evaluated against a shared comparator (e.g., placebo or standard care), a conventional indirect comparison can be conducted utilizing published aggregate data from each study.
+
+This document outlines the procedures for conducting a matching-adjusted indirect comparison (MAIC) analysis. MAIC is suitable when individual patient data from one trial and aggregate data from another are accessible. The analysis focuses on endpoints such as time-to-event (e.g., overall survival) or binary outcomes (e.g., objective tumor response).
+
+The methodologies detailed herein are based on the original work by Signorovitch et al. (2010) and further elucidated in the National Institute for Health and Care Excellence (NICE) Decision Support Unit (DSU) Technical Support Document (TSD) 18. [@signorovitch2010; @phillippo2016a]
+
+A clinical trial lacking a common comparator treatment to link it with other trials is termed an unanchored MAIC. Without a common comparator, it becomes challenging to directly compare the outcomes of interest between different treatments or interventions. Conversely, if a common comparator is available, it is termed an anchored MAIC. An anchored indirect comparison is preferred as it respects the randomization within studies and removes confounding bias.
+
+MAIC methods aim to adjust for between-study differences in patient demographics or disease characteristics at baseline. In scenarios where a common treatment comparator is absent, MAIC assumes that observed differences in absolute outcomes between trials are solely attributable to imbalances in prognostic variables and effect modifiers. This assumption requires that all imbalanced prognostic variables and effect modifiers between the studies are known, which is often challenging to fulfill. [@phillippo2016a]
+
+Various approaches exist for identifying prognostic variables and effect modifiers for use in MAIC analyses. These include clinical consultation with experts, review of published literature, examination of previous regulatory submissions, and data-driven methods such as regression modeling and subgroup analysis to uncover interactions between baseline characteristics and treatment effects.
+
+# Statistical theory behind MAIC
+
+The matching is accomplished by re-weighting patients in the study with the individual patient data (IPD) by their odds of having been enrolled in the aggregate data (AGD) study versus the IPD study. The approach is very similar to inverse probability of treatment weighting with the difference that IPD is not available for one study, so the usual maximum likelihood approach cannot be used to estimate the parameters. Instead, a method of moments is used. After the matching is complete and weights have been added to the IPD, it is possible to estimate the weighted outcomes and compare the results across.
+
+The mapping approach can be described as follows: assuming that each trial has one arm, each patient can be characterized by the following random triple ($X$, $T$, $Y$), where $X$ represents the baseline characteristics (e.g., age and weight), $T$ represents the treatment of interest (e.g., $T = A$ for the IPD study and $T = B$ for the study with AGD), and $Y$ is the outcome of interest (e.g., overall survival).
+
+Each patient is characterized by a random triple ($x_i$, $t_i$, $y_i$) with $i=1$ to $n$ but only when IPD is available, i.e., when $t_i = A$. In case where $t_i = B$, only the mean baseline characteristics $\bar{x}_{agg}$ and mean outcome $\bar{y}_{agg}$ are observed.
+
+Given the observed data, the causal effect of treatment $T = A$ versus $T = B$ on the mean of $Y$ can be estimated as follows:
+
+\[
+\frac{\sum_{i=1}^{n}y_{i}w_{i}}{\sum_{i=1}^{n}w_{i}}-\bar{y}_{agg}
+\]
+
+where $w_i=\frac{Pr(T_i=B\mid x_i)}{Pr(T_i=A\mid x_i)}$. Thus, the patients receiving $T=A$ are re-weighted to match the distribution of patients receiving $T=B$. Note that this causal effect would be the case when the outcome $Y$ is continuous. If the outcome is binary, $Y$ would be a proportion and we would use a link function such as logit to give us the causal effect in an odds ratio scale. We assume $w_i$ to follow logistic regression form.
+
+\[
+w_{i}=exp(x_i^{T}\beta)
+\]
+
+In order to estimate $\beta$, we use method of moments. We estimate $\beta$ such that the weighted averages of the covariates in the IPD exactly matches the aggregate data averages. Mathematically speaking, we estimate $\beta$ such that:
+
+\[
+0=\frac{\sum_{i=1}^{n}x_{i}exp(x_i^{T}\hat{\beta})}{\sum_{i=1}^{n}exp(x_i^{T}\hat{\beta})}-\bar{x}_{agg}
+\]
+
+This equation is equivalent to
+
+\[
+0=\sum_{i=1}^{n}(x_{i}-\bar{x}_{agg})exp(x_{i}^{T}\hat{\beta})
+\]
+
+It is possible to use this estimator since a logistic regression model for the odds of receiving $T = B$ vs $T = A$ would, by definition, provide the correct weights for balancing the trial populations. If the $x_i$ contains all the confounders and the logistic model for $w_i$ is correctly specified, then $\hat{\theta}$ in the next equation provides a consistent estimate of the causal effect of treatment $T = A$ vs $T = B$ on the mean of $Y$ among patients.
+
+\[
+\hat{\theta}=\frac{\sum_{i=1}^{n}y_{i}exp(x_i^{T}\hat{\beta})}{\sum_{i=1}^{n}exp(x_i^{T}\hat{\beta})}-\bar{y}_{agg}
+\]
+
+In order to solve the equation set up by the methods of moments, we could transform IPD by subtracting the aggregate data means. Then $\bar{x}_{agg}$ would equal 0 and the equation would simplify. This is why IPD is centered in the preprocessing step.
+
+\[
+0=\sum_{i=1}^{n}x_{i}exp(x_{i}^{T}\hat{\beta})
+\]
+
+Note that this is the first derivative of
+
+\[
+Q(\beta)=\sum_{i=1}^{n}exp(x_{i}^{T}\hat{\beta})
+\]
+
+which has second derivative
+
+\[
+Q''(\beta)=\sum_{i=1}^{n}x_ix_i^Texp(x_{i}^{T}\hat{\beta})
+\]
+
+Since $Q''(\beta)$ is positive-definite for all $\beta$, $Q(\beta)$ is convex and any finite solution from the equation is unique and corresponds to the global minimum of $Q(\beta)$. Thus, we can use optimization methods to calculate $\beta$.
+
+# References

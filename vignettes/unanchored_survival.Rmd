@@ -1,0 +1,167 @@
+---
+title: "Unanchored Survival Analysis"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: references.bib
+csl: biomedicine.csl
+vignette: >
+  %\VignetteIndexEntry{Unanchored Survival Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Loading R packages
+
+```{r}
+# install.packages("maicplus")
+library(maicplus)
+```
+
+Additional R packages for this vignette:
+
+```{r}
+library(dplyr)
+```
+
+# Illustration using example data
+
+This example reads in `centered_ipd_sat` data that was created in `calculating_weights` vignette and uses `adtte_sat` and `pseudo_ipd_sat` outcome datasets to run survival analysis using the `maic_unanchored` function by specifying `endpoint_type = "tte"`.
+
+Note that parameters `ipd` and `pseudo_ipd` in the `maic_unanchored` function for survival data analysis needs to have the following columns: USUBJID, ARM, EVENT, and TIME. USUBJID in `ipd` needs to match USUBJID in `weights_object`. USUBJID in `pseudo_ipd` is not strictly required, as if left unspecified, subject numbers are assigned using the row indexes.
+
+Furthermore, TIME in both these datasets have to be in days. For instance, when we digitize a KM plot where time is recorded in months, we need to multiply the months by the appropriate factor (i.e. 30.4375) to get the time in days.
+
+If you would like to run an analysis using scaled weights, set `normalize_weight` to TRUE. One clear benefit of using scaled weights is that the risk table at time = 0 in the Kaplan-Meier curve will match the IPD sample size.
+
+```{r}
+data(centered_ipd_sat)
+data(adtte_sat)
+data(pseudo_ipd_sat)
+
+centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+centered_colnames <- paste0(centered_colnames, "_CENTERED")
+
+weighted_data <- estimate_weights(
+  data = centered_ipd_sat,
+  centered_colnames = centered_colnames
+)
+
+result <- maic_unanchored(
+  weights_object = weighted_data,
+  ipd = adtte_sat,
+  pseudo_ipd = pseudo_ipd_sat,
+  trt_ipd = "A",
+  trt_agd = "B",
+  normalize_weight = FALSE,
+  endpoint_name = "Overall Survival",
+  endpoint_type = "tte",
+  eff_measure = "HR",
+  time_scale = "month",
+  km_conf_type = "log-log"
+)
+```
+
+There are two summaries available in the result: descriptive and inferential. In the descriptive section, we have summaries from fitting `survfit` function. Note that restricted mean (rmean), median, and 95% CI are summarized in the `time_scale` specified.
+
+```{r}
+result$descriptive$summary
+
+# Not shown due to long output
+# result$descriptive$survfit_before
+# result$descriptive$survfit_after
+```
+
+In the inferential section, we have the fitted models stored (i.e. `survfit` and `coxph`) and the results from the `coxph` models (i.e. hazard ratios and CI). Note that the p-values summarized are from `coxph` model Wald test and not from a log-rank test. Here is the overall summary.
+
+```{r}
+result$inferential$summary
+```
+
+Here are models and results before adjustment.
+
+```{r}
+result$inferential$fit$km_before
+result$inferential$fit$model_before
+result$inferential$fit$res_AB_unadj
+```
+
+Here are models and results after adjustment.
+
+```{r}
+result$inferential$fit$km_after
+result$inferential$fit$model_after
+result$inferential$fit$res_AB
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# heuristic check
+# merge in adtte with ipd_matched
+ipd_matched <- weighted_data$data
+combined_data_tte <- ipd_matched %>%
+  left_join(adtte_sat, by = c("USUBJID", "ARM"))
+pseudo_ipd <- pseudo_ipd_sat
+pseudo_ipd$weights <- 1
+
+combined_data_tte <- rbind(
+  combined_data_tte[, colnames(pseudo_ipd)],
+  pseudo_ipd
+)
+
+# Change the reference treatment to B
+combined_data_tte$ARM <- stats::relevel(as.factor(combined_data_tte$ARM), ref = "B")
+
+# Fit a Cox model with/without weights to estimate the HR
+unweighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, data = combined_data_tte)
+weighted_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM,
+  data = combined_data_tte, weights = combined_data_tte$weights, robust = TRUE
+)
+
+unweighted_cox
+weighted_cox
+
+kmobj <- survfit(Surv(TIME, EVENT) ~ ARM, combined_data_tte, conf.type = "log-log")
+kmobj_adj <- survfit(Surv(TIME, EVENT) ~ ARM,
+  combined_data_tte,
+  weights = combined_data_tte$weights, conf.type = "log-log"
+)
+
+# Derive median survival time
+medSurv <- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")
+medSurv_adj <- medSurv_makeup(kmobj_adj, legend = "after matching", time_scale = "day")
+medSurv_out <- rbind(medSurv, medSurv_adj)
+medSurv_out
+```
+
+# Using bootstrap to calculate standard errors
+
+If bootstrap standard errors are preferred, we need to specify the number of bootstrap iteration (`n_boot_iteration`) in `estimate_weights` function and proceed fitting `maic_unanchored` function. Then, the outputs include bootstrapped CI. Different types of bootstrap CI can be found by specifying the parameter `boot_ci_type`. See `boot.ci` in `boot` package for more details.
+
+```{r}
+weighted_data2 <- estimate_weights(
+  data = centered_ipd_sat,
+  centered_colnames = centered_colnames,
+  n_boot_iteration = 100,
+  set_seed_boot = 1234
+)
+
+result_boot <- maic_unanchored(
+  weights_object = weighted_data2,
+  ipd = adtte_sat,
+  pseudo_ipd = pseudo_ipd_sat,
+  trt_ipd = "A",
+  trt_agd = "B",
+  normalize_weight = FALSE,
+  endpoint_name = "Overall Survival",
+  endpoint_type = "tte",
+  eff_measure = "HR",
+  boot_ci_type = "perc",
+  time_scale = "month",
+  km_conf_type = "log-log"
+)
+
+result_boot$inferential$fit$boot_res_AB
+```

@@ -1,0 +1,162 @@
+---
+title: "Unanchored Binary Analysis"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: references.bib
+csl: biomedicine.csl
+vignette: >
+  %\VignetteIndexEntry{Unanchored Binary Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Loading R packages
+
+```{r}
+# install.packages("maicplus")
+library(maicplus)
+```
+
+Additional R packages for this vignette:
+
+```{r}
+library(dplyr)
+```
+
+# Illustration using example data
+
+This example reads in `centered_ipd_sat` data that was created in `calculating_weights` vignette and uses `adrs_sat` dataset to run binary outcome analysis using the `maic_unanchored` function by specifying `endpoint_type = "binary"`.
+
+Note that parameters `ipd` and `pseudo_ipd` in the `maic_unanchored` function for binary data analysis needs to have the following columns: USUBJID, ARM, RESPONSE. USUBJID in `ipd` needs to match USUBJID in `weights_object`. `pseudo_ipd` for binary data can be conveniently generated using `get_pseudo_ipd_binary` function.
+
+Robust standard error for the adjusted result are calculated by sandwich variance estimator in `sandwich` package with the function `vcovHC`. Default type of variance estimator (specified by parameter `binary_robust_cov_type`) is `HC3`, but other types can be specified. For more information on different types, see `vcovHC`.
+
+```{r}
+data(centered_ipd_sat)
+data(adrs_sat)
+
+centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+centered_colnames <- paste0(centered_colnames, "_CENTERED")
+
+weighted_data <- estimate_weights(
+  data = centered_ipd_sat,
+  centered_colnames = centered_colnames
+)
+
+# get dummy binary pseudo IPD
+pseudo_adrs <- get_pseudo_ipd_binary(
+  binary_agd = data.frame(
+    ARM = "B",
+    RESPONSE = c("YES", "NO"),
+    COUNT = c(280, 120)
+  ),
+  format = "stacked"
+)
+
+result <- maic_unanchored(
+  weights_object = weighted_data,
+  ipd = adrs_sat,
+  pseudo_ipd = pseudo_adrs,
+  trt_ipd = "A",
+  trt_agd = "B",
+  normalize_weight = FALSE,
+  endpoint_type = "binary",
+  endpoint_name = "Binary Endpoint",
+  eff_measure = "OR",
+  # binary specific args
+  binary_robust_cov_type = "HC3"
+)
+```
+
+There are two summaries available in the result: descriptive and inferential. In the descriptive section, we have summaries of events.
+
+```{r}
+result$descriptive
+```
+
+In the inferential section, we have the fitted models stored (i.e. logistic regression) and the results from the `glm` models (i.e. odds ratios and CI). If other effect measures are needed besides odds ratios, we have an option to fit risk ratios or risk differences via `eff_measure` parameter. Here is the overall summary.
+
+```{r}
+result$inferential$summary
+```
+
+Here are model and results before adjustment.
+
+```{r}
+result$inferential$fit$model_before
+result$inferential$fit$res_AB_unadj
+```
+
+Here are model and results after adjustment.
+
+```{r}
+result$inferential$fit$model_after
+result$inferential$fit$res_AB
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# heuristic check
+# merge in adrs with ipd_matched
+ipd_matched <- weighted_data$data
+combined_data_binary <- ipd_matched %>%
+  left_join(adrs_sat, by = c("USUBJID", "ARM"))
+pseudo_adrs$weights <- 1
+
+combined_data_binary <- rbind(
+  combined_data_binary[, colnames(pseudo_adrs)],
+  pseudo_adrs
+)
+
+# Change the reference treatment to B
+combined_data_binary$ARM <- stats::relevel(as.factor(combined_data_binary$ARM), ref = "B")
+
+binobj_dat <- glm(RESPONSE ~ ARM, combined_data_binary, family = binomial(link = "logit"))
+binobj_dat_adj <- glm(RESPONSE ~ ARM, combined_data_binary,
+  weights = weights,
+  family = binomial(link = "logit")
+) |> suppressWarnings()
+
+bin_robust_cov <- sandwich::vcovHC(binobj_dat_adj, type = "HC3")
+bin_robust_coef <- lmtest::coeftest(binobj_dat_adj, vcov. = bin_robust_cov)
+bin_robust_ci <- lmtest::coefci(binobj_dat_adj, vcov. = bin_robust_cov)
+
+bin_robust_ci
+exp(bin_robust_ci)
+
+exp(summary(binobj_dat)$coef[2, "Estimate"])
+exp(summary(binobj_dat_adj)$coef[2, "Estimate"])
+```
+
+# Using bootstrap to calculate standard errors
+
+If bootstrap standard errors are preferred, we need to specify the number of bootstrap iteration (`n_boot_iteration`) in `estimate_weights` function and proceed fitting `maic_unanchored` function. Then, the outputs include bootstrapped CI. Different types of bootstrap CI can be found by using parameter `boot_ci_type`. See `boot.ci` in `boot` package for more details.
+
+```{r}
+weighted_data2 <- estimate_weights(
+  data = centered_ipd_sat,
+  centered_colnames = centered_colnames,
+  n_boot_iteration = 100,
+  set_seed_boot = 1234
+)
+
+result_boot <- maic_unanchored(
+  weights_object = weighted_data2,
+  ipd = adrs_sat,
+  pseudo_ipd = pseudo_adrs,
+  trt_ipd = "A",
+  trt_agd = "B",
+  normalize_weight = FALSE,
+  endpoint_type = "binary",
+  endpoint_name = "Binary Endpoint",
+  eff_measure = "OR",
+  boot_ci_type = "perc",
+  # binary specific args
+  binary_robust_cov_type = "HC3"
+)
+
+result_boot$inferential$fit$boot_res_AB
+```

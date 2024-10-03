@@ -3,18 +3,81 @@ url: https://hta-pharma.github.io/maicplus
 template:
   bootstrap: 5
   bootswatch: cerulean
-  includes:
-    in_header: |
-       <!-- Global site tag (gtag.js) - Google Analytics -->
-       <script async src="https://www.googletagmanager.com/gtag/js?id=UA-125641273-1"></script>
-       <script>
-         window.dataLayer = window.dataLayer || [];
-         function gtag(){dataLayer.push(arguments);}
-         gtag('js', new Date());
-         gtag('config', 'UA-125641273-1');
-       </script>
 
 navbar:
-  right:
-    - icon: fa-github
+  structure:
+    left:
+      - intro
+      - reference
+      - articles
+      - news
+    right:
+      - github
+  components:
+    github:
+      icon: fa-github
       href: https://github.com/hta-pharma/maicplus
+      aria-label: View on github.com
+
+articles:
+  - title: All vignettes
+    navbar: ~
+    contents:
+      - introduction
+      - calculating_weights
+      - anchored_binary
+      - unanchored_binary
+      - anchored_survival
+      - unanchored_survival
+      - kaplan_meier_plots
+
+reference:
+  - title: User Functions
+    navbar: ~
+    contents:
+      - basic_kmplot
+      - basic_kmplot2
+      - bucher
+      - center_ipd
+      - check_weights
+      - complete_agd
+      - dummize_ipd
+      - estimate_weights
+      - get_pseudo_ipd_binary
+      - maic_anchored
+      - maic_unanchored
+      - process_agd
+      - report_table_binary
+      - report_table_tte
+  - title: Plotting Functions
+    contents:
+      - kmplot
+      - kmplot2
+      - ph_diagplot
+      - ph_diagplot_lch
+      - ph_diagplot_schoenfeld
+      - plot_weights_base
+      - plot_weights_ggplot
+  - title: Helper Functions
+    contents:
+      - set_time_conversion
+      - get_time_as
+      - glm_makeup
+      - find_SE_from_CI
+      - survfit_makeup
+      - medSurv_makeup
+  - title: Data
+    contents:
+      - agd
+      - adrs_sat
+      - adrs_twt
+      - adsl_sat
+      - adsl_twt
+      - adtte_sat
+      - adtte_twt
+      - centered_ipd_sat
+      - centered_ipd_twt
+      - pseudo_ipd_sat
+      - pseudo_ipd_twt
+      - weighted_sat
+      - weighted_twt
