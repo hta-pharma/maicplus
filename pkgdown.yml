@@ -1,8 +1,15 @@
 pandoc: '3.4'
 pkgdown: 2.1.1
 pkgdown_sha: ~
-articles: {}
-last_built: 2024-09-27T16:25Z
+articles:
+  anchored_binary: anchored_binary.html
+  anchored_survival: anchored_survival.html
+  calculating_weights: calculating_weights.html
+  introduction: introduction.html
+  kaplan_meier_plots: kaplan_meier_plots.html
+  unanchored_binary: unanchored_binary.html
+  unanchored_survival: unanchored_survival.html
+last_built: 2024-10-03T16:07Z
 urls:
   reference: https://hta-pharma.github.io/maicplus/main/reference
   article: https://hta-pharma.github.io/maicplus/main/articles
