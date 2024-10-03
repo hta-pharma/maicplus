@@ -1,47 +1,14 @@
 ---
-title: "Unanchored survival analysis"
+title: "Unanchored Survival Analysis"
 date: "`r Sys.Date()`"
-output: 
-  html_document: default
-  pdf_document: default
-knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, encoding = encoding,
-  output_format = "all") })
+output: rmarkdown::html_vignette
 bibliography: references.bib
 csl: biomedicine.csl
 vignette: >
-  %\VignetteIndexEntry{Calculating Weights}
+  %\VignetteIndexEntry{Unanchored Survival Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
-<style type="text/css">
-
-body{ /* Normal  */
-      font-size: 14px;
-  }
-td {  /* Table  */
-  font-size: 10px;
-}
-h1.title {
-  font-size: 38px;
-}
-h1 { /* Header 1 */
-  font-size: 28px;
-  }
-h2 { /* Header 2 */
-    font-size: 22px;
-}
-h3 { /* Header 3 */
-  font-size: 18px;
-}
-code.r{ /* Code block */
-    font-size: 12px;
-}
-pre { /* Code block - determines code spacing between lines */
-    font-size: 14px;
-}
-</style>
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
@@ -64,7 +31,7 @@ library(dplyr)
 
 This example reads in `centered_ipd_sat` data that was created in `calculating_weights` vignette and uses `adtte_sat` and `pseudo_ipd_sat` outcome datasets to run survival analysis using the `maic_unanchored` function by specifying `endpoint_type = "tte"`.
 
-Note that parameters `ipd` and `pseudo_ipd` in the `maic_unanchored` function for survival data analysis needs to have the following columns: USUBJID, ARM, EVENT, and TIME. USUBJID in `ipd` needs to match USUBJID in `weights_object`. USUBJID in `pseudo_ipd` is not strictly required, as if left unspecified, subject numbers are assigned using the row indexes. 
+Note that parameters `ipd` and `pseudo_ipd` in the `maic_unanchored` function for survival data analysis needs to have the following columns: USUBJID, ARM, EVENT, and TIME. USUBJID in `ipd` needs to match USUBJID in `weights_object`. USUBJID in `pseudo_ipd` is not strictly required, as if left unspecified, subject numbers are assigned using the row indexes.
 
 Furthermore, TIME in both these datasets have to be in days. For instance, when we digitize a KM plot where time is recorded in months, we need to multiply the months by the appropriate factor (i.e. 30.4375) to get the time in days.
 

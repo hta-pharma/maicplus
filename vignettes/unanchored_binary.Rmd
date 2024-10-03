@@ -1,47 +1,14 @@
 ---
-title: "Unanchored binary analysis"
+title: "Unanchored Binary Analysis"
 date: "`r Sys.Date()`"
-output: 
-  html_document: default
-  pdf_document: default
-knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, encoding = encoding,
-  output_format = "all") })
+output: rmarkdown::html_vignette
 bibliography: references.bib
 csl: biomedicine.csl
 vignette: >
-  %\VignetteIndexEntry{Calculating Weights}
+  %\VignetteIndexEntry{Unanchored Binary Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
-<style type="text/css">
-
-body{ /* Normal  */
-      font-size: 14px;
-  }
-td {  /* Table  */
-  font-size: 10px;
-}
-h1.title {
-  font-size: 38px;
-}
-h1 { /* Header 1 */
-  font-size: 28px;
-  }
-h2 { /* Header 2 */
-    font-size: 22px;
-}
-h3 { /* Header 3 */
-  font-size: 18px;
-}
-code.r{ /* Code block */
-    font-size: 12px;
-}
-pre { /* Code block - determines code spacing between lines */
-    font-size: 14px;
-}
-</style>
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
@@ -66,7 +33,7 @@ This example reads in `centered_ipd_sat` data that was created in `calculating_w
 
 Note that parameters `ipd` and `pseudo_ipd` in the `maic_unanchored` function for binary data analysis needs to have the following columns: USUBJID, ARM, RESPONSE. USUBJID in `ipd` needs to match USUBJID in `weights_object`. `pseudo_ipd` for binary data can be conveniently generated using `get_pseudo_ipd_binary` function.
 
-Robust standard error for the adjusted result are calculated by sandwich variance estimator in `sandwich` package with the function `vcovHC`. Default type of variance estimator (specified by parameter `binary_robust_cov_type`) is `HC3`, but other types can be specified. For more information on different types, see `vcovHC`. 
+Robust standard error for the adjusted result are calculated by sandwich variance estimator in `sandwich` package with the function `vcovHC`. Default type of variance estimator (specified by parameter `binary_robust_cov_type`) is `HC3`, but other types can be specified. For more information on different types, see `vcovHC`.
 
 ```{r}
 data(centered_ipd_sat)
@@ -105,7 +72,7 @@ result <- maic_unanchored(
 )
 ```
 
-There are two summaries available in the result: descriptive and inferential. In the descriptive section, we have summaries of events. 
+There are two summaries available in the result: descriptive and inferential. In the descriptive section, we have summaries of events.
 
 ```{r}
 result$descriptive
