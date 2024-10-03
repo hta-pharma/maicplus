@@ -1,5 +1,13 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://hta-pharma.github.io/maicplus/404.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/articles/anchored_binary.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/articles/anchored_survival.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/articles/calculating_weights.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/articles/index.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/articles/introduction.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/articles/kaplan_meier_plots.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/articles/unanchored_binary.html</loc></url>
+<url><loc>https://hta-pharma.github.io/maicplus/articles/unanchored_survival.html</loc></url>
 <url><loc>https://hta-pharma.github.io/maicplus/authors.html</loc></url>
 <url><loc>https://hta-pharma.github.io/maicplus/index.html</loc></url>
 <url><loc>https://hta-pharma.github.io/maicplus/news/index.html</loc></url>
