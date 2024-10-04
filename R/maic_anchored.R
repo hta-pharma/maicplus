@@ -427,8 +427,8 @@ maic_anchored_tte <- function(res,
     res_AB_unadj = res_AB_unadj,
     boot_res = boot_res,
     boot_res_AC = boot_res_AC,
-    boot_res_AB = boot_res_AB,
-    boot_res_AB2 = boot_res_AB2
+    boot_res_AB_mc = boot_res_AB,
+    boot_res_AB = boot_res_AB2
   )
 
   # : compile HR result
@@ -692,7 +692,8 @@ maic_anchored_binary <- function(res,
     res_AB_unadj = res_AB_unadj,
     boot_res = boot_res,
     boot_res_AC = boot_res_AC,
-    boot_res_AB = boot_res_AB
+    boot_res_AB_mc = boot_res_AB,
+    boot_res_AB = boot_res_AB2
   )
 
   # : compile binary effect estimate result
