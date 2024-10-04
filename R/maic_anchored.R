@@ -332,7 +332,7 @@ maic_anchored_tte <- function(res,
       boot_res_AC <- list(est = coef(boot_coxobj_dat_adj)[1], se = sqrt(vcov(boot_coxobj_dat_adj)[1, 1]))
       # temp method to source in variance of BC in AgD via monte carlo, may be removed in future
       res_BC_mc <- res_BC
-      res_BC_mc$est <- rnorm(1, mean = res_BC$est, sd= res_BC$se)
+      res_BC_mc$est <- rnorm(1, mean = res_BC$est, sd = res_BC$se)
       boot_res_AB <- bucher(boot_res_AC, res_BC_mc, conf_lv = 0.95)
       c(
         est_AB = boot_res_AB$est,
@@ -404,7 +404,6 @@ maic_anchored_tte <- function(res,
       ci_u = exp(boot_res_AB2$ci_u),
       pval = NA
     )
-
   } else {
     boot_res <- NULL
     boot_res_AB <- NULL
@@ -575,7 +574,7 @@ maic_anchored_binary <- function(res,
       boot_res_AC <- list(est = boot_AC_est, se = sqrt(boot_AC_var))
       # temp method to source in variance of BC in AgD via monte carlo, may be removed in future
       res_BC_mc <- res_BC
-      res_BC_mc$est <- rnorm(1, mean = res_BC$est, sd= res_BC$se)
+      res_BC_mc$est <- rnorm(1, mean = res_BC$est, sd = res_BC$se)
 
       boot_res_AB <- bucher(boot_res_AC, res_BC_mc, conf_lv = 0.95)
 
@@ -672,7 +671,6 @@ maic_anchored_binary <- function(res,
       res_AC_unadj <- transform_absolute(res_AC_unadj)
       res_BC <- transform_absolute(res_BC)
     }
-
   } else {
     boot_res_AC <- NULL
     boot_res_AB <- NULL
