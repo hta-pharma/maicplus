@@ -395,7 +395,7 @@ maic_anchored_tte <- function(res,
       ci_u = boot_ci_ac[[l_u_index[[3]]]][l_u_index[[2]]],
       pval = NA
     )
-    boot_res_AC2$se <- find_SE_from_CI(boot_res_AC2$ci_l, boot_res_AC2$ci_u, 0.95, logged = FALSE)
+    boot_res_AC2$se <- find_SE_from_CI(boot_res_AC2$ci_l, boot_res_AC2$ci_u, 0.95, log = FALSE)
     boot_res_AB2 <- bucher(boot_res_AC2, res_BC, conf_lv = 0.95)
     boot_res_AB2 <- list(
       est = exp(boot_res_AB2$est),
@@ -646,7 +646,7 @@ maic_anchored_binary <- function(res,
       ci_u = boot_ci_ac[[l_u_index[[3]]]][l_u_index[[2]]],
       pval = NA
     )
-    boot_res_AC2$se <- find_SE_from_CI(boot_res_AC2$ci_l, boot_res_AC2$ci_u, 0.95, logged = FALSE)
+    boot_res_AC2$se <- find_SE_from_CI(boot_res_AC2$ci_l, boot_res_AC2$ci_u, 0.95, log = FALSE)
     boot_res_AB2 <- bucher(boot_res_AC2, res_BC, conf_lv = 0.95)
     boot_res_AB2 <- list(
       est = transform_estimate(boot_res_AB2$est),
