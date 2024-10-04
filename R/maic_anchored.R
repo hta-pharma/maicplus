@@ -330,7 +330,10 @@ maic_anchored_tte <- function(res,
       }
       boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_ipd, weights = boot_ipd$weights, robust = TRUE)
       boot_res_AC <- list(est = coef(boot_coxobj_dat_adj)[1], se = sqrt(vcov(boot_coxobj_dat_adj)[1, 1]))
-      boot_res_AB <- bucher(boot_res_AC, res_BC, conf_lv = 0.95)
+      # temp method to source in variance of BC in AgD via monte carlo, may be removed in future
+      res_BC_mc <- res_BC
+      res_BC_mc$est <- rnorm(1, mean = res_BC$est, sd= res_BC$se)
+      boot_res_AB <- bucher(boot_res_AC, res_BC_mc, conf_lv = 0.95)
       c(
         est_AB = boot_res_AB$est,
         var_AB = boot_res_AB$se^2,
@@ -365,6 +368,7 @@ maic_anchored_tte <- function(res,
       "bca" = list(4, 5, "bca")
     )
 
+    # boot results for A v B, method 1 (maybe retired in future version)
     boot_res_AB <- list(
       est = as.vector(exp(boot_res$t0[1])),
       se = NA,
@@ -382,9 +386,29 @@ maic_anchored_tte <- function(res,
       ci_u = exp(boot_ci_ac[[l_u_index[[3]]]][l_u_index[[2]]]),
       pval = NA
     )
+
+    # boot results for A v B, method 2
+    boot_res_AC2 <- list(
+      est = as.vector(boot_res$t0[4]),
+      se = NA,
+      ci_l = boot_ci_ac[[l_u_index[[3]]]][l_u_index[[1]]],
+      ci_u = boot_ci_ac[[l_u_index[[3]]]][l_u_index[[2]]],
+      pval = NA
+    )
+    boot_res_AC2$se <- find_SE_from_CI(boot_res_AC2$ci_l, boot_res_AC2$ci_u, 0.95, logged = FALSE)
+    boot_res_AB2 <- bucher(boot_res_AC2, res_BC, conf_lv = 0.95)
+    boot_res_AB2 <- list(
+      est = exp(boot_res_AB2$est),
+      se = NA,
+      ci_l = exp(boot_res_AB2$ci_l),
+      ci_u = exp(boot_res_AB2$ci_u),
+      pval = NA
+    )
+
   } else {
     boot_res <- NULL
     boot_res_AB <- NULL
+    boot_res_AB2 <- NULL
     boot_res_AC <- NULL
   }
 
@@ -403,7 +427,8 @@ maic_anchored_tte <- function(res,
     res_AB_unadj = res_AB_unadj,
     boot_res = boot_res,
     boot_res_AC = boot_res_AC,
-    boot_res_AB = boot_res_AB
+    boot_res_AB = boot_res_AB,
+    boot_res_AB2 = boot_res_AB2
   )
 
   # : compile HR result
@@ -516,21 +541,6 @@ maic_anchored_binary <- function(res,
   res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
   res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
 
-  # transform
-  if (eff_measure %in% c("RR", "OR")) {
-    res_AB <- transform_ratio(res_AB)
-    res_AB_unadj <- transform_ratio(res_AB_unadj)
-    res_AC <- transform_ratio(res_AC)
-    res_AC_unadj <- transform_ratio(res_AC_unadj)
-    res_BC <- transform_ratio(res_BC)
-  } else if (eff_measure == "RD") {
-    res_AB <- transform_absolute(res_AB)
-    res_AB_unadj <- transform_absolute(res_AB_unadj)
-    res_AC <- transform_absolute(res_AC)
-    res_AC_unadj <- transform_absolute(res_AC_unadj)
-    res_BC <- transform_absolute(res_BC)
-  }
-
   # : get bootstrapped estimates if applicable
   if (!is.null(weights_object$boot)) {
     keep_rows <- setdiff(seq_len(nrow(weights_object$data)), weights_object$rows_with_missing)
@@ -563,7 +573,11 @@ maic_anchored_binary <- function(res,
       boot_AC_var <- vcov(boot_binobj_dat_adj)[2, 2]
 
       boot_res_AC <- list(est = boot_AC_est, se = sqrt(boot_AC_var))
-      boot_res_AB <- bucher(boot_res_AC, res_BC, conf_lv = 0.95)
+      # temp method to source in variance of BC in AgD via monte carlo, may be removed in future
+      res_BC_mc <- res_BC
+      res_BC_mc$est <- rnorm(1, mean = res_BC$est, sd= res_BC$se)
+
+      boot_res_AB <- bucher(boot_res_AC, res_BC_mc, conf_lv = 0.95)
 
       c(
         est_AB = boot_res_AB$est,
@@ -606,6 +620,7 @@ maic_anchored_binary <- function(res,
       "OR" = exp
     )
 
+    # boot results for A v B, method 1 (maybe retired in future version)
     boot_res_AB <- list(
       est = as.vector(transform_estimate(boot_res$t0[1])),
       se = NA,
@@ -623,9 +638,45 @@ maic_anchored_binary <- function(res,
       ci_u = transform_estimate(boot_ci_ac[[l_u_index[[3]]]][l_u_index[[2]]]),
       pval = NA
     )
+
+    # boot results for A v B, method 2
+    boot_res_AC2 <- list(
+      est = as.vector(boot_res$t0[4]),
+      se = NA,
+      ci_l = boot_ci_ac[[l_u_index[[3]]]][l_u_index[[1]]],
+      ci_u = boot_ci_ac[[l_u_index[[3]]]][l_u_index[[2]]],
+      pval = NA
+    )
+    boot_res_AC2$se <- find_SE_from_CI(boot_res_AC2$ci_l, boot_res_AC2$ci_u, 0.95, logged = FALSE)
+    boot_res_AB2 <- bucher(boot_res_AC2, res_BC, conf_lv = 0.95)
+    boot_res_AB2 <- list(
+      est = transform_estimate(boot_res_AB2$est),
+      se = NA,
+      ci_l = transform_estimate(boot_res_AB2$ci_l),
+      ci_u = transform_estimate(boot_res_AB2$ci_u),
+      pval = NA
+    )
+
+
+    # transform
+    if (eff_measure %in% c("RR", "OR")) {
+      res_AB <- transform_ratio(res_AB)
+      res_AB_unadj <- transform_ratio(res_AB_unadj)
+      res_AC <- transform_ratio(res_AC)
+      res_AC_unadj <- transform_ratio(res_AC_unadj)
+      res_BC <- transform_ratio(res_BC)
+    } else if (eff_measure == "RD") {
+      res_AB <- transform_absolute(res_AB)
+      res_AB_unadj <- transform_absolute(res_AB_unadj)
+      res_AC <- transform_absolute(res_AC)
+      res_AC_unadj <- transform_absolute(res_AC_unadj)
+      res_BC <- transform_absolute(res_BC)
+    }
+
   } else {
     boot_res_AC <- NULL
     boot_res_AB <- NULL
+    boot_res_AB2 <- NULL
     boot_res <- NULL
   }
 
