@@ -655,14 +655,13 @@ maic_anchored_binary <- function(res,
       ci_u = transform_estimate(boot_res_AB2$ci_u),
       pval = NA
     )
-
   } else {
     boot_res_AC <- NULL
     boot_res_AB <- NULL
     boot_res_AB2 <- NULL
     boot_res <- NULL
   }
-  
+
   # transform
   if (eff_measure %in% c("RR", "OR")) {
     res_AB <- transform_ratio(res_AB)
@@ -677,7 +676,7 @@ maic_anchored_binary <- function(res,
     res_AC_unadj <- transform_absolute(res_AC_unadj)
     res_BC <- transform_absolute(res_BC)
   }
-  
+
 
   # : report all raw fitted obj
   res$inferential[["fit"]] <- list(
