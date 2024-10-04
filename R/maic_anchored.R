@@ -411,11 +411,11 @@ maic_anchored_tte <- function(res,
   res_AB_unadj$est <- exp(res_AB_unadj$est)
   res_AB_unadj$ci_l <- exp(res_AB_unadj$ci_l)
   res_AB_unadj$ci_u <- exp(res_AB_unadj$ci_u)
-  
+
   res_AC$est <- exp(res_AC$est)
   res_AC_unadj$est <- exp(res_AC_unadj$est)
   res_BC$est <- exp(res_BC$est)
-  
+
   # : report all raw fitted obj
   res$inferential[["fit"]] <- list(
     km_before_ipd = kmobj_ipd,
