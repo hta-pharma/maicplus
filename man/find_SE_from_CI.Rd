@@ -4,12 +4,7 @@
 \alias{find_SE_from_CI}
 \title{Calculate standard error from the reported confidence interval.}
 \usage{
-find_SE_from_CI(
-  CI_lower = NULL,
-  CI_upper = NULL,
-  CI_perc = 0.95,
-  logged = TRUE
-)
+find_SE_from_CI(CI_lower = NULL, CI_upper = NULL, CI_perc = 0.95, log = TRUE)
 }
 \arguments{
 \item{CI_lower}{Reported lower percentile value of the
@@ -20,13 +15,13 @@ treatment effect}
 
 \item{CI_perc}{Percentage of confidence interval reported}
 
-\item{logged}{Whether the confidence interval should be logged.
+\item{log}{Whether the confidence interval should be logged.
 For relative treatment effect, log should be applied because
 estimated log treatment effect is approximately normally distributed.}
 }
 \value{
-Standard error of log relative treatment effect if \code{'logged'}
-is true and standard error of the treatment effect if \code{'logged'}
+Standard error of log relative treatment effect if \code{'log'}
+is true and standard error of the treatment effect if \code{'log'}
 is false
 }
 \description{
@@ -38,7 +33,7 @@ risk ratio), the function would log the confidence interval.
 For risk difference and mean difference,
 we do not log the confidence interval.
 The option to log the confidence interval is controlled
-by \code{'logged'} parameter.
+by \code{'log'} parameter.
 }
 \examples{
 find_SE_from_CI(CI_lower = 0.55, CI_upper = 0.90, CI_perc = 0.95)

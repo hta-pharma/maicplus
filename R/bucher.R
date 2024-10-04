@@ -80,25 +80,25 @@ bucher <- function(trt, com, conf_lv = 0.95) {
 #' For risk difference and mean difference,
 #' we do not log the confidence interval.
 #' The option to log the confidence interval is controlled
-#' by `'logged'` parameter.
+#' by `'log'` parameter.
 #'
 #' @param CI_lower Reported lower percentile value of the
 #' treatment effect
 #' @param CI_upper Reported upper percentile value of the
 #' treatment effect
 #' @param CI_perc Percentage of confidence interval reported
-#' @param logged Whether the confidence interval should be logged.
+#' @param log Whether the confidence interval should be logged.
 #' For relative treatment effect, log should be applied because
 #' estimated log treatment effect is approximately normally distributed.
-#' @return Standard error of log relative treatment effect if `'logged'`
-#' is true and standard error of the treatment effect if `'logged'`
+#' @return Standard error of log relative treatment effect if `'log'`
+#' is true and standard error of the treatment effect if `'log'`
 #' is false
 #' @examples
 #' find_SE_from_CI(CI_lower = 0.55, CI_upper = 0.90, CI_perc = 0.95)
 #' @export
 
 find_SE_from_CI <- function(CI_lower = NULL, CI_upper = NULL,
-                            CI_perc = 0.95, logged = TRUE) {
+                            CI_perc = 0.95, log = TRUE) {
   if (CI_perc > 1 || CI_perc < 0) {
     stop("CI_perc has to be between 0 and 1")
   }
@@ -112,7 +112,7 @@ find_SE_from_CI <- function(CI_lower = NULL, CI_upper = NULL,
   }
 
   alpha <- 1 - CI_perc
-  se <- ifelse(logged,
+  se <- ifelse(log,
     (log(CI_upper) - log(CI_lower)) / (2 * qnorm(1 - alpha / 2)),
     (CI_upper - CI_lower) / (2 * qnorm(1 - alpha / 2))
   )
