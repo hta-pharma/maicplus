@@ -33,7 +33,7 @@ Authors@R: c(
       role = c("ctb"),
       email = "chrysostomos.kal@gmail.com"
    ),
-   person("Merck, Inc.", role = c("cph", "fnd")),
+   person("MSD, Inc.", role = c("cph", "fnd")),
    person("Roche, Inc.", role = c("cph", "fnd"))
    )
 Description: The maicplus package facilitates performing matching adjusted indirect comparison
