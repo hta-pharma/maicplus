@@ -667,7 +667,7 @@ maic_anchored_binary <- function(res,
     boot_res <- NULL
   }
 
-  # transform
+  # transform effect measures
   if (eff_measure %in% c("RR", "OR")) {
     res_AB <- transform_ratio(res_AB)
     res_AB_unadj <- transform_ratio(res_AB_unadj)
@@ -683,7 +683,7 @@ maic_anchored_binary <- function(res,
   }
 
 
-  # : report all raw fitted obj
+  # report all raw fitted obj
   res$inferential[["fit"]] <- list(
     model_before_ipd = binobj_ipd,
     model_after_ipd = binobj_ipd_adj,
@@ -699,7 +699,7 @@ maic_anchored_binary <- function(res,
     boot_res_AB = boot_res_AB2
   )
 
-  # : compile binary effect estimate result
+  # compile binary effect estimate result
   res$inferential[["summary"]] <- data.frame(
     case = c("AC", "adjusted_AC", "BC", "AB", "adjusted_AB"),
     EST = c(
