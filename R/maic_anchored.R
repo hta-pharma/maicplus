@@ -297,13 +297,6 @@ maic_anchored_tte <- function(res,
   res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
   res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
 
-  res_AB$est <- exp(res_AB$est)
-  res_AB$ci_l <- exp(res_AB$ci_l)
-  res_AB$ci_u <- exp(res_AB$ci_u)
-  res_AB_unadj$est <- exp(res_AB_unadj$est)
-  res_AB_unadj$ci_l <- exp(res_AB_unadj$ci_l)
-  res_AB_unadj$ci_u <- exp(res_AB_unadj$ci_u)
-
   # : get bootstrapped estimates if applicable
   if (!is.null(weights_object$boot)) {
     keep_rows <- setdiff(seq_len(nrow(weights_object$data)), weights_object$rows_with_missing)
@@ -411,6 +404,18 @@ maic_anchored_tte <- function(res,
     boot_res_AC <- NULL
   }
 
+  # transform
+  res_AB$est <- exp(res_AB$est)
+  res_AB$ci_l <- exp(res_AB$ci_l)
+  res_AB$ci_u <- exp(res_AB$ci_u)
+  res_AB_unadj$est <- exp(res_AB_unadj$est)
+  res_AB_unadj$ci_l <- exp(res_AB_unadj$ci_l)
+  res_AB_unadj$ci_u <- exp(res_AB_unadj$ci_u)
+  
+  res_AC$est <- exp(res_AC$est)
+  res_AC_unadj$est <- exp(res_AC_unadj$est)
+  res_BC$est <- exp(res_BC$est)
+  
   # : report all raw fitted obj
   res$inferential[["fit"]] <- list(
     km_before_ipd = kmobj_ipd,
