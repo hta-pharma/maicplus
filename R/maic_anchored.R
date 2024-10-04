@@ -656,27 +656,28 @@ maic_anchored_binary <- function(res,
       pval = NA
     )
 
-
-    # transform
-    if (eff_measure %in% c("RR", "OR")) {
-      res_AB <- transform_ratio(res_AB)
-      res_AB_unadj <- transform_ratio(res_AB_unadj)
-      res_AC <- transform_ratio(res_AC)
-      res_AC_unadj <- transform_ratio(res_AC_unadj)
-      res_BC <- transform_ratio(res_BC)
-    } else if (eff_measure == "RD") {
-      res_AB <- transform_absolute(res_AB)
-      res_AB_unadj <- transform_absolute(res_AB_unadj)
-      res_AC <- transform_absolute(res_AC)
-      res_AC_unadj <- transform_absolute(res_AC_unadj)
-      res_BC <- transform_absolute(res_BC)
-    }
   } else {
     boot_res_AC <- NULL
     boot_res_AB <- NULL
     boot_res_AB2 <- NULL
     boot_res <- NULL
   }
+  
+  # transform
+  if (eff_measure %in% c("RR", "OR")) {
+    res_AB <- transform_ratio(res_AB)
+    res_AB_unadj <- transform_ratio(res_AB_unadj)
+    res_AC <- transform_ratio(res_AC)
+    res_AC_unadj <- transform_ratio(res_AC_unadj)
+    res_BC <- transform_ratio(res_BC)
+  } else if (eff_measure == "RD") {
+    res_AB <- transform_absolute(res_AB)
+    res_AB_unadj <- transform_absolute(res_AB_unadj)
+    res_AC <- transform_absolute(res_AC)
+    res_AC_unadj <- transform_absolute(res_AC_unadj)
+    res_BC <- transform_absolute(res_BC)
+  }
+  
 
   # : report all raw fitted obj
   res$inferential[["fit"]] <- list(
