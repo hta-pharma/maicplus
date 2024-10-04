@@ -30,7 +30,7 @@ Other contributors:
 \itemize{
   \item Miranta Antoniou \email{miranta.antoniou@roche.com} [contributor]
   \item Chrysostomos Kalyvas \email{chrysostomos.kal@gmail.com} [contributor]
-  \item Merck, Inc. [copyright holder, funder]
+  \item MSD, Inc. [copyright holder, funder]
   \item Roche, Inc. [copyright holder, funder]
 }
 

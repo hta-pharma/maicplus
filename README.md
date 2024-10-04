@@ -1,5 +1,10 @@
 
+# maicplus
+
+ADD LOGO
+
 ## Overview
+
 The maicplus package provides tools to perform matching-adjusted indirect comparison (MAIC) analysis. MAIC is a method used to adjust for differences in baseline characteristics between treatment groups in indirect comparisons, typically where patient-level data are available for one treatment but only aggregate-level data are available for the comparator treatment.
 
 ## Features
