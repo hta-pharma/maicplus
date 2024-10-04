@@ -18,7 +18,21 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: hta-pharma \email{hta-pharma@example.com}
+\strong{Maintainer}: Isaac Gravestock \email{isaac.gravestock@roche.com}
+
+Authors:
+\itemize{
+  \item Gregory Chen \email{xiangyi.gregory.chen@msd.com}
+  \item Michael Seo \email{michael.seo@roche.com}
+}
+
+Other contributors:
+\itemize{
+  \item Miranta Antoniou \email{miranta.antoniou@roche.com} [contributor]
+  \item Chrysostomos Kalyvas \email{chrysostomos.kal@gmail.com} [contributor]
+  \item Merck, Inc. [copyright holder, funder]
+  \item Roche, Inc. [copyright holder, funder]
+}
 
 }
 \keyword{internal}
