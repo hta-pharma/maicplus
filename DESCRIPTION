@@ -2,8 +2,40 @@ Title: Matching Adjusted Indirect Comparison
 Package: maicplus
 Version: 0.1.0
 Date: 2023-03-03
-Authors@R:
-    person("hta-pharma", , , "hta-pharma@example.com", role = c("aut", "cre"))
+Authors@R: c(
+   person(
+      given = "Gregory",
+      family = "Chen",
+      role = c("aut"),
+      email = "xiangyi.gregory.chen@msd.com"
+      ),
+   person(
+      given = "Michael",
+      family = "Seo",
+      role = c("aut"),
+      email = "michael.seo@roche.com"
+      ),
+   person(
+      given = "Isaac",
+      family = "Gravestock",
+      role = c("aut", "cre"),
+      email = "isaac.gravestock@roche.com"
+      ),
+   person(
+      given = "Miranta",
+      family = "Antoniou",
+      role = c("ctb"),
+      email = "miranta.antoniou@roche.com"
+      ),
+   person(
+      given = "Chrysostomos",
+      family = "Kalyvas",
+      role = c("ctb"),
+      email = "chrysostomos.kal@gmail.com"
+   ),
+   person("Merck, Inc.", role = c("cph", "fnd")),
+   person("Roche, Inc.", role = c("cph", "fnd"))
+   )
 Description: The maicplus package facilitates performing matching adjusted indirect comparison
  (MAIC) analysis where the endpoint of interest is either time-to-event
  (e.g. overall survival) or binary (e.g. objective tumor response).
