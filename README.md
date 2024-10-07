@@ -1,7 +1,4 @@
-
-# maicplus
-
-ADD LOGO!
+# maicplus <a href="https://hta-pharma.github.io/maicplus"><img src="man/figures/logo.svg" align="right" height="139" alt="maicplus website" /></a>
 
 ## Overview
 
@@ -9,13 +6,13 @@ The maicplus package provides tools to perform matching-adjusted indirect compar
 
 ## Features
 
-* Perform both MAIC analysis for time-to-event endpoints (e.g. overall survival).
+- Perform both MAIC analysis for time-to-event endpoints (e.g. overall survival).
 
-* Perform MAIC analysis for binary endpoints (e.g. objective tumor response).
+- Perform MAIC analysis for binary endpoints (e.g. objective tumor response).
 
-* User-friendly functions to facilitate the analysis process.
+- User-friendly functions to facilitate the analysis process.
 
-* Comprehensive documentation and examples to guide users through the analysis.
+- Comprehensive documentation and examples to guide users through the analysis.
 
 ## Installation
 

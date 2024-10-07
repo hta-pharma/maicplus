@@ -5,7 +5,7 @@ output: rmarkdown::html_vignette
 bibliography: references.bib
 csl: biomedicine.csl
 vignette: >
-  %\VignetteIndexEntry{Calculating Weights}
+  %\VignetteIndexEntry{Preprocessing and Calculating Weights}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
