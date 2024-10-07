@@ -2,7 +2,6 @@ url: https://hta-pharma.github.io/maicplus
 
 template:
   bootstrap: 5
-  bootswatch: cerulean
 
 navbar:
   structure:
