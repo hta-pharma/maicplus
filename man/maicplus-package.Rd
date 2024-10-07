@@ -31,7 +31,7 @@ Other contributors:
   \item Miranta Antoniou \email{miranta.antoniou@roche.com} [contributor]
   \item Chrysostomos Kalyvas \email{chrysostomos.kal@gmail.com} [contributor]
   \item MSD, Inc. [copyright holder, funder]
-  \item Roche, Inc. [copyright holder, funder]
+  \item F. Hoffmann-La Roche AG [copyright holder, funder]
 }
 
 }
