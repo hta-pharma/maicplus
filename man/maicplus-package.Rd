@@ -6,6 +6,8 @@
 \alias{maicplus-package}
 \title{maicplus: Matching Adjusted Indirect Comparison}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 The maicplus package facilitates performing matching adjusted indirect comparison (MAIC) analysis where the endpoint of interest is either time-to-event (e.g. overall survival) or binary (e.g. objective tumor response).
 }
 \seealso{
@@ -18,7 +20,21 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: hta-pharma \email{hta-pharma@example.com}
+\strong{Maintainer}: Isaac Gravestock \email{isaac.gravestock@roche.com}
+
+Authors:
+\itemize{
+  \item Gregory Chen \email{xiangyi.gregory.chen@msd.com}
+  \item Michael Seo \email{michael.seo@roche.com}
+}
+
+Other contributors:
+\itemize{
+  \item Miranta Antoniou \email{miranta.antoniou@roche.com} [contributor]
+  \item Chrysostomos Kalyvas \email{chrysostomos.kal@gmail.com} [contributor]
+  \item MSD, Inc. [copyright holder, funder]
+  \item F. Hoffmann-La Roche AG [copyright holder, funder]
+}
 
 }
 \keyword{internal}

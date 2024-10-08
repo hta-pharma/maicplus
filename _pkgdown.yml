@@ -2,7 +2,6 @@ url: https://hta-pharma.github.io/maicplus
 
 template:
   bootstrap: 5
-  bootswatch: cerulean
 
 navbar:
   structure:
@@ -35,8 +34,6 @@ reference:
   - title: User Functions
     navbar: ~
     contents:
-      - basic_kmplot
-      - basic_kmplot2
       - bucher
       - center_ipd
       - check_weights
@@ -51,6 +48,8 @@ reference:
       - report_table_tte
   - title: Plotting Functions
     contents:
+      - basic_kmplot
+      - basic_kmplot2
       - kmplot
       - kmplot2
       - ph_diagplot
