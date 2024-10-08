@@ -6,6 +6,8 @@
 \alias{maicplus-package}
 \title{maicplus: Matching Adjusted Indirect Comparison}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 The maicplus package facilitates performing matching adjusted indirect comparison (MAIC) analysis where the endpoint of interest is either time-to-event (e.g. overall survival) or binary (e.g. objective tumor response).
 }
 \seealso{
