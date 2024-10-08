@@ -1,4 +1,4 @@
-# maicplus <a href="https://hta-pharma.github.io/maicplus"><img src="man/figures/logo.svg" align="right" height="139" alt="maicplus website" /></a>
+# maicplus <a href="https://hta-pharma.github.io/maicplus"><img src="man/figures/logo.png" align="right" height="139" alt="maicplus website" /></a>
 
 ## Overview
 
