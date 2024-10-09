@@ -67,7 +67,7 @@ kmplot <- function(weights_object,
   is_anchored <- !is.null(trt_common)
   tte_ipd <- tte_ipd[tte_ipd[[trt_var_ipd]] %in% c(trt_ipd, trt_common), , drop = FALSE]
   tte_pseudo_ipd <- tte_pseudo_ipd[tte_pseudo_ipd[[trt_var_agd]] %in% c(trt_agd, trt_common), , drop = FALSE]
-  
+
   if (normalize_weights) {
     tte_ipd$weights <- weights_object$data$scaled_weights[match(weights_object$data$USUBJID, tte_ipd$USUBJID)]
   } else {
