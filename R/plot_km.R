@@ -14,6 +14,8 @@
 #'   indicating unanchored case
 #' @param trt_var_ipd a string, column name in \code{tte_ipd} that contains the treatment assignment
 #' @param trt_var_agd a string, column name in \code{tte_pseudo_ipd} that contains the treatment assignment
+#' @param normalize_weights logical, default is \code{FALSE}. If \code{TRUE},
+#'   \code{scaled_weights} (normalized weights) in \code{weights_object$data} will be used.
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
 #' @param km_layout a string, only applicable for unanchored case (\code{trt_common = NULL}), indicated the desired
 #'   layout of output KM curve.
@@ -38,6 +40,7 @@ kmplot <- function(weights_object,
                    trt_ipd,
                    trt_agd,
                    trt_common = NULL,
+                   normalize_weights = FALSE,
                    trt_var_ipd = "ARM",
                    trt_var_agd = "ARM",
                    km_conf_type = "log-log",
@@ -64,7 +67,12 @@ kmplot <- function(weights_object,
   is_anchored <- !is.null(trt_common)
   tte_ipd <- tte_ipd[tte_ipd[[trt_var_ipd]] %in% c(trt_ipd, trt_common), , drop = FALSE]
   tte_pseudo_ipd <- tte_pseudo_ipd[tte_pseudo_ipd[[trt_var_agd]] %in% c(trt_agd, trt_common), , drop = FALSE]
-  tte_ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, tte_ipd$USUBJID)]
+  
+  if (normalize_weights) {
+    tte_ipd$weights <- weights_object$data$scaled_weights[match(weights_object$data$USUBJID, tte_ipd$USUBJID)]
+  } else {
+    tte_ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, tte_ipd$USUBJID)]
+  }
   tte_pseudo_ipd$weights <- 1
 
   # generate plot
