@@ -11,6 +11,7 @@ kmplot(
   trt_ipd,
   trt_agd,
   trt_common = NULL,
+  normalize_weights = FALSE,
   trt_var_ipd = "ARM",
   trt_var_agd = "ARM",
   km_conf_type = "log-log",
@@ -33,6 +34,9 @@ endpoint), contain at least \code{"EVENT"}, \code{"TIME"}}
 
 \item{trt_common}{a string, name of the common comparator in internal and external trial, by default is NULL,
 indicating unanchored case}
+
+\item{normalize_weights}{logical, default is \code{FALSE}. If \code{TRUE},
+\code{scaled_weights} (normalized weights) in \code{weights_object$data} will be used.}
 
 \item{trt_var_ipd}{a string, column name in \code{tte_ipd} that contains the treatment assignment}
 
