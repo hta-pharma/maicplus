@@ -262,11 +262,12 @@ calculate_weights_legend <- function(weighted_data) {
 #'
 #' @return a plot of unscaled or scaled weights
 #' @examples
-#' plot_weights_base(weighted_sat, 
-#'   bin_col = "#6ECEB2", 
-#'   vline_col = "#688CE8", 
-#'   main_title =  c("Scaled Individual Weights", "Unscaled Individual Weights"),
-#'   scaled_weights = TRUE)
+#' plot_weights_base(weighted_sat,
+#'   bin_col = "#6ECEB2",
+#'   vline_col = "#688CE8",
+#'   main_title = c("Scaled Individual Weights", "Unscaled Individual Weights"),
+#'   scaled_weights = TRUE
+#' )
 #' @export
 
 plot_weights_base <- function(weighted_data,
@@ -317,11 +318,12 @@ plot_weights_base <- function(weighted_data,
 #' @return a plot of unscaled and scaled weights
 #' @examples
 #' if (requireNamespace("ggplot2")) {
-#' plot_weights_ggplot(weighted_sat, 
-#'   bin_col = "#6ECEB2", 
-#'   vline_col = "#688CE8", 
-#'   main_title =  c("Scaled Individual Weights", "Unscaled Individual Weights"),
-#'   bins = 50)
+#'   plot_weights_ggplot(weighted_sat,
+#'     bin_col = "#6ECEB2",
+#'     vline_col = "#688CE8",
+#'     main_title = c("Scaled Individual Weights", "Unscaled Individual Weights"),
+#'     bins = 50
+#'   )
 #' }
 #' @export
 
