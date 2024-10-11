@@ -188,7 +188,7 @@ center_ipd <- function(ipd, agd) {
 #' median can't be calculated and it is only an approximation.
 #'
 #' @param use_agd aggregated data that is processed within process_agd
-#'
+#' @noRd
 #' @return Complete N, count, mean, sd, and median for the pooled arm
 
 complete_agd <- function(use_agd) {
