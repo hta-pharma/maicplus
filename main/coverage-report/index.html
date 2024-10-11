@@ -95,7 +95,7 @@ table.table-condensed {
   font-size: 11px;
 }</style>
   <div class="col-md-8 col-md-offset-2">
-    <h2>maicplus coverage - 77.45%</h2>
+    <h2>maicplus coverage - 79.83%</h2>
     <div class="tabbable">
       <ul class="nav nav-tabs" data-tabsetid="covr">
         <li class="active">
@@ -107,584 +107,11 @@ table.table-condensed {
       </ul>
       <div class="tab-content" data-tabsetid="covr">
         <div class="tab-pane active" title="Files" data-value="Files" id="tab-covr-1">
-          <div class="datatables html-widget html-fill-item" id="htmlwidget-e03ce942f0f57b8191ef" style="width:100%;height:500px;"></div>
-          <script type="application/json" data-for="htmlwidget-e03ce942f0f57b8191ef">{"x":{"filter":"none","vertical":false,"fillContainer":false,"data":[["<a href=\"#\">R/reporting.R<\/a>","<a href=\"#\">R/zzz.R<\/a>","<a href=\"#\">R/matching.R<\/a>","<a href=\"#\">R/process_data.R<\/a>","<a href=\"#\">R/utils.R<\/a>","<a href=\"#\">R/plot_km2.R<\/a>","<a href=\"#\">R/time-helper.R<\/a>","<a href=\"#\">R/maic_unanchored.R<\/a>","<a href=\"#\">R/binary-helper.R<\/a>","<a href=\"#\">R/maic_anchored.R<\/a>","<a href=\"#\">R/plot_km.R<\/a>","<a href=\"#\">R/bucher.R<\/a>","<a href=\"#\">R/survival-helper.R<\/a>"],[112,3,562,261,41,220,78,501,126,738,763,191,81],[56,1,228,97,24,97,19,270,62,451,387,54,28],[0,0,95,45,15,77,16,235,55,404,348,49,27],[56,1,133,52,9,20,3,35,7,47,39,5,1],["0","0","36","5","5","1","66","17","3","3","12","11","63"],["0.00%","0.00%","41.67%","46.39%","62.50%","79.38%","84.21%","87.04%","88.71%","89.58%","89.92%","90.74%","96.43%"]],"container":"<table class=\"row-border\">\n  <thead>\n    <tr>\n      <th>File<\/th>\n      <th>Lines<\/th>\n      <th>Relevant<\/th>\n      <th>Covered<\/th>\n      <th>Missed<\/th>\n      <th>Hits / Line<\/th>\n      <th>Coverage<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"searching":false,"dom":"t","paging":false,"columnDefs":[{"targets":6,"createdCell":"function(td, cellData, rowData, row, col) {\n  var percent = cellData.replace(\"%\", \"\");\n  if (percent > 90) {\n    var grad = \"linear-gradient(90deg, #edfde7 \" + cellData + \", white \" + cellData + \")\";\n  } else if (percent > 75) {\n    var grad = \"linear-gradient(90deg, #f9ffe5 \" + cellData + \", white \" + cellData + \")\";\n  } else {\n    var grad = \"linear-gradient(90deg, #fcece9 \" + cellData + \", white \" + cellData + \")\";\n  }\n  $(td).css(\"background\", grad);\n}\n"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"File","targets":0},{"name":"Lines","targets":1},{"name":"Relevant","targets":2},{"name":"Covered","targets":3},{"name":"Missed","targets":4},{"name":"Hits / Line","targets":5},{"name":"Coverage","targets":6}],"order":[],"autoWidth":false,"orderClasses":false},"callback":"function(table) {\ntable.on('click.dt', 'a', function() {\n  files = $('div#files div');\n  files.not('div.hidden').addClass('hidden');\n  id = $(this).text();\n  files.filter('div[id=\\'' + id + '\\']').removeClass('hidden');\n  $('ul.nav a[data-value=Source]').text(id).tab('show');\n});\n}"},"evals":["options.columnDefs.0.createdCell","callback"],"jsHooks":[]}</script>
+          <div class="datatables html-widget html-fill-item" id="htmlwidget-3f79fa0fc2d5f050aa71" style="width:100%;height:500px;"></div>
+          <script type="application/json" data-for="htmlwidget-3f79fa0fc2d5f050aa71">{"x":{"filter":"none","vertical":false,"fillContainer":false,"data":[["<a href=\"#\">R/zzz.R<\/a>","<a href=\"#\">R/matching.R<\/a>","<a href=\"#\">R/process_data.R<\/a>","<a href=\"#\">R/utils.R<\/a>","<a href=\"#\">R/plot_km2.R<\/a>","<a href=\"#\">R/time-helper.R<\/a>","<a href=\"#\">R/maic_unanchored.R<\/a>","<a href=\"#\">R/binary-helper.R<\/a>","<a href=\"#\">R/maic_anchored.R<\/a>","<a href=\"#\">R/plot_km.R<\/a>","<a href=\"#\">R/bucher.R<\/a>","<a href=\"#\">R/survival-helper.R<\/a>"],[3,562,261,41,220,78,501,126,738,763,191,81],[1,228,97,24,97,19,270,62,451,387,54,28],[0,95,45,15,77,16,235,55,404,348,49,27],[1,133,52,9,20,3,35,7,47,39,5,1],["0","36","5","5","1","66","17","3","3","12","11","63"],["0.00%","41.67%","46.39%","62.50%","79.38%","84.21%","87.04%","88.71%","89.58%","89.92%","90.74%","96.43%"]],"container":"<table class=\"row-border\">\n  <thead>\n    <tr>\n      <th>File<\/th>\n      <th>Lines<\/th>\n      <th>Relevant<\/th>\n      <th>Covered<\/th>\n      <th>Missed<\/th>\n      <th>Hits / Line<\/th>\n      <th>Coverage<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"searching":false,"dom":"t","paging":false,"columnDefs":[{"targets":6,"createdCell":"function(td, cellData, rowData, row, col) {\n  var percent = cellData.replace(\"%\", \"\");\n  if (percent > 90) {\n    var grad = \"linear-gradient(90deg, #edfde7 \" + cellData + \", white \" + cellData + \")\";\n  } else if (percent > 75) {\n    var grad = \"linear-gradient(90deg, #f9ffe5 \" + cellData + \", white \" + cellData + \")\";\n  } else {\n    var grad = \"linear-gradient(90deg, #fcece9 \" + cellData + \", white \" + cellData + \")\";\n  }\n  $(td).css(\"background\", grad);\n}\n"},{"className":"dt-right","targets":[1,2,3,4]},{"name":"File","targets":0},{"name":"Lines","targets":1},{"name":"Relevant","targets":2},{"name":"Covered","targets":3},{"name":"Missed","targets":4},{"name":"Hits / Line","targets":5},{"name":"Coverage","targets":6}],"order":[],"autoWidth":false,"orderClasses":false},"callback":"function(table) {\ntable.on('click.dt', 'a', function() {\n  files = $('div#files div');\n  files.not('div.hidden').addClass('hidden');\n  id = $(this).text();\n  files.filter('div[id=\\'' + id + '\\']').removeClass('hidden');\n  $('ul.nav a[data-value=Source]').text(id).tab('show');\n});\n}"},"evals":["options.columnDefs.0.createdCell","callback"],"jsHooks":[]}</script>
         </div>
         <div class="tab-pane" title="Source" data-value="Source" id="tab-covr-2">
           <div id="files">
-            <div id="R/survival-helper.R" class="hidden">
-              <table class="table-condensed">
-                <tbody>
-                  <tr class="never">
-                    <td class="num">1</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' Helper function to retrieve median survival time from a `survival::survfit` object</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">2</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">3</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' Extract and display median survival time with confidence interval</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">4</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">5</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param km_fit returned object from \code{survival::survfit}</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">6</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param legend a character string, name used in 'type' column in returned data frame</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">7</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param time_scale a character string, 'years', 'months', 'weeks' or 'days', time unit of median survival time</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">8</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">9</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @examples</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">10</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' data(adtte_sat)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">11</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' data(pseudo_ipd_sat)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">12</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' library(survival)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">13</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' combined_data &lt;- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">14</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' kmobj &lt;- survfit(Surv(TIME, EVENT) ~ ARM, combined_data, conf.type = "log-log")</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">15</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">16</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' # Derive median survival time</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">17</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' medSurv &lt;- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">18</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' medSurv</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">19</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @return a data frame with a index column 'type', median survival time and confidence interval</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">20</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @export</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">21</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">22</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">medSurv_makeup &lt;- function(km_fit, legend = "before matching", time_scale) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">23</td>
-                    <td class="coverage">10<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  time_scale &lt;- match.arg(time_scale, choices = c("years", "months", "weeks", "days"))</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">24</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">25</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  # km_fit is the returned object from survival::survfit</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">26</td>
-                    <td class="coverage">10<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  km_fit &lt;- summary(km_fit)$table</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">27</td>
-                    <td class="coverage">10<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  km_fit[, 5:ncol(km_fit)] &lt;- get_time_as(km_fit[, 5:ncol(km_fit)], time_scale)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">28</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">29</td>
-                    <td class="coverage">10<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  toyadd &lt;- data.frame(</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">30</td>
-                    <td class="coverage">10<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    treatment = gsub("ARM=", "", rownames(km_fit)),</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">31</td>
-                    <td class="coverage">10<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    type = rep(legend, 2)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">32</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  )</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">33</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">34</td>
-                    <td class="coverage">10<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  km_fit &lt;- cbind(toyadd, km_fit)</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">35</td>
-                    <td class="coverage">10<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  rownames(km_fit) &lt;- NULL</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">36</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">37</td>
-                    <td class="coverage">10<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  km_fit</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">38</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">}</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">39</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">40</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">41</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' Helper function to select set of variables used for Kaplan-Meier plot</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">42</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">43</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param km_fit returned object from \code{survival::survfit}</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">44</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param single_trt_name name of treatment if no strata are specified in `km_fit`</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">45</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">46</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @examples</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">47</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' library(survival)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">48</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' data(adtte_sat)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">49</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' data(pseudo_ipd_sat)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">50</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' combined_data &lt;- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">51</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' kmobj &lt;- survfit(Surv(TIME, EVENT) ~ ARM, combined_data, conf.type = "log-log")</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">52</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' survfit_makeup(kmobj)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">53</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @return a list of data frames of variables from [survival::survfit()]. Data frame is divided by treatment.</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">54</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @export</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">55</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">56</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">survfit_makeup &lt;- function(km_fit, single_trt_name = "treatment") {</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">57</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  # in case km_fit is only for single arm</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">58</td>
-                    <td class="coverage">116<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if ("strata" %in% names(km_fit)) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">59</td>
-                    <td class="coverage">20<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    use_trt &lt;- mapply(rep, 1:2, each = km_fit$strata)</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">60</td>
-                    <td class="coverage">20<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    if (is.list(use_trt)) use_trt &lt;- unlist(use_trt)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">61</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    if (is.matrix(use_trt)) use_trt &lt;- as.vector(use_trt)</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">62</td>
-                    <td class="coverage">20<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    is_single &lt;- FALSE</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">63</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  } else {</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">64</td>
-                    <td class="coverage">96<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    use_trt &lt;- rep(single_trt_name, length(km_fit$time))</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">65</td>
-                    <td class="coverage">96<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    is_single &lt;- TRUE</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">66</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  }</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">67</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">68</td>
-                    <td class="coverage">116<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  kmdat &lt;- data.frame(</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">69</td>
-                    <td class="coverage">116<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    time = km_fit$time,</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">70</td>
-                    <td class="coverage">116<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    treatment = use_trt,</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">71</td>
-                    <td class="coverage">116<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    n.risk = km_fit$n.risk,</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">72</td>
-                    <td class="coverage">116<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    n.event = km_fit$n.event,</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">73</td>
-                    <td class="coverage">116<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    censor = km_fit$n.censor,</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">74</td>
-                    <td class="coverage">116<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    surv = km_fit$surv,</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">75</td>
-                    <td class="coverage">116<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    lower = km_fit$lower,</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">76</td>
-                    <td class="coverage">116<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    upper = km_fit$upper,</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">77</td>
-                    <td class="coverage">116<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    cumhaz = km_fit$cumhaz</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">78</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  )</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">79</td>
-                    <td class="coverage">20<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (!is_single) kmdat$treatment &lt;- sapply(strsplit(names(km_fit$strata), "="), "[[", 2)[kmdat$treatment]</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">80</td>
-                    <td class="coverage">116<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  split(kmdat, f = kmdat$treatment)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">81</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">}</pre>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
             <div id="R/plot_km.R" class="hidden">
               <table class="table-condensed">
                 <tbody>
@@ -22036,1641 +21463,6 @@ table.table-condensed {
                 </tbody>
               </table>
             </div>
-            <div id="R/utils.R" class="hidden">
-              <table class="table-condensed">
-                <tbody>
-                  <tr class="never">
-                    <td class="num">1</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"># Restore the RNG back to a previous state using the global .Random.seed</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">2</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">set_random_seed &lt;- function(old_seed) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">3</td>
-                    <td class="coverage">16<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (is.null(old_seed)) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">4</td>
-                    <td class="coverage">8<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    rm(".Random.seed", envir = globalenv(), inherits = FALSE)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">5</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  } else {</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">6</td>
-                    <td class="coverage">8<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    assign(".Random.seed", value = old_seed, envir = globalenv(), inherits = FALSE)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">7</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  }</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">8</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">}</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">9</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">10</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">construct_boot_data &lt;- function(weighted_data, i = 1) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">11</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (is.null(weighted_data$boot)) stop("Must contain bootstrap results from estimate_weights()")</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">12</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  i &lt;- as.integer(i)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">13</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  R &lt;- dim(weighted_data$boot)[3]</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">14</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (i &lt; 1 || i &gt; R) stop("i must be integer between 1 and ", R)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">15</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">16</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  boot_data &lt;- weighted_data$boot[, , i]</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">17</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  weighted_data$data &lt;- weighted_data$data[boot_data[, 1], ]</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">18</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  weighted_data$data$weights &lt;- boot_data[, 2]</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">19</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  weighted_data$data$scaled_weights &lt;- boot_data[, 2] / sum(boot_data[, 2])</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">20</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  weighted_data</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">21</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">}</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">22</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">23</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">24</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">transform_ratio &lt;- function(object) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">25</td>
-                    <td class="coverage">15<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  result &lt;- object</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">26</td>
-                    <td class="coverage">15<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  result$est &lt;- exp(object$est)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">27</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  # log normal parameterization for SE</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">28</td>
-                    <td class="coverage">15<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  result$se &lt;- sqrt((exp(object$se^2) - 1) * exp(2 * object$est + object$se^2))</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">29</td>
-                    <td class="coverage">15<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  result$ci_l &lt;- exp(object$ci_l)</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">30</td>
-                    <td class="coverage">15<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  result$ci_u &lt;- exp(object$ci_u)</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">31</td>
-                    <td class="coverage">15<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  result</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">32</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">}</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">33</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">34</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">transform_absolute &lt;- function(object) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">35</td>
-                    <td class="coverage">1<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  result &lt;- object</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">36</td>
-                    <td class="coverage">1<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  result$est &lt;- object$est * 100</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">37</td>
-                    <td class="coverage">1<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  result$se &lt;- object$se * 100</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">38</td>
-                    <td class="coverage">1<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  result$ci_l &lt;- object$ci_l * 100</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">39</td>
-                    <td class="coverage">1<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  result$ci_u &lt;- object$ci_u * 100</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">40</td>
-                    <td class="coverage">1<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  result</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">41</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">}</pre>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div id="R/time-helper.R" class="hidden">
-              <table class="table-condensed">
-                <tbody>
-                  <tr class="never">
-                    <td class="num">1</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"># Create an environment for settings</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">2</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">settings_env &lt;- new.env()</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">3</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">4</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' Get and Set Time Conversion Factors</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">5</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">6</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param default The default time scale, commonly whichever has factor = 1</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">7</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param days Factor to divide data time units to get time in days</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">8</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param weeks Factor to divide data time units to get time in weeks</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">9</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param months Factor to divide data time units to get time in months</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">10</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param years Factor to divide data time units to get time in years</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">11</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">12</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @return No value returned. Conversion factors are stored internally and used within functions.</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">13</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @export</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">14</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @rdname time_conversion</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">15</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">16</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @examples</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">17</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' # The default time scale is days:</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">18</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' set_time_conversion(default = "days", days = 1, weeks = 7, months = 365.25 / 12, years = 365.25)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">19</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">20</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' # Set the default time scale to years</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">21</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' set_time_conversion(</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">22</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'   default = "years",</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">23</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'   days = 1 / 365.25,</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">24</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'   weeks = 1 / 52.17857,</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">25</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'   months = 1 / 12,</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">26</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'   years = 1</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">27</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' )</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">28</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">29</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">set_time_conversion &lt;- function(default = "days", days = 1, weeks = 7, months = 365.25 / 12, years = 365.25) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">30</td>
-                    <td class="coverage">3<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (!default %in% c("days", "weeks", "months", "years")) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">31</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    stop("default must be one of \"days\", \"weeks\", \"months\", \"years\")")</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">32</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  }</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">33</td>
-                    <td class="coverage">3<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  factors &lt;- c(days = days, weeks = weeks, months = months, years = years)</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">34</td>
-                    <td class="coverage">3<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  check_factors &lt;- vapply(factors, function(x) isFALSE(!is.finite(x) || x == 0), logical(1L))</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">35</td>
-                    <td class="coverage">3<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (!all(check_factors)) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">36</td>
-                    <td class="coverage">1<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    stop(</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">37</td>
-                    <td class="coverage">1<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">      "Conversion factors must be finite non-zero numerical values: ",</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">38</td>
-                    <td class="coverage">1<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">      paste0(names(factors)[!check_factors], " = ", factors[!check_factors], collapse = ", ")</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">39</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    )</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">40</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  }</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">41</td>
-                    <td class="coverage">2<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  settings_env$time_conversion &lt;- factors</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">42</td>
-                    <td class="coverage">2<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  settings_env$default_time_scale &lt;- default</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">43</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">}</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">44</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">45</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">46</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param factor Time factor to get.</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">47</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @rdname time_conversion</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">48</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @export</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">49</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">50</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @examples</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">51</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' # Get time scale factors:</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">52</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' get_time_conversion("years")</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">53</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' get_time_conversion("weeks")</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">54</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">get_time_conversion &lt;- function(factor = c("days", "weeks", "months", "years")) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">55</td>
-                    <td class="coverage">238<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  factor &lt;- match.arg(factor, several.ok = TRUE)</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">56</td>
-                    <td class="coverage">238<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (!exists("time_conversion", settings_env)) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">57</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    warning("No time conversion factors previously set. Setting defaults.")</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">58</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    set_time_conversion()</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">59</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  }</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">60</td>
-                    <td class="coverage">238<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  settings_env$time_conversion[factor]</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">61</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">}</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">62</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">63</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">64</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' Convert Time Values Using Scaling Factors</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">65</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">66</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param times Numeric time values</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">67</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param as A time scale to convert to. One of "days", "weeks", "months", "years"</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">68</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">69</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @return Returns a numeric vector calculated from `times / get_time_conversion(factor = as)`</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">70</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @export</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">71</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @examples</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">72</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' get_time_as(50, as = "months")</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">73</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">get_time_as &lt;- function(times, as = NULL) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">74</td>
-                    <td class="coverage">42<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (is.null(as)) as &lt;- settings_env$default_time_scale</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">75</td>
-                    <td class="coverage">1<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (!is.numeric(times)) stop("times arguments must be numeric")</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">76</td>
-                    <td class="coverage">236<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  as &lt;- match.arg(as, c("days", "weeks", "months", "years"))</pre>
-                    </td>
-                  </tr>
-                  <tr class="covered">
-                    <td class="num">77</td>
-                    <td class="coverage">236<em>x</em></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  times / get_time_conversion(as)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">78</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">}</pre>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div id="R/reporting.R" class="hidden">
-              <table class="table-condensed">
-                <tbody>
-                  <tr class="never">
-                    <td class="num">1</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' helper function: sort out a nice report table to summarize survival analysis results</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">2</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">3</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param coxobj returned object from \code{\link[survival]{coxph}}</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">4</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param medSurvobj returned object from \code{\link{medSurv_makeup}}</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">5</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param tag a string, by default NULL, if specified, an extra 1st column is created in the output</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">6</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">7</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @return a data frame with sample size, incidence rate, median survival time with 95% CI, hazard ratio estimate with</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">8</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' 95% CI and Wald test of hazard ratio</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">9</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @example inst/examples/report_table_tte_ex.R</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">10</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @export</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">11</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">12</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">report_table_tte &lt;- function(coxobj, medSurvobj, tag = NULL) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">13</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  # descriptive part</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">14</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  N &lt;- medSurvobj$n.max</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">15</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  N.EVNT &lt;- medSurvobj$events</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">16</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  N.EVNT.PERC &lt;- round(N.EVNT * 100 / N, 1)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">17</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  N &lt;- round(N, 1) # not necessary integer</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">18</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  N.EVNT &lt;- round(N.EVNT, 1) # not necessary integer</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">19</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  meds_report &lt;- format(round(medSurvobj[, c("median", "0.95LCL", "0.95UCL")], 1), nsmall = 1)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">20</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  meds_report &lt;- apply(meds_report, 1, function(xx) paste0(xx[1], "[", xx[2], ";", xx[3], "]"))</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">21</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">22</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  # inferential part</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">23</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  hr_res &lt;- format(round(summary(coxobj)$conf.int[-2], 2), nsmall = 2)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">24</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  hr_res &lt;- paste0(hr_res[1], "[", hr_res[2], ";", hr_res[3], "]")</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">25</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  hr_pval &lt;- format(round(summary(coxobj)$waldtest[3], 3), nsmall = 3)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">26</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (hr_pval == "0.000") hr_pval &lt;- "&lt;0.001"</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">27</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">28</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  # assemble the table</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">29</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  desc_res &lt;- cbind(</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">30</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    medSurvobj[, "treatment", drop = FALSE],</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">31</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    data.frame(</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">32</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">      "N" = N,</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">33</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">      "n.events(%)" = paste0(N.EVNT, "(", format(N.EVNT.PERC, nsmall = 1), ")"),</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">34</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">      "median[95% CI]" = meds_report,</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">35</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">      check.names = FALSE</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">36</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    )</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">37</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  )</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">38</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  desc_res &lt;- cbind(desc_res[c(2, 1), ], "HR[95% CI]" = c(hr_res, ""), "p-Value" = c(hr_pval, ""))</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">39</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  names(desc_res)[3] &lt;- "n.events(%)" # cbind changes column name</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">40</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">41</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  # add first tag column if applicable</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">42</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (!is.null(tag)) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">43</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    desc_res &lt;- cbind(data.frame(Matching = rep(tag, nrow(desc_res))), desc_res)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">44</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    desc_res$Matching[duplicated(desc_res$Matching)] &lt;- ""</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">45</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  }</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">46</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">47</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  # output</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">48</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  desc_res</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">49</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">}</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">50</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">51</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' helper function: sort out a nice report table to summarize binary analysis results</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">52</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">53</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param binobj object from glm()</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">54</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param weighted_result weighted result object</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">55</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param eff_measure a string, binary effect measure, could be "OR", "RR", "RD"</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">56</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @param tag a string, by default NULL, if specified, an extra 1st column is created in the output</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">57</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#'</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">58</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @return a data frame with sample size, incidence rate, estimate of binary effect measure with</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">59</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' 95% CI and Wald test of hazard ratio</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">60</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @example inst/examples/report_table_binary_ex.R</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">61</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">#' @export</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">62</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">63</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">report_table_binary &lt;- function(binobj, weighted_result = NULL, eff_measure = c("OR", "RD", "RR"), tag = NULL) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">64</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  weighted &lt;- ifelse(is.null(weighted_result), FALSE, TRUE)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">65</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  # descriptive part</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">66</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  ARM &lt;- levels(binobj$data$ARM)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">67</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (!weighted) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">68</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    N &lt;- tapply(binobj$data$USUBJID, binobj$data$ARM, length)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">69</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    N.EVNT &lt;- tapply(binobj$data$RESPONSE, binobj$data$ARM, sum)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">70</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  } else {</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">71</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    N &lt;- tapply(binobj$data$weights, binobj$data$ARM, length)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">72</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    N.EVNT &lt;- tapply(binobj$data$weights * binobj$data$RESPONSE, binobj$data$ARM, sum)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">73</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  }</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">74</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  N.EVNT.PERC &lt;- round(N.EVNT * 100 / N, 1)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">75</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  N.EVNT &lt;- round(N.EVNT, 1)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">76</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">77</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  # inferential part</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">78</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (!weighted) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">79</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    bin_res_est &lt;- coef(binobj)[2]</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">80</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    bin_res_ci &lt;- confint(binobj, parm = 2, test = "LRT", trace = FALSE)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">81</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    bin_res &lt;- c(bin_res_est, bin_res_ci)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">82</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    if (eff_measure != "RD") bin_res &lt;- exp(bin_res)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">83</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    bin_res &lt;- round(bin_res, 2) |&gt; format(nsmall = 2)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">84</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    bin_res &lt;- paste0(bin_res[1], "[", bin_res[2], ";", bin_res[3], "]")</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">85</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    bin_pval &lt;- round(summary(binobj)$coefficients[2, 4], 3) |&gt; format(nsmall = 3)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">86</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  } else {</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">87</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    bin_res &lt;- round(unlist(weighted_result[c("est", "ci_l", "ci_u")]), 2) |&gt; format(nsmall = 2)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">88</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    bin_res &lt;- paste0(bin_res[1], "[", bin_res[2], ";", bin_res[3], "]")</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">89</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    bin_pval &lt;- round(weighted_result$pval, 3) |&gt; format(nsmall = 3)</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">90</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  }</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">91</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (bin_pval == "0.000") bin_pval &lt;- "&lt;0.001"</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">92</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">93</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  # assemble the table</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">94</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  desc_res &lt;- data.frame(</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">95</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    "treatment" = ARM,</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">96</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    "N" = N,</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">97</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    "n.events(%)" = paste0(N.EVNT, "(", format(N.EVNT.PERC, nsmall = 1), ")")</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">98</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  )</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">99</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">100</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  desc_res &lt;- cbind(desc_res[c(2, 1), ], "xx[95% CI]" = c(bin_res, ""), "p-Value" = c(bin_pval, ""))</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">101</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  names(desc_res)[ncol(desc_res) - 1] &lt;- paste0(eff_measure, "[95% CI]")</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">102</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  names(desc_res)[3] &lt;- "n.events(%)" # cbind changes column name</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">103</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">104</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  # add first tag column if applicable</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">105</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  if (!is.null(tag)) {</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">106</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    desc_res &lt;- cbind(data.frame(Matching = rep(tag, nrow(desc_res))), desc_res)</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">107</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">    desc_res$Matching[duplicated(desc_res$Matching)] &lt;- ""</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">108</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  }</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">109</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r"></pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">110</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  # output</pre>
-                    </td>
-                  </tr>
-                  <tr class="missed">
-                    <td class="num">111</td>
-                    <td class="coverage">!</td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">  desc_res</pre>
-                    </td>
-                  </tr>
-                  <tr class="never">
-                    <td class="num">112</td>
-                    <td class="coverage"></td>
-                    <td class="col-sm-12">
-                      <pre class="language-r">}</pre>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
             <div id="R/binary-helper.R" class="hidden">
               <table class="table-condensed">
                 <tbody>
@@ -24551,6 +22343,299 @@ table.table-condensed {
                   </tr>
                   <tr class="never">
                     <td class="num">126</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">}</pre>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="R/utils.R" class="hidden">
+              <table class="table-condensed">
+                <tbody>
+                  <tr class="never">
+                    <td class="num">1</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"># Restore the RNG back to a previous state using the global .Random.seed</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">2</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">set_random_seed &lt;- function(old_seed) {</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">3</td>
+                    <td class="coverage">16<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  if (is.null(old_seed)) {</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">4</td>
+                    <td class="coverage">8<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    rm(".Random.seed", envir = globalenv(), inherits = FALSE)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">5</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  } else {</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">6</td>
+                    <td class="coverage">8<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    assign(".Random.seed", value = old_seed, envir = globalenv(), inherits = FALSE)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">7</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  }</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">8</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">}</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">9</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">10</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">construct_boot_data &lt;- function(weighted_data, i = 1) {</pre>
+                    </td>
+                  </tr>
+                  <tr class="missed">
+                    <td class="num">11</td>
+                    <td class="coverage">!</td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  if (is.null(weighted_data$boot)) stop("Must contain bootstrap results from estimate_weights()")</pre>
+                    </td>
+                  </tr>
+                  <tr class="missed">
+                    <td class="num">12</td>
+                    <td class="coverage">!</td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  i &lt;- as.integer(i)</pre>
+                    </td>
+                  </tr>
+                  <tr class="missed">
+                    <td class="num">13</td>
+                    <td class="coverage">!</td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  R &lt;- dim(weighted_data$boot)[3]</pre>
+                    </td>
+                  </tr>
+                  <tr class="missed">
+                    <td class="num">14</td>
+                    <td class="coverage">!</td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  if (i &lt; 1 || i &gt; R) stop("i must be integer between 1 and ", R)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">15</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="missed">
+                    <td class="num">16</td>
+                    <td class="coverage">!</td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  boot_data &lt;- weighted_data$boot[, , i]</pre>
+                    </td>
+                  </tr>
+                  <tr class="missed">
+                    <td class="num">17</td>
+                    <td class="coverage">!</td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  weighted_data$data &lt;- weighted_data$data[boot_data[, 1], ]</pre>
+                    </td>
+                  </tr>
+                  <tr class="missed">
+                    <td class="num">18</td>
+                    <td class="coverage">!</td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  weighted_data$data$weights &lt;- boot_data[, 2]</pre>
+                    </td>
+                  </tr>
+                  <tr class="missed">
+                    <td class="num">19</td>
+                    <td class="coverage">!</td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  weighted_data$data$scaled_weights &lt;- boot_data[, 2] / sum(boot_data[, 2])</pre>
+                    </td>
+                  </tr>
+                  <tr class="missed">
+                    <td class="num">20</td>
+                    <td class="coverage">!</td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  weighted_data</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">21</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">}</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">22</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">23</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">24</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">transform_ratio &lt;- function(object) {</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">25</td>
+                    <td class="coverage">15<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  result &lt;- object</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">26</td>
+                    <td class="coverage">15<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  result$est &lt;- exp(object$est)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">27</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  # log normal parameterization for SE</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">28</td>
+                    <td class="coverage">15<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  result$se &lt;- sqrt((exp(object$se^2) - 1) * exp(2 * object$est + object$se^2))</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">29</td>
+                    <td class="coverage">15<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  result$ci_l &lt;- exp(object$ci_l)</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">30</td>
+                    <td class="coverage">15<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  result$ci_u &lt;- exp(object$ci_u)</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">31</td>
+                    <td class="coverage">15<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  result</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">32</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">}</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">33</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">34</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">transform_absolute &lt;- function(object) {</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">35</td>
+                    <td class="coverage">1<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  result &lt;- object</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">36</td>
+                    <td class="coverage">1<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  result$est &lt;- object$est * 100</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">37</td>
+                    <td class="coverage">1<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  result$se &lt;- object$se * 100</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">38</td>
+                    <td class="coverage">1<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  result$ci_l &lt;- object$ci_l * 100</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">39</td>
+                    <td class="coverage">1<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  result$ci_u &lt;- object$ci_u * 100</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">40</td>
+                    <td class="coverage">1<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  result</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">41</td>
                     <td class="coverage"></td>
                     <td class="col-sm-12">
                       <pre class="language-r">}</pre>
@@ -25894,6 +23979,1131 @@ table.table-condensed {
                   </tr>
                   <tr class="never">
                     <td class="num">191</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">}</pre>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="R/survival-helper.R" class="hidden">
+              <table class="table-condensed">
+                <tbody>
+                  <tr class="never">
+                    <td class="num">1</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' Helper function to retrieve median survival time from a `survival::survfit` object</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">2</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">3</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' Extract and display median survival time with confidence interval</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">4</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">5</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @param km_fit returned object from \code{survival::survfit}</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">6</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @param legend a character string, name used in 'type' column in returned data frame</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">7</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @param time_scale a character string, 'years', 'months', 'weeks' or 'days', time unit of median survival time</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">8</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">9</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @examples</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">10</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' data(adtte_sat)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">11</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' data(pseudo_ipd_sat)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">12</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' library(survival)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">13</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' combined_data &lt;- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">14</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' kmobj &lt;- survfit(Surv(TIME, EVENT) ~ ARM, combined_data, conf.type = "log-log")</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">15</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">16</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' # Derive median survival time</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">17</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' medSurv &lt;- medSurv_makeup(kmobj, legend = "before matching", time_scale = "day")</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">18</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' medSurv</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">19</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @return a data frame with a index column 'type', median survival time and confidence interval</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">20</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @export</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">21</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">22</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">medSurv_makeup &lt;- function(km_fit, legend = "before matching", time_scale) {</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">23</td>
+                    <td class="coverage">10<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  time_scale &lt;- match.arg(time_scale, choices = c("years", "months", "weeks", "days"))</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">24</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">25</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  # km_fit is the returned object from survival::survfit</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">26</td>
+                    <td class="coverage">10<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  km_fit &lt;- summary(km_fit)$table</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">27</td>
+                    <td class="coverage">10<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  km_fit[, 5:ncol(km_fit)] &lt;- get_time_as(km_fit[, 5:ncol(km_fit)], time_scale)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">28</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">29</td>
+                    <td class="coverage">10<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  toyadd &lt;- data.frame(</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">30</td>
+                    <td class="coverage">10<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    treatment = gsub("ARM=", "", rownames(km_fit)),</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">31</td>
+                    <td class="coverage">10<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    type = rep(legend, 2)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">32</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  )</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">33</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">34</td>
+                    <td class="coverage">10<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  km_fit &lt;- cbind(toyadd, km_fit)</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">35</td>
+                    <td class="coverage">10<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  rownames(km_fit) &lt;- NULL</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">36</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">37</td>
+                    <td class="coverage">10<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  km_fit</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">38</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">}</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">39</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">40</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">41</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' Helper function to select set of variables used for Kaplan-Meier plot</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">42</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">43</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @param km_fit returned object from \code{survival::survfit}</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">44</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @param single_trt_name name of treatment if no strata are specified in `km_fit`</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">45</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">46</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @examples</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">47</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' library(survival)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">48</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' data(adtte_sat)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">49</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' data(pseudo_ipd_sat)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">50</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' combined_data &lt;- rbind(adtte_sat[, c("TIME", "EVENT", "ARM")], pseudo_ipd_sat)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">51</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' kmobj &lt;- survfit(Surv(TIME, EVENT) ~ ARM, combined_data, conf.type = "log-log")</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">52</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' survfit_makeup(kmobj)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">53</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @return a list of data frames of variables from [survival::survfit()]. Data frame is divided by treatment.</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">54</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @export</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">55</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">56</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">survfit_makeup &lt;- function(km_fit, single_trt_name = "treatment") {</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">57</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  # in case km_fit is only for single arm</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">58</td>
+                    <td class="coverage">116<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  if ("strata" %in% names(km_fit)) {</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">59</td>
+                    <td class="coverage">20<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    use_trt &lt;- mapply(rep, 1:2, each = km_fit$strata)</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">60</td>
+                    <td class="coverage">20<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    if (is.list(use_trt)) use_trt &lt;- unlist(use_trt)</pre>
+                    </td>
+                  </tr>
+                  <tr class="missed">
+                    <td class="num">61</td>
+                    <td class="coverage">!</td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    if (is.matrix(use_trt)) use_trt &lt;- as.vector(use_trt)</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">62</td>
+                    <td class="coverage">20<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    is_single &lt;- FALSE</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">63</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  } else {</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">64</td>
+                    <td class="coverage">96<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    use_trt &lt;- rep(single_trt_name, length(km_fit$time))</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">65</td>
+                    <td class="coverage">96<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    is_single &lt;- TRUE</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">66</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  }</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">67</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">68</td>
+                    <td class="coverage">116<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  kmdat &lt;- data.frame(</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">69</td>
+                    <td class="coverage">116<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    time = km_fit$time,</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">70</td>
+                    <td class="coverage">116<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    treatment = use_trt,</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">71</td>
+                    <td class="coverage">116<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    n.risk = km_fit$n.risk,</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">72</td>
+                    <td class="coverage">116<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    n.event = km_fit$n.event,</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">73</td>
+                    <td class="coverage">116<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    censor = km_fit$n.censor,</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">74</td>
+                    <td class="coverage">116<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    surv = km_fit$surv,</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">75</td>
+                    <td class="coverage">116<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    lower = km_fit$lower,</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">76</td>
+                    <td class="coverage">116<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    upper = km_fit$upper,</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">77</td>
+                    <td class="coverage">116<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    cumhaz = km_fit$cumhaz</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">78</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  )</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">79</td>
+                    <td class="coverage">20<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  if (!is_single) kmdat$treatment &lt;- sapply(strsplit(names(km_fit$strata), "="), "[[", 2)[kmdat$treatment]</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">80</td>
+                    <td class="coverage">116<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  split(kmdat, f = kmdat$treatment)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">81</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">}</pre>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="R/time-helper.R" class="hidden">
+              <table class="table-condensed">
+                <tbody>
+                  <tr class="never">
+                    <td class="num">1</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"># Create an environment for settings</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">2</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">settings_env &lt;- new.env()</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">3</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">4</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' Get and Set Time Conversion Factors</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">5</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">6</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @param default The default time scale, commonly whichever has factor = 1</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">7</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @param days Factor to divide data time units to get time in days</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">8</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @param weeks Factor to divide data time units to get time in weeks</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">9</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @param months Factor to divide data time units to get time in months</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">10</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @param years Factor to divide data time units to get time in years</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">11</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">12</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @return No value returned. Conversion factors are stored internally and used within functions.</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">13</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @export</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">14</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @rdname time_conversion</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">15</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">16</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @examples</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">17</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' # The default time scale is days:</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">18</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' set_time_conversion(default = "days", days = 1, weeks = 7, months = 365.25 / 12, years = 365.25)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">19</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">20</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' # Set the default time scale to years</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">21</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' set_time_conversion(</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">22</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'   default = "years",</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">23</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'   days = 1 / 365.25,</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">24</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'   weeks = 1 / 52.17857,</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">25</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'   months = 1 / 12,</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">26</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'   years = 1</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">27</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' )</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">28</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">29</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">set_time_conversion &lt;- function(default = "days", days = 1, weeks = 7, months = 365.25 / 12, years = 365.25) {</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">30</td>
+                    <td class="coverage">3<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  if (!default %in% c("days", "weeks", "months", "years")) {</pre>
+                    </td>
+                  </tr>
+                  <tr class="missed">
+                    <td class="num">31</td>
+                    <td class="coverage">!</td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    stop("default must be one of \"days\", \"weeks\", \"months\", \"years\")")</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">32</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  }</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">33</td>
+                    <td class="coverage">3<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  factors &lt;- c(days = days, weeks = weeks, months = months, years = years)</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">34</td>
+                    <td class="coverage">3<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  check_factors &lt;- vapply(factors, function(x) isFALSE(!is.finite(x) || x == 0), logical(1L))</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">35</td>
+                    <td class="coverage">3<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  if (!all(check_factors)) {</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">36</td>
+                    <td class="coverage">1<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    stop(</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">37</td>
+                    <td class="coverage">1<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">      "Conversion factors must be finite non-zero numerical values: ",</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">38</td>
+                    <td class="coverage">1<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">      paste0(names(factors)[!check_factors], " = ", factors[!check_factors], collapse = ", ")</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">39</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    )</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">40</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  }</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">41</td>
+                    <td class="coverage">2<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  settings_env$time_conversion &lt;- factors</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">42</td>
+                    <td class="coverage">2<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  settings_env$default_time_scale &lt;- default</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">43</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">}</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">44</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">45</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">46</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @param factor Time factor to get.</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">47</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @rdname time_conversion</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">48</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @export</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">49</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">50</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @examples</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">51</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' # Get time scale factors:</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">52</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' get_time_conversion("years")</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">53</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' get_time_conversion("weeks")</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">54</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">get_time_conversion &lt;- function(factor = c("days", "weeks", "months", "years")) {</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">55</td>
+                    <td class="coverage">238<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  factor &lt;- match.arg(factor, several.ok = TRUE)</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">56</td>
+                    <td class="coverage">238<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  if (!exists("time_conversion", settings_env)) {</pre>
+                    </td>
+                  </tr>
+                  <tr class="missed">
+                    <td class="num">57</td>
+                    <td class="coverage">!</td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    warning("No time conversion factors previously set. Setting defaults.")</pre>
+                    </td>
+                  </tr>
+                  <tr class="missed">
+                    <td class="num">58</td>
+                    <td class="coverage">!</td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">    set_time_conversion()</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">59</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  }</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">60</td>
+                    <td class="coverage">238<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  settings_env$time_conversion[factor]</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">61</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">}</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">62</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">63</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r"></pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">64</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' Convert Time Values Using Scaling Factors</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">65</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">66</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @param times Numeric time values</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">67</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @param as A time scale to convert to. One of "days", "weeks", "months", "years"</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">68</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#'</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">69</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @return Returns a numeric vector calculated from `times / get_time_conversion(factor = as)`</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">70</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @export</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">71</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' @examples</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">72</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">#' get_time_as(50, as = "months")</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">73</td>
+                    <td class="coverage"></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">get_time_as &lt;- function(times, as = NULL) {</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">74</td>
+                    <td class="coverage">42<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  if (is.null(as)) as &lt;- settings_env$default_time_scale</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">75</td>
+                    <td class="coverage">1<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  if (!is.numeric(times)) stop("times arguments must be numeric")</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">76</td>
+                    <td class="coverage">236<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  as &lt;- match.arg(as, c("days", "weeks", "months", "years"))</pre>
+                    </td>
+                  </tr>
+                  <tr class="covered">
+                    <td class="num">77</td>
+                    <td class="coverage">236<em>x</em></td>
+                    <td class="col-sm-12">
+                      <pre class="language-r">  times / get_time_conversion(as)</pre>
+                    </td>
+                  </tr>
+                  <tr class="never">
+                    <td class="num">78</td>
                     <td class="coverage"></td>
                     <td class="col-sm-12">
                       <pre class="language-r">}</pre>
