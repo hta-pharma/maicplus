@@ -7,7 +7,6 @@ test_that("kmplot2 works", {
 
   # plot by trial
   vdiffr::expect_doppelganger(
-    
     title = "kmplot2_by_trial",
     fig = function() {
       kmplot2(
