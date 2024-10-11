@@ -43,7 +43,6 @@ reference:
       - get_pseudo_ipd_binary
       - maic_anchored
       - maic_unanchored
-      - process_agd
       - report_table_binary
       - report_table_tte
   - title: Plotting Functions
