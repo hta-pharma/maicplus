@@ -5,7 +5,6 @@ test_that("kmplot2 works", {
   data(adtte_twt)
   data(pseudo_ipd_twt)
 
-  # plot by trial
   vdiffr::expect_doppelganger(
     title = "kmplot2_by_trial",
     fig = function() {
