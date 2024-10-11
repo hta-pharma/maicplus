@@ -23,3 +23,12 @@ a plot of unscaled and scaled weights
 \description{
 Generates a \code{ggplot} histogram of weights. Default is to plot both unscaled and scaled weights on a same graph.
 }
+\examples{
+if (requireNamespace("ggplot2")) {
+plot_weights_ggplot(weighted_sat, 
+  bin_col = "#6ECEB2", 
+  vline_col = "#688CE8", 
+  main_title =  c("Scaled Individual Weights", "Unscaled Individual Weights"),
+  bins = 50)
+}
+}

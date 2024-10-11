@@ -29,3 +29,10 @@ a plot of unscaled or scaled weights
 \description{
 Generates a base R histogram of weights. Default is to plot either unscaled or scaled weights and not both.
 }
+\examples{
+plot_weights_base(weighted_sat, 
+  bin_col = "#6ECEB2", 
+  vline_col = "#688CE8", 
+  main_title =  c("Scaled Individual Weights", "Unscaled Individual Weights"),
+  scaled_weights = TRUE)
+}
