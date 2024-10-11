@@ -60,6 +60,39 @@ test_that("kmplot works all", {
   )
 })
 
+
+test_that("kmplot normalize weights works", {
+  make_plot <- function() {
+    kmplot(
+      weights_object = weighted_twt,
+      tte_ipd = adtte_twt,
+      tte_pseudo_ipd = pseudo_ipd_twt,
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_common = "C",
+      normalize_weights = TRUE,
+      trt_var_ipd = "ARM",
+      trt_var_agd = "ARM",
+      endpoint_name = "Overall Survival",
+      km_conf_type = "log-log",
+      km_layout = "all",
+      time_scale = "year",
+      time_grid = seq(0, 1.5, by = 0.25),
+      use_colors = NULL,
+      use_line_types = c(6, 3, 4, 5),
+      use_pch_cex = 0.65,
+      use_pch_alpha = 100
+    )
+  }
+
+  expect_no_error(make_plot())
+  skip_if_not_installed("vdiffr")
+  vdiffr::expect_doppelganger(
+    title = "kmplot_normalize_all",
+    fig = make_plot()
+  )
+})
+
 test_that("kmplot works by_arm", {
   make_plot <- function() {
     kmplot(
