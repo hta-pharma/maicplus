@@ -84,7 +84,7 @@ test_that("kmplot normalize weights works", {
       use_pch_alpha = 100
     )
   }
-  
+
   expect_no_error(make_plot())
   skip_if_not_installed("vdiffr")
   vdiffr::expect_doppelganger(
