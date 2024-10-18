@@ -50,7 +50,7 @@ remotes::install_github("hta-pharma/maicplus")
 ## Tutorial
 
 To learn how to use the `maicplus` R package, refer to the
-[package website (hta-pharma.github.io/maicplus/)](hta-pharma.github.io/maicplus/).
+[package website (hta-pharma.github.io/maicplus/)](https://hta-pharma.github.io/maicplus/).
 
 ## Bibliography
 
