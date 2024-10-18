@@ -56,7 +56,7 @@ To learn how to use the `maicplus` R package, refer to the
 
 Chen G, Seo M, Antoniou M, Belleli R, Kalyvas C, Gravestock I. SA83 {Maicplus}:
 An R Package to Support Analysis and Reporting of Matching Adjusted Indirect Treatment
-Comparisons (MAIC) for HTA Dossiers. Value in Health. 2023;26(12):S558. doi:10.1016/j.jval.2023.09.2992
+Comparisons (MAIC) for HTA Dossiers. Value in Health. 2023;26(12):S558. [doi:10.1016/j.jval.2023.09.2992](https://doi.org/10.1016/j.jval.2023.09.2992)
 
 Phillippo D, Ades T, Dias S, Palmer S, Abrams KR, Welton N.
 NICE DSU Technical Support Document 18:
