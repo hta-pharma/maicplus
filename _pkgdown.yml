@@ -10,6 +10,7 @@ navbar:
       - reference
       - articles
       - news
+      - reports
     right:
       - github
   components:
@@ -17,6 +18,11 @@ navbar:
       icon: fa-github
       href: https://github.com/hta-pharma/maicplus
       aria-label: View on github.com
+    reports:
+      text: Reports
+      menu:
+        - text: Coverage report
+          href: coverage-report/
 
 articles:
   - title: All vignettes
