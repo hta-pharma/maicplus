@@ -25,9 +25,9 @@ aggregate-level data are available for the comparator treatment.
 
 ## Features
 
-- Perform both MAIC analysis for time-to-event endpoints (e.g. overall survival).
+- Perform MAIC analysis for time-to-event endpoints (e.g. overall survival) or binary endpoints (e.g. objective tumor response).
 
-- Perform MAIC analysis for binary endpoints (e.g. objective tumor response).
+- Perform unanchored analysis when comparing single-arm trials or anchored analysis when there exists a common comparator between trials.
 
 - User-friendly functions to facilitate the analysis process.
 
