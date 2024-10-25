@@ -227,6 +227,7 @@ complete_agd <- function(use_agd) {
   }
 
   # output
+  rownames(use_agd) <- NULL
   use_agd
 }
 

@@ -44,6 +44,29 @@ test_that("optimise_weights works as expected", {
   )
 })
 
+test_that("estimate_weights fails as expected with invalid input", {
+  load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
+  load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
+  ipd_centered <- center_ipd(ipd = ipd, agd = agd)
+  centered_colnames <- paste0(c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN"), "_CENTERED")
+  expect_error(
+    estimate_weights(data = as.matrix(ipd_centered), centered_colnames = centered_colnames),
+    "not a data.frame"
+  )
+
+  expect_error(
+    estimate_weights(data = ipd_centered, centered_colnames = "hba1c_centered", trace = 2),
+    "specified centered_colnames"
+  )
+
+  ipd_centered$AGE_MEDIAN_CENTERED_FCT <- as.factor(ipd_centered$AGE_MEDIAN_CENTERED)
+  expect_error(
+    estimate_weights(data = ipd_centered, centered_colnames = c(centered_colnames, "AGE_MEDIAN_CENTERED_FCT")),
+    "not numeric"
+  )
+})
+
+
 
 test_that("estimate_weights works as expected", {
   load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
@@ -164,4 +187,69 @@ test_that("estimate_weights prints errors about convergence", {
     estimate_weights(data = ipd_centered, centered_colnames = centered_colnames, trace = 0, maxit = 300),
     NA
   )
+})
+
+test_that("plot_weights_base works as expected", {
+  vdiffr::expect_doppelganger(
+    title = "plot_weights_base scaled_TRUE",
+    plot_weights_base(
+      weighted_sat,
+      bin_col = "#6ECFFF",
+      vline_col = "#0000E8",
+      main_title = c("Scaled Individual Weights"),
+      scaled_weights = TRUE
+    )
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "plot_weights_base scaled_FALSE",
+    plot_weights_base(
+      weighted_sat,
+      bin_col = "#6ECFFF",
+      vline_col = "#0000E8",
+      main_title = c("Unscaled Individual Weights"),
+      scaled_weights = FALSE
+    )
+  )
+})
+
+test_that("plot_weights_ggplot works as expected", {
+  vdiffr::expect_doppelganger(
+    title = "plot_weights_ggplot",
+    plot_weights_ggplot(
+      weighted_sat,
+      bin_col = "#6ECFFF",
+      vline_col = "#0000E8",
+      main_title = c("Scaled Individual Weights", "Unscaled Individual Weights"),
+      bins = 10
+    )
+  )
+})
+
+test_that("default plot works as expected", {
+  vdiffr::expect_doppelganger(
+    title = "default_weights_plot",
+    plot(weighted_twt)
+  )
+  vdiffr::expect_doppelganger(
+    title = "default_weights_ggplot",
+    plot(weighted_twt, ggplot = TRUE)
+  )
+})
+
+test_that("check_weights works as expected", {
+  result <- check_weights(weighted_sat, process_agd(agd))
+  checkmate::expect_class(result, "maicplus_check_weights")
+  checkmate::expect_data_frame(result, nrows = 6, ncols = 6)
+  checkmate::expect_names(
+    colnames(result),
+    identical.to = c(
+      "covariate", "match_stat", "internal_trial", "internal_trial_after_weighted",
+      "external_trial", "sum_centered_IPD_with_weights"
+    ),
+    what = "colnames"
+  )
+  expect_equal(result[, "covariate"], c("AGE", "AGE", "AGE", "SEX_MALE", "ECOG0", "SMOKE"))
+  expect_equal(result[, "match_stat"], c("Mean", "Median", "SD", "Prop", "Prop", "Prop"))
+  expect_equal(result[, "sum_centered_IPD_with_weights"], c(0, 0, -0.0045, 0, 0, 0))
 })

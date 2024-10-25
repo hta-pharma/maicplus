@@ -65,7 +65,8 @@ Suggests:
     survminer,
     flexsurv,
     tibble,
-    vdiffr
+    vdiffr,
+    checkmate
 VignetteBuilder:
     knitr
 biocViews:
