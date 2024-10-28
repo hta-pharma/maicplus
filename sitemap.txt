@@ -1,0 +1,10 @@
+https://hta-pharma.github.io/maicplus/index.html
+https://hta-pharma.github.io/maicplus/main/index.html
+https://hta-pharma.github.io/maicplus/main/articles/introduction.html
+https://hta-pharma.github.io/maicplus/main/articles/calculating_weights.html
+https://hta-pharma.github.io/maicplus/main/articles/anchored_binary.html
+https://hta-pharma.github.io/maicplus/main/articles/unanchored_binary.html
+https://hta-pharma.github.io/maicplus/main/articles/anchored_survival.html
+https://hta-pharma.github.io/maicplus/main/articles/unanchored_survival.html
+https://hta-pharma.github.io/maicplus/main/articles/kaplan_meier_plots.html
+https://hta-pharma.github.io/maicplus/main/reference/index.html
