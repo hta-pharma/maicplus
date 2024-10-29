@@ -1,5 +1,3 @@
-
-
 # unanchored example using maic_unanchored for binary outcome
 
 data(centered_ipd_sat)
