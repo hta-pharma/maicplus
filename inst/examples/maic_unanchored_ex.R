@@ -16,7 +16,7 @@ weighted_data2 <- estimate_weights(
   centered_colnames = grep("_CENTERED$", names(centered_ipd_sat)),
   start_val = 0,
   method = "BFGS",
-  n_boot_iteration = 500,
+  n_boot_iteration = 100,
   set_seed_boot = 1234
 )
 

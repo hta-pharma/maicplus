@@ -1,4 +1,7 @@
+
+
 # unanchored example using maic_unanchored for binary outcome
+
 data(centered_ipd_sat)
 data(adrs_sat)
 
@@ -7,7 +10,7 @@ centered_colnames <- grep("_CENTERED$", colnames(centered_ipd_sat), value = TRUE
 weighted_data <- estimate_weights(data = centered_ipd_sat, centered_colnames = centered_colnames)
 weighted_data2 <- estimate_weights(
   data = centered_ipd_sat, centered_colnames = centered_colnames,
-  n_boot_iteration = 500
+  n_boot_iteration = 100
 )
 
 # get dummy binary IPD
