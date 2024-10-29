@@ -78,7 +78,9 @@ columns. This function is not sensitive to upper or lower case of letters in col
 }
 }
 \examples{
+#
 # unanchored example using maic_unanchored for time-to-event data
+#
 data(centered_ipd_sat)
 data(adtte_sat)
 data(pseudo_ipd_sat)
@@ -134,9 +136,9 @@ result_boot <- maic_unanchored(
 )
 result$descriptive$summary
 result$inferential$summary
-
-
+#
 # unanchored example using maic_unanchored for binary outcome
+#
 
 data(centered_ipd_sat)
 data(adrs_sat)
@@ -190,4 +192,6 @@ maic_unanchored(
   # binary specific args
   binary_robust_cov_type = "HC3"
 )
+
+#---------------------------------
 }

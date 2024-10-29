@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-The maicplus package facilitates performing matching adjusted indirect comparison (MAIC) analysis where the endpoint of interest is either time-to-event (e.g. overall survival) or binary (e.g. objective tumor response).
+Facilitates performing matching adjusted indirect comparison (MAIC) analysis where the endpoint of interest is either time-to-event (e.g. overall survival) or binary (e.g. objective tumor response). The method is described by Signorovitch et al (2012) \doi{10.1016/j.jval.2012.05.004}.
 }
 \seealso{
 Useful links:

@@ -1,4 +1,6 @@
+#
 # unanchored example using maic_unanchored for time-to-event data
+#
 data(centered_ipd_sat)
 data(adtte_sat)
 data(pseudo_ipd_sat)

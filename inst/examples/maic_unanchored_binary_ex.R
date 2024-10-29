@@ -1,4 +1,6 @@
+#
 # unanchored example using maic_unanchored for binary outcome
+#
 
 data(centered_ipd_sat)
 data(adrs_sat)
@@ -52,3 +54,5 @@ maic_unanchored(
   # binary specific args
   binary_robust_cov_type = "HC3"
 )
+
+#---------------------------------
