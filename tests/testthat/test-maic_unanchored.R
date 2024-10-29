@@ -131,14 +131,7 @@ test_that("test time to event case", {
     km_conf_type = "log-log"
   )
 
-  if (FALSE) {
-    # Manual snapshot of results
-    expectout <- testout
-    expectout2 <- testout2
-    save(list = c("expectout", "expectout2"), file = test_path("data", "test_tte_unanchored_expected.RData"))
-  }
 
-  load(test_path("data", "test_tte_unanchored_expected.RData"))
   # Compare robust outputs
   expect_snapshot(testout$descriptive$summary)
   expect_snapshot(testout$inferential$summary)

@@ -1,6 +1,97 @@
 # test binary case
 
     Code
+      testout$descriptive$summary
+    Output
+        trt_ind treatment            type   n   events events_pct
+      1       B         B Before matching 400 280.0000   70.00000
+      2       A         A Before matching 500 390.0000   78.00000
+      3       B         B  After matching 400 280.0000   70.00000
+      4       A         A  After matching 500 142.8968   28.57935
+
+---
+
+    Code
+      testout$inferential$summary
+    Output
+               case       RR       LCL      UCL      pval
+      1          AB 1.114286 0.9557015 1.299185 0.1671206
+      2 adjusted_AB 1.023627 0.9123647 1.148457 0.6908096
+
+---
+
+    Code
+      testout$inferential$fit
+    Output
+      $model_before
+      
+      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat)
+      
+      Coefficients:
+      (Intercept)         ARMA  
+          -0.3567       0.1082  
+      
+      Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
+      Null Deviance:	    395.5 
+      Residual Deviance: 393.5 	AIC: 1738
+      
+      $model_after
+      
+      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat, 
+          weights = weights)
+      
+      Coefficients:
+      (Intercept)         ARMA  
+         -0.35667      0.02335  
+      
+      Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
+      Null Deviance:	    295.1 
+      Residual Deviance: 295 	AIC: 1145
+      
+      $res_AB
+      $res_AB$est
+      [1] 1.023627
+      
+      $res_AB$se
+      [1] 0.06025155
+      
+      $res_AB$ci_l
+      [1] 0.9123647
+      
+      $res_AB$ci_u
+      [1] 1.148457
+      
+      $res_AB$pval
+      [1] 0.6908096
+      
+      
+      $res_AB_unadj
+      $res_AB_unadj$est
+      [1] 1.114286
+      
+      $res_AB_unadj$se
+      [1] 0.08768422
+      
+      $res_AB_unadj$ci_l
+      [1] 0.9557015
+      
+      $res_AB_unadj$ci_u
+      [1] 1.299185
+      
+      $res_AB_unadj$pval
+      [1] 0.1671206
+      
+      
+      $boot_res
+      NULL
+      
+      $boot_res_AB
+      NULL
+      
+
+---
+
+    Code
       testout2$descriptive
     Output
       $summary
