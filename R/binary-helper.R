@@ -91,6 +91,8 @@ get_pseudo_ipd_binary <- function(binary_agd, format = c("stacked", "unstacked")
 #' @param binobj returned object from \code{stats::glm}
 #' @param legend label to indicate the binary fit
 #' @param weighted logical flag indicating whether weights have been applied in the glm fit
+#' @returns A `data.frame` containing a summary of the number of events and subjects in a logistic
+#' regression model.
 #' @examples
 #' data(adrs_sat)
 #' pseudo_adrs <- get_pseudo_ipd_binary(
