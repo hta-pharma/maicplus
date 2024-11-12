@@ -54,24 +54,15 @@ test_that("maic_anchored works for TTE", {
     km_conf_type = "log-log"
   )
 
-  if (FALSE) {
-    # Manual snapshot of results
-    expectout <- testout
-    expectout2 <- testout2
-    save(list = c("expectout", "expectout2"), file = test_path("data", "test_tte_anchored_expected.RData"))
-  }
-
-  load(test_path("data", "test_tte_anchored_expected.RData"))
   # Compare robust outputs
-  expect_equal(testout$descriptive, expectout$descriptive)
-  expect_equal(testout$inferential$summary, expectout$inferential$summary)
-  expect_equal(testout$inferential$fit$res_AB, expectout$inferential$fit$res_AB)
+  expect_snapshot(testout$descriptive$summary)
+  expect_snapshot(testout$inferential$summary)
+  expect_snapshot(testout$inferential$fit)
 
   # Compare bootstrap outputs
-  expect_equal(testout2$descriptive, expectout2$descriptive)
-  expect_equal(testout2$inferential$fit$boot_est["t"], expectout2$inferential$fit$boot_est["t"])
-  expect_equal(testout2$inferential$fit$boot_est["seed"], expectout2$inferential$fit$boot_est["seed"])
-  expect_equal(testout2$inferential$boot_res_AB, expectout2$inferential$boot_res_AB)
+  expect_snapshot(testout2$descriptive$summary)
+  expect_snapshot(testout2$inferential$summary)
+  expect_snapshot(testout2$inferential$fit)
 })
 
 test_that("maic_anchored for binary case gives the expected result", {
@@ -132,24 +123,13 @@ test_that("maic_anchored for binary case gives the expected result", {
     eff_measure = "OR"
   )
 
-  if (FALSE) {
-    # Manual snapshot of results
-    expectout <- testout
-    expectout2 <- testout2
-    save(list = c("expectout", "expectout2"), file = test_path("data", "test_binary_anchored_expected.RData"))
-  }
-
-  load(test_path("data", "test_binary_anchored_expected.RData"))
-
   # Compare robust outputs
-  expect_equal(testout$descriptive, expectout$descriptive)
-  expect_equal(testout$inferential$summary, expectout$inferential$summary)
-  expect_equal(testout$inferential$fit$res_AB$est, testout$inferential$fit$res_AB$est)
-  expect_equal(testout$inferential$fit$res_AB$pvalue, testout$inferential$fit$res_AB$pvalue)
+  expect_snapshot(testout$descriptive$summary)
+  expect_snapshot(testout$inferential$summary)
+  expect_snapshot(testout$inferential$fit)
 
   # Compare bootstrap outputs
-  expect_equal(testout2$descriptive, expectout2$descriptive)
-  expect_equal(testout2$inferential$fit$boot_est["t"], expectout2$inferential$fit$boot_est["t"])
-  expect_equal(testout2$inferential$fit$boot_est["seed"], expectout2$inferential$fit$boot_est["seed"])
-  expect_equal(testout2$inferential$boot_res_AB, expectout2$inferential$boot_res_AB)
+  expect_snapshot(testout2$descriptive$summary)
+  expect_snapshot(testout2$inferential$summary)
+  expect_snapshot(testout2$inferential$fit)
 })

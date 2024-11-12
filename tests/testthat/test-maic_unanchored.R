@@ -60,25 +60,16 @@ test_that("test binary case", {
       binary_robust_cov_type = "HC3"
     )
 
-  if (FALSE) {
-    # Manual snapshot of results
-    expectout <- testout
-    expectout2 <- testout2
-    save(list = c("expectout", "expectout2"), file = test_path("data", "test_binary_unanchored_expected.RData"))
-  }
-
-  load(test_path("data", "test_binary_unanchored_expected.RData"))
 
   # Compare robust outputs
-  expect_equal(testout$descriptive, expectout$descriptive)
-  expect_equal(testout$inferential$summary, expectout$inferential$summary)
-  expect_equal(testout$inferential$fit, expectout$inferential$fit)
+  expect_snapshot(testout$descriptive$summary)
+  expect_snapshot(testout$inferential$summary)
+  expect_snapshot(testout$inferential$fit)
 
   # Compare bootstrap outputs
-  expect_equal(testout2$descriptive, expectout2$descriptive)
-  expect_equal(testout2$inferential$fit$boot_est["t"], expectout2$inferential$fit$boot_est["t"])
-  expect_equal(testout2$inferential$fit$boot_est["seed"], expectout2$inferential$fit$boot_est["seed"])
-  expect_equal(testout2$inferential$boot_res_AB, expectout2$inferential$boot_res_AB)
+  expect_snapshot(testout2$descriptive)
+  expect_snapshot(testout2$inferential$fit)
+  expect_snapshot(testout2$inferential$summary)
 })
 
 
@@ -140,22 +131,14 @@ test_that("test time to event case", {
     km_conf_type = "log-log"
   )
 
-  if (FALSE) {
-    # Manual snapshot of results
-    expectout <- testout
-    expectout2 <- testout2
-    save(list = c("expectout", "expectout2"), file = test_path("data", "test_tte_unanchored_expected.RData"))
-  }
 
-  load(test_path("data", "test_tte_unanchored_expected.RData"))
   # Compare robust outputs
-  expect_equal(testout$descriptive, expectout$descriptive)
-  expect_equal(testout$inferential$summary, expectout$inferential$summary)
-  expect_equal(testout$inferential$fit$res_AB, expectout$inferential$fit$res_AB)
+  expect_snapshot(testout$descriptive$summary)
+  expect_snapshot(testout$inferential$summary)
+  expect_snapshot(testout$inferential$fit)
 
   # Compare bootstrap outputs
-  expect_equal(testout2$descriptive, expectout2$descriptive)
-  expect_equal(testout2$inferential$fit$boot_est["t"], expectout2$inferential$fit$boot_est["t"])
-  expect_equal(testout2$inferential$fit$boot_est["seed"], expectout2$inferential$fit$boot_est["seed"])
-  expect_equal(testout2$inferential$boot_res_AB, expectout2$inferential$boot_res_AB)
+  expect_snapshot(testout2$descriptive$summary)
+  expect_snapshot(testout2$inferential$summary)
+  expect_snapshot(testout2$inferential$fit)
 })

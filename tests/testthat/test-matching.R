@@ -31,7 +31,7 @@ test_that("optimise_weights works as expected", {
     result <- optimise_weights(object, par = c(0, 0), trace = 2),
     "converged"
   )
-  expect_equal(result$alpha, c(-0.07702229, 0.06826333))
+  expect_equal(result$alpha, c(-0.0770222925868337, 0.0682633331364419))
   expect_equal(
     result$wt[, 1],
     c(

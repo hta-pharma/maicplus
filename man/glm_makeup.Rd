@@ -13,6 +13,10 @@ glm_makeup(binobj, legend = "before matching", weighted = FALSE)
 
 \item{weighted}{logical flag indicating whether weights have been applied in the glm fit}
 }
+\value{
+A \code{data.frame} containing a summary of the number of events and subjects in a logistic
+regression model.
+}
 \description{
 Helper function to summarize outputs from glm fit
 }

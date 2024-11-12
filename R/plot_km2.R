@@ -169,6 +169,7 @@ kmplot2 <- function(weights_object,
 #' @param use_line_types a numeric vector of length up to 4, line type to the KM curves,
 #'   it will be passed to \code{lty} of \code{lines()}
 #' @example inst/examples/basic_kmplot2_ex.R
+#' @returns A Kaplan-Meier plot object created with `survminer::ggsurvplot()`.
 #' @export
 
 basic_kmplot2 <- function(kmlist,
