@@ -115,10 +115,12 @@ combined_data_binary <- rbind(
 combined_data_binary$ARM <- stats::relevel(as.factor(combined_data_binary$ARM), ref = "B")
 
 binobj_dat <- glm(RESPONSE ~ ARM, combined_data_binary, family = binomial(link = "logit"))
-binobj_dat_adj <- glm(RESPONSE ~ ARM, combined_data_binary,
-  weights = weights,
-  family = binomial(link = "logit")
-) |> suppressWarnings()
+binobj_dat_adj <- suppressWarnings(
+  glm(RESPONSE ~ ARM, combined_data_binary,
+    weights = weights,
+    family = binomial(link = "logit")
+  )
+)
 
 bin_robust_cov <- sandwich::vcovHC(binobj_dat_adj, type = "HC3")
 bin_robust_coef <- lmtest::coeftest(binobj_dat_adj, vcov. = bin_robust_cov)

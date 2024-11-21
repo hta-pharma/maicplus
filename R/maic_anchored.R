@@ -703,32 +703,32 @@ maic_anchored_binary <- function(res,
   res$inferential[["summary"]] <- data.frame(
     case = c("AC", "adjusted_AC", "BC", "AB", "adjusted_AB"),
     EST = c(
-      res_AC$est,
       res_AC_unadj$est,
+      res_AC$est,
       res_BC$est,
-      res_AB$est,
-      res_AB_unadj$est
+      res_AB_unadj$est,
+      res_AB$est
     ),
     LCL = c(
-      res_AC$ci_l,
       res_AC_unadj$ci_l,
+      res_AC$ci_l,
       res_BC$ci_l,
-      res_AB$ci_l,
-      res_AB_unadj$ci_l
+      res_AB_unadj$ci_l,
+      res_AB$ci_l
     ),
     UCL = c(
-      res_AC$ci_u,
       res_AC_unadj$ci_u,
+      res_AC$ci_u,
       res_BC$ci_u,
-      res_AB$ci_u,
-      res_AB_unadj$ci_u
+      res_AB_unadj$ci_u,
+      res_AB$ci_u
     ),
     pval = c(
-      res_AC$pval,
       res_AC_unadj$pval,
+      res_AC$pval,
       res_BC$pval,
-      res_AB$pval,
-      res_AB_unadj$pval
+      res_AB_unadj$pval,
+      res_AB$pval
     )
   )
   names(res$inferential[["summary"]])[2] <- eff_measure
