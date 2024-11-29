@@ -432,8 +432,7 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
 #' data(weighted_sat)
 #' data(agd)
 #' check_weights(weighted_sat, process_agd(agd))
-#'
-#' @import DescTools
+#' @importFrom matrixStats weightedMedian
 #'
 #' @return data.frame of weighted and unweighted covariate averages of the IPD,
 #' average of aggregate data, and sum of inner products of covariate \eqn{x_i} and the weights (\eqn{exp(x_i\beta)})
@@ -485,12 +484,10 @@ check_weights <- function(weighted_data, processed_agd) {
         type = 2,
         names = FALSE
       ) # SAS default
-      outdata$internal_trial_after_weighted[ii] <- DescTools::Quantile(ipd_with_weights[[covname]],
-        weights = ipd_with_weights$weights,
-        probs = 0.5,
-        na.rm = TRUE,
-        type = 5,
-        names = FALSE
+      outdata$internal_trial_after_weighted[ii] <- weightedMedian(
+        x = ipd_with_weights[[covname]],
+        w = ipd_with_weights$weights,
+        na.rm = TRUE
       )
       # no IPD equals to reported AgD median
       msg_ind <- !any(ipd_with_weights[[covname]] == outdata$external_trial[ii], na.rm = TRUE)

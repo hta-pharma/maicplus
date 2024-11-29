@@ -1,3 +1,5 @@
+# maicplus 0.1.2
+
 # maicplus 0.1.1
 
 - bug fixes
