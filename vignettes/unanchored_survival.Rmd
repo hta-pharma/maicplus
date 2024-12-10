@@ -165,3 +165,7 @@ result_boot <- maic_unanchored(
 
 result_boot$inferential$fit$boot_res_AB
 ```
+
+Note that the bootstrap in unanchored analysis only uses resampling of internal IPD trial population and assumes there is no uncertainty in the comparator trial population (i.e. estimated mean outcomes). [@chandler] Therefore, we recommend the use of sandwich estimators for the variance calculation in the unanchored analysis.
+
+# References
