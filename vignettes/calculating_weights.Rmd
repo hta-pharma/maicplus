@@ -130,7 +130,7 @@ plot(weighted_sat)
 # plot(weighted_sat, ggplot = TRUE, bin_col = "black", vline_col = "red")
 ```
 
-Another check would be to look at whether the weighted summary of covariates in internal IPD match the external aggregate data summary.
+Another check would be to look at whether the weighted summary of covariates in internal IPD match the external comparator aggregate data summary.
 
 ```{r}
 check_weights(weighted_sat, agd)
