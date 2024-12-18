@@ -28,7 +28,7 @@
       2 adjusted_AC 0.1631852 0.1113815 0.2390829 1.361531e-20
       3          BC 0.5718004 0.4811989 0.6794607 2.143660e-10
       4          AB 0.3876507 0.3039348 0.4944253 2.270430e-14
-      5 adjusted_AB 0.2853885 0.1876867 0.4339497 4.509575e-09
+      5 adjusted_AB 0.2853885 0.1876867 0.4339497 4.509574e-09
 
 ---
 
@@ -191,7 +191,7 @@
       2 adjusted_AC 0.1631852 0.1113815 0.2390829 1.361531e-20
       3          BC 0.5718004 0.4811989 0.6794607 2.143660e-10
       4          AB 0.3876507 0.3039348 0.4944253 2.270430e-14
-      5 adjusted_AB 0.2853885 0.1876867 0.4339497 4.509575e-09
+      5 adjusted_AB 0.2853885 0.1876867 0.4339497 4.509574e-09
 
 ---
 
@@ -323,12 +323,12 @@
       
       Bootstrap Statistics :
              original       bias    std. error
-      t1* -1.24586465 -0.161716794  0.28787014
-      t2*  0.04571853  0.001994459  0.01042480
-      t3*  0.21381891  0.003564636  0.02391077
-      t4* -1.81286926 -0.166912210  0.25058383
-      t5*  0.19486304  0.003675676  0.02618306
-      t6*  0.03797160  0.001994459  0.01042480
+      t1* -1.24586465 -0.161716795  0.28787015
+      t2*  0.04571853  0.001994460  0.01042480
+      t3*  0.21381891  0.003564637  0.02391077
+      t4* -1.81286926 -0.166912211  0.25058383
+      t5*  0.19486304  0.003675678  0.02618306
+      t6*  0.03797160  0.001994460  0.01042480
       
       $boot_res_AC
       $boot_res_AC$est
@@ -387,13 +387,13 @@
     Code
       testout$descriptive$summary
     Output
-        trt_ind treatment                 type   n   events events_pct
-      1       C         C IPD, before matching 500 338.0000   67.60000
-      2       A         A IPD, before matching 500 390.0000   78.00000
-      3       C         C  IPD, after matching 500 131.2892   26.25784
-      4       A         A  IPD, after matching 500 142.8968   28.57935
-      5       C         C        AgD, external 320 120.0000   37.50000
-      6       B         B        AgD, external 480 280.0000   58.33333
+        trt_ind treatment                 type        n   events events_pct
+      1       C         C IPD, before matching 500.0000 338.0000   67.60000
+      2       A         A IPD, before matching 500.0000 390.0000   78.00000
+      3       C         C  IPD, after matching 199.4265 131.2892   65.83339
+      4       A         A  IPD, after matching 199.4265 142.8968   71.65386
+      5       C         C        AgD, external 320.0000 120.0000   37.50000
+      6       B         B        AgD, external 480.0000 280.0000   58.33333
 
 ---
 
@@ -526,13 +526,13 @@
     Code
       testout2$descriptive$summary
     Output
-        trt_ind treatment                 type   n   events events_pct
-      1       C         C IPD, before matching 500 338.0000   67.60000
-      2       A         A IPD, before matching 500 390.0000   78.00000
-      3       C         C  IPD, after matching 500 131.2892   26.25784
-      4       A         A  IPD, after matching 500 142.8968   28.57935
-      5       C         C        AgD, external 320 120.0000   37.50000
-      6       B         B        AgD, external 480 280.0000   58.33333
+        trt_ind treatment                 type        n   events events_pct
+      1       C         C IPD, before matching 500.0000 338.0000   67.60000
+      2       A         A IPD, before matching 500.0000 390.0000   78.00000
+      3       C         C  IPD, after matching 199.4265 131.2892   65.83339
+      4       A         A  IPD, after matching 199.4265 142.8968   71.65386
+      5       C         C        AgD, external 320.0000 120.0000   37.50000
+      6       B         B        AgD, external 480.0000 280.0000   58.33333
 
 ---
 
@@ -662,7 +662,7 @@
       t1* -0.69289322 0.59931037 0.259160031
       t2*  0.06888563 0.01114340 0.004040355
       t3*  0.26246071 0.02034770 0.007139486
-      t4*  0.27147808 0.45352064 0.291583054
+      t4*  0.27147808 0.45352063 0.291583054
       t5*  0.21675070 0.02420063 0.008380500
       t6*  0.04698086 0.01114340 0.004040355
       

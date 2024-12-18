@@ -3,20 +3,20 @@
     Code
       testout$descriptive$summary
     Output
-        trt_ind treatment            type   n   events events_pct
-      1       B         B Before matching 400 280.0000   70.00000
-      2       A         A Before matching 500 390.0000   78.00000
-      3       B         B  After matching 400 280.0000   70.00000
-      4       A         A  After matching 500 142.8968   28.57935
+        trt_ind treatment            type        n   events events_pct
+      1       B         B Before matching 400.0000 280.0000   70.00000
+      2       A         A Before matching 500.0000 390.0000   78.00000
+      3       B         B  After matching 400.0000 280.0000   70.00000
+      4       A         A  After matching 199.4265 142.8968   71.65386
 
 ---
 
     Code
       testout$inferential$summary
     Output
-               case       RR       LCL      UCL      pval
-      1          AB 1.114286 0.9557015 1.299185 0.1671206
-      2 adjusted_AB 1.023627 0.9123647 1.148457 0.6908096
+               case       RR       LCL      UCL        pval
+      1          AB 1.114286 1.0293724 1.206204 0.007455267
+      2 adjusted_AB 1.023627 0.9123647 1.148457 0.690809607
 
 ---
 
@@ -32,8 +32,8 @@
           -0.3567       0.1082  
       
       Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
-      Null Deviance:	    395.5 
-      Residual Deviance: 393.5 	AIC: 1738
+      Null Deviance:	    1023 
+      Residual Deviance: 1016 	AIC: 1020
       
       $model_after
       
@@ -45,8 +45,8 @@
          -0.35667      0.02335  
       
       Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
-      Null Deviance:	    295.1 
-      Residual Deviance: 295 	AIC: 1145
+      Null Deviance:	    726.7 
+      Residual Deviance: 726.5 	AIC: 712.5
       
       $res_AB
       $res_AB$est
@@ -70,16 +70,16 @@
       [1] 1.114286
       
       $res_AB_unadj$se
-      [1] 0.08768422
+      [1] 0.04511891
       
       $res_AB_unadj$ci_l
-      [1] 0.9557015
+      [1] 1.029372
       
       $res_AB_unadj$ci_u
-      [1] 1.299185
+      [1] 1.206204
       
       $res_AB_unadj$pval
-      [1] 0.1671206
+      [1] 0.007455267
       
       
       $boot_res
@@ -95,11 +95,11 @@
       testout2$descriptive
     Output
       $summary
-        trt_ind treatment            type   n   events events_pct
-      1       B         B Before matching 400 280.0000   70.00000
-      2       A         A Before matching 500 390.0000   78.00000
-      3       B         B  After matching 400 280.0000   70.00000
-      4       A         A  After matching 500 142.8968   28.57935
+        trt_ind treatment            type        n   events events_pct
+      1       B         B Before matching 400.0000 280.0000   70.00000
+      2       A         A Before matching 500.0000 390.0000   78.00000
+      3       B         B  After matching 400.0000 280.0000   70.00000
+      4       A         A  After matching 199.4265 142.8968   71.65386
       
 
 ---
@@ -116,8 +116,8 @@
           -0.3567       0.1082  
       
       Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
-      Null Deviance:	    395.5 
-      Residual Deviance: 393.5 	AIC: 1738
+      Null Deviance:	    1023 
+      Residual Deviance: 1016 	AIC: 1020
       
       $model_after
       
@@ -129,8 +129,8 @@
          -0.35667      0.02335  
       
       Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
-      Null Deviance:	    295.1 
-      Residual Deviance: 295 	AIC: 1145
+      Null Deviance:	    726.7 
+      Residual Deviance: 726.5 	AIC: 712.5
       
       $res_AB
       $res_AB$est
@@ -154,16 +154,16 @@
       [1] 1.114286
       
       $res_AB_unadj$se
-      [1] 0.08768422
+      [1] 0.04511891
       
       $res_AB_unadj$ci_l
-      [1] 0.9557015
+      [1] 1.029372
       
       $res_AB_unadj$ci_u
-      [1] 1.299185
+      [1] 1.206204
       
       $res_AB_unadj$pval
-      [1] 0.1671206
+      [1] 0.007455267
       
       
       $boot_res
@@ -177,9 +177,9 @@
       
       
       Bootstrap Statistics :
-            original       bias     std. error
-      t1* 0.02335185 1.366708e-02 0.0538052765
-      t2* 0.01056949 8.109601e-05 0.0005263733
+             original        bias     std. error
+      t1* 0.023351847  1.366708e-02 0.0538052766
+      t2* 0.003055105 -4.315049e-05 0.0003823512
       
       $boot_res_AB
       $boot_res_AB$est
@@ -204,9 +204,9 @@
     Code
       testout2$inferential$summary
     Output
-               case       RR       LCL      UCL      pval
-      1          AB 1.114286 0.9557015 1.299185 0.1671206
-      2 adjusted_AB 1.023627 0.9123647 1.148457 0.6908096
+               case       RR       LCL      UCL        pval
+      1          AB 1.114286 1.0293724 1.206204 0.007455267
+      2 adjusted_AB 1.023627 0.9123647 1.148457 0.690809607
 
 # test time to event case
 
@@ -427,7 +427,7 @@
       
       Bootstrap Statistics :
              original       bias    std. error
-      t1* -1.26062079 0.0024513461 0.131388233
+      t1* -1.26062079 0.0024513462 0.131388233
       t2*  0.02536718 0.0005819358 0.002670424
       
       $boot_res_AB
