@@ -12,7 +12,7 @@ repos:
           - plumber
           - shiny
           - lubridate
-          - DescTools
+          - matrixStats
           - lmtest
           - sandwich
       # codemeta must be above use-tidy-description when both are used
