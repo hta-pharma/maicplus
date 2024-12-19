@@ -27,7 +27,7 @@ test_that("test binary case", {
   )
 
   # unanchored binary MAIC, with CI based on sandwich estimator
-  testout <-
+  testout_RR <-
     maic_unanchored(
       weights_object = weighted_data,
       ipd = adrs_sat,
@@ -43,8 +43,42 @@ test_that("test binary case", {
       binary_robust_cov_type = "HC3"
     )
 
+  testout_RD <-
+    maic_unanchored(
+      weights_object = weighted_data,
+      ipd = adrs_sat,
+      pseudo_ipd = pseudo_adrs,
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_var_ipd = "ARM",
+      trt_var_agd = "ARM",
+      endpoint_type = "binary",
+      endpoint_name = "Binary Endpoint",
+      eff_measure = "RD",
+      # binary specific args
+      binary_robust_cov_type = "HC3"
+    )
+
+
+  testout_OR <-
+    maic_unanchored(
+      weights_object = weighted_data,
+      ipd = adrs_sat,
+      pseudo_ipd = pseudo_adrs,
+      trt_ipd = "A",
+      trt_agd = "B",
+      trt_var_ipd = "ARM",
+      trt_var_agd = "ARM",
+      endpoint_type = "binary",
+      endpoint_name = "Binary Endpoint",
+      eff_measure = "OR",
+      # binary specific args
+      binary_robust_cov_type = "HC3"
+    )
+
+
   # unanchored binary MAIC, with bootstrapped CI
-  testout2 <-
+  testout_boot_RR <-
     maic_unanchored(
       weights_object = weighted_data2,
       ipd = adrs_sat,
@@ -62,14 +96,22 @@ test_that("test binary case", {
 
 
   # Compare robust outputs
-  expect_snapshot(testout$descriptive$summary)
-  expect_snapshot(testout$inferential$summary)
-  expect_snapshot(testout$inferential$fit)
+  expect_snapshot(testout_RR$descriptive$summary)
+  expect_snapshot(testout_RR$inferential$summary)
+  expect_snapshot(testout_RR$inferential$fit)
+
+  expect_snapshot(testout_RD$descriptive$summary)
+  expect_snapshot(testout_RD$inferential$summary)
+  expect_snapshot(testout_RD$inferential$fit)
+
+  expect_snapshot(testout_OR$descriptive$summary)
+  expect_snapshot(testout_OR$inferential$summary)
+  expect_snapshot(testout_OR$inferential$fit)
 
   # Compare bootstrap outputs
-  expect_snapshot(testout2$descriptive)
-  expect_snapshot(testout2$inferential$fit)
-  expect_snapshot(testout2$inferential$summary)
+  expect_snapshot(testout_boot_RR$descriptive)
+  expect_snapshot(testout_boot_RR$inferential$fit)
+  expect_snapshot(testout_boot_RR$inferential$summary)
 })
 
 

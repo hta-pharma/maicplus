@@ -65,6 +65,7 @@ test_that("maic_anchored works for TTE", {
   expect_snapshot(testout2$inferential$fit)
 })
 
+
 test_that("maic_anchored for binary case gives the expected result", {
   data(centered_ipd_twt)
   data(agd)
@@ -95,7 +96,7 @@ test_that("maic_anchored for binary case gives the expected result", {
   )
 
   # inferential result
-  testout <- maic_anchored(
+  testout_OR <- maic_anchored(
     weights_object = weighted_data,
     ipd = adrs_twt,
     pseudo_ipd = pseudo_adrs,
@@ -109,7 +110,36 @@ test_that("maic_anchored for binary case gives the expected result", {
     eff_measure = "OR"
   )
 
-  testout2 <- maic_anchored(
+  testout_RR <- maic_anchored(
+    weights_object = weighted_data,
+    ipd = adrs_twt,
+    pseudo_ipd = pseudo_adrs,
+    trt_var_ipd = "ARM",
+    trt_var_agd = "ARM",
+    trt_ipd = "A",
+    trt_agd = "B",
+    trt_common = "C",
+    endpoint_name = "Binary Event",
+    endpoint_type = "binary",
+    eff_measure = "RR"
+  )
+
+  testout_RD <- maic_anchored(
+    weights_object = weighted_data,
+    ipd = adrs_twt,
+    pseudo_ipd = pseudo_adrs,
+    trt_var_ipd = "ARM",
+    trt_var_agd = "ARM",
+    trt_ipd = "A",
+    trt_agd = "B",
+    trt_common = "C",
+    endpoint_name = "Binary Event",
+    endpoint_type = "binary",
+    eff_measure = "RD"
+  )
+
+  # bootstrap
+  testout_boot_OR <- maic_anchored(
     weights_object = weighted_data2,
     ipd = adrs_twt,
     pseudo_ipd = pseudo_adrs,
@@ -124,12 +154,20 @@ test_that("maic_anchored for binary case gives the expected result", {
   )
 
   # Compare robust outputs
-  expect_snapshot(testout$descriptive$summary)
-  expect_snapshot(testout$inferential$summary)
-  expect_snapshot(testout$inferential$fit)
+  expect_snapshot(testout_OR$descriptive$summary)
+  expect_snapshot(testout_OR$inferential$summary)
+  expect_snapshot(testout_OR$inferential$fit)
+
+  expect_snapshot(testout_RR$descriptive$summary)
+  expect_snapshot(testout_RR$inferential$summary)
+  expect_snapshot(testout_RR$inferential$fit)
+
+  expect_snapshot(testout_RD$descriptive$summary)
+  expect_snapshot(testout_RD$inferential$summary)
+  expect_snapshot(testout_RD$inferential$fit)
 
   # Compare bootstrap outputs
-  expect_snapshot(testout2$descriptive$summary)
-  expect_snapshot(testout2$inferential$summary)
-  expect_snapshot(testout2$inferential$fit)
+  expect_snapshot(testout_boot_OR$descriptive$summary)
+  expect_snapshot(testout_boot_OR$inferential$summary)
+  expect_snapshot(testout_boot_OR$inferential$fit)
 })
