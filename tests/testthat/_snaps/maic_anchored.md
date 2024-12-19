@@ -385,20 +385,20 @@
 # maic_anchored for binary case gives the expected result
 
     Code
-      testout$descriptive$summary
+      testout_OR$descriptive$summary
     Output
-        trt_ind treatment                 type   n   events events_pct
-      1       C         C IPD, before matching 500 338.0000   67.60000
-      2       A         A IPD, before matching 500 390.0000   78.00000
-      3       C         C  IPD, after matching 500 131.2892   26.25784
-      4       A         A  IPD, after matching 500 142.8968   28.57935
-      5       C         C        AgD, external 320 120.0000   37.50000
-      6       B         B        AgD, external 480 280.0000   58.33333
+        trt_ind treatment                 type        n   events events_pct
+      1       C         C IPD, before matching 500.0000 338.0000   67.60000
+      2       A         A IPD, before matching 500.0000 390.0000   78.00000
+      3       C         C  IPD, after matching 199.4265 131.2892   65.83339
+      4       A         A  IPD, after matching 199.4265 142.8968   71.65386
+      5       C         C        AgD, external 320.0000 120.0000   37.50000
+      6       B         B        AgD, external 480.0000 280.0000   58.33333
 
 ---
 
     Code
-      testout$inferential$summary
+      testout_OR$inferential$summary
     Output
                case        OR       LCL       UCL         pval
       1          AC 1.6993007 1.2809976 2.2541985 2.354448e-04
@@ -410,7 +410,7 @@
 ---
 
     Code
-      testout$inferential$fit
+      testout_OR$inferential$fit
     Output
       $model_before_ipd
       
@@ -524,20 +524,298 @@
 ---
 
     Code
-      testout2$descriptive$summary
+      testout_RR$descriptive$summary
     Output
-        trt_ind treatment                 type   n   events events_pct
-      1       C         C IPD, before matching 500 338.0000   67.60000
-      2       A         A IPD, before matching 500 390.0000   78.00000
-      3       C         C  IPD, after matching 500 131.2892   26.25784
-      4       A         A  IPD, after matching 500 142.8968   28.57935
-      5       C         C        AgD, external 320 120.0000   37.50000
-      6       B         B        AgD, external 480 280.0000   58.33333
+        trt_ind treatment                 type        n   events events_pct
+      1       C         C IPD, before matching 500.0000 338.0000   67.60000
+      2       A         A IPD, before matching 500.0000 390.0000   78.00000
+      3       C         C  IPD, after matching 199.4265 131.2892   65.83339
+      4       A         A  IPD, after matching 199.4265 142.8968   71.65386
+      5       C         C        AgD, external 320.0000 120.0000   37.50000
+      6       B         B        AgD, external 480.0000 280.0000   58.33333
 
 ---
 
     Code
-      testout2$inferential$summary
+      testout_RR$inferential$summary
+    Output
+               case        RR       LCL       UCL         pval
+      1          AC 1.1538462 1.0688892 1.2455556 2.451956e-04
+      2 adjusted_AC 1.0884122 0.9398949 1.2603975 2.577047e-01
+      3          BC 1.5555555 1.3250564 1.8261510 6.678781e-08
+      4          AB 0.7417582 0.6210074 0.8859883 9.832938e-04
+      5 adjusted_AB 0.6996936 0.5630034 0.8695704 1.281101e-03
+
+---
+
+    Code
+      testout_RR$inferential$fit
+    Output
+      $model_before_ipd
+      
+      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = ipd)
+      
+      Coefficients:
+      (Intercept)         ARMA  
+          -0.3916       0.1431  
+      
+      Degrees of Freedom: 999 Total (i.e. Null);  998 Residual
+      Null Deviance:	    1170 
+      Residual Deviance: 1157 	AIC: 1161
+      
+      $model_after_ipd
+      
+      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = ipd, 
+          weights = weights)
+      
+      Coefficients:
+      (Intercept)         ARMA  
+         -0.41804      0.08472  
+      
+      Degrees of Freedom: 999 Total (i.e. Null);  998 Residual
+      Null Deviance:	    495.5 
+      Residual Deviance: 493.9 	AIC: 454.5
+      
+      $model_agd
+      
+      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = pseudo_ipd)
+      
+      Coefficients:
+      (Intercept)         ARMB  
+          -0.9808       0.4418  
+      
+      Degrees of Freedom: 799 Total (i.e. Null);  798 Residual
+      Null Deviance:	    1109 
+      Residual Deviance: 1075 	AIC: 1079
+      
+      $res_AC
+      $res_AC$est
+      [1] 1.088412
+      
+      $res_AC$se
+      [1] 0.08181292
+      
+      $res_AC$ci_l
+      [1] 0.9398949
+      
+      $res_AC$ci_u
+      [1] 1.260397
+      
+      $res_AC$pval
+      [1] 0.2577047
+      
+      
+      $res_AC_unadj
+      $res_AC_unadj$est
+      [1] 1.153846
+      
+      $res_AC_unadj$se
+      [1] 0.04507631
+      
+      $res_AC_unadj$ci_l
+      [1] 1.068889
+      
+      $res_AC_unadj$ci_u
+      [1] 1.245556
+      
+      $res_AC_unadj$pval
+      [1] 0.0002451956
+      
+      
+      $res_BC
+      $res_BC$est
+      [1] 1.555556
+      
+      $res_BC$se
+      [1] 0.1279272
+      
+      $res_BC$ci_l
+      [1] 1.325056
+      
+      $res_BC$ci_u
+      [1] 1.826151
+      
+      $res_BC$pval
+      [1] 6.678781e-08
+      
+      
+      $res_AB
+                  result             pvalue 
+      "0.70[0.56; 0.87]"            "0.001" 
+      
+      $res_AB_unadj
+                  result             pvalue 
+      "0.74[0.62; 0.89]"            "0.001" 
+      
+      $boot_res
+      NULL
+      
+      $boot_res_AC
+      NULL
+      
+      $boot_res_AB_mc
+      NULL
+      
+      $boot_res_AB
+      NULL
+      
+
+---
+
+    Code
+      testout_RD$descriptive$summary
+    Output
+        trt_ind treatment                 type        n   events events_pct
+      1       C         C IPD, before matching 500.0000 338.0000   67.60000
+      2       A         A IPD, before matching 500.0000 390.0000   78.00000
+      3       C         C  IPD, after matching 199.4265 131.2892   65.83339
+      4       A         A  IPD, after matching 199.4265 142.8968   71.65386
+      5       C         C        AgD, external 320.0000 120.0000   37.50000
+      6       B         B        AgD, external 480.0000 280.0000   58.33333
+
+---
+
+    Code
+      testout_RD$inferential$summary
+    Output
+               case         RD        LCL       UCL         pval
+      1          AC  10.400000   4.921741 15.878259 1.985755e-04
+      2 adjusted_AC   5.820475  -4.207825 15.848775 2.552989e-01
+      3          BC  20.833333  13.934963 27.731704 3.235832e-09
+      4          AB -10.433333 -19.242354 -1.624313 2.026711e-02
+      5 adjusted_AB -15.012859 -27.184724 -2.840993 1.563044e-02
+
+---
+
+    Code
+      testout_RD$inferential$fit
+    Output
+      $model_before_ipd
+      
+      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = ipd)
+      
+      Coefficients:
+      (Intercept)         ARMA  
+            0.676        0.104  
+      
+      Degrees of Freedom: 999 Total (i.e. Null);  998 Residual
+      Null Deviance:	    1170 
+      Residual Deviance: 1157 	AIC: 1161
+      
+      $model_after_ipd
+      
+      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = ipd, 
+          weights = weights)
+      
+      Coefficients:
+      (Intercept)         ARMA  
+           0.6583       0.0582  
+      
+      Degrees of Freedom: 999 Total (i.e. Null);  998 Residual
+      Null Deviance:	    495.5 
+      Residual Deviance: 493.9 	AIC: 454.5
+      
+      $model_agd
+      
+      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = pseudo_ipd)
+      
+      Coefficients:
+      (Intercept)         ARMB  
+           0.3750       0.2083  
+      
+      Degrees of Freedom: 799 Total (i.e. Null);  798 Residual
+      Null Deviance:	    1109 
+      Residual Deviance: 1075 	AIC: 1079
+      
+      $res_AC
+      $res_AC$est
+      [1] 5.820475
+      
+      $res_AC$se
+      [1] 5.116574
+      
+      $res_AC$ci_l
+      [1] -4.207825
+      
+      $res_AC$ci_u
+      [1] 15.84877
+      
+      $res_AC$pval
+      [1] 0.2552989
+      
+      
+      $res_AC_unadj
+      $res_AC_unadj$est
+      [1] 10.4
+      
+      $res_AC_unadj$se
+      [1] 2.795081
+      
+      $res_AC_unadj$ci_l
+      [1] 4.921741
+      
+      $res_AC_unadj$ci_u
+      [1] 15.87826
+      
+      $res_AC_unadj$pval
+      [1] 0.0001985755
+      
+      
+      $res_BC
+      $res_BC$est
+      [1] 20.83333
+      
+      $res_BC$se
+      [1] 3.519641
+      
+      $res_BC$ci_l
+      [1] 13.93496
+      
+      $res_BC$ci_u
+      [1] 27.7317
+      
+      $res_BC$pval
+      [1] 3.235832e-09
+      
+      
+      $res_AB
+                       result                  pvalue 
+      "-15.01[-27.18; -2.84]"                 "0.016" 
+      
+      $res_AB_unadj
+                       result                  pvalue 
+      "-10.43[-19.24; -1.62]"                 "0.020" 
+      
+      $boot_res
+      NULL
+      
+      $boot_res_AC
+      NULL
+      
+      $boot_res_AB_mc
+      NULL
+      
+      $boot_res_AB
+      NULL
+      
+
+---
+
+    Code
+      testout_boot_OR$descriptive$summary
+    Output
+        trt_ind treatment                 type        n   events events_pct
+      1       C         C IPD, before matching 500.0000 338.0000   67.60000
+      2       A         A IPD, before matching 500.0000 390.0000   78.00000
+      3       C         C  IPD, after matching 199.4265 131.2892   65.83339
+      4       A         A  IPD, after matching 199.4265 142.8968   71.65386
+      5       C         C        AgD, external 320.0000 120.0000   37.50000
+      6       B         B        AgD, external 480.0000 280.0000   58.33333
+
+---
+
+    Code
+      testout_boot_OR$inferential$summary
     Output
                case        OR       LCL       UCL         pval
       1          AC 1.6993007 1.2809976 2.2541985 2.354448e-04
@@ -549,7 +827,7 @@
 ---
 
     Code
-      testout2$inferential$fit
+      testout_boot_OR$inferential$fit
     Output
       $model_before_ipd
       

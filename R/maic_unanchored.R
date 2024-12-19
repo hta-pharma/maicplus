@@ -355,8 +355,8 @@ maic_unanchored_binary <- function(res,
   # ~~~ Analysis table
   # : set up proper link
   glm_link <- switch(eff_measure,
-    "RD" = poisson(link = "identity"),
-    "RR" = poisson(link = "log"),
+    "RD" = binomial(link = "identity"),
+    "RR" = binomial(link = "log"),
     "OR" = binomial(link = "logit")
   )
   transform_estimate <- switch(eff_measure,

@@ -115,7 +115,7 @@ glm_makeup <- function(binobj, legend = "before matching", weighted = FALSE) {
     n <- tapply(binobj$data$USUBJID, binobj$data$ARM, length)
     n_event <- tapply(binobj$data$RESPONSE, binobj$data$ARM, sum)
   } else {
-    n <- tapply(binobj$data$weights, binobj$data$ARM, length)
+    n <- tapply(binobj$data$weights, binobj$data$ARM, sum)
     n_event <- tapply(binobj$data$weights * binobj$data$RESPONSE, binobj$data$ARM, sum)
   }
   data.frame(

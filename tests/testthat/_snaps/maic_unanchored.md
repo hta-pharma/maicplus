@@ -1,27 +1,27 @@
 # test binary case
 
     Code
-      testout$descriptive$summary
+      testout_RR$descriptive$summary
     Output
-        trt_ind treatment            type   n   events events_pct
-      1       B         B Before matching 400 280.0000   70.00000
-      2       A         A Before matching 500 390.0000   78.00000
-      3       B         B  After matching 400 280.0000   70.00000
-      4       A         A  After matching 500 142.8968   28.57935
+        trt_ind treatment            type        n   events events_pct
+      1       B         B Before matching 400.0000 280.0000   70.00000
+      2       A         A Before matching 500.0000 390.0000   78.00000
+      3       B         B  After matching 400.0000 280.0000   70.00000
+      4       A         A  After matching 199.4265 142.8968   71.65386
 
 ---
 
     Code
-      testout$inferential$summary
+      testout_RR$inferential$summary
     Output
-               case       RR       LCL      UCL      pval
-      1          AB 1.114286 0.9557015 1.299185 0.1671206
-      2 adjusted_AB 1.023627 0.9123647 1.148457 0.6908096
+               case       RR       LCL      UCL        pval
+      1          AB 1.114286 1.0293724 1.206204 0.007455267
+      2 adjusted_AB 1.023627 0.9123647 1.148457 0.690809607
 
 ---
 
     Code
-      testout$inferential$fit
+      testout_RR$inferential$fit
     Output
       $model_before
       
@@ -32,8 +32,8 @@
           -0.3567       0.1082  
       
       Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
-      Null Deviance:	    395.5 
-      Residual Deviance: 393.5 	AIC: 1738
+      Null Deviance:	    1023 
+      Residual Deviance: 1016 	AIC: 1020
       
       $model_after
       
@@ -45,8 +45,8 @@
          -0.35667      0.02335  
       
       Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
-      Null Deviance:	    295.1 
-      Residual Deviance: 295 	AIC: 1145
+      Null Deviance:	    726.7 
+      Residual Deviance: 726.5 	AIC: 712.5
       
       $res_AB
       $res_AB$est
@@ -70,16 +70,16 @@
       [1] 1.114286
       
       $res_AB_unadj$se
-      [1] 0.08768422
+      [1] 0.04511891
       
       $res_AB_unadj$ci_l
-      [1] 0.9557015
+      [1] 1.029372
       
       $res_AB_unadj$ci_u
-      [1] 1.299185
+      [1] 1.206204
       
       $res_AB_unadj$pval
-      [1] 0.1671206
+      [1] 0.007455267
       
       
       $boot_res
@@ -92,20 +92,27 @@
 ---
 
     Code
-      testout2$descriptive
+      testout_RD$descriptive$summary
     Output
-      $summary
-        trt_ind treatment            type   n   events events_pct
-      1       B         B Before matching 400 280.0000   70.00000
-      2       A         A Before matching 500 390.0000   78.00000
-      3       B         B  After matching 400 280.0000   70.00000
-      4       A         A  After matching 500 142.8968   28.57935
-      
+        trt_ind treatment            type        n   events events_pct
+      1       B         B Before matching 400.0000 280.0000   70.00000
+      2       A         A Before matching 500.0000 390.0000   78.00000
+      3       B         B  After matching 400.0000 280.0000   70.00000
+      4       A         A  After matching 199.4265 142.8968   71.65386
 
 ---
 
     Code
-      testout2$inferential$fit
+      testout_RD$inferential$summary
+    Output
+               case       RD       LCL       UCL        pval
+      1          AB 8.000000  2.224920 13.775080 0.006626293
+      2 adjusted_AB 1.653865 -6.532173  9.839902 0.692119096
+
+---
+
+    Code
+      testout_RD$inferential$fit
     Output
       $model_before
       
@@ -113,11 +120,11 @@
       
       Coefficients:
       (Intercept)         ARMA  
-          -0.3567       0.1082  
+             0.70         0.08  
       
       Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
-      Null Deviance:	    395.5 
-      Residual Deviance: 393.5 	AIC: 1738
+      Null Deviance:	    1023 
+      Residual Deviance: 1016 	AIC: 1020
       
       $model_after
       
@@ -126,44 +133,219 @@
       
       Coefficients:
       (Intercept)         ARMA  
-         -0.35667      0.02335  
+          0.70000      0.01654  
       
       Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
-      Null Deviance:	    295.1 
-      Residual Deviance: 295 	AIC: 1145
+      Null Deviance:	    726.7 
+      Residual Deviance: 726.5 	AIC: 712.5
       
       $res_AB
       $res_AB$est
-      [1] 1.023627
+      [1] 1.653865
       
       $res_AB$se
-      [1] 0.06025155
+      [1] 4.176627
       
       $res_AB$ci_l
-      [1] 0.9123647
+      [1] -6.532173
       
       $res_AB$ci_u
-      [1] 1.148457
+      [1] 9.839902
       
       $res_AB$pval
-      [1] 0.6908096
+      [1] 0.6921191
       
       
       $res_AB_unadj
       $res_AB_unadj$est
-      [1] 1.114286
+      [1] 8
       
       $res_AB_unadj$se
-      [1] 0.08768422
+      [1] 2.946523
       
       $res_AB_unadj$ci_l
-      [1] 0.9557015
+      [1] 2.22492
       
       $res_AB_unadj$ci_u
-      [1] 1.299185
+      [1] 13.77508
       
       $res_AB_unadj$pval
-      [1] 0.1671206
+      [1] 0.006626293
+      
+      
+      $boot_res
+      NULL
+      
+      $boot_res_AB
+      NULL
+      
+
+---
+
+    Code
+      testout_OR$descriptive$summary
+    Output
+        trt_ind treatment            type        n   events events_pct
+      1       B         B Before matching 400.0000 280.0000   70.00000
+      2       A         A Before matching 500.0000 390.0000   78.00000
+      3       B         B  After matching 400.0000 280.0000   70.00000
+      4       A         A  After matching 199.4265 142.8968   71.65386
+
+---
+
+    Code
+      testout_OR$inferential$summary
+    Output
+               case       OR       LCL      UCL        pval
+      1          AB 1.519481 1.1247154 2.052805 0.006417064
+      2 adjusted_AB 1.083350 0.7268601 1.614683 0.694183560
+
+---
+
+    Code
+      testout_OR$inferential$fit
+    Output
+      $model_before
+      
+      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat)
+      
+      Coefficients:
+      (Intercept)         ARMA  
+           0.8473       0.4184  
+      
+      Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
+      Null Deviance:	    1023 
+      Residual Deviance: 1016 	AIC: 1020
+      
+      $model_after
+      
+      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat, 
+          weights = weights)
+      
+      Coefficients:
+      (Intercept)         ARMA  
+          0.84730      0.08006  
+      
+      Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
+      Null Deviance:	    726.7 
+      Residual Deviance: 726.5 	AIC: 712.5
+      
+      $res_AB
+      $res_AB$est
+      [1] 1.08335
+      
+      $res_AB$se
+      [1] 0.2275624
+      
+      $res_AB$ci_l
+      [1] 0.7268601
+      
+      $res_AB$ci_u
+      [1] 1.614683
+      
+      $res_AB$pval
+      [1] 0.6941836
+      
+      
+      $res_AB_unadj
+      $res_AB_unadj$est
+      [1] 1.519481
+      
+      $res_AB_unadj$se
+      [1] 0.2373883
+      
+      $res_AB_unadj$ci_l
+      [1] 1.124715
+      
+      $res_AB_unadj$ci_u
+      [1] 2.052805
+      
+      $res_AB_unadj$pval
+      [1] 0.006417064
+      
+      
+      $boot_res
+      NULL
+      
+      $boot_res_AB
+      NULL
+      
+
+---
+
+    Code
+      testout_boot_RR$descriptive
+    Output
+      $summary
+        trt_ind treatment            type        n   events events_pct
+      1       B         B Before matching 400.0000 280.0000   70.00000
+      2       A         A Before matching 500.0000 390.0000   78.00000
+      3       B         B  After matching 400.0000 280.0000   70.00000
+      4       A         A  After matching 199.4265 142.8968   71.65386
+      
+
+---
+
+    Code
+      print(testout_boot_RR$inferential$fit, digits = 5)
+    Output
+      $model_before
+      
+      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat)
+      
+      Coefficients:
+      (Intercept)         ARMA  
+         -0.35667      0.10821  
+      
+      Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
+      Null Deviance:	    1023 
+      Residual Deviance: 1015.6 	AIC: 1019.6
+      
+      $model_after
+      
+      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat, 
+          weights = weights)
+      
+      Coefficients:
+      (Intercept)         ARMA  
+        -0.356675     0.023352  
+      
+      Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
+      Null Deviance:	    726.66 
+      Residual Deviance: 726.48 	AIC: 712.47
+      
+      $res_AB
+      $res_AB$est
+      [1] 1.0236
+      
+      $res_AB$se
+      [1] 0.060252
+      
+      $res_AB$ci_l
+      [1] 0.91236
+      
+      $res_AB$ci_u
+      [1] 1.1485
+      
+      $res_AB$pval
+      [1] 0.69081
+      
+      
+      $res_AB_unadj
+      $res_AB_unadj$est
+      [1] 1.1143
+      
+      $res_AB_unadj$se
+      [1] 0.045119
+      
+      $res_AB_unadj$ci_l
+      [1] 1.0294
+      
+      $res_AB_unadj$ci_u
+      [1] 1.2062
+      
+      $res_AB_unadj$pval
+      [1] 0.0074553
       
       
       $boot_res
@@ -177,22 +359,22 @@
       
       
       Bootstrap Statistics :
-            original       bias     std. error
-      t1* 0.02335185 1.366708e-02 0.0538052765
-      t2* 0.01056949 8.109601e-05 0.0005263733
+           original      bias    std. error
+      t1* 0.0233518  0.01366708  0.05380528
+      t2* 0.0030551 -0.00004315  0.00038235
       
       $boot_res_AB
       $boot_res_AB$est
-      [1] 1.023627
+      [1] 1.0236
       
       $boot_res_AB$se
       [1] NA
       
       $boot_res_AB$ci_l
-      [1] 0.9086715
+      [1] 0.90867
       
       $boot_res_AB$ci_u
-      [1] 1.122032
+      [1] 1.122
       
       $boot_res_AB$pval
       [1] NA
@@ -202,11 +384,11 @@
 ---
 
     Code
-      testout2$inferential$summary
+      print(testout_boot_RR$inferential$summary, digits = 5)
     Output
-               case       RR       LCL      UCL      pval
-      1          AB 1.114286 0.9557015 1.299185 0.1671206
-      2 adjusted_AB 1.023627 0.9123647 1.148457 0.6908096
+               case     RR     LCL    UCL      pval
+      1          AB 1.1143 1.02937 1.2062 0.0074553
+      2 adjusted_AB 1.0236 0.91236 1.1485 0.6908096
 
 # test time to event case
 
