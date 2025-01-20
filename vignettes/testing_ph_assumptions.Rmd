@@ -1,0 +1,145 @@
+---
+title: "Testing PH assumptions"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: references.bib
+csl: biomedicine.csl
+vignette: >
+  %\VignetteIndexEntry{Kaplan-Meier Plots}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  fig.dim = c(8, 6),
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+# Loading R packages
+
+```{r}
+# install.packages("maicplus")
+library(maicplus)
+```
+
+# Introduction
+
+Here we demonstrate briefly how we can test proportional hazards assumptions including weights for time-to-event endpoints.
+
+```{r}
+data(weighted_sat)
+data(adtte_sat)
+data(pseudo_ipd_sat)
+```
+
+## Unanchored case
+
+```{r}
+result <- maic_unanchored(
+  weights_object = weighted_sat,
+  ipd = adtte_sat,
+  pseudo_ipd = pseudo_ipd_sat,
+  trt_ipd = "A",
+  trt_agd = "B",
+  normalize_weight = FALSE,
+  endpoint_name = "Overall Survival",
+  endpoint_type = "tte",
+  eff_measure = "HR",
+  time_scale = "months",
+  km_conf_type = "log-log"
+)
+
+fit_surv <- result$inferential$fit$km_after
+fit_cox <- result$inferential$fit$model_after
+
+# Log-log plot
+ph_diagplot_lch(fit_surv,
+   time_scale = "months", log_time = TRUE,
+   endpoint_name = "OS", subtitle = "(After Matching)"
+)
+
+# Schoenfeld plot
+ph_diagplot_schoenfeld(fit_cox,
+   time_scale = "months", log_time = FALSE,
+   endpoint_name = "OS", subtitle = "(After Matching)"
+)
+
+# Or set of diagnostic plots
+ph_diagplot(
+  weights_object = weighted_sat,
+  tte_ipd = adtte_sat,
+  tte_pseudo_ipd = pseudo_ipd_sat,
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = NULL,
+  endpoint_name = "Overall Survival",
+  time_scale = "week",
+  zph_transform = "log",
+  zph_log_hazard = TRUE
+)
+```
+
+## Anchored case
+
+```{r}
+data(weighted_twt)
+data(adtte_twt)
+data(pseudo_ipd_twt)
+
+ph_diagplot(
+  weights_object = weighted_twt,
+  tte_ipd = adtte_twt,
+  tte_pseudo_ipd = pseudo_ipd_twt,
+  trt_var_ipd = "ARM",
+  trt_var_agd = "ARM",
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  endpoint_name = "Overall Survival",
+  time_scale = "week",
+  zph_transform = "log",
+  zph_log_hazard = TRUE
+)
+```
+
+
+```{r, echo = FALSE, eval = FALSE}
+#heuristic check
+library(dplyr)
+library(survival)
+library(survminer)
+
+ipd_matched <- weighted_sat$data
+combined_data_tte <- ipd_matched %>%
+  left_join(adtte_sat, by = c("USUBJID", "ARM"))
+pseudo_ipd <- pseudo_ipd_sat
+pseudo_ipd$weights <- 1
+
+combined_data_tte <- rbind(
+  combined_data_tte[, colnames(pseudo_ipd)],
+  pseudo_ipd
+)
+
+# Change the reference treatment to B
+combined_data_tte$ARM <- stats::relevel(as.factor(combined_data_tte$ARM), ref = "B")
+
+combined_data_tte$TIME <- combined_data_tte$TIME/30.4375 # change time to months
+
+fit_surv <- survfit(Surv(TIME, EVENT==1) ~ ARM, weights = weights, data = combined_data_tte)
+fit_cox <- coxph(Surv(TIME, EVENT==1) ~ ARM, weights = weights, data = combined_data_tte)
+
+ggsurvplot(fit_surv, data = combined_data_tte,
+           xlab = "Months",
+           ylab = "Log-log plot OS",
+           main = "Log-log plot OS",
+           fun = "cloglog")
+
+test.ph <- cox.zph(fit_cox, transform = "log")
+print(ggcoxzph(test.ph))
+```
+
