@@ -57,14 +57,14 @@ fit_cox <- result$inferential$fit$model_after
 
 # Log-log plot
 ph_diagplot_lch(fit_surv,
-   time_scale = "months", log_time = TRUE,
-   endpoint_name = "OS", subtitle = "(After Matching)"
+  time_scale = "months", log_time = TRUE,
+  endpoint_name = "OS", subtitle = "(After Matching)"
 )
 
 # Schoenfeld plot
 ph_diagplot_schoenfeld(fit_cox,
-   time_scale = "months", log_time = FALSE,
-   endpoint_name = "OS", subtitle = "(After Matching)"
+  time_scale = "months", log_time = FALSE,
+  endpoint_name = "OS", subtitle = "(After Matching)"
 )
 
 # Or set of diagnostic plots
@@ -109,7 +109,7 @@ ph_diagplot(
 
 
 ```{r, echo = FALSE, eval = FALSE}
-#heuristic check
+# heuristic check
 library(dplyr)
 library(survival)
 library(survminer)
@@ -128,16 +128,18 @@ combined_data_tte <- rbind(
 # Change the reference treatment to B
 combined_data_tte$ARM <- stats::relevel(as.factor(combined_data_tte$ARM), ref = "B")
 
-combined_data_tte$TIME <- combined_data_tte$TIME/30.4375 # change time to months
+combined_data_tte$TIME <- combined_data_tte$TIME / 30.4375 # change time to months
 
-fit_surv <- survfit(Surv(TIME, EVENT==1) ~ ARM, weights = weights, data = combined_data_tte)
-fit_cox <- coxph(Surv(TIME, EVENT==1) ~ ARM, weights = weights, data = combined_data_tte)
+fit_surv <- survfit(Surv(TIME, EVENT == 1) ~ ARM, weights = weights, data = combined_data_tte)
+fit_cox <- coxph(Surv(TIME, EVENT == 1) ~ ARM, weights = weights, data = combined_data_tte)
 
-ggsurvplot(fit_surv, data = combined_data_tte,
-           xlab = "Months",
-           ylab = "Log-log plot OS",
-           main = "Log-log plot OS",
-           fun = "cloglog")
+ggsurvplot(fit_surv,
+  data = combined_data_tte,
+  xlab = "Months",
+  ylab = "Log-log plot OS",
+  main = "Log-log plot OS",
+  fun = "cloglog"
+)
 
 test.ph <- cox.zph(fit_cox, transform = "log")
 print(ggcoxzph(test.ph))
