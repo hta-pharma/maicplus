@@ -41,8 +41,8 @@ average of aggregate data, and sum of inner products of covariate \eqn{x_i} and 
 \description{
 This function checks to see if the optimization is done properly
 by checking the covariate averages before and after adjustment.
-In case of ties when calculating
-median, we return the mean of the two numbers. For more details,
+In case of ties when calculating median,
+we return the mean of the two numbers. For more details,
 see \link{ties} parameter in \link[matrixStats:weightedMedian]{matrixStats::weightedMedian}.
 }
 \section{Methods (by generic)}{
