@@ -423,8 +423,8 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
 #'
 #' This function checks to see if the optimization is done properly
 #' by checking the covariate averages before and after adjustment.
-#' In case of ties when calculating
-#' median, we return the mean of the two numbers. For more details,
+#' In case of ties when calculating median,
+#' we return the mean of the two numbers. For more details,
 #' see [ties] parameter in [matrixStats::weightedMedian].
 #'
 #' @param weighted_data object returned after calculating weights using \code{\link{estimate_weights}}
