@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="bucher" timestamp="2025-02-10T17:18:06Z" hostname="27798207d179" tests="9" skipped="0" failures="0" errors="0" time="0.144">
+    <testcase time="0.014" classname="bucher" name="bucher_works_as_expected"/>
+    <testcase time="0.0390000000000001" classname="bucher" name="bucher_works_when_difference_in_trt_effects_is_positive"/>
+    <testcase time="0.0159999999999998" classname="bucher" name="bucher_errors_on_bad_input"/>
+    <testcase time="0.004" classname="bucher" name="bucher_errors_on_bad_input"/>
+    <testcase time="0.00500000000000012" classname="bucher" name="bucher_errors_on_bad_input"/>
+    <testcase time="0.004" classname="bucher" name="bucher_errors_on_bad_input"/>
+    <testcase time="0.05" classname="bucher" name="bucher_errors_on_bad_input"/>
+    <testcase time="0.00600000000000001" classname="bucher" name="find_SE_from_CI_works_as_expected"/>
+    <testcase time="0.00600000000000001" classname="bucher" name="bucher_print_works_as_expected"/>
+  </testsuite>
+  <testsuite name="get_pseudo_ipd_binary" timestamp="2025-02-10T17:18:06Z" hostname="27798207d179" tests="2" skipped="0" failures="0" errors="0" time="0.024">
+    <testcase time="0.0169999999999999" classname="get_pseudo_ipd_binary" name="generate_pseudo_binary_IPD_given_unstacked_table_as_input"/>
+    <testcase time="0.00700000000000012" classname="get_pseudo_ipd_binary" name="generate_pseudo_binary_IPD_given_stacked_table_as_input"/>
+  </testsuite>
+  <testsuite name="maic_anchored" timestamp="2025-02-10T17:18:06Z" hostname="27798207d179" tests="2" skipped="2" failures="0" errors="0" time="0.534">
+    <testcase time="0.312" classname="maic_anchored" name="maic_anchored_works_for_TTE">
+      <skipped message="Reason: On CRAN ('test-maic_anchored.R:58:3')"/>
+    </testcase>
+    <testcase time="0.222" classname="maic_anchored" name="maic_anchored_for_binary_case_gives_the_expected_result">
+      <skipped message="Reason: On CRAN ('test-maic_anchored.R:157:3')"/>
+    </testcase>
+  </testsuite>
+  <testsuite name="maic_unanchored" timestamp="2025-02-10T17:18:07Z" hostname="27798207d179" tests="2" skipped="2" failures="0" errors="0" time="2.885">
+    <testcase time="0.188" classname="maic_unanchored" name="test_binary_case">
+      <skipped message="Reason: On CRAN ('test-maic_unanchored.R:99:3')"/>
+    </testcase>
+    <testcase time="2.697" classname="maic_unanchored" name="test_time_to_event_case">
+      <skipped message="Reason: On CRAN ('test-maic_unanchored.R:178:3')"/>
+    </testcase>
+  </testsuite>
+  <testsuite name="matching" timestamp="2025-02-10T17:18:09Z" hostname="27798207d179" tests="45" skipped="3" failures="0" errors="0" time="0.753">
+    <testcase time="0.0180000000000007" classname="matching" name="ess_footnote_text_works"/>
+    <testcase time="0.00599999999999934" classname="matching" name="calculate_weights_legend_works"/>
+    <testcase time="0.00600000000000023" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.00300000000000011" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.00300000000000011" classname="matching" name="optimise_weights_works_as_expected"/>
+    <testcase time="0.0129999999999999" classname="matching" name="estimate_weights_fails_as_expected_with_invalid_input"/>
+    <testcase time="0.00400000000000045" classname="matching" name="estimate_weights_fails_as_expected_with_invalid_input"/>
+    <testcase time="0.00499999999999989" classname="matching" name="estimate_weights_fails_as_expected_with_invalid_input"/>
+    <testcase time="0.0129999999999999" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00199999999999978" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00399999999999956" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00300000000000011" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00400000000000045" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.00300000000000011" classname="matching" name="estimate_weights_works_as_expected"/>
+    <testcase time="0.0229999999999997" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00100000000000033" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00399999999999956" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00199999999999978" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00300000000000011" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00300000000000011" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.00400000000000045" classname="matching" name="estimate_weights_works_as_expected_with_bootstrapping"/>
+    <testcase time="0.0149999999999997" classname="matching" name="estimate_weights_works_as_expected_with_alternative_bootstrap_strata"/>
+    <testcase time="0.00100000000000033" classname="matching" name="estimate_weights_works_as_expected_with_alternative_bootstrap_strata"/>
+    <testcase time="0.00300000000000011" classname="matching" name="estimate_weights_works_as_expected_with_alternative_bootstrap_strata"/>
+    <testcase time="0.00399999999999956" classname="matching" name="estimate_weights_works_as_expected_with_alternative_bootstrap_strata"/>
+    <testcase time="0.0869999999999997" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
+    <testcase time="0.00200000000000067" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
+    <testcase time="0.00299999999999923" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
+    <testcase time="0.00300000000000011" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
+    <testcase time="0.00300000000000011" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
+    <testcase time="0.00300000000000011" classname="matching" name="estimate_weights_works_when_the_input_is_a_tibble"/>
+    <testcase time="0.0120000000000005" classname="matching" name="estimate_weights_prints_errors_about_convergence"/>
+    <testcase time="0.00499999999999989" classname="matching" name="estimate_weights_prints_errors_about_convergence"/>
+    <testcase time="0.0139999999999993" classname="matching" name="plot_weights_base_works_as_expected">
+      <skipped message="Reason: On CRAN ('test-matching.R:193:3')"/>
+    </testcase>
+    <testcase time="0.163" classname="matching" name="plot_weights_ggplot_works_as_expected"/>
+    <testcase time="0.024" classname="matching" name="plot_weights_ggplot_works_as_expected"/>
+    <testcase time="0.024" classname="matching" name="plot_weights_ggplot_works_as_expected"/>
+    <testcase time="0.206" classname="matching" name="plot_weights_ggplot_works_as_expected">
+      <skipped message="Reason: On CRAN ('test-matching.R:217:3')"/>
+    </testcase>
+    <testcase time="0.0209999999999999" classname="matching" name="default_plot_works_as_expected">
+      <skipped message="Reason: On CRAN ('test-matching.R:230:3')"/>
+    </testcase>
+    <testcase time="0.0219999999999994" classname="matching" name="check_weights_works_as_expected"/>
+    <testcase time="0.00100000000000033" classname="matching" name="check_weights_works_as_expected"/>
+    <testcase time="0.00199999999999978" classname="matching" name="check_weights_works_as_expected"/>
+    <testcase time="0.00300000000000011" classname="matching" name="check_weights_works_as_expected"/>
+    <testcase time="0.00300000000000011" classname="matching" name="check_weights_works_as_expected"/>
+    <testcase time="0.00199999999999978" classname="matching" name="check_weights_works_as_expected"/>
+  </testsuite>
+  <testsuite name="plot_km" timestamp="2025-02-10T17:18:10Z" hostname="27798207d179" tests="18" skipped="8" failures="0" errors="0" time="1.005">
+    <testcase time="0.0430000000000001" classname="plot_km" name="kmplot_works_by_trial"/>
+    <testcase time="0.0410000000000004" classname="plot_km" name="kmplot_works_by_trial">
+      <skipped message="Reason: On CRAN ('test-plot_km.R:26:3')"/>
+    </testcase>
+    <testcase time="0.0579999999999998" classname="plot_km" name="kmplot_works_all"/>
+    <testcase time="0.0499999999999998" classname="plot_km" name="kmplot_works_all">
+      <skipped message="Reason: On CRAN ('test-plot_km.R:57:3')"/>
+    </testcase>
+    <testcase time="0.0609999999999999" classname="plot_km" name="kmplot_normalize_weights_works"/>
+    <testcase time="0.0439999999999996" classname="plot_km" name="kmplot_normalize_weights_works">
+      <skipped message="Reason: On CRAN ('test-plot_km.R:90:3')"/>
+    </testcase>
+    <testcase time="0.0570000000000004" classname="plot_km" name="kmplot_works_by_arm"/>
+    <testcase time="0.0419999999999998" classname="plot_km" name="kmplot_works_by_arm">
+      <skipped message="Reason: On CRAN ('test-plot_km.R:119:3')"/>
+    </testcase>
+    <testcase time="0.159" classname="plot_km" name="ph_diagplot_works_for_anchored_data"/>
+    <testcase time="0.118" classname="plot_km" name="ph_diagplot_works_for_anchored_data">
+      <skipped message="Reason: On CRAN ('test-plot_km.R:146:3')"/>
+    </testcase>
+    <testcase time="0.119" classname="plot_km" name="ph_diagplot_works_for_unanchored_data"/>
+    <testcase time="0.11" classname="plot_km" name="ph_diagplot_works_for_unanchored_data">
+      <skipped message="Reason: On CRAN ('test-plot_km.R:185:3')"/>
+    </testcase>
+    <testcase time="0.0460000000000003" classname="plot_km" name="ph_diagplot_lch_works_without_error"/>
+    <testcase time="0.00299999999999923" classname="plot_km" name="ph_diagplot_lch_works_without_error"/>
+    <testcase time="0.00700000000000056" classname="plot_km" name="ph_diagplot_lch_works_without_error">
+      <skipped message="Reason: On CRAN ('test-plot_km.R:223:3')"/>
+    </testcase>
+    <testcase time="0.0299999999999994" classname="plot_km" name="ph_diagplot_schoenfeld_works_without_error"/>
+    <testcase time="0.00200000000000067" classname="plot_km" name="ph_diagplot_schoenfeld_works_without_error"/>
+    <testcase time="0.0149999999999997" classname="plot_km" name="ph_diagplot_schoenfeld_works_without_error">
+      <skipped message="Reason: On CRAN ('test-plot_km.R:251:3')"/>
+    </testcase>
+  </testsuite>
+  <testsuite name="plot_km2" timestamp="2025-02-10T17:18:11Z" hostname="27798207d179" tests="1" skipped="1" failures="0" errors="0" time="1.463">
+    <testcase time="1.463" classname="plot_km2" name="kmplot2_works">
+      <skipped message="Reason: On CRAN ('test-plot_km2.R:8:3')"/>
+    </testcase>
+  </testsuite>
+  <testsuite name="process_data" timestamp="2025-02-10T17:18:13Z" hostname="27798207d179" tests="10" skipped="0" failures="0" errors="0" time="0.061">
+    <testcase time="0.0250000000000004" classname="process_data" name="process_agd_works"/>
+    <testcase time="0.00499999999999989" classname="process_data" name="process_agd_works"/>
+    <testcase time="0.00300000000000011" classname="process_data" name="process_agd_works"/>
+    <testcase time="0.00499999999999989" classname="process_data" name="dummize_ipd_works_as_expected"/>
+    <testcase time="0.00200000000000067" classname="process_data" name="dummize_ipd_works_as_expected"/>
+    <testcase time="0.00199999999999978" classname="process_data" name="dummize_ipd_works_as_expected"/>
+    <testcase time="0.00300000000000011" classname="process_data" name="dummize_ipd_works_as_expected"/>
+    <testcase time="0.0110000000000001" classname="process_data" name="complete_agd_works_as_expected"/>
+    <testcase time="0.00199999999999978" classname="process_data" name="complete_agd_works_as_expected"/>
+    <testcase time="0.00300000000000011" classname="process_data" name="complete_agd_works_as_expected"/>
+  </testsuite>
+  <testsuite name="time-helper" timestamp="2025-02-10T17:18:13Z" hostname="27798207d179" tests="10" skipped="0" failures="0" errors="0" time="0.035">
+    <testcase time="0.00699999999999967" classname="time_helper" name="setting_time_factors_works"/>
+    <testcase time="0.00300000000000011" classname="time_helper" name="setting_time_factors_works"/>
+    <testcase time="0.00300000000000011" classname="time_helper" name="setting_time_factors_works"/>
+    <testcase time="0.00300000000000011" classname="time_helper" name="setting_time_factors_works"/>
+    <testcase time="0.000999999999999446" classname="time_helper" name="setting_time_factors_works"/>
+    <testcase time="0.00300000000000011" classname="time_helper" name="setting_time_factors_works"/>
+    <testcase time="0.00300000000000011" classname="time_helper" name="setting_time_factors_works"/>
+    <testcase time="0.00300000000000011" classname="time_helper" name="setting_time_factors_works"/>
+    <testcase time="0.00499999999999989" classname="time_helper" name="setting_time_factors_works"/>
+    <testcase time="0.00400000000000045" classname="time_helper" name="setting_time_factors_works"/>
+  </testsuite>
+  <testsuite name="utils" timestamp="2025-02-10T17:18:13Z" hostname="27798207d179" tests="4" skipped="0" failures="0" errors="0" time="0.03">
+    <testcase time="0.0139999999999993" classname="utils" name="set_random_seed_works"/>
+    <testcase time="0.00200000000000067" classname="utils" name="set_random_seed_works"/>
+    <testcase time="0.00600000000000023" classname="utils" name="transform_ratio_works_as_expected"/>
+    <testcase time="0.00799999999999912" classname="utils" name="transform_absolute_works_as_expected"/>
+  </testsuite>
+</testsuites>
