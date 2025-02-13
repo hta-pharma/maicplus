@@ -253,3 +253,30 @@ test_that("check_weights works as expected", {
   expect_equal(result[, "match_stat"], c("Mean", "Median", "SD", "Prop", "Prop", "Prop"))
   expect_equal(result[, "sum_centered_IPD_with_weights"], c(0, 0, -0.0045, 0, 0, 0))
 })
+
+test_that("weighted median is correct", {
+  # based on calculating_weights vignette
+  data <- adsl_sat
+  data$SEX_MALE <- ifelse(data$SEX == "Male", 1, 0)
+  data$SAGE_SQUARED <- data$AGE^2
+  agd <- data.frame(
+    AGE_MEAN = 51,
+    AGE_SD = 3.25,
+    SEX_MALE_PROP = 147 / 300,
+    ECOG0_PROP = 0.40,
+    SMOKE_PROP = 58 / (300 - 5),
+    N_PR_THER_MEDIAN = 2
+  )
+
+  ipd <- adsl_sat
+  ipd_centered <- center_ipd(ipd = ipd, agd = agd)
+  centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+  centered_colnames <- paste0(centered_colnames, "_CENTERED")
+
+  weighted_sat <- estimate_weights(
+    data = ipd_centered,
+    centered_colnames = centered_colnames
+  )
+  check_weights_result <- check_weights(weighted_sat, agd)
+  expect_snapshot(check_weights_result)
+})
