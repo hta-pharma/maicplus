@@ -115,6 +115,55 @@ test_that("test binary case", {
 })
 
 
+
+test_that("check if match properly", {
+  
+  data(centered_ipd_twt)
+  data(adrs_twt)
+  
+  centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+  centered_colnames <- paste0(centered_colnames, "_CENTERED")
+  
+  weighted_data <- estimate_weights(
+    data = centered_ipd_twt,
+    centered_colnames = centered_colnames
+  )
+  
+  # get dummy binary IPD
+  pseudo_adrs <- get_pseudo_ipd_binary(
+    binary_agd = data.frame(
+      ARM = c("B", "C", "B", "C"),
+      RESPONSE = c("YES", "YES", "NO", "NO"),
+      COUNT = c(280, 120, 200, 200)
+    ),
+    format = "stacked"
+  )
+  
+  testout2 <- maic_anchored(
+    weights_object = weighted_data,
+    ipd = adrs_twt,
+    pseudo_ipd = pseudo_adrs,
+    trt_ipd = "A",
+    trt_agd = "B",
+    trt_common = "C",
+    normalize_weight = FALSE,
+    endpoint_type = "binary",
+    endpoint_name = "Binary Endpoint",
+    eff_measure = "OR",
+    # binary specific args
+    binary_robust_cov_type = "HC3"
+  )
+  
+  weights_before_wrapper <- weighted_data$data$weights
+  adrs_twt_dummy <- adrs_twt
+  adrs_twt_dummy$weights <- weighted_data$data$weights[match(adrs_twt_dummy$USUBJID, weighted_data$data$USUBJID)]
+ 
+  weights_after_wrapper <- testout2$inferential$fit$model_after$data$weights
+  
+  expect_equal(adrs_twt_dummy$weights, weights_after_wrapper)
+  
+})
+
 test_that("test time to event case", {
   data(centered_ipd_sat)
   data(agd)
