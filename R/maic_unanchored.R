@@ -140,9 +140,9 @@ maic_unanchored <- function(weights_object,
 
   # : assign weights to real and pseudo ipd
   if (normalize_weights) {
-    ipd$weights <- weights_object$data$scaled_weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+    ipd$weights <- weights_object$data$scaled_weights[match(ipd$USUBJID, weights_object$data$USUBJID)]
   } else {
-    ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+    ipd$weights <- weights_object$data$weights[match(ipd$USUBJID, weights_object$data$USUBJID)]
   }
   pseudo_ipd$weights <- 1
 
