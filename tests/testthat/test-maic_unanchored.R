@@ -158,7 +158,6 @@ test_that("check if match properly", {
   adrs_twt_dummy$weights <- weighted_data$data$weights[match(adrs_twt_dummy$USUBJID, weighted_data$data$USUBJID)]
 
   weights_after_wrapper <- testout2$inferential$fit$model_after$data$weights
-
   expect_equal(adrs_twt_dummy$weights, weights_after_wrapper)
 })
 
