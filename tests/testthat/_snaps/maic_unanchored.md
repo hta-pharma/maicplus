@@ -287,7 +287,7 @@
 ---
 
     Code
-      print(testout_boot_RR$inferential$fit, digits = 5)
+      testout_boot_RR$inferential$fit
     Output
       $model_before
       
@@ -295,11 +295,11 @@
       
       Coefficients:
       (Intercept)         ARMA  
-         -0.35667      0.10821  
+          -0.3567       0.1082  
       
       Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
       Null Deviance:	    1023 
-      Residual Deviance: 1015.6 	AIC: 1019.6
+      Residual Deviance: 1016 	AIC: 1020
       
       $model_after
       
@@ -308,44 +308,44 @@
       
       Coefficients:
       (Intercept)         ARMA  
-        -0.356675     0.023352  
+         -0.35667      0.02335  
       
       Degrees of Freedom: 899 Total (i.e. Null);  898 Residual
-      Null Deviance:	    726.66 
-      Residual Deviance: 726.48 	AIC: 712.47
+      Null Deviance:	    726.7 
+      Residual Deviance: 726.5 	AIC: 712.5
       
       $res_AB
       $res_AB$est
-      [1] 1.0236
+      [1] 1.023627
       
       $res_AB$se
-      [1] 0.060252
+      [1] 0.06025155
       
       $res_AB$ci_l
-      [1] 0.91236
+      [1] 0.9123647
       
       $res_AB$ci_u
-      [1] 1.1485
+      [1] 1.148457
       
       $res_AB$pval
-      [1] 0.69081
+      [1] 0.6908096
       
       
       $res_AB_unadj
       $res_AB_unadj$est
-      [1] 1.1143
+      [1] 1.114286
       
       $res_AB_unadj$se
-      [1] 0.045119
+      [1] 0.04511891
       
       $res_AB_unadj$ci_l
-      [1] 1.0294
+      [1] 1.029372
       
       $res_AB_unadj$ci_u
-      [1] 1.2062
+      [1] 1.206204
       
       $res_AB_unadj$pval
-      [1] 0.0074553
+      [1] 0.007455267
       
       
       $boot_res
@@ -359,22 +359,22 @@
       
       
       Bootstrap Statistics :
-           original      bias    std. error
-      t1* 0.0233518  0.01366708  0.05380528
-      t2* 0.0030551 -0.00004315  0.00038235
+             original        bias     std. error
+      t1* 0.023351847  1.366708e-02 0.0538052765
+      t2* 0.003055105 -4.315049e-05 0.0003823512
       
       $boot_res_AB
       $boot_res_AB$est
-      [1] 1.0236
+      [1] 1.023627
       
       $boot_res_AB$se
       [1] NA
       
       $boot_res_AB$ci_l
-      [1] 0.90867
+      [1] 0.9086715
       
       $boot_res_AB$ci_u
-      [1] 1.122
+      [1] 1.122032
       
       $boot_res_AB$pval
       [1] NA
@@ -384,11 +384,11 @@
 ---
 
     Code
-      print(testout_boot_RR$inferential$summary, digits = 5)
+      testout_boot_RR$inferential$summary
     Output
-               case     RR     LCL    UCL      pval
-      1          AB 1.1143 1.02937 1.2062 0.0074553
-      2 adjusted_AB 1.0236 0.91236 1.1485 0.6908096
+               case       RR       LCL      UCL        pval
+      1          AB 1.114286 1.0293724 1.206204 0.007455267
+      2 adjusted_AB 1.023627 0.9123647 1.148457 0.690809607
 
 # test time to event case
 
