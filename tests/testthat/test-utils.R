@@ -1,3 +1,7 @@
+test_that("errors occur", {
+  expect_true(FALSE)
+})
+
 test_that("set_random_seed works", {
   original_seed <- globalenv()$.Random.seed
   set.seed(123)
