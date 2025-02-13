@@ -43,7 +43,7 @@ This function checks to see if the optimization is done properly
 by checking the covariate averages before and after adjustment.
 In case of ties when calculating median,
 we return the mean of the two numbers. For more details,
-see \link{ties} parameter in \link[matrixStats:weightedMedian]{matrixStats::weightedMedian}.
+see \code{ties} parameter in \link[matrixStats:weightedMedian]{matrixStats::weightedMedian}.
 }
 \section{Methods (by generic)}{
 \itemize{
