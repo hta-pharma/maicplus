@@ -192,24 +192,28 @@ test_that("estimate_weights prints errors about convergence", {
 test_that("plot_weights_base works as expected", {
   vdiffr::expect_doppelganger(
     title = "plot_weights_base scaled_TRUE",
-    plot_weights_base(
-      weighted_sat,
-      bin_col = "#6ECFFF",
-      vline_col = "#0000E8",
-      main_title = c("Scaled Individual Weights"),
-      scaled_weights = TRUE
-    )
+    function() {
+      plot_weights_base(
+        weighted_sat,
+        bin_col = "#6ECFFF",
+        vline_col = "#0000E8",
+        main_title = c("Scaled Individual Weights"),
+        scaled_weights = TRUE
+      )
+    }
   )
 
   vdiffr::expect_doppelganger(
     title = "plot_weights_base scaled_FALSE",
-    plot_weights_base(
-      weighted_sat,
-      bin_col = "#6ECFFF",
-      vline_col = "#0000E8",
-      main_title = c("Unscaled Individual Weights"),
-      scaled_weights = FALSE
-    )
+    function() {
+      plot_weights_base(
+        weighted_sat,
+        bin_col = "#6ECFFF",
+        vline_col = "#0000E8",
+        main_title = c("Unscaled Individual Weights"),
+        scaled_weights = FALSE
+      )
+    }
   )
 })
 
@@ -229,7 +233,7 @@ test_that("plot_weights_ggplot works as expected", {
 test_that("default plot works as expected", {
   vdiffr::expect_doppelganger(
     title = "default_weights_plot",
-    plot(weighted_twt)
+    function() plot(weighted_twt)
   )
   vdiffr::expect_doppelganger(
     title = "default_weights_ggplot",
