@@ -354,9 +354,10 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
   })
   legend_data <- data.frame(ind = main_title, lab = lab)
 
+  values <- median <- NULL # dummy assignment for undefined variable check
   hist_plot <- ggplot2::ggplot(wt_data) +
-    ggplot2::geom_histogram(ggplot2::aes_string(x = "values"), bins = bins, color = bin_col, fill = bin_col) +
-    ggplot2::geom_vline(ggplot2::aes_string(xintercept = "median"),
+    ggplot2::geom_histogram(ggplot2::aes(x = values), bins = bins, color = bin_col, fill = bin_col) +
+    ggplot2::geom_vline(ggplot2::aes(xintercept = median),
       color = vline_col,
       linetype = "dashed"
     ) +
@@ -364,7 +365,7 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
     ggplot2::facet_wrap(~ind, ncol = 1) +
     ggplot2::geom_text(
       data = legend_data,
-      ggplot2::aes_string(label = "lab"), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3
+      ggplot2::aes(label = lab), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3
     ) +
     ggplot2::theme(
       axis.title = ggplot2::element_text(size = 12),
@@ -421,8 +422,11 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
 
 #' Check to see if weights are optimized correctly
 #'
-#' This function checks to see if the optimization is done properly by checking the covariate averages
-#' before and after adjustment.
+#' This function checks to see if the optimization is done properly
+#' by checking the covariate averages before and after adjustment.
+#' In case of ties when calculating median,
+#' we return the mean of the two numbers. For more details,
+#' see `ties` parameter in [matrixStats::weightedMedian].
 #'
 #' @param weighted_data object returned after calculating weights using \code{\link{estimate_weights}}
 #' @param processed_agd a data frame, object returned after using \code{\link{process_agd}} or
@@ -487,6 +491,8 @@ check_weights <- function(weighted_data, processed_agd) {
       outdata$internal_trial_after_weighted[ii] <- weightedMedian(
         x = ipd_with_weights[[covname]],
         w = ipd_with_weights$weights,
+        interpolate = FALSE,
+        ties = "mean",
         na.rm = TRUE
       )
       # no IPD equals to reported AgD median
