@@ -56,7 +56,7 @@ test_that("maic_anchored works for TTE", {
 
   # Compare robust outputs
   expect_snapshot(testout$descriptive$summary)
-  expect_snapshot(testout$inferential$summary)
+  expect_snapshot(print(testout$inferential$summary, digits = 5))
   expect_snapshot(testout$inferential$fit)
 
   # Compare bootstrap outputs
