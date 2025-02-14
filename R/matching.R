@@ -354,9 +354,10 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
   })
   legend_data <- data.frame(ind = main_title, lab = lab)
 
+  values <- median <- NULL # dummy assignment for undefined variable check
   hist_plot <- ggplot2::ggplot(wt_data) +
-    ggplot2::geom_histogram(ggplot2::aes_string(x = "values"), bins = bins, color = bin_col, fill = bin_col) +
-    ggplot2::geom_vline(ggplot2::aes_string(xintercept = "median"),
+    ggplot2::geom_histogram(ggplot2::aes(x = values), bins = bins, color = bin_col, fill = bin_col) +
+    ggplot2::geom_vline(ggplot2::aes(xintercept = median),
       color = vline_col,
       linetype = "dashed"
     ) +
@@ -364,7 +365,7 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
     ggplot2::facet_wrap(~ind, ncol = 1) +
     ggplot2::geom_text(
       data = legend_data,
-      ggplot2::aes_string(label = "lab"), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3
+      ggplot2::aes(label = lab), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3
     ) +
     ggplot2::theme(
       axis.title = ggplot2::element_text(size = 12),
