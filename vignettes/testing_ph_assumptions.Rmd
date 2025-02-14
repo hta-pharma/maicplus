@@ -54,13 +54,25 @@ result <- maic_unanchored(
 
 fit_surv <- result$inferential$fit$km_after
 fit_cox <- result$inferential$fit$model_after
+```
 
+To assess if the hazards are proportional to each other over time, we can check if the log cumulative hazard lines are parallel.
+
+```{r}
 # Log-log plot
 ph_diagplot_lch(fit_surv,
   time_scale = "months", log_time = TRUE,
   endpoint_name = "OS", subtitle = "(After Matching)"
 )
+```
 
+Another way is using the Schoenfeld residual.
+
+At the subject’s failure time, the residual measures how the value of $x$ for the subject who fails differs from a weighted average of $x$ values for those still at risk. Weights depend on estimated HR for each subject at risk. [@brown]
+
+If the lines in Schoenfeld plots are flat, covariate effect are constant over time and proportional hazards assumptions are met. Alternatively, a non-significant p-value in Schoenfeld residual test suggests that there is no strong evidence for non-proportionality.
+
+```{r}
 # Schoenfeld plot
 ph_diagplot_schoenfeld(fit_cox,
   time_scale = "months", log_time = FALSE,
@@ -85,6 +97,8 @@ ph_diagplot(
 ```
 
 ## Anchored case
+
+Similar tests can be done for the anchored case.
 
 ```{r}
 data(weighted_twt)
@@ -145,3 +159,4 @@ test.ph <- cox.zph(fit_cox, transform = "log")
 print(ggcoxzph(test.ph))
 ```
 
+# References
