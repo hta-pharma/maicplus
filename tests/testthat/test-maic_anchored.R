@@ -56,13 +56,13 @@ test_that("maic_anchored works for TTE", {
 
   # Compare robust outputs
   expect_snapshot(testout$descriptive$summary)
-  expect_snapshot(testout$inferential$summary)
+  expect_snapshot(print(testout$inferential$summary, digits = 5))
   expect_snapshot(testout$inferential$fit)
 
   # Compare bootstrap outputs
-  expect_snapshot(testout2$descriptive$summary)
-  expect_snapshot(testout2$inferential$summary)
-  expect_snapshot(testout2$inferential$fit)
+  expect_snapshot(print(testout2$descriptive$summary, digits = 5))
+  expect_snapshot(print(testout2$inferential$summary, digits = 5))
+  expect_snapshot(print(testout2$inferential$fit, digits = 5))
 })
 
 
@@ -167,7 +167,7 @@ test_that("maic_anchored for binary case gives the expected result", {
   expect_snapshot(testout_RD$inferential$fit)
 
   # Compare bootstrap outputs
-  expect_snapshot(testout_boot_OR$descriptive$summary)
-  expect_snapshot(testout_boot_OR$inferential$summary)
-  expect_snapshot(testout_boot_OR$inferential$fit)
+  expect_snapshot(print(testout_boot_OR$descriptive$summary, digits = 5))
+  expect_snapshot(print(testout_boot_OR$inferential$summary, digits = 5))
+  expect_snapshot(print(testout_boot_OR$inferential$fit, digits = 5))
 })

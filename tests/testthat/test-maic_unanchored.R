@@ -109,9 +109,9 @@ test_that("test binary case", {
   expect_snapshot(testout_OR$inferential$fit)
 
   # Compare bootstrap outputs
-  expect_snapshot(testout_boot_RR$descriptive)
-  expect_snapshot(testout_boot_RR$inferential$fit)
-  expect_snapshot(testout_boot_RR$inferential$summary)
+  expect_snapshot(print(testout_boot_RR$descriptive$summary, digits = 5))
+  expect_snapshot(print(testout_boot_RR$inferential$summary, digits = 5))
+  expect_snapshot(print(testout_boot_RR$inferential$fit, digits = 5))
 })
 
 
@@ -226,7 +226,7 @@ test_that("test time to event case", {
   expect_snapshot(testout$inferential$fit)
 
   # Compare bootstrap outputs
-  expect_snapshot(testout2$descriptive$summary)
-  expect_snapshot(testout2$inferential$summary)
-  expect_snapshot(testout2$inferential$fit)
+  expect_snapshot(print(testout2$descriptive$summary, digits = 5))
+  expect_snapshot(print(testout2$inferential$summary, digits = 5))
+  expect_snapshot(print(testout2$inferential$fit, digits = 5))
 })
