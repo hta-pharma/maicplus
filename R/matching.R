@@ -374,7 +374,7 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
     ggplot2::ylab("Frequency") +
     ggplot2::xlab("Weight")
 
-  return(hist_plot)
+  hist_plot
 }
 
 

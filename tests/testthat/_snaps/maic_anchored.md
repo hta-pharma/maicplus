@@ -414,7 +414,8 @@
     Output
       $model_before_ipd
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = ipd)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = ipd)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -426,8 +427,8 @@
       
       $model_after_ipd
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = ipd, 
-          weights = weights)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = ipd, weights = weights)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -439,7 +440,8 @@
       
       $model_agd
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = pseudo_ipd)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = pseudo_ipd)
       
       Coefficients:
       (Intercept)         ARMB  
@@ -553,7 +555,8 @@
     Output
       $model_before_ipd
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = ipd)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = ipd)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -565,8 +568,8 @@
       
       $model_after_ipd
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = ipd, 
-          weights = weights)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = ipd, weights = weights)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -578,7 +581,8 @@
       
       $model_agd
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = pseudo_ipd)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = pseudo_ipd)
       
       Coefficients:
       (Intercept)         ARMB  
@@ -692,7 +696,8 @@
     Output
       $model_before_ipd
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = ipd)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = ipd)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -704,8 +709,8 @@
       
       $model_after_ipd
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = ipd, 
-          weights = weights)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = ipd, weights = weights)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -717,7 +722,8 @@
       
       $model_agd
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = pseudo_ipd)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = pseudo_ipd)
       
       Coefficients:
       (Intercept)         ARMB  
@@ -831,7 +837,8 @@
     Output
       $model_before_ipd
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = ipd)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = ipd)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -843,8 +850,8 @@
       
       $model_after_ipd
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = ipd, 
-          weights = weights)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = ipd, weights = weights)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -856,7 +863,8 @@
       
       $model_agd
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = pseudo_ipd)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = pseudo_ipd)
       
       Coefficients:
       (Intercept)         ARMB  
