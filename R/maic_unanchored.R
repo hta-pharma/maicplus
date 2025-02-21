@@ -424,7 +424,9 @@ maic_unanchored_binary <- function(res,
       }
       boot_dat <- rbind(boot_ipd, pseudo_ipd)
       boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
-      boot_binobj_dat_adj <- suppressWarnings(glm(RESPONSE ~ ARM, boot_dat, weights = weights, family = binomial(link = glm_link)))
+      boot_binobj_dat_adj <- suppressWarnings(
+        glm(RESPONSE ~ ARM, boot_dat, weights = weights, family = binomial(link = glm_link))
+      )
       c(est = coef(boot_binobj_dat_adj)[2], var = vcov(boot_binobj_dat_adj)[2, 2])
     }
 
