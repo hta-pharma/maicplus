@@ -1,7 +1,6 @@
 Title: Matching Adjusted Indirect Comparison
 Package: maicplus
 Version: 0.1.2
-Date: 2024-10-29
 Authors@R: c(
    person(
       given = "Gregory",
@@ -75,5 +74,5 @@ Encoding: UTF-8
 Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2.9000
+RoxygenNote: 7.3.2
 Config/testthat/edition: 3

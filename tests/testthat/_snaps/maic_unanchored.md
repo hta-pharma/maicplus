@@ -25,7 +25,8 @@
     Output
       $model_before
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = dat)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -37,8 +38,8 @@
       
       $model_after
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat, 
-          weights = weights)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = dat, weights = weights)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -116,7 +117,8 @@
     Output
       $model_before
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = dat)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -128,8 +130,8 @@
       
       $model_after
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat, 
-          weights = weights)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = dat, weights = weights)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -207,7 +209,8 @@
     Output
       $model_before
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = dat)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -219,8 +222,8 @@
       
       $model_after
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat, 
-          weights = weights)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = dat, weights = weights)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -298,7 +301,8 @@
     Output
       $model_before
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = dat)
       
       Coefficients:
       (Intercept)         ARMA  
@@ -310,8 +314,8 @@
       
       $model_after
       
-      Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat, 
-          weights = weights)
+      Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), 
+          data = dat, weights = weights)
       
       Coefficients:
       (Intercept)         ARMA  
