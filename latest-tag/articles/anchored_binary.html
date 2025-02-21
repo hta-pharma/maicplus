@@ -15,8 +15,8 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Anchored Binary Analysis">
 </head>
 <body>
@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">maicplus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,6 +61,7 @@
     <div class="dropdown-menu" aria-labelledby="dropdown-versions">
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/v0.1.2">v0.1.2</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/v0.1.1">v0.1.1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/v0.1.0">v0.1.0</a>
 </div>
@@ -82,9 +83,9 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Anchored Binary Analysis</h1>
             
-            <h4 data-toc-skip class="date">2024-11-22</h4>
+            <h4 data-toc-skip class="date">2025-02-21</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/hta-pharma/maicplus/blob/v0.1.1/vignettes/anchored_binary.Rmd" class="external-link"><code>vignettes/anchored_binary.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/hta-pharma/maicplus/blob/v0.1.2/vignettes/anchored_binary.Rmd" class="external-link"><code>vignettes/anchored_binary.Rmd</code></a></small>
       <div class="d-none name"><code>anchored_binary.Rmd</code></div>
     </div>
 
@@ -150,13 +151,13 @@ events.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span><span class="op">$</span><span class="va">descriptive</span></span></code></pre></div>
 <pre><code><span><span class="co">## $summary</span></span>
-<span><span class="co">##   trt_ind treatment                 type   n   events events_pct</span></span>
-<span><span class="co">## 1       C         C IPD, before matching 500 338.0000   67.60000</span></span>
-<span><span class="co">## 2       A         A IPD, before matching 500 390.0000   78.00000</span></span>
-<span><span class="co">## 3       C         C  IPD, after matching 500 131.2892   26.25784</span></span>
-<span><span class="co">## 4       A         A  IPD, after matching 500 142.8968   28.57935</span></span>
-<span><span class="co">## 5       C         C        AgD, external 320 120.0000   37.50000</span></span>
-<span><span class="co">## 6       B         B        AgD, external 480 280.0000   58.33333</span></span></code></pre>
+<span><span class="co">##   trt_ind treatment                 type        n   events events_pct</span></span>
+<span><span class="co">## 1       C         C IPD, before matching 500.0000 338.0000   67.60000</span></span>
+<span><span class="co">## 2       A         A IPD, before matching 500.0000 390.0000   78.00000</span></span>
+<span><span class="co">## 3       C         C  IPD, after matching 199.4265 134.0364   67.21094</span></span>
+<span><span class="co">## 4       A         A  IPD, after matching 199.4265 142.8968   71.65386</span></span>
+<span><span class="co">## 5       C         C        AgD, external 320.0000 120.0000   37.50000</span></span>
+<span><span class="co">## 6       B         B        AgD, external 480.0000 280.0000   58.33333</span></span></code></pre>
 <p>In the inferential section, we have the fitted models stored
 (i.e. logistic regression) and the results from the <code>glm</code>
 models (i.e. odds ratios and CI).</p>
@@ -164,10 +165,10 @@ models (i.e. odds ratios and CI).</p>
 <code class="sourceCode R"><span><span class="va">result</span><span class="op">$</span><span class="va">inferential</span><span class="op">$</span><span class="va">summary</span></span></code></pre></div>
 <pre><code><span><span class="co">##          case        OR       LCL       UCL         pval</span></span>
 <span><span class="co">## 1          AC 1.6993007 1.2809976 2.2541985 2.354448e-04</span></span>
-<span><span class="co">## 2 adjusted_AC 1.3119021 0.8210000 2.0963303 2.562849e-01</span></span>
+<span><span class="co">## 2 adjusted_AC 1.2332036 0.7710134 1.9724576 3.817109e-01</span></span>
 <span><span class="co">## 3          BC 2.3333333 1.7458092 3.1185794 1.035032e-08</span></span>
 <span><span class="co">## 4          AB 0.7282717 0.4857575 1.0918611 1.248769e-01</span></span>
-<span><span class="co">## 5 adjusted_AB 0.5622438 0.3239933 0.9756933 4.061296e-02</span></span></code></pre>
+<span><span class="co">## 5 adjusted_AB 0.5285158 0.3043103 0.9179084 2.356848e-02</span></span></code></pre>
 <p>Here are model and results before adjustment.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span><span class="op">$</span><span class="va">inferential</span><span class="op">$</span><span class="va">fit</span><span class="op">$</span><span class="va">model_before</span></span></code></pre></div>
@@ -210,31 +211,31 @@ models (i.e. odds ratios and CI).</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## Coefficients:</span></span>
 <span><span class="co">## (Intercept)         ARMA  </span></span>
-<span><span class="co">##      0.6559       0.2715  </span></span>
+<span><span class="co">##      0.7177       0.2096  </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Degrees of Freedom: 999 Total (i.e. Null);  998 Residual</span></span>
-<span><span class="co">## Null Deviance:       495.5 </span></span>
-<span><span class="co">## Residual Deviance: 493.9     AIC: 454.5</span></span></code></pre>
+<span><span class="co">## Null Deviance:       491.1 </span></span>
+<span><span class="co">## Residual Deviance: 490.1     AIC: 458.4</span></span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span><span class="op">$</span><span class="va">inferential</span><span class="op">$</span><span class="va">fit</span><span class="op">$</span><span class="va">res_AC</span></span></code></pre></div>
 <pre><code><span><span class="co">## $est</span></span>
-<span><span class="co">## [1] 1.311902</span></span>
+<span><span class="co">## [1] 1.233204</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $se</span></span>
-<span><span class="co">## [1] 0.3275028</span></span>
+<span><span class="co">## [1] 0.3085377</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $ci_l</span></span>
-<span><span class="co">## [1] 0.821</span></span>
+<span><span class="co">## [1] 0.7710134</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $ci_u</span></span>
-<span><span class="co">## [1] 2.09633</span></span>
+<span><span class="co">## [1] 1.972458</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $pval</span></span>
-<span><span class="co">## [1] 0.2562849</span></span></code></pre>
+<span><span class="co">## [1] 0.3817109</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span><span class="op">$</span><span class="va">inferential</span><span class="op">$</span><span class="va">fit</span><span class="op">$</span><span class="va">res_AB</span></span></code></pre></div>
 <pre><code><span><span class="co">##             result             pvalue </span></span>
-<span><span class="co">## "0.56[0.32; 0.98]"            "0.041"</span></span></code></pre>
+<span><span class="co">## "0.53[0.30; 0.92]"            "0.024"</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="using-bootstrap-to-calculate-standard-errors">Using bootstrap to calculate standard errors<a class="anchor" aria-label="anchor" href="#using-bootstrap-to-calculate-standard-errors"></a>
@@ -271,16 +272,16 @@ parameter <code>boot_ci_type</code>.</p>
 <span></span>
 <span><span class="va">result_boot</span><span class="op">$</span><span class="va">inferential</span><span class="op">$</span><span class="va">fit</span><span class="op">$</span><span class="va">boot_res_AB</span></span></code></pre></div>
 <pre><code><span><span class="co">## $est</span></span>
-<span><span class="co">## [1] 0.5622438</span></span>
+<span><span class="co">## [1] 0.5285158</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $se</span></span>
 <span><span class="co">## [1] NA</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $ci_l</span></span>
-<span><span class="co">## [1] 0.3228615</span></span>
+<span><span class="co">## [1] 0.3034937</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $ci_u</span></span>
-<span><span class="co">## [1] 0.9791133</span></span>
+<span><span class="co">## [1] 0.9203782</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $pval</span></span>
 <span><span class="co">## [1] NA</span></span></code></pre>

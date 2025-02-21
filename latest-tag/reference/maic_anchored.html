@@ -15,8 +15,8 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Anchored MAIC for binary and time-to-event endpoint — maic_anchored">
 <meta name="description" content="This is a wrapper function to provide adjusted effect estimates and relevant statistics in anchored case (i.e. there
 is a common comparator arm in the internal and external trial).">
@@ -32,7 +32,7 @@ is a common comparator arm in the internal and external trial).">
 
     <a class="navbar-brand me-2" href="../index.html">maicplus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +66,7 @@ is a common comparator arm in the internal and external trial).">
     <div class="dropdown-menu" aria-labelledby="dropdown-versions">
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/v0.1.2">v0.1.2</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/v0.1.1">v0.1.1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/v0.1.0">v0.1.0</a>
 </div>
@@ -82,7 +83,7 @@ is a common comparator arm in the internal and external trial).">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Anchored MAIC for binary and time-to-event endpoint</h1>
-      <small class="dont-index">Source: <a href="https://github.com/hta-pharma/maicplus/blob/v0.1.1/R/maic_anchored.R" class="external-link"><code>R/maic_anchored.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/hta-pharma/maicplus/blob/v0.1.2/R/maic_anchored.R" class="external-link"><code>R/maic_anchored.R</code></a></small>
       <div class="d-none name"><code>maic_anchored.Rd</code></div>
     </div>
 
@@ -267,17 +268,17 @@ columns. This function is not sensitive to upper or lower case of letters in col
 <span class="r-out co"><span class="r-pr">#&gt;</span>     events%     rmean  se(rmean)    median   0.95LCL   0.95UCL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 100.00000  2.564797 0.11366994  1.836467  1.644765  2.045808</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2  38.00000  8.709690 0.35514766  7.587627  6.278691 10.288538</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 100.00000  2.690665 0.20750373  1.818345  1.457222  2.352181</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 100.00000  2.361458 0.18291706  1.641770  1.052627  2.093468</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4  32.02718 10.575301 0.57325902 12.166430 10.244293        NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5 100.00000  2.455272 0.09848888  1.851987  1.670540  2.009650</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6  59.33333  4.303551 0.33672602  2.746131  2.261125  3.320857</span>
 <span class="r-in"><span><span class="va">result_tte</span><span class="op">$</span><span class="va">inferential</span><span class="op">$</span><span class="va">summary</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          case        HR       LCL       UCL         pval</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          AC 0.2216588 0.1867151 0.2631423 2.136650e-66</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 adjusted_AC 0.1639632 0.1120463 0.2399358 1.302433e-20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          BC 0.5718004 0.4811989 0.6794607 2.143660e-10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          AB 0.3876507 0.3039348 0.4944253 2.270430e-14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 adjusted_AB 0.2867489 0.1887868 0.4355439 4.704496e-09</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          case        HR        LCL       UCL         pval</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          AC 0.2216588 0.18671510 0.2631423 2.136650e-66</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 adjusted_AC 0.1368317 0.09470597 0.1976953 3.172693e-26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          BC 0.5718004 0.48119889 0.6794607 2.143660e-10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          AB 0.3876507 0.30393476 0.4944253 2.270430e-14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 adjusted_AB 0.2392998 0.15938333 0.3592872 5.325218e-12</span>
 <span class="r-in"><span><span class="co"># Anchored example using maic_anchored for binary outcome</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">weighted_twt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">adrs_twt</span><span class="op">)</span></span></span>
@@ -308,20 +309,20 @@ columns. This function is not sensitive to upper or lower case of letters in col
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">result_binary</span><span class="op">$</span><span class="va">descriptive</span><span class="op">$</span><span class="va">summary</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   trt_ind treatment                 type   n   events events_pct</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1       C         C IPD, before matching 500 338.0000   67.60000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       A         A IPD, before matching 500 390.0000   78.00000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       C         C  IPD, after matching 500 124.2146   24.84292</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       A         A  IPD, after matching 500 128.7925   25.75849</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5       C         C        AgD, external 320 120.0000   37.50000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6       B         B        AgD, external 480 280.0000   58.33333</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   trt_ind treatment                 type        n   events events_pct</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       C         C IPD, before matching 500.0000 338.0000   67.60000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       A         A IPD, before matching 500.0000 390.0000   78.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       C         C  IPD, after matching 173.4208 117.9894   68.03648</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       A         A  IPD, after matching 173.4208 128.7925   74.26586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5       C         C        AgD, external 320.0000 120.0000   37.50000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6       B         B        AgD, external 480.0000 280.0000   58.33333</span>
 <span class="r-in"><span><span class="va">result_binary</span><span class="op">$</span><span class="va">inferential</span><span class="op">$</span><span class="va">summary</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          case        OR       LCL       UCL         pval</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          AC 1.6993007 1.2809976 2.2541985 2.354448e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 adjusted_AC 1.1432118 0.6694678 1.9521971 6.239765e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          BC 2.3333333 1.7458092 3.1185794 1.035032e-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          AB 0.7282717 0.4857575 1.0918611 1.248769e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 adjusted_AB 0.4899479 0.2665649 0.9005273 2.159935e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          case        OR       LCL      UCL         pval</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          AC 1.6993007 1.2809976 2.254199 2.354448e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 adjusted_AC 1.3557902 0.7804864 2.355156 2.799951e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          BC 2.3333333 1.7458092 3.118579 1.035032e-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          AB 0.7282717 0.4857575 1.091861 1.248769e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 adjusted_AB 0.5810530 0.3113963 1.084221 8.802907e-02</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

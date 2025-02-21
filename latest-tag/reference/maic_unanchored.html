@@ -15,8 +15,8 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Unanchored MAIC for binary and time-to-event endpoint — maic_unanchored">
 <meta name="description" content="This is a wrapper function to provide adjusted effect estimates and relevant statistics in unanchored case (i.e.
 there is no common comparator arm in the internal and external trial).">
@@ -32,7 +32,7 @@ there is no common comparator arm in the internal and external trial).">
 
     <a class="navbar-brand me-2" href="../index.html">maicplus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +66,7 @@ there is no common comparator arm in the internal and external trial).">
     <div class="dropdown-menu" aria-labelledby="dropdown-versions">
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/v0.1.2">v0.1.2</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/v0.1.1">v0.1.1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/v0.1.0">v0.1.0</a>
 </div>
@@ -82,7 +83,7 @@ there is no common comparator arm in the internal and external trial).">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Unanchored MAIC for binary and time-to-event endpoint</h1>
-      <small class="dont-index">Source: <a href="https://github.com/hta-pharma/maicplus/blob/v0.1.1/R/maic_unanchored.R" class="external-link"><code>R/maic_unanchored.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/hta-pharma/maicplus/blob/v0.1.2/R/maic_unanchored.R" class="external-link"><code>R/maic_unanchored.R</code></a></small>
       <div class="d-none name"><code>maic_unanchored.Rd</code></div>
     </div>
 
@@ -1852,11 +1853,11 @@ columns. This function is not sensitive to upper or lower case of letters in col
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $descriptive</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $descriptive$summary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   trt_ind treatment            type   n  events events_pct</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1       B         B Before matching 400 280.000    70.0000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       A         A Before matching 500 390.000    78.0000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       B         B  After matching 400 280.000    70.0000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       A         A  After matching 500 128.322    25.6644</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   trt_ind treatment            type        n  events events_pct</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       B         B Before matching 400.0000 280.000   70.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       A         A Before matching 500.0000 390.000   78.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       B         B  After matching 400.0000 280.000   70.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       A         A  After matching 173.3137 128.322   74.04028</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential</span>
@@ -1870,8 +1871,8 @@ columns. This function is not sensitive to upper or lower case of letters in col
 <span class="r-out co"><span class="r-pr">#&gt;</span>     -0.3567       0.1082  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of Freedom: 899 Total (i.e. Null);  898 Residual</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Null Deviance:	    395.5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual Deviance: 393.5 	AIC: 1738</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Null Deviance:	    1023 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual Deviance: 1016 	AIC: 1020</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$model_after</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -1883,8 +1884,8 @@ columns. This function is not sensitive to upper or lower case of letters in col
 <span class="r-out co"><span class="r-pr">#&gt;</span>    -0.35667      0.05611  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of Freedom: 899 Total (i.e. Null);  898 Residual</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Null Deviance:	    277.2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual Deviance: 276.9 	AIC: 1098</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Null Deviance:	    688.2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual Deviance: 687.2 	AIC: 669.7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$res_AB</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$res_AB$est</span>
@@ -1908,16 +1909,16 @@ columns. This function is not sensitive to upper or lower case of letters in col
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.114286</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$res_AB_unadj$se</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.08768422</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04511891</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$res_AB_unadj$ci_l</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9557015</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.029372</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$res_AB_unadj$ci_u</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.299185</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.206204</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$res_AB_unadj$pval</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1671206</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.007455267</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$boot_res</span>
@@ -1928,9 +1929,9 @@ columns. This function is not sensitive to upper or lower case of letters in col
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$summary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          case       RR       LCL      UCL      pval</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          AB 1.114286 0.9557015 1.299185 0.1671206</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 adjusted_AB 1.057718 0.9362356 1.194964 0.3673375</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          case       RR       LCL      UCL        pval</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          AB 1.114286 1.0293724 1.206204 0.007455267</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 adjusted_AB 1.057718 0.9362356 1.194964 0.367337470</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
@@ -1951,11 +1952,11 @@ columns. This function is not sensitive to upper or lower case of letters in col
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $descriptive</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $descriptive$summary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   trt_ind treatment            type   n  events events_pct</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1       B         B Before matching 400 280.000    70.0000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       A         A Before matching 500 390.000    78.0000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       B         B  After matching 400 280.000    70.0000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       A         A  After matching 500 128.322    25.6644</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   trt_ind treatment            type        n  events events_pct</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       B         B Before matching 400.0000 280.000   70.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       A         A Before matching 500.0000 390.000   78.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       B         B  After matching 400.0000 280.000   70.00000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       A         A  After matching 173.3137 128.322   74.04028</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential</span>
@@ -1969,8 +1970,8 @@ columns. This function is not sensitive to upper or lower case of letters in col
 <span class="r-out co"><span class="r-pr">#&gt;</span>     -0.3567       0.1082  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of Freedom: 899 Total (i.e. Null);  898 Residual</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Null Deviance:	    395.5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual Deviance: 393.5 	AIC: 1738</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Null Deviance:	    1023 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual Deviance: 1016 	AIC: 1020</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$model_after</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -1982,8 +1983,8 @@ columns. This function is not sensitive to upper or lower case of letters in col
 <span class="r-out co"><span class="r-pr">#&gt;</span>    -0.35667      0.05611  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of Freedom: 899 Total (i.e. Null);  898 Residual</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Null Deviance:	    277.2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual Deviance: 276.9 	AIC: 1098</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Null Deviance:	    688.2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual Deviance: 687.2 	AIC: 669.7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$res_AB</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$res_AB$est</span>
@@ -2007,16 +2008,16 @@ columns. This function is not sensitive to upper or lower case of letters in col
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.114286</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$res_AB_unadj$se</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.08768422</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04511891</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$res_AB_unadj$ci_l</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9557015</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.029372</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$res_AB_unadj$ci_u</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.299185</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.206204</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$res_AB_unadj$pval</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1671206</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.007455267</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$boot_res</span>
@@ -2030,9 +2031,9 @@ columns. This function is not sensitive to upper or lower case of letters in col
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Bootstrap Statistics :</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       original       bias     std. error</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> t1* 0.05611408 0.0092659306 0.0517384223</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> t2* 0.01136433 0.0002515784 0.0008517504</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        original       bias     std. error</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> t1* 0.056114083 9.265931e-03 0.0517384223</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> t2* 0.003094441 1.476056e-05 0.0004445552</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$boot_res_AB</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$fit$boot_res_AB$est</span>
@@ -2053,9 +2054,9 @@ columns. This function is not sensitive to upper or lower case of letters in col
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inferential$summary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          case       RR       LCL      UCL      pval</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          AB 1.114286 0.9557015 1.299185 0.1671206</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 adjusted_AB 1.057718 0.9362356 1.194964 0.3673375</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          case       RR       LCL      UCL        pval</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          AB 1.114286 1.0293724 1.206204 0.007455267</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 adjusted_AB 1.057718 0.9362356 1.194964 0.367337470</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>

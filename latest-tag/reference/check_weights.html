@@ -15,13 +15,19 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Check to see if weights are optimized correctly — check_weights">
-<meta name="description" content="This function checks to see if the optimization is done properly by checking the covariate averages
-before and after adjustment.">
-<meta property="og:description" content="This function checks to see if the optimization is done properly by checking the covariate averages
-before and after adjustment.">
+<meta name="description" content="This function checks to see if the optimization is done properly
+by checking the covariate averages before and after adjustment.
+In case of ties when calculating median,
+we return the mean of the two numbers. For more details,
+see ties parameter in matrixStats::weightedMedian.">
+<meta property="og:description" content="This function checks to see if the optimization is done properly
+by checking the covariate averages before and after adjustment.
+In case of ties when calculating median,
+we return the mean of the two numbers. For more details,
+see ties parameter in matrixStats::weightedMedian.">
 <meta property="og:image" content="https://hta-pharma.github.io/maicplus/logo.svg">
 </head>
 <body>
@@ -32,7 +38,7 @@ before and after adjustment.">
 
     <a class="navbar-brand me-2" href="../index.html">maicplus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +72,7 @@ before and after adjustment.">
     <div class="dropdown-menu" aria-labelledby="dropdown-versions">
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/v0.1.2">v0.1.2</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/v0.1.1">v0.1.1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://hta-pharma.github.io/maicplus/v0.1.0">v0.1.0</a>
 </div>
@@ -82,13 +89,16 @@ before and after adjustment.">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Check to see if weights are optimized correctly</h1>
-      <small class="dont-index">Source: <a href="https://github.com/hta-pharma/maicplus/blob/v0.1.1/R/matching.R" class="external-link"><code>R/matching.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/hta-pharma/maicplus/blob/v0.1.2/R/matching.R" class="external-link"><code>R/matching.R</code></a></small>
       <div class="d-none name"><code>check_weights.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>This function checks to see if the optimization is done properly by checking the covariate averages
-before and after adjustment.</p>
+    <p>This function checks to see if the optimization is done properly
+by checking the covariate averages before and after adjustment.
+In case of ties when calculating median,
+we return the mean of the two numbers. For more details,
+see <code>ties</code> parameter in <a href="https://rdrr.io/pkg/matrixStats/man/weightedMedian.html" class="external-link">matrixStats::weightedMedian</a>.</p>
     </div>
 
     <div class="section level2">
@@ -190,7 +200,6 @@ average of aggregate data, and sum of inner products of covariate \(x_i\) and th
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4           0.49                        0.0000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5           0.35                        0.0000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6           0.19                        0.0000</span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
