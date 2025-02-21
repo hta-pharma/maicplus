@@ -182,7 +182,8 @@ summary.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span><span class="op">$</span><span class="va">inferential</span><span class="op">$</span><span class="va">fit</span><span class="op">$</span><span class="va">model_before</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
-<span><span class="co">## Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat)</span></span>
+<span><span class="co">## Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), </span></span>
+<span><span class="co">##     data = dat)</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Coefficients:</span></span>
 <span><span class="co">## (Intercept)         ARMA  </span></span>
@@ -211,8 +212,8 @@ summary.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span><span class="op">$</span><span class="va">inferential</span><span class="op">$</span><span class="va">fit</span><span class="op">$</span><span class="va">model_after</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
-<span><span class="co">## Call:  glm(formula = RESPONSE ~ ARM, family = glm_link, data = dat, </span></span>
-<span><span class="co">##     weights = weights)</span></span>
+<span><span class="co">## Call:  glm(formula = RESPONSE ~ ARM, family = binomial(link = glm_link), </span></span>
+<span><span class="co">##     data = dat, weights = weights)</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Coefficients:</span></span>
 <span><span class="co">## (Intercept)         ARMA  </span></span>
