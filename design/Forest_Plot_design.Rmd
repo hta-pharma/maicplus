@@ -63,6 +63,7 @@ knitr::opts_chunk$set(
 ```{r}
 library(gridExtra)
 library(ggplot2)
+library(dplyr)
 ```
 
 # Background 
@@ -236,7 +237,146 @@ maic_tte_unanchor <- function(useWt, dat, dat_ext, trt, trt_ext,
 }
 ```
 
+```{r}
+#updated unanchored function
+maic_unanchored_tte <- function(res,
+                                res_AB,
+                                res_AB_unadj,
+                                dat,
+                                ipd,
+                                pseudo_ipd,
+                                km_conf_type,
+                                time_scale,
+                                weights_object,
+                                endpoint_name,
+                                normalize_weights,
+                                boot_ci_type,
+                                trt_ipd,
+                                trt_agd) {
+  # ~~~ Descriptive table before and after matching
+  # : derive km w and w/o weights
+  kmobj_dat <- survfit(Surv(TIME, EVENT) ~ ARM, dat, conf.type = km_conf_type)
+  kmobj_dat_adj <- survfit(Surv(TIME, EVENT) ~ ARM, dat, weights = dat$weights, conf.type = km_conf_type)
+  res$descriptive[["survfit_before"]] <- survfit_makeup(kmobj_dat)
+  res$descriptive[["survfit_after"]] <- survfit_makeup(kmobj_dat_adj)
+  # : derive median survival time
+  medSurv_dat <- medSurv_makeup(kmobj_dat, legend = "Before matching", time_scale = time_scale)
+  medSurv_dat_adj <- medSurv_makeup(kmobj_dat_adj, legend = "After matching", time_scale = time_scale)
+  medSurv_out <- rbind(medSurv_dat, medSurv_dat_adj)
+  medSurv_out <- cbind(trt_ind = c("B", "A")[match(medSurv_out$treatment, levels(dat$ARM))], medSurv_out)
 
+  res$descriptive[["summary"]] <- medSurv_out
+
+  # ~~~ Analysis table (Cox model) before and after matching
+  # : fit PH Cox regression model
+  coxobj_dat <- coxph(Surv(TIME, EVENT) ~ ARM, dat)
+  coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, dat, weights = weights, robust = TRUE)
+
+  # : derive adjusted estimate for ipd exp arm vs agd exp arm
+  res_AB$est <- summary(coxobj_dat_adj)$conf.int[1]
+  mu <- summary(coxobj_dat_adj)$coef[1]
+  sig <- summary(coxobj_dat_adj)$coef[4]
+  res_AB$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parametrization
+  res_AB$ci_l <- summary(coxobj_dat_adj)$conf.int[3]
+  res_AB$ci_u <- summary(coxobj_dat_adj)$conf.int[4]
+  res_AB$pval <- summary(coxobj_dat_adj)$coef[6]
+
+  # : derive unadjusted estimate
+  res_AB_unadj$est <- summary(coxobj_dat)$conf.int[1]
+  mu <- summary(coxobj_dat)$coef[1]
+  sig <- summary(coxobj_dat)$coef[3]
+  res_AB_unadj$se <- sqrt((exp(sig^2) - 1) * exp(2 * mu + sig^2)) # log normal parametrization
+  res_AB_unadj$ci_l <- summary(coxobj_dat)$conf.int[3]
+  res_AB_unadj$ci_u <- summary(coxobj_dat)$conf.int[4]
+  res_AB_unadj$pval <- summary(coxobj_dat)$coef[5]
+
+  # : get bootstrapped estimates if applicable
+  if (!is.null(weights_object$boot)) {
+    keep_rows <- setdiff(seq_len(nrow(weights_object$data)), weights_object$rows_with_missing)
+    boot_ipd_id <- weights_object$data[keep_rows, "USUBJID", drop = FALSE]
+
+    boot_ipd <- merge(boot_ipd_id, ipd, by = "USUBJID", all.x = TRUE)
+    if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
+    boot_ipd <- boot_ipd[match(boot_ipd$USUBJID, boot_ipd_id$USUBJID), ]
+
+    stat_fun <- function(data, index, w_obj, pseudo_ipd, normalize) {
+      boot_ipd <- data[index, ]
+      r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
+      if (!is.na(r)) {
+        if (!all(index == w_obj$boot[, 1, r])) stop("Bootstrap and weight indices don't match")
+        boot_ipd$weights <- w_obj$boot[, 2, r]
+        if (normalize) boot_ipd$weights <- boot_ipd$weights / mean(boot_ipd$weights, na.rm = TRUE)
+      }
+      boot_dat <- rbind(boot_ipd, pseudo_ipd)
+      boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
+      boot_coxobj_dat_adj <- coxph(Surv(TIME, EVENT) ~ ARM, boot_dat, weights = weights)
+      c(est = coef(boot_coxobj_dat_adj)[1], var = vcov(boot_coxobj_dat_adj)[1, 1])
+    }
+
+    # Revert seed to how it was for weight bootstrap sampling
+    old_seed <- globalenv()$.Random.seed
+    on.exit(suspendInterrupts(set_random_seed(old_seed)))
+    set_random_seed(weights_object$boot_seed)
+    R <- dim(weights_object$boot)[3]
+
+    boot_res <- boot(
+      boot_ipd,
+      stat_fun,
+      R = R,
+      w_obj = weights_object,
+      pseudo_ipd = pseudo_ipd,
+      normalize = normalize_weights,
+      strata = weights_object$boot_strata
+    )
+    boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, pseudo_ipd = pseudo_ipd)
+
+    l_u_index <- switch(boot_ci_type,
+      "norm" = list(2, 3, "normal"),
+      "basic" = list(4, 5, "basic"),
+      "stud" = list(4, 5, "student"),
+      "perc" = list(4, 5, "percent"),
+      "bca" = list(4, 5, "bca")
+    )
+
+    transform_estimate <- exp
+    boot_res_AB <- list(
+      est = as.vector(transform_estimate(boot_res$t0[1])),
+      se = NA,
+      ci_l = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[1]]]),
+      ci_u = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]),
+      pval = NA
+    )
+  } else {
+    boot_res_AB <- NULL
+    boot_res <- NULL
+  }
+
+  # : report all raw fitted obj
+  res$inferential[["fit"]] <- list(
+    km_before = kmobj_dat,
+    km_after = kmobj_dat_adj,
+    model_before = coxobj_dat,
+    model_after = coxobj_dat_adj,
+    res_AB = res_AB,
+    res_AB_unadj = res_AB_unadj,
+    boot_res = boot_res,
+    boot_res_AB = boot_res_AB
+  )
+
+  # : compile HR result
+  res$inferential[["summary"]] <- data.frame(
+    case = c("AB", "adjusted_AB"),
+    HR = c(res_AB_unadj$est, res_AB$est),
+    LCL = c(res_AB_unadj$ci_l, res_AB$ci_l),
+    UCL = c(res_AB_unadj$ci_u, res_AB$ci_u),
+    pval = c(res_AB_unadj$pval, res_AB$pval)
+  )
+
+  # output
+  res
+}
+
+```
 
 ## Run maic_tte_unanchor example and get the data frame with the results
 ```{r, fig.show='hide' }
@@ -251,12 +391,168 @@ dat_ext <- dat_ext[, c("ARM", "Time", "Event")]
 colnames(dat_ext) <- c("treatment", "time", "status")
 trt <- "A"
 trt_ext <- "B"
+#new testing 1/12/2025
+  data(centered_ipd_sat)
+  data(agd)
+  agd <- process_agd(agd)
 
+  ipd_centered <- center_ipd(ipd = centered_ipd_sat, agd = agd)
 
-tte_unanchor <- maic_tte_unanchor(useWt, dat, dat_ext, trt, trt_ext, time_scale = "month", endpoint_name = "OS", transform = "log")
+  # estimate weights
+  centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+  centered_colnames <- paste0(centered_colnames, "_CENTERED")
 
+  weighted_data <- estimate_weights(data = ipd_centered, centered_colnames = centered_colnames)
+  weighted_data2 <- estimate_weights(
+    data = ipd_centered, centered_colnames = centered_colnames, n_boot_iteration = 20,
+    set_seed_boot = 1234
+  )
+  # get dummy binary IPD
+  data(adrs_sat)
 
-d <- tte_unanchor$report_overall_fp[c(1, 3), c(1, 6, 7, 8, 9)]
+  pseudo_adrs <- get_pseudo_ipd_binary(
+    binary_agd = data.frame(
+      ARM = rep("B", 2),
+      RESPONSE = c("YES", "NO"),
+      COUNT = c(280, 120)
+    ),
+    format = "stacked"
+  )
+  
+  boot_ci_type = c("norm", "basic", "stud", "perc", "bca")
+  # ~~~ Create the hull for the output from this function
+  res <- list(
+    descriptive = list(),
+    inferential = list()
+  )
+
+  res_AB_unadj <- res_AB <- list(
+    est = NA,
+    se = NA,
+    ci_l = NA,
+    ci_u = NA,
+    pval = NA
+  )
+    weights_object <- weighted_data
+    ipd <- adtte_sat
+    pseudo_ipd <- pseudo_ipd_sat
+    trt_var_ipd <- "ARM"
+    trt_var_agd <- "ARM"
+    trt_ipd <- "A"
+    trt_agd <- "B"
+    endpoint_name <- "Overall Survival"
+    endpoint_type <- "tte"
+    eff_measure <- "HR"
+    time_scale <- "month"
+    km_conf_type <- "log-log"
+  # ~~~ Initial colname process and precheck on effect measure
+  names(ipd) <- toupper(names(ipd))
+  names(pseudo_ipd) <- toupper(names(pseudo_ipd))
+  trt_var_ipd <- toupper(trt_var_ipd)
+  trt_var_agd <- toupper(trt_var_agd)
+
+  if (length(eff_measure) > 1) eff_measure <- NULL
+  if (is.null(eff_measure)) eff_measure <- list(binary = "OR", tte = "HR")[[endpoint_type]]
+
+  # ~~~ Setup ARM column and make related pre-checks
+  if (!trt_var_ipd %in% names(ipd)) stop("cannot find arm indicator column trt_var_ipd in ipd")
+  if (!trt_var_agd %in% names(pseudo_ipd)) stop("cannot find arm indicator column trt_var_agd in pseudo_ipd")
+  if (trt_var_ipd != "ARM") ipd$ARM <- ipd[[trt_var_ipd]]
+  if (trt_var_agd != "ARM") pseudo_ipd$ARM <- pseudo_ipd[[trt_var_agd]]
+  ipd$ARM <- as.character(ipd$ARM) # just to avoid potential error when merging
+  pseudo_ipd$ARM <- as.character(pseudo_ipd$ARM) # just to avoid potential error when merging
+  if (!trt_ipd %in% ipd$ARM) stop("trt_ipd does not exist in ipd$ARM")
+  if (!trt_agd %in% pseudo_ipd$ARM) stop("trt_agd does not exist in pseudo_ipd$ARM")
+
+  # ~~~ More pre-checks
+  endpoint_type <- match.arg(endpoint_type, c("binary", "tte"))
+  if (!"maicplus_estimate_weights" %in% class(weights_object)) {
+    stop("weights_object should be an object returned by estimate_weights")
+  }
+  if (any(duplicated(ipd$USUBJID))) {
+    warning(
+      "check your ipd, it has duplicated usubjid, this indicates, ",
+      "it might contain multiple endpoints for each subject"
+    )
+  }
+  if (!all(ipd$USUBJID %in% weights_object$data$USUBJID)) {
+    stop(
+      "These pts in ipd cannot be found in weights_object ",
+      toString(setdiff(ipd$USUBJID, weights_object$USUBJID))
+    )
+  }
+  time_scale <- match.arg(arg = time_scale, choices = c("days", "weeks", "months", "years"))
+  if (endpoint_type == "binary") { # for binary effect measure
+
+    if (any(!c("USUBJID", "RESPONSE") %in% names(ipd))) stop("ipd should have 'USUBJID', 'RESPONSE' columns at minimum")
+    eff_measure <- match.arg(eff_measure, choices = c("OR", "RD", "RR"), several.ok = FALSE)
+    binary_robust_cov_type <- match.arg(
+      binary_robust_cov_type,
+      choices = c("HC3", "const", "HC", "HC0", "HC1", "HC2", "HC4", "HC4m", "HC5")
+    )
+  } else if (endpoint_type == "tte") { # for time to event effect measure
+
+    if (!all(c("USUBJID", "TIME", "EVENT", trt_var_ipd) %in% names(ipd))) {
+      stop("ipd needs to include at least USUBJID, TIME, EVENT, ", trt_var_ipd)
+    }
+    if (!all(c("TIME", "EVENT", trt_var_agd) %in% names(pseudo_ipd))) {
+      stop("pseudo_ipd needs to include at least TIME, EVENT, ", trt_var_agd)
+    }
+    eff_measure <- match.arg(eff_measure, choices = c("HR"), several.ok = FALSE)
+  }
+  boot_ci_type <- match.arg(boot_ci_type)
+
+  # ==> IPD and AgD data preparation ------------------------------------------
+  # : subset ipd, retain only ipd from interested trts
+  ipd <- ipd[ipd$ARM == trt_ipd, , drop = TRUE]
+  pseudo_ipd <- pseudo_ipd[pseudo_ipd$ARM == trt_agd, , drop = TRUE]
+  normalize_weights<-FALSE
+  # : assign weights to real and pseudo ipd
+  if (normalize_weights) {
+    ipd$weights <- weights_object$data$scaled_weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+  } else {
+    ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+  }
+  pseudo_ipd$weights <- 1
+
+  # : necessary formatting for pseudo ipd
+  if (!"USUBJID" %in% names(pseudo_ipd)) pseudo_ipd$USUBJID <- paste0("ID", seq_len(nrow(pseudo_ipd)))
+  if ("RESPONSE" %in% names(pseudo_ipd) && is.logical(pseudo_ipd$RESPONSE)) {
+    pseudo_ipd$RESPONSE <- as.numeric(pseudo_ipd$RESPONSE)
+  }
+
+  # : give warning when individual pts in IPD has no weights
+  if (any(is.na(ipd$weights))) {
+    ipd <- ipd[!is.na(ipd$weights), , drop = FALSE]
+    warning(
+      paste(
+        "these usubjid in ipd have no weight in weights_object, and hence excluded from analysis:",
+        paste(ipd$USUBJID[is.na(ipd$weights)], collapse = ",")
+      )
+    )
+    if (nrow(ipd) == 0) stop("there is no pts with weight in IPD!!")
+  }
+
+  # : retain necessary columns
+  if (endpoint_type == "tte") {
+    retain_cols <- c("USUBJID", "ARM", "TIME", "EVENT", "weights")
+  } else {
+    retain_cols <- c("USUBJID", "ARM", "RESPONSE", "weights")
+  }
+  ipd <- ipd[, retain_cols, drop = FALSE]
+  pseudo_ipd <- pseudo_ipd[, retain_cols, drop = FALSE]
+
+  # : merge real and pseudo ipds
+  dat <- rbind(ipd, pseudo_ipd)
+  dat$ARM <- factor(dat$ARM, levels = c(trt_agd, trt_ipd))
+  
+tte_unanchor <-     maic_unanchored_tte(
+      res, res_AB, res_AB_unadj, dat, ipd, pseudo_ipd, km_conf_type, time_scale,
+      weights_object, endpoint_name, normalize_weights, boot_ci_type, trt_ipd, trt_agd
+    )
+#tte_unanchor <- maic_tte_unanchor(useWt, dat, dat_ext, trt, trt_ext, time_scale = "month", endpoint_name = "OS", transform = "log")
+
+d <- tte_unanchor$inferential$summary
 ```
 
 
@@ -270,8 +566,8 @@ d$Index <- 1:dim(d)[1]
 
 # Transform HR and CIs to number values
 d$HR <- as.numeric(d$HR)
-d$lowerCI <- as.numeric(d$lowerCI)
-d$upperCI <- as.numeric(d$upperCI)
+d$lowerCI <- as.numeric(d$LCL)
+d$upperCI <- as.numeric(d$UCL)
 
 plot1 <- ggplot(d, aes(y = Index, x = HR)) +
   geom_point(shape = 18, size = 4) +
@@ -323,7 +619,7 @@ tab1 <- table_base +
 
 ## pvalue table
 tab2 <- table_base +
-  geom_text(aes(y = rev(Index), x = 1, label = WaldTest), size = 4) +
+  geom_text(aes(y = rev(Index), x = 1, label = pval), size = 4) +
   ggtitle("pvalue")
 
 ## Merge tables with plot
@@ -411,11 +707,245 @@ maic_forest_plot <- function(tte_unanchor_res) {
 }
 ```
 
+```{r}
+#test 1/24/25
+plot1 <- ggplot(d, aes(y = Index, x = HR)) +
+  geom_point(shape = 18, size = 4) +
+  geom_errorbarh(aes(xmin = lowerCI, xmax = upperCI), height = 0.1) +
+  geom_vline(xintercept = 1, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
+  coord_cartesian(xlim = c(0, 1.5), ylim = c(0, 5))+
+  scale_y_continuous(
+    name = "",
+    breaks = d$Index,                 # e.g. c(1,2)
+    labels = d$Matching,             # c("AB","adjusted_AB")
+    trans  = "reverse"
+  ) +
+  #, ylim = c(0, 5)) +
+  #scale_y_continuous(name = "", breaks = 1:2, labels = d$Matching, trans = "reverse") +
+  xlab("Hazard Ratio (95% CI)") +
+  theme_bw() +
+  theme(
+    panel.border = element_blank(),
+    panel.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line = element_line(colour = "black"),
+    axis.text.y = element_text(size = 12, colour = "black"),
+    axis.text.x.bottom = element_text(size = 12, colour = "black"),
+    axis.title.x = element_text(size = 12, colour = "black")
+  )
 
+# 2) Table base used for any table
+table_base <- ggplot(d, aes(y = Matching)) +
+  ylab(NULL) +
+  xlab("  ") +
+  coord_cartesian(xlim = c(-10, 10), ylim = c(0, 5)) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12),
+    axis.text.x = element_text(color = "white", hjust = -3, size = 25),
+    axis.line = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title.y = element_blank(),
+    legend.position = "none",
+    panel.background = element_blank(),
+    panel.border = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.background = element_blank()
+  )
+# 3) Left table: "Case"
+tabCase <- table_base +
+  geom_text(aes(y = rev(Index), x = 1, label = case), size = 4,fontface = "bold") +
+  ggtitle("Case")+
+  theme(
+    axis.line  = element_blank(),
+    plot.title = element_text(hjust=0.5, face="bold")
+  )
+
+# 4) Middle table: "HR [95% CI]"
+tab1 <- table_base +
+  geom_text(aes(y = rev(Index), x = 1,
+                label = paste0(
+                  formatC(HR, format="f", digits=2),
+                  " [", formatC(lowerCI, format="f", digits=2),
+                  ";", formatC(upperCI, format="f", digits=2), "]"
+                )
+  ),
+
+                #label = paste0(d[,2], "[", d[,3], ";", d[,4], "]")),
+            size = 4) +
+  ggtitle("HR[95% CI]")+
+  theme(
+    plot.title = element_text(hjust=0.5, face="bold")
+  )
+
+# 5) Right table: "pvalue"
+tab2 <- table_base +
+  geom_text(aes(y = rev(Index), x = 1,       label = ifelse(
+    pval < 0.0001,
+    "< 0.0001",
+    formatC(pval, format="f", digits=4))),
+   size = 4) +
+  ggtitle("p value")+
+  theme(
+    plot.title = element_text(hjust=0.5, face="bold")
+  )
+
+# 6) Combine with layout matrix
+library(gridExtra)
+
+lay <- matrix(c(1,2,2,3,4), nrow = 1)
+# 1 => tabCase, 2 => plot1, 3 => tab1, 4 => tab2
+grid.arrange(tabCase, plot1, tab1, tab2, layout_matrix = lay)
+
+
+```
 
 ## Alternative Forest Plot 
 
 Another example: Figure 4 of [this publication](https://pubmed.ncbi.nlm.nih.gov/35764490/)
 
+## Forest plot function
 
+```{r}
+maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
+
+  # 1) Gather all objects
+  objs_list <- list(...)
+  if (length(objs_list) == 0) {
+    stop("No MAIC objects were provided. Pass at least one object with $inferential$summary.")
+  }
+
+  # 2) Extract and combine inferential summaries
+  df_list <- lapply(objs_list, function(x) {
+    if (!("inferential" %in% names(x)) ||
+        !("summary" %in% names(x$inferential))) {
+      stop("One of the objects doesn't have 'inferential$summary'. Check your inputs.")
+    }
+    x$inferential$summary
+  })
+  forest_data <- do.call(rbind, df_list)
+  rownames(forest_data) <- NULL
+
+  if ("HR" %in% names(forest_data)) {
+    effect_col <- "HR"
+  } else if ("OR" %in% names(forest_data)) {
+    effect_col <- "OR"
+  } else if ("RR" %in% names(forest_data)) {
+    effect_col <- "RR"
+  } else {
+    stop("No recognized effect measure (HR, OR, or RR) in the summary data.")
+  }
+
+
+  # Convert to numeric if needed
+  forest_data <- forest_data %>%
+    dplyr::mutate(
+      effect_est = as.numeric(.data[[effect_col]]),
+      LCL = as.numeric(LCL),
+      UCL = as.numeric(UCL),
+      pval= as.numeric(pval),
+      row_index  = dplyr::row_number()  # 1,2,... in the order they appear
+    )
+
+  # 2c) Make group_id a factor in reversed order so row 1 is at the TOP
+  forest_data$group_id <- factor(forest_data$row_index,
+                                 levels = forest_data$row_index)
+  # 3) Create the forest plot
+  col_grid <- rgb(235, 235, 235, 100, maxColorValue = 255)
+
+  forest <- ggplot2::ggplot(
+    data = forest_data,
+    ggplot2::aes(x = group_id, y = effect_est, ymin = LCL, ymax = UCL)
+  ) +
+    ggplot2::geom_pointrange(ggplot2::aes(color = case)) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = LCL, ymax = UCL, color = case), width = 0, size = 1) +
+    ggplot2::geom_hline(yintercept = reference_line, colour = "red", linetype = "dashed", alpha = 0.5) +
+    ggplot2::coord_flip() +
+    ggplot2::scale_y_continuous(limits = xlim) +
+    ggplot2::scale_x_discrete(
+      labels = rev(forest_data$case),
+      limits = rev(levels(forest_data$group_id))
+    ) +
+    ggplot2::xlab("Experimental vs. Comparator Treatment") +
+    ggplot2::ylab(paste0(effect_col, " (95% CI)")) +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      panel.background = ggplot2::element_blank(),
+      strip.background = ggplot2::element_rect(colour = NA, fill = NA),
+      panel.grid.major.y = ggplot2::element_line(colour = col_grid, size = 0.5),
+      panel.border = ggplot2::element_rect(fill = NA, color = "black"),
+      legend.position = "none",
+      axis.text = ggplot2::element_text(face = "bold"),
+      axis.title = ggplot2::element_text(face = "bold"),
+      plot.title = ggplot2::element_text(face = "bold", hjust = 0.5, size = 13)
+    )
+
+  # 4) Build a table showing [HR (LCL, UCL)] and p-value
+  dat_table <- forest_data %>%
+    dplyr::mutate(
+      pval_str = ifelse(pval < 0.001, "< 0.001", sprintf("%.3f", pval)),
+      # Build a string with HR and 95% CI
+      effect_est_ci_str = paste0(
+        sprintf("%.2f", effect_est),
+        " [", sprintf("%.2f", LCL), ", ",
+        sprintf("%.2f", UCL), "]"
+      )
+    ) %>%
+    dplyr::select(group_id, case, effect_est_ci_str, pval_str)
+
+  df_effect <- data.frame(
+    group_id = dat_table$group_id,
+    case     = dat_table$case,
+    stat     = "effect_est_ci_str",
+    value    = dat_table$effect_est_ci_str,
+    stringsAsFactors = FALSE
+  )
+
+  df_pval <- data.frame(
+    group_id = dat_table$group_id,
+    case     = dat_table$case,
+    stat     = "pval_str",
+    value    = dat_table$pval_str,
+    stringsAsFactors = FALSE
+  )
+
+
+  dat_table_long <- rbind(df_effect, df_pval)
+
+
+  dat_table_long$stat <- factor(dat_table_long$stat, levels = c("effect_est_ci_str", "pval_str"))
+
+
+  # 5) Table plot
+  table_base <- ggplot2::ggplot(dat_table_long, ggplot2::aes(x = stat, y = group_id, label = value)) +
+    ggplot2::geom_text(size = 3) +
+    ggplot2::scale_x_discrete(position = "top",
+                              labels = c(paste0(effect_col, " (95% CI)"), "P value")) +
+    ggplot2::scale_y_discrete(
+      labels = forest_data$case,
+      limits = rev(levels(dat_table_long$group_id))
+    ) +
+    ggplot2::labs(x = NULL, y = NULL) +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      strip.background = ggplot2::element_blank(),
+      panel.grid.major = ggplot2::element_blank(),
+      panel.border = ggplot2::element_blank(),
+      axis.line = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(size = 12),
+      axis.ticks = ggplot2::element_blank(),
+      axis.title = ggplot2::element_text(face = "bold")
+    )
+
+  # 6) Combine forest & table
+  #final_plot <- forest + table_base + patchwork::plot_layout(widths = c(10, 4))
+  final_plot <- patchwork::wrap_plots(forest, table_base) + patchwork::plot_layout(widths = c(10, 4))
+
+  return(final_plot)
+}
+
+```
 

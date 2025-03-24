@@ -67,7 +67,8 @@ Suggests:
     flexsurv,
     tibble,
     vdiffr,
-    checkmate
+    checkmate,
+    patchwork
 VignetteBuilder:
     knitr
 biocViews:
