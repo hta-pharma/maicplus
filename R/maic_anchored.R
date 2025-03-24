@@ -154,9 +154,9 @@ maic_anchored <- function(weights_object,
 
   # : assign weights to real and pseudo ipd
   if (normalize_weights) {
-    ipd$weights <- weights_object$data$scaled_weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+    ipd$weights <- weights_object$data$scaled_weights[match(ipd$USUBJID, weights_object$data$USUBJID)]
   } else {
-    ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+    ipd$weights <- weights_object$data$weights[match(ipd$USUBJID, weights_object$data$USUBJID)]
   }
   pseudo_ipd$weights <- 1
   if (!"USUBJID" %in% names(pseudo_ipd)) pseudo_ipd$USUBJID <- paste0("ID", seq_len(nrow(pseudo_ipd)))
@@ -485,9 +485,9 @@ maic_anchored_binary <- function(res,
   # ~~~ Analysis table
   # : set up proper link
   glm_link <- switch(eff_measure,
-    "RD" = binomial(link = "identity"),
-    "RR" = binomial(link = "log"),
-    "OR" = binomial(link = "logit")
+    "RD" = "identity",
+    "RR" = "log",
+    "OR" = "logit"
   )
   res_template <- list(
     est = NA,
@@ -498,9 +498,9 @@ maic_anchored_binary <- function(res,
   )
 
   # : fit glm for binary outcome and robust estimate with weights
-  binobj_ipd <- glm(RESPONSE ~ ARM, ipd, family = glm_link)
-  binobj_ipd_adj <- suppressWarnings(glm(RESPONSE ~ ARM, ipd, weights = weights, family = glm_link))
-  binobj_agd <- glm(RESPONSE ~ ARM, pseudo_ipd, family = glm_link)
+  binobj_ipd <- glm(RESPONSE ~ ARM, ipd, family = binomial(link = glm_link))
+  binobj_ipd_adj <- suppressWarnings(glm(RESPONSE ~ ARM, ipd, weights = weights, family = binomial(link = glm_link)))
+  binobj_agd <- glm(RESPONSE ~ ARM, pseudo_ipd, family = binomial(link = glm_link))
 
   bin_robust_cov <- sandwich::vcovHC(binobj_ipd_adj, type = binary_robust_cov_type)
   bin_robust_coef <- lmtest::coeftest(binobj_ipd_adj, vcov. = bin_robust_cov)
@@ -571,7 +571,7 @@ maic_anchored_binary <- function(res,
       }
 
       boot_binobj_dat_adj <- suppressWarnings(
-        glm(RESPONSE ~ ARM, boot_ipd, weights = boot_ipd$weights, family = glm_link)
+        glm(RESPONSE ~ ARM, boot_ipd, weights = boot_ipd$weights, family = binomial(link = glm_link))
       )
       boot_AC_est <- coef(boot_binobj_dat_adj)[2]
       boot_AC_var <- vcov(boot_binobj_dat_adj)[2, 2]

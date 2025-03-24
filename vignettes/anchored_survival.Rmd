@@ -104,7 +104,7 @@ result$inferential$fit$res_AB
 # merge in adtte with ipd_matched
 
 ipd <- adtte_twt
-ipd$weights <- weighted_data$data$weights[match(weighted_data$data$USUBJID, ipd$USUBJID)]
+ipd$weights <- weighted_data$data$weights[match(ipd$USUBJID, weighted_data$data$USUBJID)]
 
 pseudo_ipd <- pseudo_ipd_twt
 pseudo_ipd$weights <- 1
