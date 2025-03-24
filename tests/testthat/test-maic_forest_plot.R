@@ -28,10 +28,12 @@ test_that("maic_forest_plot works for TTE", {
     km_conf_type = "log-log"
   )
 
-  make_plot <- function() {maic_forest_plot(
-    result,
-    xlim = c(0, 3.5),
-    reference_line = 1)
+  make_plot <- function() {
+    maic_forest_plot(
+      result,
+      xlim = c(0, 3.5),
+      reference_line = 1
+    )
   }
   expect_error(make_plot(), NA)
 
@@ -40,4 +42,4 @@ test_that("maic_forest_plot works for TTE", {
     title = "maic_forest_plot_tte",
     fig = make_plot()
   )
-  })
+})

@@ -45,11 +45,7 @@
 #' # Specify a different x-axis limit and reference line:
 #' maic_forest_plot(maic_obj, xlim = c(0, 2), reference_line = 1)
 #' }
-
-
-
 maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
-
   # 1) Gather all objects
   objs_list <- list(...)
   if (length(objs_list) == 0) {
@@ -59,7 +55,7 @@ maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
   # 2) Extract and combine inferential summaries
   df_list <- lapply(objs_list, function(x) {
     if (!("inferential" %in% names(x)) ||
-        !("summary" %in% names(x$inferential))) {
+      !("summary" %in% names(x$inferential))) {
       stop("One of the objects doesn't have 'inferential$summary'. Check your inputs.")
     }
     x$inferential$summary
@@ -84,13 +80,14 @@ maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
       effect_est = as.numeric(.data[[effect_col]]),
       LCL = as.numeric(LCL),
       UCL = as.numeric(UCL),
-      pval= as.numeric(pval),
-      row_index  = dplyr::row_number()  # 1,2,... in the order they appear
+      pval = as.numeric(pval),
+      row_index = dplyr::row_number() # 1,2,... in the order they appear
     )
 
   # 2c) Make group_id a factor in reversed order so row 1 is at the TOP
   forest_data$group_id <- factor(forest_data$row_index,
-                                 levels = forest_data$row_index)
+    levels = forest_data$row_index
+  )
   # 3) Create the forest plot
   col_grid <- rgb(235, 235, 235, 100, maxColorValue = 255)
 
@@ -136,17 +133,17 @@ maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
 
   df_effect <- data.frame(
     group_id = dat_table$group_id,
-    case     = dat_table$case,
-    stat     = "effect_est_ci_str",
-    value    = dat_table$effect_est_ci_str,
+    case = dat_table$case,
+    stat = "effect_est_ci_str",
+    value = dat_table$effect_est_ci_str,
     stringsAsFactors = FALSE
   )
 
   df_pval <- data.frame(
     group_id = dat_table$group_id,
-    case     = dat_table$case,
-    stat     = "pval_str",
-    value    = dat_table$pval_str,
+    case = dat_table$case,
+    stat = "pval_str",
+    value = dat_table$pval_str,
     stringsAsFactors = FALSE
   )
 
@@ -160,8 +157,10 @@ maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
   # 5) Table plot
   table_base <- ggplot2::ggplot(dat_table_long, ggplot2::aes(x = stat, y = group_id, label = value)) +
     ggplot2::geom_text(size = 3) +
-    ggplot2::scale_x_discrete(position = "top",
-                              labels = c(paste0(effect_col, " (95% CI)"), "P value")) +
+    ggplot2::scale_x_discrete(
+      position = "top",
+      labels = c(paste0(effect_col, " (95% CI)"), "P value")
+    ) +
     ggplot2::scale_y_discrete(
       labels = forest_data$case,
       limits = rev(levels(dat_table_long$group_id))
@@ -180,7 +179,7 @@ maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
     )
 
   # 6) Combine forest & table
-  #final_plot <- forest + table_base + patchwork::plot_layout(widths = c(10, 4))
+  # final_plot <- forest + table_base + patchwork::plot_layout(widths = c(10, 4))
   final_plot <- patchwork::wrap_plots(forest, table_base) + patchwork::plot_layout(widths = c(10, 4))
 
   return(final_plot)
