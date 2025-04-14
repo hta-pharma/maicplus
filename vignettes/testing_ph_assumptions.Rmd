@@ -68,7 +68,7 @@ ph_diagplot_lch(fit_surv,
 
 Another way is using the Schoenfeld residual.
 
-At the subject’s failure time, the residual measures how the value of $x$ for the subject who fails differs from a weighted average of $x$ values for those still at risk. Weights depend on estimated HR for each subject at risk. [@brown]
+At the subject’s failure time, the residual measures how the value of $x$ for the subject who fails differs from a weighted average of $x$ values for those still at risk. Weights depend on estimated HR for each subject at risk.
 
 If the lines in Schoenfeld plots are flat, covariate effect are constant over time and proportional hazards assumptions are met. Alternatively, a non-significant p-value in Schoenfeld residual test suggests that there is no strong evidence for non-proportionality.
 
@@ -158,5 +158,3 @@ ggsurvplot(fit_surv,
 test.ph <- cox.zph(fit_cox, transform = "log")
 print(ggcoxzph(test.ph))
 ```
-
-# References
