@@ -35,6 +35,7 @@ articles:
       - anchored_survival
       - unanchored_survival
       - kaplan_meier_plots
+      - testing_ph_assumptions
 
 reference:
   - title: User Functions

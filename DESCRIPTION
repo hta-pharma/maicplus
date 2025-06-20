@@ -1,6 +1,6 @@
 Title: Matching Adjusted Indirect Comparison
 Package: maicplus
-Version: 0.1.2
+Version: 0.1.2.9000
 Authors@R: c(
    person(
       given = "Gregory",

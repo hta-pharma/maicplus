@@ -1,4 +1,8 @@
-# maicplus 0.1.2
+## maicplus 0.1.2.9000
+
+- Add vignette about proportional hazards
+
+## maicplus 0.1.2
 
 - Changed the link function to binomial for RD and RR in binary analysis
 - Updated vignette to recommend against bootstrap in unanchored analysis with citation
@@ -7,10 +11,10 @@
 - Added testing PH assumptions vignette
 - Fixed the issues with merging weights using match function
 
-# maicplus 0.1.1
+## maicplus 0.1.1
 
 - bug fixes
 
-# maicplus 0.1.0
+## maicplus 0.1.0
 
 - first CRAN release
