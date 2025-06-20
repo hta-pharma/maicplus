@@ -73,12 +73,12 @@ maic_forest_plot <- function(...,
     lapply(objs_list, function(x) {
       # FIX: Opening brace on same line
       if (!("inferential" %in% names(x)) ||
-            !("summary" %in% names(x$inferential))) {
+        !("summary" %in% names(x$inferential))) {
         stop("One of the objects doesn't have 'inferential$summary'. Check your inputs.")
       }
       inferential_df <- x$inferential$summary
       if (!("descriptive" %in% names(x)) ||
-            !("summary" %in% names(x$descriptive))) {
+        !("summary" %in% names(x$descriptive))) {
         stop("One of the objects doesn't have 'descriptive$summary'. Check your inputs.")
       }
       descriptive_df <- x$descriptive$summary
@@ -103,15 +103,15 @@ maic_forest_plot <- function(...,
       }
       # consider the bootstrap result if exists
       if (!is.null(effect_measure_col_name) &&
-            "boot_res_AB" %in% names(inferential_fit_obj)) {
+        "boot_res_AB" %in% names(inferential_fit_obj)) {
         boot_results <- inferential_fit_obj$boot_res_AB
         adjusted_AB_row_index <-
           which(inferential_df$case == "adjusted_AB")
 
         # If the "adjusted_AB" row exists and bootstrap results are valid
         if (length(adjusted_AB_row_index) > 0 &&
-              !is.null(boot_results$est) &&
-              !is.null(boot_results$ci_l) && !is.null(boot_results$ci_u)) {
+          !is.null(boot_results$est) &&
+          !is.null(boot_results$ci_l) && !is.null(boot_results$ci_u)) {
           # Update the values for the 'adjusted_AB' row
           inferential_df[[effect_measure_col_name]][adjusted_AB_row_index] <-
             boot_results$est
