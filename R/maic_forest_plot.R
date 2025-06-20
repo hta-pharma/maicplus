@@ -28,27 +28,17 @@
 #'   \item A corresponding table listing each estimate in numeric form, along with the p-value.
 #' }
 #' Printing or plotting this returned object will display both the forest plot and the summary table.
-#'
-#' @importFrom ggplot2 ggplot aes geom_pointrange geom_errorbar geom_hline coord_flip scale_y_continuous scale_x_discrete xlab ylab theme_classic theme element_text element_blank element_line element_rect
-#' @importFrom dplyr mutate row_number select
-#' @importFrom patchwork wrap_plots plot_layout
+#' @example inst/examples/maic_forest_plot_ex.R
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' # Suppose maic_obj is a MAIC object containing:
-#' #  maic_obj$inferential$summary
-#'
-#' # Generate a forest plot with the default settings:
-#' maic_forest_plot(maic_obj)
-#'
-#' # Specify a different x-axis limit and reference line:
-#' maic_forest_plot(maic_obj, xlim = c(0, 2), reference_line = 1)
-#' }
-
 
 
 maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop("ggplot2 package is required for this function")
+  }
+  if (!requireNamespace("patchwork", quietly = TRUE)) {
+    stop("patchwork package is required for this function")
+  }
 
   # 1) Gather all objects
   objs_list <- list(...)
@@ -56,14 +46,74 @@ maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
     stop("No MAIC objects were provided. Pass at least one object with $inferential$summary.")
   }
 
-  # 2) Extract and combine inferential summaries
-  df_list <- lapply(objs_list, function(x) {
+  change_case_name <- function(data0_case_col, A_name, B_name, C_name){
+    case_renamed <- data0_case_col
+    for(i in 1:length(data0_case_col)){
+      if(data0_case_col[i] == "AC") {
+        case_renamed[i] <- paste0(A_name, " vs. ", C_name)
+      } else if(data0_case_col[i] == "adjusted_AC") {
+        case_renamed[i] <- paste0("Adjusted ", A_name, " vs. ", C_name)
+      } else if(data0_case_col[i] == "BC"){
+        case_renamed[i] <- paste0(B_name, " vs. ", C_name)
+      } else if(data0_case_col[i] == "AB"){
+        case_renamed[i] <- paste0(A_name, " vs. ", B_name)
+      } else if(data0_case_col[i] == "adjusted_AB"){
+        case_renamed[i] <- paste0("Adjusted ", A_name, " vs. ", B_name)
+      }
+    }
+    return(case_renamed)
+  }
+
+  # 2) Extract and combine inferential summaries and descriptive summaries
+  df_list <- lapply(objs_list, function(x) { # FIX: Opening brace on same line
     if (!("inferential" %in% names(x)) ||
         !("summary" %in% names(x$inferential))) {
       stop("One of the objects doesn't have 'inferential$summary'. Check your inputs.")
     }
-    x$inferential$summary
+    inferential_df <- x$inferential$summary
+    if (!("descriptive" %in% names(x)) ||
+        !("summary" %in% names(x$descriptive))) {
+      stop("One of the objects doesn't have 'descriptive$summary'. Check your inputs.")
+    }
+    descriptive_df <- x$descriptive$summary
+    inferential_fit_obj <- x$inferential$fit
+    safely_extract_name <- function(df, trt_char) {
+      if (trt_char %in% df$trt_ind) {
+        return(df[df$trt_ind == trt_char,]$treatment[1])
+      } else {
+        return(NA_character_)
+      }
+    }
+    C_name <- safely_extract_name(descriptive_df, "C")
+    A_name <- safely_extract_name(descriptive_df, "A")
+    B_name <- safely_extract_name(descriptive_df, "B")
+    effect_measure_col_name <- NULL
+    if ("HR" %in% names(inferential_df)) {
+      effect_measure_col_name <- "HR"
+    } else if ("OR" %in% names(inferential_df)) {
+      effect_measure_col_name <- "OR"
+    } else if ("RR" %in% names(inferential_df)) {
+      effect_measure_col_name <- "RR"
+    }
+    # consider the bootstrap result if exists
+    if (!is.null(effect_measure_col_name) && "boot_res_AB" %in% names(inferential_fit_obj)){
+      boot_results <- inferential_fit_obj$boot_res_AB
+      adjusted_AB_row_index <- which(inferential_df$case == "adjusted_AB")
+
+      # If the "adjusted_AB" row exists and bootstrap results are valid
+      if (length(adjusted_AB_row_index) > 0 &&
+          !is.null(boot_results$est) && !is.null(boot_results$ci_l) && !is.null(boot_results$ci_u)) {
+
+        # Update the values for the 'adjusted_AB' row
+        inferential_df[[effect_measure_col_name]][adjusted_AB_row_index] <- boot_results$est
+        inferential_df$LCL[adjusted_AB_row_index] <- boot_results$ci_l
+        inferential_df$UCL[adjusted_AB_row_index] <- boot_results$ci_u
+      }
+    }
+    inferential_df$case <- change_case_name(inferential_df$case, A_name, B_name, C_name)
+    return(inferential_df)
   })
+
   forest_data <- do.call(rbind, df_list)
   rownames(forest_data) <- NULL
 
@@ -77,16 +127,12 @@ maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
     stop("No recognized effect measure (HR, OR, or RR) in the summary data.")
   }
 
-
   # Convert to numeric if needed
-  forest_data <- forest_data %>%
-    dplyr::mutate(
-      effect_est = as.numeric(.data[[effect_col]]),
-      LCL = as.numeric(LCL),
-      UCL = as.numeric(UCL),
-      pval= as.numeric(pval),
-      row_index  = dplyr::row_number()  # 1,2,... in the order they appear
-    )
+  forest_data$effect_est <- as.numeric(forest_data[[effect_col]])
+  forest_data$LCL <- as.numeric(forest_data$LCL)
+  forest_data$UCL <- as.numeric(forest_data$UCL)
+  forest_data$pval <- as.numeric(forest_data$pval)
+  forest_data$row_index <- seq_len(nrow(forest_data))
 
   # 2c) Make group_id a factor in reversed order so row 1 is at the TOP
   forest_data$group_id <- factor(forest_data$row_index,
@@ -99,7 +145,7 @@ maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
     ggplot2::aes(x = group_id, y = effect_est, ymin = LCL, ymax = UCL)
   ) +
     ggplot2::geom_pointrange(ggplot2::aes(color = case)) +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin = LCL, ymax = UCL, color = case), width = 0, size = 1) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = LCL, ymax = UCL, color = case), width = 0, linewidth = 1) +
     ggplot2::geom_hline(yintercept = reference_line, colour = "red", linetype = "dashed", alpha = 0.5) +
     ggplot2::coord_flip() +
     ggplot2::scale_y_continuous(limits = xlim) +
@@ -113,7 +159,7 @@ maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
     ggplot2::theme(
       panel.background = ggplot2::element_blank(),
       strip.background = ggplot2::element_rect(colour = NA, fill = NA),
-      panel.grid.major.y = ggplot2::element_line(colour = col_grid, size = 0.5),
+      panel.grid.major.y = ggplot2::element_line(colour = col_grid, linewidth = 0.5),
       panel.border = ggplot2::element_rect(fill = NA, color = "black"),
       legend.position = "none",
       axis.text = ggplot2::element_text(face = "bold"),
@@ -122,17 +168,14 @@ maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
     )
 
   # 4) Build a table showing [HR (LCL, UCL)] and p-value
-  dat_table <- forest_data %>%
-    dplyr::mutate(
-      pval_str = ifelse(pval < 0.001, "< 0.001", sprintf("%.3f", pval)),
-      # Build a string with HR and 95% CI
-      effect_est_ci_str = paste0(
-        sprintf("%.2f", effect_est),
-        " [", sprintf("%.2f", LCL), ", ",
-        sprintf("%.2f", UCL), "]"
-      )
-    ) %>%
-    dplyr::select(group_id, case, effect_est_ci_str, pval_str)
+  dat_table <- forest_data
+  dat_table$pval_str <- ifelse(dat_table$pval < 0.001, "< 0.001", sprintf("%.3f", dat_table$pval))
+  dat_table$effect_est_ci_str <- paste0(
+    sprintf("%.2f", dat_table$effect_est),
+    " [", sprintf("%.2f", dat_table$LCL), ", ",
+    sprintf("%.2f", dat_table$UCL), "]"
+  )
+  dat_table <- dat_table[, c("group_id", "case", "effect_est_ci_str", "pval_str")]
 
   df_effect <- data.frame(
     group_id = dat_table$group_id,
@@ -150,12 +193,9 @@ maic_forest_plot <- function(..., xlim = c(0, 1.5), reference_line = 1) {
     stringsAsFactors = FALSE
   )
 
-
   dat_table_long <- rbind(df_effect, df_pval)
 
-
   dat_table_long$stat <- factor(dat_table_long$stat, levels = c("effect_est_ci_str", "pval_str"))
-
 
   # 5) Table plot
   table_base <- ggplot2::ggplot(dat_table_long, ggplot2::aes(x = stat, y = group_id, label = value)) +
