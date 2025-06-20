@@ -41,14 +41,34 @@ for each row, along with its p-value. If the p-value is less than 0.001, it is d
 otherwise it is displayed to three decimal places.
 }
 \examples{
-\dontrun{
-# Suppose maic_obj is a MAIC object containing:
-#  maic_obj$inferential$summary
+library(ggplot2)
+library(patchwork)
 
-# Generate a forest plot with the default settings:
-maic_forest_plot(maic_obj)
+data(centered_ipd_sat)
+data(adtte_sat)
+data(pseudo_ipd_sat)
 
-# Specify a different x-axis limit and reference line:
-maic_forest_plot(maic_obj, xlim = c(0, 2), reference_line = 1)
-}
+centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+centered_colnames <- paste0(centered_colnames, "_CENTERED")
+
+weighted_data <- estimate_weights(
+  data = centered_ipd_sat,
+  centered_colnames = centered_colnames
+)
+
+result <- maic_unanchored(
+  weights_object = weighted_data,
+  ipd = adtte_sat,
+  pseudo_ipd = pseudo_ipd_sat,
+  trt_ipd = "A",
+  trt_agd = "B",
+  normalize_weight = FALSE,
+  endpoint_name = "Overall Survival",
+  endpoint_type = "tte",
+  eff_measure = "HR",
+  time_scale = "month",
+  km_conf_type = "log-log"
+)
+
+maic_forest_plot(result)
 }
