@@ -71,7 +71,6 @@ maic_forest_plot <- function(...,
   # 2) Extract and combine inferential summaries and descriptive summaries
   df_list <-
     lapply(objs_list, function(x) {
-      # FIX: Opening brace on same line
       if (!("inferential" %in% names(x)) ||
         !("summary" %in% names(x$inferential))) {
         stop("One of the objects doesn't have 'inferential$summary'. Check your inputs.")
