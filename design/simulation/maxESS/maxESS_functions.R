@@ -58,7 +58,7 @@ jackson_MAIC<-function (the_data, id, match_mean, agg_means, agg_sds, accuracy=s
   ### Recall that the first column of the_data_m is patient identifiers and should be ignored above
   ### X is now a matrix containing CENTRED matching covariates (including squared terms).
   
-  start=rep(0, ncol(X)); Answers=weight(start, X, accuracy)
+  start=rep(0, ncol(X)); Answers=jackson_weight(start, X, accuracy)
   ### Answers contains the weights, calculated using the weights function 
   
   the_data_o$weight.maic=0
@@ -85,7 +85,7 @@ jackson_MAIC<-function (the_data, id, match_mean, agg_means, agg_sds, accuracy=s
 
 # Also define a function weight that is needed by the MAIC function to compute conventional MAIC weights.
 
-weight<-function(start, X, accuracy) {  
+jackson_weight<-function(start, X, accuracy) {  
   objective <- function(x, X) return( sum(exp(X %*% x)) ) 
   gradient <- function(x, X) return(t((exp(X %*% x))) %*% X)
   max <- optim(par=start, fn=objective, gr=gradient, method="BFGS", X=X, control=list(maxit=100000, reltol=accuracy))
