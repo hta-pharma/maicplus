@@ -71,13 +71,11 @@ maic_forest_plot <- function(...,
   # 2) Extract and combine inferential summaries and descriptive summaries
   df_list <-
     lapply(objs_list, function(x) {
-      if (!("inferential" %in% names(x)) ||
-        !("summary" %in% names(x$inferential))) {
+      if (!("inferential" %in% names(x)) || !("summary" %in% names(x$inferential))) {
         stop("One of the objects doesn't have 'inferential$summary'. Check your inputs.")
       }
       inferential_df <- x$inferential$summary
-      if (!("descriptive" %in% names(x)) ||
-        !("summary" %in% names(x$descriptive))) {
+      if (!("descriptive" %in% names(x)) || !("summary" %in% names(x$descriptive))) {
         stop("One of the objects doesn't have 'descriptive$summary'. Check your inputs.")
       }
       descriptive_df <- x$descriptive$summary
@@ -101,23 +99,20 @@ maic_forest_plot <- function(...,
         effect_measure_col_name <- "RR"
       }
       # consider the bootstrap result if exists
-      if (!is.null(effect_measure_col_name) &&
-        "boot_res_AB" %in% names(inferential_fit_obj)) {
+      if (!is.null(effect_measure_col_name) && "boot_res_AB" %in% names(inferential_fit_obj)) {
         boot_results <- inferential_fit_obj$boot_res_AB
-        adjusted_AB_row_index <-
-          which(inferential_df$case == "adjusted_AB")
+        adjusted_AB_row_index <- which(inferential_df$case == "adjusted_AB")
 
         # If the "adjusted_AB" row exists and bootstrap results are valid
-        if (length(adjusted_AB_row_index) > 0 &&
-          !is.null(boot_results$est) &&
-          !is.null(boot_results$ci_l) && !is.null(boot_results$ci_u)) {
+        if (
+          length(adjusted_AB_row_index) > 0 &&
+            !is.null(boot_results$est) &&
+            !is.null(boot_results$ci_l) && !is.null(boot_results$ci_u)
+        ) {
           # Update the values for the 'adjusted_AB' row
-          inferential_df[[effect_measure_col_name]][adjusted_AB_row_index] <-
-            boot_results$est
-          inferential_df$LCL[adjusted_AB_row_index] <-
-            boot_results$ci_l
-          inferential_df$UCL[adjusted_AB_row_index] <-
-            boot_results$ci_u
+          inferential_df[[effect_measure_col_name]][adjusted_AB_row_index] <- boot_results$est
+          inferential_df$LCL[adjusted_AB_row_index] <- boot_results$ci_l
+          inferential_df$UCL[adjusted_AB_row_index] <- boot_results$ci_u
         }
       }
       inferential_df$case <-
@@ -151,6 +146,8 @@ maic_forest_plot <- function(...,
   )
   # 3) Create the forest plot
   col_grid <- rgb(235, 235, 235, 100, maxColorValue = 255)
+
+  group_id <- effect_est <- LCL <- UCL <- case <-  NULL
 
   forest <- ggplot2::ggplot(
     data = forest_data,
@@ -243,6 +240,7 @@ maic_forest_plot <- function(...,
     )
 
   # 5) Table plot
+  stat <- value <- NULL
   table_base <-
     ggplot2::ggplot(
       dat_table_long,

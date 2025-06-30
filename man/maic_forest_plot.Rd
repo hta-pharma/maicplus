@@ -41,8 +41,8 @@ for each row, along with its p-value. If the p-value is less than 0.001, it is d
 otherwise it is displayed to three decimal places.
 }
 \examples{
-library(ggplot2)
-library(patchwork)
+
+if(requireNamespace("ggplot2") && requireNamespace("patchwork")) {
 
 data(centered_ipd_sat)
 data(adtte_sat)
@@ -71,4 +71,5 @@ result <- maic_unanchored(
 )
 
 maic_forest_plot(result)
+}
 }
