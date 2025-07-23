@@ -1,5 +1,5 @@
-library(ggplot2)
-library(patchwork)
+
+if(requireNamespace("ggplot2") && requireNamespace("patchwork")) {
 
 data(centered_ipd_sat)
 data(adtte_sat)
@@ -28,3 +28,4 @@ result <- maic_unanchored(
 )
 
 maic_forest_plot(result)
+}
