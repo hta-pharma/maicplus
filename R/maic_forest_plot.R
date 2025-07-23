@@ -147,7 +147,7 @@ maic_forest_plot <- function(...,
   # 3) Create the forest plot
   col_grid <- rgb(235, 235, 235, 100, maxColorValue = 255)
 
-  group_id <- effect_est <- LCL <- UCL <- case <-  NULL
+  group_id <- effect_est <- LCL <- UCL <- case <- NULL
 
   forest <- ggplot2::ggplot(
     data = forest_data,
