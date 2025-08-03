@@ -39,8 +39,11 @@ data.frame of weighted and unweighted covariate averages of the IPD,
 average of aggregate data, and sum of inner products of covariate \eqn{x_i} and the weights (\eqn{exp(x_i\beta)})
 }
 \description{
-This function checks to see if the optimization is done properly by checking the covariate averages
-before and after adjustment.
+This function checks to see if the optimization is done properly
+by checking the covariate averages before and after adjustment.
+In case of ties when calculating median,
+we return the mean of the two numbers. For more details,
+see \code{ties} parameter in \link[matrixStats:weightedMedian]{matrixStats::weightedMedian}.
 }
 \section{Methods (by generic)}{
 \itemize{
@@ -51,5 +54,4 @@ before and after adjustment.
 data(weighted_sat)
 data(agd)
 check_weights(weighted_sat, process_agd(agd))
-
 }

@@ -1,13 +1,20 @@
-# maicplus 0.1.0
+## maicplus 0.1.2.9000
 
-### New features
+- Add vignette about proportional hazards
 
-* Add an initializer script.
+## maicplus 0.1.2
 
-### Enhancements
+- Changed the link function to binomial for RD and RR in binary analysis
+- Updated vignette to recommend against bootstrap in unanchored analysis with citation
+- Fix events percentage to properly incorporate weights in the report table for binary analysis
+- Replace quantile function to use matrixStats package instead of desctools package
+- Added testing PH assumptions vignette
+- Fixed the issues with merging weights using match function
 
-* Documentation on how to use the initialize a package.
+## maicplus 0.1.1
 
-### Bug fixes
+- bug fixes
 
-* None.
+## maicplus 0.1.0
+
+- first CRAN release

@@ -31,7 +31,7 @@ test_that("optimise_weights works as expected", {
     result <- optimise_weights(object, par = c(0, 0), trace = 2),
     "converged"
   )
-  expect_equal(result$alpha, c(-0.07702229, 0.06826333))
+  expect_equal(result$alpha, c(-0.0770222925868337, 0.0682633331364419))
   expect_equal(
     result$wt[, 1],
     c(
@@ -43,6 +43,29 @@ test_that("optimise_weights works as expected", {
     )
   )
 })
+
+test_that("estimate_weights fails as expected with invalid input", {
+  load(system.file("extdata", "ipd.rda", package = "maicplus", mustWork = TRUE))
+  load(system.file("extdata", "agd.rda", package = "maicplus", mustWork = TRUE))
+  ipd_centered <- center_ipd(ipd = ipd, agd = agd)
+  centered_colnames <- paste0(c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN"), "_CENTERED")
+  expect_error(
+    estimate_weights(data = as.matrix(ipd_centered), centered_colnames = centered_colnames),
+    "not a data.frame"
+  )
+
+  expect_error(
+    estimate_weights(data = ipd_centered, centered_colnames = "hba1c_centered", trace = 2),
+    "specified centered_colnames"
+  )
+
+  ipd_centered$AGE_MEDIAN_CENTERED_FCT <- as.factor(ipd_centered$AGE_MEDIAN_CENTERED)
+  expect_error(
+    estimate_weights(data = ipd_centered, centered_colnames = c(centered_colnames, "AGE_MEDIAN_CENTERED_FCT")),
+    "not numeric"
+  )
+})
+
 
 
 test_that("estimate_weights works as expected", {
@@ -164,4 +187,100 @@ test_that("estimate_weights prints errors about convergence", {
     estimate_weights(data = ipd_centered, centered_colnames = centered_colnames, trace = 0, maxit = 300),
     NA
   )
+})
+
+test_that("plot_weights_base works as expected", {
+  vdiffr::expect_doppelganger(
+    title = "plot_weights_base scaled_TRUE",
+    function() {
+      plot_weights_base(
+        weighted_sat,
+        bin_col = "#6ECFFF",
+        vline_col = "#0000E8",
+        main_title = c("Scaled Individual Weights"),
+        scaled_weights = TRUE
+      )
+    }
+  )
+
+  vdiffr::expect_doppelganger(
+    title = "plot_weights_base scaled_FALSE",
+    function() {
+      plot_weights_base(
+        weighted_sat,
+        bin_col = "#6ECFFF",
+        vline_col = "#0000E8",
+        main_title = c("Unscaled Individual Weights"),
+        scaled_weights = FALSE
+      )
+    }
+  )
+})
+
+test_that("plot_weights_ggplot works as expected", {
+  vdiffr::expect_doppelganger(
+    title = "plot_weights_ggplot",
+    plot_weights_ggplot(
+      weighted_sat,
+      bin_col = "#6ECFFF",
+      vline_col = "#0000E8",
+      main_title = c("Scaled Individual Weights", "Unscaled Individual Weights"),
+      bins = 10
+    )
+  )
+})
+
+test_that("default plot works as expected", {
+  vdiffr::expect_doppelganger(
+    title = "default_weights_plot",
+    function() plot(weighted_twt)
+  )
+  vdiffr::expect_doppelganger(
+    title = "default_weights_ggplot",
+    plot(weighted_twt, ggplot = TRUE)
+  )
+})
+
+test_that("check_weights works as expected", {
+  result <- check_weights(weighted_sat, process_agd(agd))
+  checkmate::expect_class(result, "maicplus_check_weights")
+  checkmate::expect_data_frame(result, nrows = 6, ncols = 6)
+  checkmate::expect_names(
+    colnames(result),
+    identical.to = c(
+      "covariate", "match_stat", "internal_trial", "internal_trial_after_weighted",
+      "external_trial", "sum_centered_IPD_with_weights"
+    ),
+    what = "colnames"
+  )
+  expect_equal(result[, "covariate"], c("AGE", "AGE", "AGE", "SEX_MALE", "ECOG0", "SMOKE"))
+  expect_equal(result[, "match_stat"], c("Mean", "Median", "SD", "Prop", "Prop", "Prop"))
+  expect_equal(result[, "sum_centered_IPD_with_weights"], c(0, 0, -0.0045, 0, 0, 0))
+})
+
+test_that("weighted median is correct", {
+  # based on calculating_weights vignette
+  data <- adsl_sat
+  data$SEX_MALE <- ifelse(data$SEX == "Male", 1, 0)
+  data$SAGE_SQUARED <- data$AGE^2
+  agd <- data.frame(
+    AGE_MEAN = 51,
+    AGE_SD = 3.25,
+    SEX_MALE_PROP = 147 / 300,
+    ECOG0_PROP = 0.40,
+    SMOKE_PROP = 58 / (300 - 5),
+    N_PR_THER_MEDIAN = 2
+  )
+
+  ipd <- adsl_sat
+  ipd_centered <- center_ipd(ipd = ipd, agd = agd)
+  centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+  centered_colnames <- paste0(centered_colnames, "_CENTERED")
+
+  weighted_sat <- estimate_weights(
+    data = ipd_centered,
+    centered_colnames = centered_colnames
+  )
+  check_weights_result <- check_weights(weighted_sat, agd)
+  expect_snapshot(check_weights_result)
 })

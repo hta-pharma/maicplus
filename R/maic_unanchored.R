@@ -140,9 +140,9 @@ maic_unanchored <- function(weights_object,
 
   # : assign weights to real and pseudo ipd
   if (normalize_weights) {
-    ipd$weights <- weights_object$data$scaled_weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+    ipd$weights <- weights_object$data$scaled_weights[match(ipd$USUBJID, weights_object$data$USUBJID)]
   } else {
-    ipd$weights <- weights_object$data$weights[match(weights_object$data$USUBJID, ipd$USUBJID)]
+    ipd$weights <- weights_object$data$weights[match(ipd$USUBJID, weights_object$data$USUBJID)]
   }
   pseudo_ipd$weights <- 1
 
@@ -355,9 +355,9 @@ maic_unanchored_binary <- function(res,
   # ~~~ Analysis table
   # : set up proper link
   glm_link <- switch(eff_measure,
-    "RD" = poisson(link = "identity"),
-    "RR" = poisson(link = "log"),
-    "OR" = binomial(link = "logit")
+    "RD" = "identity",
+    "RR" = "log",
+    "OR" = "logit"
   )
   transform_estimate <- switch(eff_measure,
     "RD" = function(x) x * 100,
@@ -366,8 +366,8 @@ maic_unanchored_binary <- function(res,
   )
 
   # : fit glm for binary outcome and robust estimate with weights
-  binobj_dat <- glm(RESPONSE ~ ARM, dat, family = glm_link)
-  binobj_dat_adj <- glm(RESPONSE ~ ARM, dat, weights = weights, family = glm_link) |> suppressWarnings()
+  binobj_dat <- glm(RESPONSE ~ ARM, dat, family = binomial(link = glm_link))
+  binobj_dat_adj <- suppressWarnings(glm(RESPONSE ~ ARM, dat, weights = weights, family = binomial(link = glm_link)))
 
   bin_robust_cov <- sandwich::vcovHC(binobj_dat_adj, type = binary_robust_cov_type)
   bin_robust_coef <- lmtest::coeftest(binobj_dat_adj, vcov. = bin_robust_cov)
@@ -424,7 +424,9 @@ maic_unanchored_binary <- function(res,
       }
       boot_dat <- rbind(boot_ipd, pseudo_ipd)
       boot_dat$ARM <- factor(boot_dat$ARM, levels = c(trt_agd, trt_ipd))
-      boot_binobj_dat_adj <- glm(RESPONSE ~ ARM, boot_dat, weights = weights, family = glm_link) |> suppressWarnings()
+      boot_binobj_dat_adj <- suppressWarnings(
+        glm(RESPONSE ~ ARM, boot_dat, weights = weights, family = binomial(link = glm_link))
+      )
       c(est = coef(boot_binobj_dat_adj)[2], var = vcov(boot_binobj_dat_adj)[2, 2])
     }
 

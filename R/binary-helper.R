@@ -91,6 +91,8 @@ get_pseudo_ipd_binary <- function(binary_agd, format = c("stacked", "unstacked")
 #' @param binobj returned object from \code{stats::glm}
 #' @param legend label to indicate the binary fit
 #' @param weighted logical flag indicating whether weights have been applied in the glm fit
+#' @returns A `data.frame` containing a summary of the number of events and subjects in a logistic
+#' regression model.
 #' @examples
 #' data(adrs_sat)
 #' pseudo_adrs <- get_pseudo_ipd_binary(
@@ -113,7 +115,7 @@ glm_makeup <- function(binobj, legend = "before matching", weighted = FALSE) {
     n <- tapply(binobj$data$USUBJID, binobj$data$ARM, length)
     n_event <- tapply(binobj$data$RESPONSE, binobj$data$ARM, sum)
   } else {
-    n <- tapply(binobj$data$weights, binobj$data$ARM, length)
+    n <- tapply(binobj$data$weights, binobj$data$ARM, sum)
     n_event <- tapply(binobj$data$weights * binobj$data$RESPONSE, binobj$data$ARM, sum)
   }
   data.frame(

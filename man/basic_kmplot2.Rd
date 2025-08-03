@@ -44,6 +44,9 @@ it will be passed to 'col' of \code{lines()}}
 \item{use_line_types}{a numeric vector of length up to 4, line type to the KM curves,
 it will be passed to \code{lty} of \code{lines()}}
 }
+\value{
+A Kaplan-Meier plot object created with \code{survminer::ggsurvplot()}.
+}
 \description{
 This function generates a basic KM plot using ggplot.
 }

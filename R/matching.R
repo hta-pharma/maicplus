@@ -354,9 +354,10 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
   })
   legend_data <- data.frame(ind = main_title, lab = lab)
 
+  values <- median <- NULL # dummy assignment for undefined variable check
   hist_plot <- ggplot2::ggplot(wt_data) +
-    ggplot2::geom_histogram(ggplot2::aes_string(x = "values"), bins = bins, color = bin_col, fill = bin_col) +
-    ggplot2::geom_vline(ggplot2::aes_string(xintercept = "median"),
+    ggplot2::geom_histogram(ggplot2::aes(x = values), bins = bins, color = bin_col, fill = bin_col) +
+    ggplot2::geom_vline(ggplot2::aes(xintercept = median),
       color = vline_col,
       linetype = "dashed"
     ) +
@@ -364,7 +365,7 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
     ggplot2::facet_wrap(~ind, ncol = 1) +
     ggplot2::geom_text(
       data = legend_data,
-      ggplot2::aes_string(label = "lab"), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3
+      ggplot2::aes(label = lab), x = Inf, y = Inf, hjust = 1, vjust = 1, size = 3
     ) +
     ggplot2::theme(
       axis.title = ggplot2::element_text(size = 12),
@@ -373,7 +374,7 @@ plot_weights_ggplot <- function(weighted_data, bin_col, vline_col,
     ggplot2::ylab("Frequency") +
     ggplot2::xlab("Weight")
 
-  return(hist_plot)
+  hist_plot
 }
 
 
@@ -421,8 +422,11 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
 
 #' Check to see if weights are optimized correctly
 #'
-#' This function checks to see if the optimization is done properly by checking the covariate averages
-#' before and after adjustment.
+#' This function checks to see if the optimization is done properly
+#' by checking the covariate averages before and after adjustment.
+#' In case of ties when calculating median,
+#' we return the mean of the two numbers. For more details,
+#' see `ties` parameter in [matrixStats::weightedMedian].
 #'
 #' @param weighted_data object returned after calculating weights using \code{\link{estimate_weights}}
 #' @param processed_agd a data frame, object returned after using \code{\link{process_agd}} or
@@ -432,8 +436,7 @@ plot.maicplus_estimate_weights <- function(x, ggplot = FALSE,
 #' data(weighted_sat)
 #' data(agd)
 #' check_weights(weighted_sat, process_agd(agd))
-#'
-#' @import DescTools
+#' @importFrom matrixStats weightedMedian
 #'
 #' @return data.frame of weighted and unweighted covariate averages of the IPD,
 #' average of aggregate data, and sum of inner products of covariate \eqn{x_i} and the weights (\eqn{exp(x_i\beta)})
@@ -485,12 +488,12 @@ check_weights <- function(weighted_data, processed_agd) {
         type = 2,
         names = FALSE
       ) # SAS default
-      outdata$internal_trial_after_weighted[ii] <- DescTools::Quantile(ipd_with_weights[[covname]],
-        weights = ipd_with_weights$weights,
-        probs = 0.5,
-        na.rm = TRUE,
-        type = 5,
-        names = FALSE
+      outdata$internal_trial_after_weighted[ii] <- weightedMedian(
+        x = ipd_with_weights[[covname]],
+        w = ipd_with_weights$weights,
+        interpolate = FALSE,
+        ties = "mean",
+        na.rm = TRUE
       )
       # no IPD equals to reported AgD median
       msg_ind <- !any(ipd_with_weights[[covname]] == outdata$external_trial[ii], na.rm = TRUE)

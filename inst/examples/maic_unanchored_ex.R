@@ -1,4 +1,6 @@
+#
 # unanchored example using maic_unanchored for time-to-event data
+#
 data(centered_ipd_sat)
 data(adtte_sat)
 data(pseudo_ipd_sat)
@@ -16,7 +18,7 @@ weighted_data2 <- estimate_weights(
   centered_colnames = grep("_CENTERED$", names(centered_ipd_sat)),
   start_val = 0,
   method = "BFGS",
-  n_boot_iteration = 500,
+  n_boot_iteration = 100,
   set_seed_boot = 1234
 )
 
