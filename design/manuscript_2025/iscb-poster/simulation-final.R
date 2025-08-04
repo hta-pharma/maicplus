@@ -179,11 +179,30 @@ calibrate_d_for_ess <- function(target_ess_ratio, n_calib = 10000, tol = 0.01, m
     combined_X <- rbind(X_external[, 1:3], X_internal[, 1:3])
     combined_Z <- c(rep(0, n_calib), rep(1, n_calib))
 
-    ps_model <- glm(combined_Z ~ combined_X, family = binomial())
-    ps_external <- predict(ps_model, newdata = data.frame(combined_X = X_external[, 1:3]),
-                           type = "response")
+    # Create data frame for GLM
+    glm_data <- data.frame(
+      Z = combined_Z,
+      X1 = combined_X[, 1],
+      X2 = combined_X[, 2],
+      X3 = combined_X[, 3]
+    )
 
-    # Compute weights
+    ps_model <- glm(Z ~ X1 + X2 + X3, data = glm_data, family = binomial())
+
+    # Create prediction data frame
+    pred_data <- data.frame(
+      X1 = X_external[, 1],
+      X2 = X_external[, 2],
+      X3 = X_external[, 3]
+    )
+
+    ps_external <- predict(ps_model, newdata = pred_data, type = "response")
+
+    # Compute weights with numerical stability
+    # Avoid extreme propensity scores
+    ps_external <- pmax(ps_external, 0.001)
+    ps_external <- pmin(ps_external, 0.999)
+
     weights <- ps_external / (1 - ps_external)
     weights <- c(weights, rep(1, n_calib))
 
@@ -193,6 +212,9 @@ calibrate_d_for_ess <- function(target_ess_ratio, n_calib = 10000, tol = 0.01, m
     # Return ESS ratio
     return(ess / (2 * n_calib))
   }
+
+  # Match the first element if method is a vector
+  method <- match.arg(method)
 
   if("bisection" %in% method) {
     # Use bisection method to find d
@@ -211,7 +233,7 @@ calibrate_d_for_ess <- function(target_ess_ratio, n_calib = 10000, tol = 0.01, m
     }
 
     d_current <- (d_lower + d_upper) / 2
-  }else if(all(method == "newton-ralphson")) {
+  } else if(method == "newton-ralphson") {
     # Use Newton-Raphson method to find d
     # Initialize d with a reasonable starting value
     d_current <- 1.0
@@ -260,7 +282,7 @@ calibrate_d_for_ess <- function(target_ess_ratio, n_calib = 10000, tol = 0.01, m
     if (iter == max_iter) {
       warning(sprintf("Newton-Raphson did not converge after %d iterations", max_iter))
     }
-  }else {
+  } else {
     stop("specified 'method' does not exist")
   }
 
@@ -373,9 +395,12 @@ generate_censoring <- function(n, T, dropout_rate) {
 #' @param base_params Baseline distribution parameters
 #' @param dropout_rate Dropout rate
 #' @param max_followup Maximum follow-up time (default 48 months)
+#' @param tol Tolerance for convergence
+#' @param method Algorithm used to find the right value for beta, either "bisection" (default) or "newton-ralphson"
 #' @return Calibrated beta vector
 calibrate_beta <- function(target_event_rate, n_calib = 5000, distribution,
-                           base_params, dropout_rate, max_followup = 48) {
+                           base_params, dropout_rate, max_followup = 48,
+                           tol = 0.01, method = c("bisection", "newton-ralphson")) {
   # Function to compute event rate for given beta scale
   compute_event_rate <- function(beta_scale) {
     # Set beta values (X1-X3 prognostic, X4 non-prognostic)
@@ -396,23 +421,77 @@ calibrate_beta <- function(target_event_rate, n_calib = 5000, distribution,
     return(event_rate)
   }
 
-  # Use bisection to find beta scale
-  beta_lower <- -2
-  beta_upper <- 2
-  tol <- 0.01
+  if("bisection" %in% method) {
+    # Use bisection to find beta scale
+    beta_lower <- -2
+    beta_upper <- 2
 
-  while (beta_upper - beta_lower > tol) {
-    beta_mid <- (beta_lower + beta_upper) / 2
-    rate_mid <- compute_event_rate(beta_mid)
+    while (beta_upper - beta_lower > tol) {
+      beta_mid <- (beta_lower + beta_upper) / 2
+      rate_mid <- compute_event_rate(beta_mid)
 
-    if (rate_mid < target_event_rate) {
-      beta_lower <- beta_mid
-    } else {
-      beta_upper <- beta_mid
+      if (rate_mid < target_event_rate) {
+        beta_lower <- beta_mid
+      } else {
+        beta_upper <- beta_mid
+      }
     }
+
+    beta_scale <- (beta_lower + beta_upper) / 2
+  } else if(all(method == "newton-ralphson")) {
+    # Use Newton-Raphson method to find beta scale
+    beta_current <- 0.0  # Start at 0 (no effect)
+    max_iter <- 50
+    h <- 0.01  # Step size for numerical derivative
+
+    for (iter in 1:max_iter) {
+      # Compute function value at current beta
+      f_current <- compute_event_rate(beta_current) - target_event_rate
+
+      # Check convergence
+      if (abs(f_current) < tol) {
+        break
+      }
+
+      # Compute numerical derivative using central difference
+      rate_plus <- compute_event_rate(beta_current + h)
+      rate_minus <- compute_event_rate(beta_current - h)
+      f_prime <- (rate_plus - rate_minus) / (2 * h)
+
+      # Check if derivative is too small (avoid division by zero)
+      if (abs(f_prime) < 1e-10) {
+        warning("Derivative too small in Newton-Raphson, switching to bisection for this step")
+        # Fall back to bisection-like step
+        if (f_current > 0) {
+          beta_current <- beta_current - 0.1
+        } else {
+          beta_current <- beta_current + 0.1
+        }
+      } else {
+        # Newton-Raphson update
+        beta_new <- beta_current - f_current / f_prime
+
+        # Ensure beta stays within reasonable bounds [-2, 2]
+        beta_new <- pmax(-2, pmin(2, beta_new))
+
+        # Apply damping if change is too large
+        if (abs(beta_new - beta_current) > 0.5) {
+          beta_new <- beta_current + sign(beta_new - beta_current) * 0.5
+        }
+
+        beta_current <- beta_new
+      }
+    }
+
+    if (iter == max_iter) {
+      warning(sprintf("Newton-Raphson did not converge after %d iterations", max_iter))
+    }
+
+    beta_scale <- beta_current
+  } else {
+    stop("specified 'method' does not exist")
   }
 
-  beta_scale <- (beta_lower + beta_upper) / 2
   return(c(beta_scale, beta_scale, beta_scale, 0))
 }
 
