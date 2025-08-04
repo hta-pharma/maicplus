@@ -1,12 +1,12 @@
 # =============================================================================
-# MAIC Simulation Study for Time-to-Event Outcomes (Version A)
+# MAIC Simulation Study for Time-to-Event Outcomes
 #
 # This code implements the simulation study described in the manuscript:
 # "Comparative Evaluation of Weight Normalization Methods in Matching-Adjusted
 # Indirect Comparison for Time-to-Event Outcomes"
 #
-# Developer: Gregory etc.
-# Date: Aug, 2025
+# Author: Gregory, etc
+# Date: Aug 2025
 # R Version: 4.5.1
 # =============================================================================
 
@@ -14,6 +14,83 @@
 library(survival)
 library(parallel)
 library(MASS)  # For mvrnorm if needed
+
+# =============================================================================
+# Design
+# =============================================================================
+
+# ## Main Components:
+#
+# ### 1. **Data Generation Functions**
+# - `generate_covariates()`: Creates baseline covariates for internal/external populations
+# - `calibrate_d_for_ess()`: Calibrates the scaling factor to achieve target ESS ratios
+# - `generate_survival_times()`: Generates Weibull or log-normal survival times
+# - `calibrate_base_params()`: Calibrates distribution parameters for target median and 48-month survival
+# - `generate_censoring()`: Implements the dropout pattern (60% early, 40% late)
+# - `calibrate_beta()`: Calibrates prognostic effects to achieve target event rates
+#
+# ### 2. **Weight Calculation Functions**
+# - `calculate_maic_weights()`: Implements method of moments for MAIC weights
+# - `calculate_mew_weights()`: Calculates maximum ESS weights using quadratic programming
+# - `normalize_weights()`: Applies different normalization schemes (OW, SW1, SWN, SWESS)
+#
+# ### 3. **Analysis Functions**
+# - `fit_weighted_cox()`: Fits weighted Cox models and extracts HR with CIs
+# - `calculate_balance()`: Computes maximum standardized differences
+# - `calculate_ess()`: Computes effective sample size
+#
+# ### 4. **Simulation Infrastructure**
+# - `run_single_simulation()`: Executes one simulation iteration
+# - `run_simulation_study()`: Manages the full factorial design with parallel processing
+# - Automatic intermediate result saving every 10 scenarios
+# - Parallel computing with configurable cores
+#
+# ### 5. **Results Processing**
+# - `calculate_performance_metrics()`: Aggregates results with Monte Carlo standard errors
+# - `create_summary_tables()`: Generates CSV tables for manuscript
+# - `create_diagnostic_plots()`: Creates visualization plots
+# - `export_latex_tables()`: Exports results to LaTeX format
+# - `validate_results()`: Performs quality checks on simulation output
+#
+# ## Key Features:
+#
+# 1. **Efficient Implementation**
+#    - Uses base R functions where possible (minimal dependencies)
+#    - Parallel processing with `makeCluster()`
+#    - Vectorized operations throughout
+#    - Memory-efficient intermediate saving
+#
+# 2. **Follows Manuscript Exactly**
+#    - All 8 weight normalization methods
+#    - Three prognostic factor scenarios (correct, under, over)
+#    - Full factorial design as specified
+#    - Algorithm matches your manuscript's description
+#
+# 3. **Comprehensive Output**
+#   - Bias and coverage with Monte Carlo SEs
+# - ESS and weight diagnostics
+# - Balance metrics
+# - Automatic plot generation
+# - LaTeX table export
+#
+# 4. **Flexibility**
+#   - Number of cores is tunable
+# - Can save/resume from intermediate results
+# - Configuration can be loaded from external file
+# - Easy to extend with additional methods
+#
+# ## Usage:
+#
+# ```r
+# # Run with default parameters
+# source("maic_simulation.R")
+# results <- main()
+#
+# # Or customize parameters
+# sim_params$n_cores <- 8  # Use 8 cores
+# sim_params$n_sim <- 5000  # Reduce simulations for testing
+# results <- main()
+# ```
 
 # =============================================================================
 # SECTION 1: SIMULATION PARAMETERS AND SETUP
@@ -715,3 +792,345 @@ run_simulation_study <- function(sim_params, save_intermediate = TRUE,
     scenario_results_df$iteration <- rep(1:sim_params$n_sim,
                                          each = length(unique(scenario_results_df$method)))
     scenario_results_df$scenario_id <- scenario_idx
+
+    # Store results
+    all_results[[scenario_idx]] <- scenario_results_df
+
+    # Save intermediate results if requested
+    if (save_intermediate && scenario_idx %% 10 == 0) {
+      intermediate_df <- do.call(rbind, all_results)
+      saveRDS(intermediate_df, file.path(save_dir,
+                                         sprintf("intermediate_results_%d.rds", scenario_idx)))
+      cat(sprintf("  Saved intermediate results at scenario %d\n", scenario_idx))
+    }
+  }
+
+  # Stop cluster
+  stopCluster(cl)
+
+  # Combine all results
+  final_results <- do.call(rbind, all_results)
+
+  # Save final results
+  if (save_intermediate) {
+    saveRDS(final_results, file.path(save_dir, "final_results.rds"))
+    write.csv(final_results, file.path(save_dir, "final_results.csv"),
+              row.names = FALSE)
+  }
+
+  return(final_results)
+}
+
+# =============================================================================
+# SECTION 7: PERFORMANCE METRICS CALCULATION
+# =============================================================================
+
+#' Calculate performance metrics across simulations
+#'
+#' @param results Combined results from all simulations
+#' @return Data frame with aggregated performance metrics
+calculate_performance_metrics <- function(results) {
+  # Group by scenario and method
+  metrics <- aggregate(
+    cbind(hr_est, ci_lower, ci_upper, ess, max_weight, max_std_diff) ~
+      n + true_hr + distribution + median_surv + surv_48m + dropout_rate +
+      event_rate + d + weighting_scenario + method,
+    data = results,
+    FUN = function(x) c(
+      mean = mean(x, na.rm = TRUE),
+      sd = sd(x, na.rm = TRUE),
+      median = median(x, na.rm = TRUE),
+      q25 = quantile(x, 0.25, na.rm = TRUE),
+      q75 = quantile(x, 0.75, na.rm = TRUE)
+    )
+  )
+
+  # Calculate bias
+  metrics$bias <- metrics$hr_est[, "mean"] - metrics$true_hr
+
+  # Calculate coverage
+  coverage_df <- aggregate(
+    cbind(covered = I(ci_lower <= true_hr & ci_upper >= true_hr)) ~
+      n + true_hr + distribution + median_surv + surv_48m + dropout_rate +
+      event_rate + d + weighting_scenario + method,
+    data = results,
+    FUN = mean
+  )
+
+  metrics$coverage <- coverage_df$covered
+
+  # Calculate Monte Carlo standard errors
+  n_sim <- length(unique(results$iteration))
+  metrics$mcse_bias <- metrics$hr_est[, "sd"] / sqrt(n_sim)
+  metrics$mcse_coverage <- sqrt(metrics$coverage * (1 - metrics$coverage) / n_sim)
+
+  return(metrics)
+}
+
+#' Create summary tables for manuscript
+#'
+#' @param metrics Performance metrics data frame
+#' @param output_dir Directory for saving tables
+create_summary_tables <- function(metrics, output_dir = "tables") {
+  if (!dir.exists(output_dir)) {
+    dir.create(output_dir, recursive = TRUE)
+  }
+
+  # Table 1: Bias by method and sample size
+  bias_table <- reshape(
+    metrics[, c("method", "n", "bias", "mcse_bias")],
+    idvar = "method",
+    timevar = "n",
+    direction = "wide"
+  )
+
+  write.csv(bias_table, file.path(output_dir, "bias_by_method_and_n.csv"),
+            row.names = FALSE)
+
+  # Table 2: Coverage by method and scenario
+  coverage_table <- reshape(
+    metrics[, c("method", "weighting_scenario", "coverage", "mcse_coverage")],
+    idvar = "method",
+    timevar = "weighting_scenario",
+    direction = "wide"
+  )
+
+  write.csv(coverage_table, file.path(output_dir, "coverage_by_method_and_scenario.csv"),
+            row.names = FALSE)
+
+  # Table 3: ESS comparison
+  ess_summary <- aggregate(
+    ess ~ method + n,
+    data = metrics,
+    FUN = function(x) c(mean = mean(x[, "mean"]), sd = mean(x[, "sd"]))
+  )
+
+  write.csv(ess_summary, file.path(output_dir, "ess_summary.csv"),
+            row.names = FALSE)
+}
+
+# =============================================================================
+# SECTION 8: VISUALIZATION FUNCTIONS
+# =============================================================================
+
+#' Create diagnostic plots
+#'
+#' @param results Raw simulation results
+#' @param metrics Aggregated performance metrics
+#' @param output_dir Directory for saving plots
+create_diagnostic_plots <- function(results, metrics, output_dir = "figures") {
+  if (!dir.exists(output_dir)) {
+    dir.create(output_dir, recursive = TRUE)
+  }
+
+  # Plot 1: Bias across methods
+  pdf(file.path(output_dir, "bias_by_method.pdf"), width = 10, height = 6)
+
+  par(mar = c(5, 4, 4, 2) + 0.1)
+  boxplot(bias ~ method, data = metrics,
+          main = "Bias in HR Estimation by Method",
+          xlab = "Method", ylab = "Bias",
+          col = rainbow(8))
+  abline(h = 0, lty = 2, col = "red")
+
+  dev.off()
+
+  # Plot 2: Coverage probability
+  pdf(file.path(output_dir, "coverage_by_method.pdf"), width = 10, height = 6)
+
+  coverage_means <- aggregate(coverage ~ method, data = metrics, mean)
+  barplot(coverage_means$coverage, names.arg = coverage_means$method,
+          main = "95% CI Coverage Probability by Method",
+          xlab = "Method", ylab = "Coverage",
+          ylim = c(0, 1), col = rainbow(8))
+  abline(h = 0.95, lty = 2, col = "red")
+
+  dev.off()
+
+  # Plot 3: ESS vs Balance trade-off
+  pdf(file.path(output_dir, "ess_vs_balance.pdf"), width = 8, height = 8)
+
+  plot(metrics$ess[, "mean"], metrics$max_std_diff[, "mean"],
+       col = as.factor(metrics$method), pch = 19,
+       xlab = "Effective Sample Size",
+       ylab = "Maximum Standardized Difference",
+       main = "ESS vs Covariate Balance Trade-off")
+  legend("topright", legend = unique(metrics$method),
+         col = 1:length(unique(metrics$method)), pch = 19)
+
+  dev.off()
+
+  # Plot 4: Weight distributions
+  pdf(file.path(output_dir, "weight_distributions.pdf"), width = 12, height = 8)
+
+  par(mfrow = c(2, 4))
+  for (method in unique(results$method)) {
+    subset_data <- results[results$method == method & results$iteration <= 100, ]
+    hist(log(subset_data$max_weight + 1),
+         main = paste("Log(Max Weight) -", method),
+         xlab = "log(Max Weight + 1)", col = "lightblue")
+  }
+
+  dev.off()
+}
+
+# =============================================================================
+# SECTION 9: MAIN EXECUTION SCRIPT
+# =============================================================================
+
+#' Main function to run complete simulation study
+#'
+#' @param config_file Optional configuration file path
+main <- function(config_file = NULL) {
+  # Load configuration if provided
+  if (!is.null(config_file)) {
+    source(config_file)
+  }
+
+  # Start timing
+  start_time <- Sys.time()
+
+  cat("Starting MAIC simulation study...\n")
+  cat(sprintf("Using %d cores for parallel processing\n", sim_params$n_cores))
+
+  # Run simulations
+  results <- run_simulation_study(sim_params)
+
+  # Calculate performance metrics
+  cat("Calculating performance metrics...\n")
+  metrics <- calculate_performance_metrics(results)
+
+  # Create summary tables
+  cat("Creating summary tables...\n")
+  create_summary_tables(metrics)
+
+  # Create diagnostic plots
+  cat("Creating diagnostic plots...\n")
+  create_diagnostic_plots(results, metrics)
+
+  # Report completion
+  end_time <- Sys.time()
+  runtime <- difftime(end_time, start_time, units = "hours")
+
+  cat(sprintf("\nSimulation study completed in %.2f hours\n", runtime))
+  cat(sprintf("Total scenarios: %d\n", length(unique(results$scenario_id))))
+  cat(sprintf("Total simulations: %d\n", nrow(results) / length(unique(results$method))))
+
+  # Save session info for reproducibility
+  sink("session_info.txt")
+  sessionInfo()
+  sink()
+
+  return(list(results = results, metrics = metrics))
+}
+
+# =============================================================================
+# SECTION 10: UTILITY FUNCTIONS FOR POST-PROCESSING
+# =============================================================================
+
+#' Export results to LaTeX tables
+#'
+#' @param metrics Performance metrics
+#' @param output_file LaTeX file name
+export_latex_tables <- function(metrics, output_file = "simulation_results.tex") {
+  # Requires xtable package
+  if (!requireNamespace("xtable", quietly = TRUE)) {
+    warning("xtable package not available, skipping LaTeX export")
+    return(NULL)
+  }
+
+  library(xtable)
+
+  # Create bias table
+  bias_summary <- aggregate(
+    cbind(bias, mcse_bias) ~ method + n,
+    data = metrics,
+    FUN = mean
+  )
+
+  bias_wide <- reshape(bias_summary, idvar = "method", timevar = "n",
+                       direction = "wide")
+
+  # Format for LaTeX
+  sink(output_file)
+
+  cat("\\begin{table}[ht]\n")
+  cat("\\centering\n")
+  cat("\\caption{Average bias in hazard ratio estimation by method and sample size}\n")
+  print(xtable(bias_wide, digits = 4), include.rownames = FALSE,
+        floating = FALSE)
+  cat("\\end{table}\n\n")
+
+  # Create coverage table
+  coverage_summary <- aggregate(
+    cbind(coverage, mcse_coverage) ~ method + weighting_scenario,
+    data = metrics,
+    FUN = mean
+  )
+
+  coverage_wide <- reshape(coverage_summary, idvar = "method",
+                           timevar = "weighting_scenario", direction = "wide")
+
+  cat("\\begin{table}[ht]\n")
+  cat("\\centering\n")
+  cat("\\caption{95\\% CI coverage probability by method and weighting scenario}\n")
+  print(xtable(coverage_wide, digits = 3), include.rownames = FALSE,
+        floating = FALSE)
+  cat("\\end{table}\n")
+
+  sink()
+
+  cat(sprintf("LaTeX tables exported to %s\n", output_file))
+}
+
+#' Validate simulation results
+#'
+#' @param results Simulation results
+#' @return List of validation checks
+validate_results <- function(results) {
+  checks <- list()
+
+  # Check 1: All methods present for each scenario
+  methods_per_scenario <- aggregate(method ~ scenario_id, data = results,
+                                    FUN = function(x) length(unique(x)))
+  checks$all_methods_present <- all(methods_per_scenario$method == 8)
+
+  # Check 2: No missing HR estimates
+  checks$no_missing_hr <- sum(is.na(results$hr_est)) == 0
+
+  # Check 3: Reasonable HR range
+  checks$reasonable_hr_range <- all(results$hr_est > 0.1 & results$hr_est < 10,
+                                    na.rm = TRUE)
+
+  # Check 4: ESS <= n
+  checks$ess_valid <- all(results$ess <= results$n, na.rm = TRUE)
+
+  # Check 5: Weights are positive
+  checks$positive_weights <- all(results$max_weight > 0, na.rm = TRUE)
+
+  # Report
+  cat("Validation Results:\n")
+  for (check_name in names(checks)) {
+    status <- ifelse(checks[[check_name]], "PASS", "FAIL")
+    cat(sprintf("  %s: %s\n", check_name, status))
+  }
+
+  return(checks)
+}
+
+# =============================================================================
+# Execute if run as script
+# =============================================================================
+
+if (sys.nframe() == 0) {
+  # Running as script, not sourced
+  results <- main()
+
+  # Validate results
+  validation <- validate_results(results$results)
+
+  # Export LaTeX tables
+  export_latex_tables(results$metrics)
+
+  cat("\nSimulation study complete. Results saved to simulation_results/\n")
+}
