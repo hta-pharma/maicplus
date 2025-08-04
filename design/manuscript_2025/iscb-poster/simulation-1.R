@@ -166,8 +166,9 @@ generate_covariates <- function(n, population = "external", d = 1) {
 #' @param target_ess_ratio Target ESS/N ratio
 #' @param n_calib Sample size for calibration
 #' @param tol Tolerance for convergence
+#' @param method Algorithm used to find the right value for d, either "bisection" (default) or "newton-ralphson"
 #' @return Calibrated d value
-calibrate_d_for_ess <- function(target_ess_ratio, n_calib = 10000, tol = 0.01) {
+calibrate_d_for_ess <- function(target_ess_ratio, n_calib = 10000, tol = 0.01, method = c("bisection","newton-ralphson")) {
   # Function to compute ESS ratio for given d
   compute_ess_ratio <- function(d) {
     # Generate large samples for calibration
@@ -184,6 +185,7 @@ calibrate_d_for_ess <- function(target_ess_ratio, n_calib = 10000, tol = 0.01) {
 
     # Compute weights
     weights <- ps_external / (1 - ps_external)
+    weights <- c(weights, rep(1, n_calib))
 
     # Compute ESS
     ess <- sum(weights)^2 / sum(weights^2)
@@ -192,22 +194,77 @@ calibrate_d_for_ess <- function(target_ess_ratio, n_calib = 10000, tol = 0.01) {
     return(ess / (2 * n_calib))
   }
 
-  # Use bisection method to find d
-  d_lower <- 0.1
-  d_upper <- 2.0
+  if("bisection" %in% method) {
+    # Use bisection method to find d
+    d_lower <- 0.1
+    d_upper <- 2.0
 
-  while (d_upper - d_lower > tol) {
-    d_mid <- (d_lower + d_upper) / 2
-    ess_mid <- compute_ess_ratio(d_mid)
+    while (d_upper - d_lower > tol) {
+      d_mid <- (d_lower + d_upper) / 2
+      ess_mid <- compute_ess_ratio(d_mid)
 
-    if (ess_mid < target_ess_ratio) {
-      d_upper <- d_mid
-    } else {
-      d_lower <- d_mid
+      if (ess_mid < target_ess_ratio) {
+        d_upper <- d_mid
+      } else {
+        d_lower <- d_mid
+      }
     }
+
+    d_current <- (d_lower + d_upper) / 2
+  }else if(all(method == "newton-ralphson")) {
+    # Use Newton-Raphson method to find d
+    # Initialize d with a reasonable starting value
+    d_current <- 1.0
+    max_iter <- 50
+    h <- 0.001  # Step size for numerical derivative
+
+    for (iter in 1:max_iter) {
+      # Compute function value at current d
+      f_current <- compute_ess_ratio(d_current) - target_ess_ratio
+
+      # Check convergence
+      if (abs(f_current) < tol) {
+        break
+      }
+
+      # Compute numerical derivative using central difference
+      f_plus <- compute_ess_ratio(d_current + h) - target_ess_ratio
+      f_minus <- compute_ess_ratio(d_current - h) - target_ess_ratio
+      f_prime <- (f_plus - f_minus) / (2 * h)
+
+      # Check if derivative is too small (avoid division by zero)
+      if (abs(f_prime) < 1e-10) {
+        warning("Derivative too small in Newton-Raphson, switching to bisection for this step")
+        # Fall back to bisection for this iteration
+        if (f_current > 0) {
+          d_current <- d_current * 0.9
+        } else {
+          d_current <- d_current * 1.1
+        }
+      } else {
+        # Newton-Raphson update
+        d_new <- d_current - f_current / f_prime
+
+        # Ensure d stays within reasonable bounds [0.1, 2.0]
+        d_new <- pmax(0.1, pmin(2.0, d_new))
+
+        # Apply damping if change is too large
+        if (abs(d_new - d_current) > 0.5) {
+          d_new <- d_current + sign(d_new - d_current) * 0.5
+        }
+
+        d_current <- d_new
+      }
+    }
+
+    if (iter == max_iter) {
+      warning(sprintf("Newton-Raphson did not converge after %d iterations", max_iter))
+    }
+  }else {
+    stop("specified 'method' does not exist")
   }
 
-  return((d_lower + d_upper) / 2)
+  return(d_current)
 }
 
 #' Generate survival times based on specified distribution
