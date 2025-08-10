@@ -9,6 +9,7 @@ library(stringr)
 # load in function file maxESS_functions from Jackson et al paper
 setwd("C:/Users/swj88/Documents/Github/maicplus/design/simulation/maxESS")
 source("maxESS_functions.R") 
+source("mew_functions.R")
 
 # function to use in pipeline
 maxESS <- function(ipd, adtte, agd, match_mean, id = "USUBJID"){
@@ -59,6 +60,25 @@ maxESS <- function(ipd, adtte, agd, match_mean, id = "USUBJID"){
   
   return(result)
 }
+
+
+compare_jackson_result <- function(ipd, agd, match_mean, id = "USUBJID"){
+  
+  # calculate jackson's maxESS weights
+  agg_means <- agd
+  agg_means$N <- NULL
+  agg_colnames <- stringr::str_split(colnames(agg_means), "_")
+  agg_means <- unlist(agg_means)
+  names(agg_means) <- sapply(agg_colnames, function(x) { paste(x[-length(x)], collapse = "_")})
+
+  jackson_result <- jackson_MAIC(the_data = ipd, id = "USUBJID", match_mean = match_mean, agg_means = agg_means, agg_sds = NA, 0.000000000001)
+  
+  weight.maic <- jackson_result$the_data$weight.maic
+  weight.opt <- jackson_result$the_data$weight.opt
+  mew_result <- calculate_mew_weights(X_internal = as.matrix(ipd[,match_mean]), X_external_means = agg_means)
+    
+  return(cbind(weight.maic = weight.maic, weight.opt = weight.opt, mew_result = as.numeric(mew_result)))
+}
   
 
 ########## input
@@ -81,9 +101,19 @@ agd <- data.frame(
   SMOKE_PROP = 58 / (300 - 5)
 )
 
-match_mean = c("AGE", "SEX_MALE", "ECOG0", "SMOKE")
+match_mean = c("AGE","SEX_MALE", "ECOG0", "SMOKE")
 
 
 ## call the function
 result <- maxESS(ipd, adtte, agd, match_mean, id = "USUBJID")
 result$inferential$summary # just look at adjusted value. Original value is wrong because data is trimmed
+
+weight_comparison <- data.frame(compare_jackson_result(ipd, agd, match_mean))
+
+weight_comparison <- weight_comparison %>%
+  mutate(mew_sw1 = normalize_weights(mew_result, method = "SW1"))
+
+# jackson_result (normalizes to add up to 1; SW1) constrains weights to be 
+# positive in the opitmization
+# mew estimates ess weights and then forces weights to be positive
+# if there are no negative weights, two methods are equal
