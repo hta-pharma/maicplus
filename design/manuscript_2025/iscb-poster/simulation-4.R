@@ -263,7 +263,7 @@ sim_params <- list(
   ess_ratios = c(0.15, 0.25, 0.33, 0.50),
 
   # Simulation settings
-  n_sim = 10000,  # Number of Monte Carlo replications
+  n_sim = 10000,  # Number of simulation replications
   max_followup = 48,  # months
   n_boot = 500,  # Number of bootstrap iterations for CIs
   max_weight = 100,  # Maximum weight cap for stability
@@ -2278,7 +2278,7 @@ main <- function(sim_params = NULL, run_analysis = TRUE) {
   start_time <- Sys.time()
 
   cat("=============================================================================\n")
-  cat("MAIC Simulation Study with IPTW ATUT Comparison - Version 39\n")
+  cat("MAIC Simulation Study with IPTW ATUT Comparison - Version Aug-17\n")
   cat("TARGET ESTIMAND: ATUT (Average Treatment Effect in the Untreated)\n")
   cat("=============================================================================\n\n")
 
