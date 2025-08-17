@@ -6,7 +6,7 @@
 # Indirect Comparison for Time-to-Event Outcomes"
 #
 # Author: Gregory Chen, etc
-# Date: Aug 15, 2025
+# Date: Aug 16, 2025
 # R Version: 4.5.1
 # =============================================================================
 
@@ -19,8 +19,9 @@
 #' @description Tests all major functions with small datasets to ensure
 #' error-free execution before running full simulations
 #'
+#' @param sim_params Simulation parameters to use for testing
 #' @return List of test results with pass/fail status
-test_simulation_functions <- function() {
+test_simulation_functions_with_params <- function(sim_params) {
   cat("=== Running Simulation Function Tests ===\n")
 
   test_results <- list()
@@ -125,11 +126,8 @@ test_simulation_functions <- function() {
       gamma = log(0.7), weighting_scenario = "correct",
       max_followup = 48
     )
-    # Set global sim_params for n_boot
-    sim_params_temp <- list(n_boot = 50)
-    assign("sim_params", sim_params_temp, envir = .GlobalEnv)
 
-    single_res <- run_single_simulation(test_params)
+    single_res <- run_single_simulation_with_params(test_params, sim_params)
     test_results$single_sim <- nrow(single_res) == 8  # 8 methods
     cat("  PASS\n")
   }, error = function(e) {
@@ -884,7 +882,11 @@ calculate_balance <- function(X_internal, X_external_means, weights) {
 }
 
 #' Run single simulation iteration (CORRECTED)
-run_single_simulation <- function(params) {
+#'
+#' @param params List of scenario parameters
+#' @param sim_params List of global simulation parameters (for n_boot)
+#' @return Data frame with results
+run_single_simulation_with_params <- function(params, sim_params) {
   # Extract parameters
   n <- params$n
   true_hr <- params$true_hr
@@ -898,6 +900,9 @@ run_single_simulation <- function(params) {
   gamma <- params$gamma
   weighting_scenario <- params$weighting_scenario
   max_followup <- params$max_followup
+
+  # Get n_boot from sim_params
+  n_boot <- ifelse(is.null(sim_params$n_boot), 500, sim_params$n_boot)
 
   # Generate baseline distribution parameters
   base_params <- calibrate_base_params(distribution, median_surv, surv_48m,
@@ -1007,7 +1012,7 @@ run_single_simulation <- function(params) {
 
     # Fit weighted Cox model
     cox_results <- fit_weighted_cox(Y_combined, delta_combined, Z_combined,
-                                    weights_combined, n_boot = sim_params$n_boot)
+                                    weights_combined, n_boot = n_boot)
 
     # Calculate metrics
     ess <- calculate_ess(weights_internal)
@@ -1149,13 +1154,16 @@ run_simulation_study <- function(sim_params, save_intermediate = TRUE,
   # Set up parallel cluster
   cl <- makeCluster(sim_params$n_cores)
 
-  # Export all necessary functions and objects
+  # Export all necessary functions and objects including sim_params
   clusterExport(cl, c("generate_covariates", "calibrate_base_params",
                       "generate_survival_times", "generate_censoring",
                       "calculate_maic_weights", "calculate_mew_weights",
                       "normalize_weights", "calculate_ess", "fit_weighted_cox",
-                      "calculate_balance", "run_single_simulation", "sim_params"),
+                      "calculate_balance", "run_single_simulation_with_params"),
                 envir = environment())
+
+  # Export sim_params to each worker
+  clusterExport(cl, "sim_params", envir = environment())
 
   clusterEvalQ(cl, {
     library(survival)
@@ -1181,10 +1189,10 @@ run_simulation_study <- function(sim_params, save_intermediate = TRUE,
     param_list <- replicate(sim_params$n_sim, as.list(current_scenario),
                             simplify = FALSE)
 
-    # Run parallel simulations
+    # Run parallel simulations with sim_params
     scenario_results <- parLapply(cl, param_list, function(params) {
       tryCatch({
-        run_single_simulation(params)
+        run_single_simulation_with_params(params, sim_params)
       }, error = function(e) {
         cat("\nError in simulation:", e$message, "\n")
         return(NULL)
@@ -1744,10 +1752,34 @@ create_diagnostic_plots <- function(results, metrics, output_dir = "figures",
 }
 
 #' Main function to run complete simulation study
-main <- function(config_file = NULL) {
+#'
+#' @param sim_params List containing all simulation parameters
+#' @param config_file Optional configuration file to source
+#' @return List with results and metrics
+main <- function(sim_params = NULL, config_file = NULL) {
   # Load configuration if provided
   if (!is.null(config_file)) {
     source(config_file)
+    # If config file defines sim_params, use it
+    if (exists("sim_params", envir = .GlobalEnv)) {
+      sim_params <- get("sim_params", envir = .GlobalEnv)
+    }
+  }
+
+  # Check if sim_params provided
+  if (is.null(sim_params)) {
+    stop("sim_params must be provided as an argument or defined in config_file")
+  }
+
+  # Ensure all required parameters exist with defaults
+  if (is.null(sim_params$timestamp_files)) {
+    sim_params$timestamp_files <- TRUE
+  }
+  if (is.null(sim_params$results_prefix)) {
+    sim_params$results_prefix <- "maic_sim"
+  }
+  if (is.null(sim_params$n_boot)) {
+    sim_params$n_boot <- 500
   }
 
   # Start timing
@@ -1757,9 +1789,9 @@ main <- function(config_file = NULL) {
   cat("MAIC Simulation Study - Version 37 (Final)\n")
   cat("=============================================================================\n\n")
 
-  # Run tests first
+  # Run tests first with sim_params
   cat("Running function tests...\n")
-  test_results <- test_simulation_functions()
+  test_results <- test_simulation_functions_with_params(sim_params)
 
   if (!all(unlist(test_results))) {
     stop("Some tests failed. Please fix errors before running full simulation.")
