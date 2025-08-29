@@ -1,6 +1,4 @@
-
-
-#setwd("~/GitHub/maicplus")
+# setwd("~/GitHub/maicplus")
 source("design/explore_normalization/normalize_weights.R")
 
 library(maicplus)
@@ -91,8 +89,8 @@ result_SWESS$inferential$summary
 
 # baseline hazards are different
 library(survival)
-basehaz(result_OW$inferential$fit$model_after)[1:10,]
-basehaz(result_SW1$inferential$fit$model_after)[1:10,]
+basehaz(result_OW$inferential$fit$model_after)[1:10, ]
+basehaz(result_SW1$inferential$fit$model_after)[1:10, ]
 
-basehaz(result_OW$inferential$fit$model_before)[1:10,]
-basehaz(result_SW1$inferential$fit$model_before)[1:10,]
+basehaz(result_OW$inferential$fit$model_before)[1:10, ]
+basehaz(result_SW1$inferential$fit$model_before)[1:10, ]

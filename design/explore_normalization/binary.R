@@ -1,5 +1,4 @@
-
-#setwd("~/GitHub/maicplus")
+# setwd("~/GitHub/maicplus")
 source("design/explore_normalization/normalize_weights.R")
 
 library(maicplus)

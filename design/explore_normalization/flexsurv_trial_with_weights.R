@@ -21,14 +21,14 @@ n <- 200
 sample_data <- data.frame(
   time = rexp(n, rate = 0.1),
   status = rbinom(n, 1, 0.8),
-  group = factor(rep(c("A", "B"), each = n/2)),
+  group = factor(rep(c("A", "B"), each = n / 2)),
   age = rnorm(n, 50, 10)
 )
 
 # --- Step 2: Create a weighting variable ---
 # Let's say observations from group 'B' are twice as important.
 weights_vector <- ifelse(sample_data$group == "A", 1, 2)
-weights_vector_SW1 <- weights_vector/sum(weights_vector)
+weights_vector_SW1 <- weights_vector / sum(weights_vector)
 
 # --- Step 3: Fit the weighted Weibull model directly using flexsurvreg ---
 weighted_weibull_model <- flexsurvreg(
@@ -50,7 +50,7 @@ print("Summary of the weighted Weibull model:")
 weighted_weibull_model
 weighted_weibull_model_SW1
 
-print(summary(weighted_weibull_model)[[1]][1:10,])
-print(summary(weighted_weibull_model_SW1)[[1]][1:10,])
+print(summary(weighted_weibull_model)[[1]][1:10, ])
+print(summary(weighted_weibull_model_SW1)[[1]][1:10, ])
 
 ## Conclusion: estimates are the same with different normalization
