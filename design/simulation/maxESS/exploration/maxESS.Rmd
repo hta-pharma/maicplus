@@ -40,6 +40,7 @@ agd <- data.frame(
 ipd_centered <- center_ipd(ipd = ipd, agd = agd)
 
 centered_colnames <- c("AGE", "SEX_MALE", "ECOG0", "SMOKE")
+#centered_colnames <- c("SEX_MALE", "ECOG0", "SMOKE")
 centered_colnames <- paste0(centered_colnames, "_CENTERED")
 
 weighted_sat <- estimate_weights(
@@ -72,6 +73,7 @@ AD <- data.frame(
 )
 
 IPD <- ipd[,c("AGE", "SEX_MALE", "ECOG0", "SMOKE")]
+#IPD <- ipd[,c("SEX_MALE", "ECOG0", "SMOKE")]
 
 m0 <- maxessWt(IPD, AD)
 head(m0$maxess.wt, 100)
@@ -95,6 +97,8 @@ weighted_sat$data$weights <- m0$maxess.wt
 # )
 
 #Error in survfit.formula(Surv(TIME, EVENT) ~ ARM, dat, weights = dat$weights,  : weights must be non-negative
+
+store <- cbind(maicChecks = m0$maxess.wt, maicChecks_normalized = m0$maxess.wt/sum(m0$maxess.wt))
 ```
 
 ## Dan Jackson's code
@@ -198,6 +202,7 @@ weight<-function(start, X, accuracy) {
 }
 
 jackson <- MAIC(data.frame(ipd), "USUBJID", match_mean = c("AGE", "SEX_MALE", "ECOG0", "SMOKE"), agg_means = unlist(AD), agg_sds = NA, 0.000000000001)
+#jackson <- MAIC(data.frame(ipd), "USUBJID", match_mean = c("SEX_MALE", "ECOG0", "SMOKE"), agg_means = unlist(AD), agg_sds = NA, 0.000000000001)
 
 weights_jackson <- jackson$the_data$weight.opt
 weights_jackson <- ifelse(weights_jackson == 0, 0.0000000001, weights_jackson)
@@ -225,4 +230,7 @@ result$inferential$summary
 
 #Error in coxph.fit(X, Y, istrat, offset, init, control, weights = weights,  : 
 #  Invalid weights, must be >0
+
+store <- cbind(store, jackson = jackson$the_data$weight.opt, jackson_normalized = jackson$the_data$weight.opt/sum(jackson$the_data$weight.opt))
+head(store, 20)
 ```
