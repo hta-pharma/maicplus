@@ -36,3 +36,4 @@ maicplus*.tar.gz
 maicplus*.tgz
 inst/doc
 tests/testthat/*.pdf
+tests/testthat/_snaps/maic_forest_plot/*

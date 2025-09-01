@@ -25,6 +25,8 @@ Additional R packages for this vignette:
 
 ```{r}
 library(dplyr)
+library(ggplot2)
+library(patchwork)
 ```
 
 # Illustration using example data
@@ -167,5 +169,18 @@ result_boot$inferential$fit$boot_res_AB
 ```
 
 Note that the bootstrap in unanchored analysis only uses resampling of internal IPD trial population and assumes there is no uncertainty in the comparator trial population (i.e. estimated mean outcomes). [@chandler] Therefore, we recommend the use of sandwich estimators for the variance calculation in the unanchored analysis.
+
+# Visualizing effect estimates with forest plot
+
+We can use maic_forest_plot() function to visualize the effect estimates and their confidence intervals from an unanchored MAIC object. 
+If bootstrapped confidence intervals exist, these will be displayed. Otherwise, the standard confidence intervals from the $inferential$summary will be used.
+
+```{r}
+maic_forest_plot(
+  result,
+  xlim = c(0, 1.5), # Default, can adjust x-axis limits as appropriate for your HR/OR/RR range
+  reference_line = 1 # Default, can adjust to be consistent with HR/OR/RR
+)
+```
 
 # References
