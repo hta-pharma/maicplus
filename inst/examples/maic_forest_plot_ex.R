@@ -3,7 +3,14 @@ if (requireNamespace("ggplot2") && requireNamespace("patchwork")) {
   data(adtte_sat)
   data(pseudo_ipd_sat)
 
-  centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+  centered_colnames <- c(
+    "AGE",
+    "AGE_SQUARED",
+    "SEX_MALE",
+    "ECOG0",
+    "SMOKE",
+    "N_PR_THER_MEDIAN"
+  )
   centered_colnames <- paste0(centered_colnames, "_CENTERED")
 
   weighted_data <- estimate_weights(
