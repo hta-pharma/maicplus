@@ -1,5 +1,5 @@
-pandoc: 3.6.4
-pkgdown: 2.1.2
+pandoc: 3.7.0.2
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   anchored_binary: anchored_binary.html
@@ -10,7 +10,7 @@ articles:
   testing_ph_assumptions: testing_ph_assumptions.html
   unanchored_binary: unanchored_binary.html
   unanchored_survival: unanchored_survival.html
-last_built: 2025-05-23T14:22Z
+last_built: 2025-09-01T16:37Z
 urls:
   reference: https://hta-pharma.github.io/maicplus/main/reference
   article: https://hta-pharma.github.io/maicplus/main/articles
