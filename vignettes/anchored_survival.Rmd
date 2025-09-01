@@ -19,6 +19,8 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```{r}
 # install.packages("maicplus")
 library(maicplus)
+library(ggplot2)
+library(patchwork)
 ```
 
 Additional R packages for this vignette:
@@ -178,4 +180,17 @@ result_boot <- maic_anchored(
 )
 
 result_boot$inferential$fit$boot_res_AB
+```
+
+# Visualizing effect estimates with forest plot
+
+We can use maic_forest_plot() function to visualize the effect estimates and their confidence intervals from an anchored MAIC object. 
+If bootstrapped confidence intervals exist, these will be displayed. Otherwise, the standard confidence intervals from the $inferential$summary will be used.
+
+```{r}
+maic_forest_plot(
+  result,
+  xlim = c(0, 1.5), # Default, can adjust x-axis limits as appropriate for your HR/OR/RR range
+  reference_line = 1 # Default, can adjust to be consistent with HR/OR/RR
+)
 ```

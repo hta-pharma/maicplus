@@ -5,7 +5,7 @@ output: rmarkdown::html_vignette
 bibliography: references.bib
 csl: biomedicine.csl
 vignette: >
-  %\VignetteIndexEntry{Kaplan-Meier Plots}
+  %\VignetteIndexEntry{Testing PH assumptions}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
