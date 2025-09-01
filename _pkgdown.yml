@@ -61,6 +61,7 @@ reference:
       - ph_diagplot_schoenfeld
       - plot_weights_base
       - plot_weights_ggplot
+      - maic_forest_plot
   - title: Helper Functions
     contents:
       - set_time_conversion
