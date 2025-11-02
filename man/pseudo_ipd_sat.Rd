@@ -20,6 +20,7 @@ Pseudo individual patient survival data from published study
 }
 \seealso{
 Other unanchored datasets: 
+\code{\link{adlb_sat}},
 \code{\link{adrs_sat}},
 \code{\link{adsl_sat}},
 \code{\link{adtte_sat}},

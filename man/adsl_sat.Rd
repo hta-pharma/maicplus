@@ -26,6 +26,7 @@ Patient data from single arm study
 }
 \seealso{
 Other unanchored datasets: 
+\code{\link{adlb_sat}},
 \code{\link{adrs_sat}},
 \code{\link{adtte_sat}},
 \code{\link{agd}},

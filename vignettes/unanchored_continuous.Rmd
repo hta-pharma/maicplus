@@ -1,0 +1,168 @@
+---
+title: "Unanchored Continuous Analysis"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: references.bib
+csl: biomedicine.csl
+vignette: >
+  %\VignetteIndexEntry{Unanchored Continuous Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Loading R packages
+
+```{r}
+library(maicplus)
+library(dplyr)
+```
+
+# Illustration using example data
+
+This example reads in `centered_ipd_sat` data that was created in `calculating_weights` vignette and uses `adlb_sat` dataset to run continuous outcome analysis using the `maic_unanchored` function by specifying `endpoint_type = "continuous"`.
+
+```{r}
+data(centered_ipd_sat)
+data(adlb_sat)
+
+centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+centered_colnames <- paste0(centered_colnames, "_CENTERED")
+
+weighted_data <- estimate_weights(
+  data = centered_ipd_sat,
+  centered_colnames = centered_colnames
+)
+
+# Get pseudo IPD from published aggregate data
+pseudo_adlb <- get_pseudo_ipd_continuous(
+  continuous_agd = data.frame(
+    ARM = "B",
+    MEAN = -12,
+    SD = 9,
+    N = 120
+  )
+)
+```
+
+# Perform Unanchored MAIC
+
+## Mean Difference (MD)
+
+The mean difference is the direct difference between treatment means. A negative value indicates that the IPD treatment (A) has a greater reduction compared to the external comparator (B).
+
+```{r}
+unanchored_MD_results <- maic_unanchored(
+  weights_object = weighted_data,
+  ipd = adlb_sat,
+  pseudo_ipd = pseudo_adlb,
+  trt_ipd = "A",
+  trt_agd = "B",
+  endpoint_name = "Change from Baseline",
+  endpoint_type = "continuous",
+  eff_measure = "MD"
+)
+```
+
+### Descriptive Statistics
+
+```{r}
+knitr::kable(unanchored_MD_results$descriptive$summary, digits = 2)
+```
+
+### Inferential Results
+
+```{r}
+knitr::kable(unanchored_MD_results$inferential$summary, digits = 3)
+```
+
+## Standardized Mean Difference (SMD)
+
+SMD is particularly useful when comparing outcomes measured on different scales or when effect sizes need to be standardized.
+
+### Hedges' g (bias-corrected)
+
+```{r}
+unanchored_SMD_results <- maic_unanchored(
+  weights_object = weighted_data,
+  ipd = adlb_sat,
+  pseudo_ipd = pseudo_adlb,
+  trt_ipd = "A",
+  trt_agd = "B",
+  endpoint_name = "Change from Baseline",
+  endpoint_type = "continuous",
+  eff_measure = "SMD",
+  smd_type = "hedges"
+)
+```
+
+```{r}
+knitr::kable(unanchored_SMD_results$inferential$summary, digits = 3)
+```
+
+### Glass's delta
+
+Glass's delta uses only the control group standard deviation, which can be useful when treatment affects variance.
+
+```{r}
+unanchored_SMD_glass <- maic_unanchored(
+  weights_object = weighted_data,
+  ipd = adlb_sat,
+  pseudo_ipd = pseudo_adlb,
+  trt_ipd = "A",
+  trt_agd = "B",
+  endpoint_name = "Change from Baseline",
+  endpoint_type = "continuous",
+  eff_measure = "SMD",
+  smd_type = "glass"
+)
+
+knitr::kable(unanchored_SMD_glass$inferential$summary, digits = 3)
+```
+
+# Comparing Effect Measures
+
+Different effect measures serve different purposes:
+
+| Effect Measure | When to Use | Interpretation |
+|---------------|-------------|----------------|
+| **MD** | Same scale outcomes | Direct difference in original units |
+| **SMD** | Different scales or standardized comparison | Scale-free effect size |
+| **RoM** | Ratio/positive outcomes | Multiplicative comparison |
+
+## Example: Interpretation
+
+For the MD result, if the adjusted effect is -3.0 with 95% CI [-5.2, -0.8]:
+
+- Treatment A shows 3.0 units greater improvement than Treatment B
+- The confidence interval excludes zero, indicating statistical significance
+- The effect is in favor of Treatment A (more negative = better if negative indicates improvement)
+
+For SMD, use Cohen's guidelines:
+
+- |SMD| < 0.2: Small effect
+- |SMD| ~ 0.5: Medium effect
+- |SMD| > 0.8: Large effect
+
+# Important Considerations
+
+1. **Unanchored comparisons** lack a common comparator and rely heavily on the assumption that all prognostic factors and effect modifiers are balanced after weighting
+
+2. **Check effective sample size (ESS)** after weighting - substantial reduction indicates limited overlap between populations
+
+3. **Examine weight distribution** - extreme weights suggest poor comparability
+
+4. **SMD type selection**:
+   - Cohen's d: Standard choice when variances are similar
+   - Hedges' g: Preferred for small samples (bias correction)
+   - Glass's delta: When treatment affects variance
+
+# Summary
+
+The `maic_unanchored` function with `endpoint_type = "continuous"` enables flexible analysis of continuous outcomes when no common comparator exists. It provides multiple effect measures (MD, SMD, RoM) with robust standard errors and comprehensive output for informed decision-making.
+
+For additional methodological details, consult the MAIC literature and package documentation.
+

@@ -34,6 +34,7 @@ Centered patient data from two arm trial
 }
 \seealso{
 Other anchored datasets: 
+\code{\link{adlb_twt}},
 \code{\link{adrs_twt}},
 \code{\link{adsl_twt}},
 \code{\link{adtte_twt}},

@@ -1,0 +1,136 @@
+---
+title: "Anchored Continuous Analysis"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: references.bib
+csl: biomedicine.csl
+vignette: >
+  %\VignetteIndexEntry{Anchored Continuous Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Loading R packages
+
+```{r}
+library(maicplus)
+library(dplyr)
+```
+
+# Illustration using example data
+
+This example reads in `centered_ipd_twt` data that was created in `calculating_weights` vignette and uses `adlb_twt` dataset to run continuous outcome analysis using the `maic_anchored` function by specifying `endpoint_type = "continuous"`.
+
+```{r}
+data(centered_ipd_twt)
+data(adlb_twt)
+
+centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+centered_colnames <- paste0(centered_colnames, "_CENTERED")
+
+weighted_data <- estimate_weights(
+  data = centered_ipd_twt,
+  centered_colnames = centered_colnames
+)
+
+# Get pseudo IPD from published aggregate data
+pseudo_adlb <- get_pseudo_ipd_continuous(
+  continuous_agd = data.frame(
+    ARM = c("B", "C"),
+    MEAN = c(-12, -9),
+    SD = c(9, 9.5),
+    N = c(120, 150)
+  )
+)
+```
+
+# Perform Anchored MAIC
+
+## Mean Difference (MD)
+
+The mean difference is the direct difference between treatment means. A negative value indicates greater improvement in the IPD treatment arm (assuming negative values indicate improvement).
+
+```{r}
+anchored_MD_results <- maic_anchored(
+  weights_object = weighted_data,
+  ipd = adlb_twt,
+  pseudo_ipd = pseudo_adlb,
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  endpoint_name = "Change from Baseline",
+  endpoint_type = "continuous",
+  eff_measure = "MD"
+)
+```
+
+### Descriptive Statistics
+
+```{r}
+knitr::kable(anchored_MD_results$descriptive$summary, digits = 2)
+```
+
+### Inferential Results
+
+```{r}
+knitr::kable(anchored_MD_results$inferential$summary, digits = 3)
+```
+
+## Standardized Mean Difference (SMD)
+
+SMD is scale-independent and allows comparison across different outcome scales. Three methods are available:
+
+- **Cohen's d**: Uses pooled standard deviation
+- **Hedges' g**: Bias-corrected version of Cohen's d (recommended for small samples)
+- **Glass's delta**: Uses control group SD only
+
+### Cohen's d
+
+```{r}
+anchored_SMD_results <- maic_anchored(
+  weights_object = weighted_data,
+  ipd = adlb_twt,
+  pseudo_ipd = pseudo_adlb,
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  endpoint_name = "Change from Baseline",
+  endpoint_type = "continuous",
+  eff_measure = "SMD",
+  smd_type = "cohen"
+)
+```
+
+```{r}
+knitr::kable(anchored_SMD_results$inferential$summary, digits = 3)
+```
+
+## Interpretation of Effect Sizes
+
+SMD interpretations (Cohen's guidelines):
+
+- Small effect: |SMD| = 0.2
+- Medium effect: |SMD| = 0.5
+- Large effect: |SMD| = 0.8
+
+# Summary
+
+The `maic_anchored` function with `endpoint_type = "continuous"` provides flexible analysis of continuous outcomes through:
+
+1. **Mean Difference (MD)**: Direct difference between treatment means
+2. **Standardized Mean Difference (SMD)**: Scale-independent effect size
+3. **Ratio of Means (RoM)**: Multiplicative comparison (requires positive outcomes)
+
+Each analysis provides:
+
+- Descriptive statistics before and after matching
+- Unadjusted and adjusted treatment effect estimates
+- Confidence intervals and p-values
+- Bucher indirect comparison results
+
+For further details on MAIC methodology, see the package documentation and cited references.
+

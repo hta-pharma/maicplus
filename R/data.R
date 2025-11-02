@@ -85,6 +85,19 @@
 #' @keywords dataset
 "adrs_sat"
 
+#' Continuous outcome data from single arm trial
+#' @format A data frame with 500 rows and 5 columns:
+#'   \describe{
+#'     \item{USUBJID}{Unique subject identifiers for patients.}
+#'     \item{ARM}{Assigned treatment arm, `"A"`.}
+#'     \item{AVAL}{Analysis value, change from baseline in lab value.}
+#'     \item{PARAM}{Parameter name, `"Change from Baseline in Lab Value"`.}
+#'     \item{PARAMCD}{Parameter code, `"CHG"`.}
+#'   }
+#' @family unanchored datasets
+#' @keywords dataset
+"adlb_sat"
+
 #' Weighted object for single arm trial data
 #' @format A `maicplus_estimate_weights` object created by [estimate_weights()] containing
 #'   \describe{
@@ -172,6 +185,19 @@
 #' @family anchored datasets
 #' @keywords dataset
 "adrs_twt"
+
+#' Continuous outcome data from two arm trial
+#' @format A data frame with 1500 rows and 5 columns:
+#'   \describe{
+#'     \item{USUBJID}{Unique subject identifiers for patients.}
+#'     \item{ARM}{Assigned treatment arm, `"A"`, `"B"`, `"C"`.}
+#'     \item{AVAL}{Analysis value, change from baseline in lab value.}
+#'     \item{PARAM}{Parameter name, `"Change from Baseline in Lab Value"`.}
+#'     \item{PARAMCD}{Parameter code, `"CHG"`.}
+#'   }
+#' @family anchored datasets
+#' @keywords dataset
+"adlb_twt"
 
 #' Pseudo individual patient survival data from published two arm study
 #' @format A data frame with 800 rows and 3 columns:

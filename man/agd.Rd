@@ -27,6 +27,7 @@ This data is formatted to be used in \code{\link[=center_ipd]{center_ipd()}}.
 }
 \seealso{
 Other unanchored datasets: 
+\code{\link{adlb_sat}},
 \code{\link{adrs_sat}},
 \code{\link{adsl_sat}},
 \code{\link{adtte_sat}},
@@ -35,6 +36,7 @@ Other unanchored datasets:
 \code{\link{weighted_sat}}
 
 Other anchored datasets: 
+\code{\link{adlb_twt}},
 \code{\link{adrs_twt}},
 \code{\link{adsl_twt}},
 \code{\link{adtte_twt}},

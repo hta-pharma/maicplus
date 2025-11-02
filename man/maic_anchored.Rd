@@ -2,7 +2,7 @@
 % Please edit documentation in R/maic_anchored.R
 \name{maic_anchored}
 \alias{maic_anchored}
-\title{Anchored MAIC for binary and time-to-event endpoint}
+\title{Anchored MAIC for binary, time-to-event, and continuous endpoints}
 \usage{
 maic_anchored(
   weights_object,
@@ -16,11 +16,13 @@ maic_anchored(
   normalize_weights = FALSE,
   endpoint_type = "tte",
   endpoint_name = "Time to Event Endpoint",
-  eff_measure = c("HR", "OR", "RR", "RD"),
+  eff_measure = c("HR", "OR", "RR", "RD", "MD", "SMD", "RoM"),
   boot_ci_type = c("norm", "basic", "stud", "perc", "bca"),
   time_scale = "months",
   km_conf_type = "log-log",
-  binary_robust_cov_type = "HC3"
+  binary_robust_cov_type = "HC3",
+  continuous_robust_cov_type = "HC3",
+  smd_type = c("cohen", "hedges", "glass")
 )
 }
 \arguments{
@@ -28,8 +30,8 @@ maic_anchored(
 
 \item{ipd}{a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial}
 
-\item{pseudo_ipd}{a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or
-from contingency table (for binary endpoint)}
+\item{pseudo_ipd}{a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint),
+from contingency table (for binary endpoint), or from aggregate statistics (for continuous endpoint)}
 
 \item{trt_ipd}{a string, name of the interested investigation arm in internal trial \code{ipd} (internal IPD)}
 
@@ -44,12 +46,14 @@ from contingency table (for binary endpoint)}
 \item{normalize_weights}{logical, default is \code{FALSE}. If \code{TRUE},
 \code{scaled_weights} (normalized weights) in \code{weights_object$data} will be used.}
 
-\item{endpoint_type}{a string, one out of the following "binary", "tte" (time to event)}
+\item{endpoint_type}{a string, one out of the following "binary", "tte" (time to event), "continuous"}
 
-\item{endpoint_name}{a string, name of time to event endpoint, to be show in the last line of title}
+\item{endpoint_name}{a string, name of endpoint, to be shown in the last line of title}
 
 \item{eff_measure}{a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint;
-"HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.}
+"HR" for a time-to-event endpoint; "MD" (mean difference), "SMD" (standardized mean difference),
+"RoM" (ratio of means) for a continuous endpoint. By default is \code{NULL}, "OR" is used for binary case,
+"HR" for time-to-event, and "MD" for continuous.}
 
 \item{boot_ci_type}{a string, one of \code{c("norm","basic", "stud", "perc", "bca")} to select the type of bootstrap
 confidence interval. See \link[boot:boot.ci]{boot::boot.ci} for more details.}
@@ -61,6 +65,12 @@ confidence interval. See \link[boot:boot.ci]{boot::boot.ci} for more details.}
 
 \item{binary_robust_cov_type}{a string to pass to argument \code{type} of \link[sandwich:vcovHC]{sandwich::vcovHC}, see possible options in the
 documentation of that function. Default is \code{"HC3"}}
+
+\item{continuous_robust_cov_type}{a string to pass to argument \code{type} of \link[sandwich:vcovHC]{sandwich::vcovHC} for continuous outcomes,
+see possible options in the documentation of that function. Default is \code{"HC3"}}
+
+\item{smd_type}{a string, applicable when \code{eff_measure = "SMD"}, specifying the method for standardized
+mean difference calculation: "cohen" (Cohen's d, default), "hedges" (Hedges' g), or "glass" (Glass's delta)}
 }
 \value{
 A list, contains 'descriptive' and 'inferential'
@@ -85,6 +95,10 @@ For time-to-event analysis, the follow columns are required:
 For binary outcomes:
 \itemize{
 \item RESPONSE - numeric, \code{1} for event occurred, \code{0} otherwise
+}
+For continuous outcomes:
+\itemize{
+\item AVAL - numeric, the continuous outcome value
 }
 }
 \examples{
@@ -141,4 +155,61 @@ result_binary <- maic_anchored(
 
 result_binary$descriptive$summary
 result_binary$inferential$summary
+library(maicplus)
+
+# Load data
+data(centered_ipd_twt)
+data(adlb_twt)
+
+# Estimate weights
+centered_colnames <- c("AGE", "AGE_SQUARED", "SEX_MALE", "ECOG0", "SMOKE", "N_PR_THER_MEDIAN")
+centered_colnames <- paste0(centered_colnames, "_CENTERED")
+
+weighted_data <- estimate_weights(
+  data = centered_ipd_twt,
+  centered_colnames = centered_colnames
+)
+
+# Create pseudo IPD for external comparator (Arm B and C)
+pseudo_adlb <- get_pseudo_ipd_continuous(
+  continuous_agd = data.frame(
+    ARM = c("B", "C"),
+    MEAN = c(-12, -9),
+    SD = c(9, 9.5),
+    N = c(120, 150)
+  )
+)
+
+#### Anchored MAIC for Mean Difference (MD) ####
+maic_anchored_results_MD <- maic_anchored(
+  weights_object = weighted_data,
+  ipd = adlb_twt,
+  pseudo_ipd = pseudo_adlb,
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  endpoint_name = "Change from Baseline",
+  endpoint_type = "continuous",
+  eff_measure = "MD"
+)
+
+# View results
+maic_anchored_results_MD$inferential$summary
+
+#### Anchored MAIC for Standardized Mean Difference (SMD) ####
+maic_anchored_results_SMD <- maic_anchored(
+  weights_object = weighted_data,
+  ipd = adlb_twt,
+  pseudo_ipd = pseudo_adlb,
+  trt_ipd = "A",
+  trt_agd = "B",
+  trt_common = "C",
+  endpoint_name = "Change from Baseline",
+  endpoint_type = "continuous",
+  eff_measure = "SMD",
+  smd_type = "cohen"
+)
+
+maic_anchored_results_SMD$inferential$summary
+
 }
