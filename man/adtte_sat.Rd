@@ -26,6 +26,7 @@ Survival data from single arm trial
 }
 \seealso{
 Other unanchored datasets: 
+\code{\link{adlb_sat}},
 \code{\link{adrs_sat}},
 \code{\link{adsl_sat}},
 \code{\link{agd}},

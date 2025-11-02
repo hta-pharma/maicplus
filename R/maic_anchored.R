@@ -1,12 +1,12 @@
-#' Anchored MAIC for binary and time-to-event endpoint
+#' Anchored MAIC for binary, time-to-event, and continuous endpoints
 #'
 #' This is a wrapper function to provide adjusted effect estimates and relevant statistics in anchored case (i.e. there
 #' is a common comparator arm in the internal and external trial).
 #'
 #' @param weights_object an object returned by \code{estimate_weight}
 #' @param ipd a data frame that meet format requirements in 'Details', individual patient data (IPD) of internal trial
-#' @param pseudo_ipd a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint) or
-#'   from contingency table (for binary endpoint)
+#' @param pseudo_ipd a data frame, pseudo IPD from digitized KM curve of external trial (for time-to-event endpoint),
+#'   from contingency table (for binary endpoint), or from aggregate statistics (for continuous endpoint)
 #' @param trt_ipd  a string, name of the interested investigation arm in internal trial \code{ipd} (internal IPD)
 #' @param trt_agd a string, name of the interested investigation arm in external trial \code{pseudo_ipd} (pseudo IPD)
 #' @param trt_common a string, name of the common comparator in internal and external trial
@@ -14,17 +14,23 @@
 #' @param trt_var_agd a string, column name in \code{ipd} that contains the treatment assignment
 #' @param normalize_weights logical, default is \code{FALSE}. If \code{TRUE},
 #'   \code{scaled_weights} (normalized weights) in \code{weights_object$data} will be used.
-#' @param endpoint_type a string, one out of the following "binary", "tte" (time to event)
-#' @param endpoint_name a string, name of time to event endpoint, to be show in the last line of title
+#' @param endpoint_type a string, one out of the following "binary", "tte" (time to event), "continuous"
+#' @param endpoint_name a string, name of endpoint, to be shown in the last line of title
 #' @param time_scale a string, time unit of median survival time, taking a value of 'years', 'months', 'weeks' or
 #'   'days'. NOTE: it is assumed that values in TIME column of \code{ipd} and \code{pseudo_ipd} is in the unit of days
 #' @param km_conf_type a string, pass to \code{conf.type} of \code{survfit}
 #' @param eff_measure a string, "RD" (risk difference), "OR" (odds ratio), "RR" (relative risk) for a binary endpoint;
-#'   "HR" for a time-to-event endpoint. By default is \code{NULL}, "OR" is used for binary case, otherwise "HR" is used.
+#'   "HR" for a time-to-event endpoint; "MD" (mean difference), "SMD" (standardized mean difference),
+#'   "RoM" (ratio of means) for a continuous endpoint. By default is \code{NULL}, "OR" is used for binary case,
+#'   "HR" for time-to-event, and "MD" for continuous.
+#' @param smd_type a string, applicable when \code{eff_measure = "SMD"}, specifying the method for standardized
+#'   mean difference calculation: "cohen" (Cohen's d, default), "hedges" (Hedges' g), or "glass" (Glass's delta)
 #' @param boot_ci_type a string, one of `c("norm","basic", "stud", "perc", "bca")` to select the type of bootstrap
 #'   confidence interval. See [boot::boot.ci] for more details.
 #' @param binary_robust_cov_type a string to pass to argument `type` of [sandwich::vcovHC], see possible options in the
 #'   documentation of that function. Default is `"HC3"`
+#' @param continuous_robust_cov_type a string to pass to argument `type` of [sandwich::vcovHC] for continuous outcomes,
+#'   see possible options in the documentation of that function. Default is `"HC3"`
 #'
 #' @details It is required that input \code{ipd} and \code{pseudo_ipd} to have the following
 #'   columns. This function is not sensitive to upper or lower case of letters in column names.
@@ -42,6 +48,10 @@
 #' \itemize{
 #'   \item RESPONSE - numeric, `1` for event occurred, `0` otherwise
 #' }
+#' For continuous outcomes:
+#' \itemize{
+#'   \item AVAL - numeric, the continuous outcome value
+#' }
 #'
 #' @importFrom survival survfit Surv coxph
 #' @importFrom lmtest coeftest coefci
@@ -50,6 +60,7 @@
 #' @return A list, contains 'descriptive' and 'inferential'
 #' @example inst/examples/maic_anchored_ex.R
 #' @example inst/examples/maic_anchored_binary_ex.R
+#' @example inst/examples/maic_anchored_continuous_ex.R
 #' @export
 
 maic_anchored <- function(weights_object,
@@ -63,13 +74,16 @@ maic_anchored <- function(weights_object,
                           normalize_weights = FALSE,
                           endpoint_type = "tte",
                           endpoint_name = "Time to Event Endpoint",
-                          eff_measure = c("HR", "OR", "RR", "RD"),
+                          eff_measure = c("HR", "OR", "RR", "RD", "MD", "SMD", "RoM"),
                           boot_ci_type = c("norm", "basic", "stud", "perc", "bca"),
                           # time to event specific args
                           time_scale = "months",
                           km_conf_type = "log-log",
                           # binary specific args
-                          binary_robust_cov_type = "HC3") {
+                          binary_robust_cov_type = "HC3",
+                          # continuous specific args
+                          continuous_robust_cov_type = "HC3",
+                          smd_type = c("cohen", "hedges", "glass")) {
   # ==> Initial Setup ------------------------------------------
   # ~~~ Create the hull for the output from this function
   res <- list(
@@ -91,7 +105,8 @@ maic_anchored <- function(weights_object,
   trt_var_ipd <- toupper(trt_var_ipd)
   trt_var_agd <- toupper(trt_var_agd)
   if (length(eff_measure) > 1) eff_measure <- NULL
-  if (is.null(eff_measure)) eff_measure <- list(binary = "OR", tte = "HR")[[endpoint_type]]
+  if (is.null(eff_measure)) eff_measure <- list(binary = "OR", tte = "HR", continuous = "MD")[[endpoint_type]]
+  if (length(smd_type) > 1) smd_type <- smd_type[1]
 
   # ~~~ Setup ARM column and make related pre-checks
   if (!trt_var_ipd %in% names(ipd)) stop("cannot find arm indicator column trt_var_ipd in ipd")
@@ -114,7 +129,7 @@ maic_anchored <- function(weights_object,
   if (!length(pseudo_ipd_arms) >= 2) {
     stop("In anchored case, there should be at least two arms in pseudo_ipd, but you have: ", toString(pseudo_ipd_arms))
   }
-  endpoint_type <- match.arg(endpoint_type, c("binary", "tte"))
+  endpoint_type <- match.arg(endpoint_type, c("binary", "tte", "continuous"))
   if (!"maicplus_estimate_weights" %in% class(weights_object)) {
     stop("weights_object should be an object returned by estimate_weights")
   }
@@ -144,6 +159,17 @@ maic_anchored <- function(weights_object,
       stop("pseudo_ipd needs to include at least TIME, EVENT, ", toString(trt_var_agd))
     }
     eff_measure <- match.arg(eff_measure, choices = c("HR"), several.ok = FALSE)
+  } else if (endpoint_type == "continuous") { # for continuous effect measure
+
+    if (any(!c("USUBJID", "AVAL") %in% names(ipd))) stop("ipd should have 'USUBJID', 'AVAL' columns at minimum")
+    if (!"AVAL" %in% names(pseudo_ipd)) stop("pseudo_ipd should have 'AVAL' column")
+    eff_measure <- match.arg(eff_measure, choices = c("MD", "SMD", "RoM"), several.ok = FALSE)
+    if (eff_measure == "SMD") smd_type <- match.arg(smd_type, choices = c("cohen", "hedges", "glass"))
+    if (eff_measure == "RoM") {
+      if (any(ipd$AVAL <= 0, na.rm = TRUE) || any(pseudo_ipd$AVAL <= 0, na.rm = TRUE)) {
+        stop("For RoM, all AVAL values must be positive")
+      }
+    }
   }
   boot_ci_type <- match.arg(boot_ci_type)
 
@@ -172,7 +198,13 @@ maic_anchored <- function(weights_object,
   }
 
   # : retain necessary columns
-  outcome_cols <- if (endpoint_type == "tte") c("TIME", "EVENT") else "RESPONSE"
+  outcome_cols <- if (endpoint_type == "tte") {
+    c("TIME", "EVENT")
+  } else if (endpoint_type == "binary") {
+    "RESPONSE"
+  } else {
+    "AVAL"
+  }
   retain_cols <- c("USUBJID", "ARM", outcome_cols, "weights")
 
   ipd <- ipd[, retain_cols, drop = FALSE]
@@ -218,6 +250,23 @@ maic_anchored <- function(weights_object,
       endpoint_name,
       normalize_weights,
       eff_measure,
+      trt_ipd,
+      trt_agd,
+      boot_ci_type
+    )
+  } else if (endpoint_type == "continuous") {
+    maic_anchored_continuous(
+      res,
+      res_BC = NULL,
+      dat,
+      ipd,
+      pseudo_ipd,
+      continuous_robust_cov_type,
+      weights_object,
+      endpoint_name,
+      normalize_weights,
+      eff_measure,
+      smd_type,
       trt_ipd,
       trt_agd,
       boot_ci_type
@@ -700,6 +749,352 @@ maic_anchored_binary <- function(res,
   )
 
   # compile binary effect estimate result
+  res$inferential[["summary"]] <- data.frame(
+    case = c("AC", "adjusted_AC", "BC", "AB", "adjusted_AB"),
+    EST = c(
+      res_AC_unadj$est,
+      res_AC$est,
+      res_BC$est,
+      res_AB_unadj$est,
+      res_AB$est
+    ),
+    LCL = c(
+      res_AC_unadj$ci_l,
+      res_AC$ci_l,
+      res_BC$ci_l,
+      res_AB_unadj$ci_l,
+      res_AB$ci_l
+    ),
+    UCL = c(
+      res_AC_unadj$ci_u,
+      res_AC$ci_u,
+      res_BC$ci_u,
+      res_AB_unadj$ci_u,
+      res_AB$ci_u
+    ),
+    pval = c(
+      res_AC_unadj$pval,
+      res_AC$pval,
+      res_BC$pval,
+      res_AB_unadj$pval,
+      res_AB$pval
+    )
+  )
+  names(res$inferential[["summary"]])[2] <- eff_measure
+
+  # output
+  res
+}
+
+# MAIC inference functions for Continuous outcome type ------------
+maic_anchored_continuous <- function(res,
+                                     res_BC = NULL,
+                                     dat,
+                                     ipd,
+                                     pseudo_ipd,
+                                     continuous_robust_cov_type,
+                                     weights_object,
+                                     endpoint_name,
+                                     normalize_weights,
+                                     eff_measure,
+                                     smd_type,
+                                     trt_ipd,
+                                     trt_agd,
+                                     boot_ci_type) {
+  # ~~~ Analysis table
+  res_template <- list(
+    est = NA,
+    se = NA,
+    ci_l = NA,
+    ci_u = NA,
+    pval = NA
+  )
+
+  # : transform data if using RoM
+  if (eff_measure == "RoM") {
+    ipd$AVAL <- log(ipd$AVAL)
+    pseudo_ipd$AVAL <- log(pseudo_ipd$AVAL)
+  }
+
+  # : fit lm for continuous outcome and robust estimate with weights
+  lmobj_ipd <- lm(AVAL ~ ARM, ipd)
+  lmobj_ipd_adj <- lm(AVAL ~ ARM, ipd, weights = weights)
+  lmobj_agd <- lm(AVAL ~ ARM, pseudo_ipd)
+
+  cont_robust_cov <- sandwich::vcovHC(lmobj_ipd_adj, type = continuous_robust_cov_type)
+  cont_robust_coef <- lmtest::coeftest(lmobj_ipd_adj, vcov. = cont_robust_cov)
+  cont_robust_ci <- lmtest::coefci(lmobj_ipd_adj, vcov. = cont_robust_cov)
+
+  # : make general summary
+  lmDesc_ipd <- lm_makeup(lmobj_ipd, legend = "IPD, before matching", weighted = FALSE)
+  lmDesc_ipd_adj <- lm_makeup(lmobj_ipd_adj, legend = "IPD, after matching", weighted = TRUE)
+  lmDesc_agd <- lm_makeup(lmobj_agd, legend = "AgD, external", weighted = FALSE)
+  lmDesc <- rbind(lmDesc_ipd, lmDesc_ipd_adj, lmDesc_agd)
+  lmDesc <- cbind(trt_ind = c("C", "B", "A")[match(lmDesc$treatment, levels(dat$ARM))], lmDesc)
+  rownames(lmDesc) <- NULL
+  res$descriptive[["summary"]] <- lmDesc
+
+  # derive ipd exp arm vs agd exp arm via bucher
+  if (eff_measure == "SMD") {
+    # For SMD, calculate manually using descriptive statistics
+    ipd_trt <- lmDesc_ipd_adj[lmDesc_ipd_adj$treatment == trt_ipd, ]
+    ipd_ctrl <- lmDesc_ipd_adj[lmDesc_ipd_adj$treatment == levels(dat$ARM)[1], ]
+    agd_trt <- lmDesc_agd[lmDesc_agd$treatment == trt_agd, ]
+    agd_ctrl <- lmDesc_agd[lmDesc_agd$treatment == levels(dat$ARM)[1], ]
+
+    # AC: IPD treatment vs common comparator (adjusted)
+    smd_AC <- calculate_smd(
+      ipd_trt$mean, ipd_ctrl$mean,
+      ipd_trt$sd, ipd_ctrl$sd,
+      ipd_trt$n, ipd_ctrl$n,
+      method = smd_type
+    )
+    se_AC <- calculate_smd_se(smd_AC, ipd_trt$n, ipd_ctrl$n, method = smd_type)
+
+    # BC: AgD treatment vs common comparator
+    smd_BC <- calculate_smd(
+      agd_trt$mean, agd_ctrl$mean,
+      agd_trt$sd, agd_ctrl$sd,
+      agd_trt$n, agd_ctrl$n,
+      method = smd_type
+    )
+    se_BC <- calculate_smd_se(smd_BC, agd_trt$n, agd_ctrl$n, method = smd_type)
+
+    res_AC <- list(
+      est = smd_AC,
+      se = se_AC,
+      ci_l = smd_AC - 1.96 * se_AC,
+      ci_u = smd_AC + 1.96 * se_AC,
+      pval = 2 * pnorm(-abs(smd_AC / se_AC))
+    )
+
+    res_BC <- list(
+      est = smd_BC,
+      se = se_BC,
+      ci_l = smd_BC - 1.96 * se_BC,
+      ci_u = smd_BC + 1.96 * se_BC,
+      pval = 2 * pnorm(-abs(smd_BC / se_BC))
+    )
+
+    # Unadjusted AC
+    ipd_trt_unadj <- lmDesc_ipd[lmDesc_ipd$treatment == trt_ipd, ]
+    ipd_ctrl_unadj <- lmDesc_ipd[lmDesc_ipd$treatment == levels(dat$ARM)[1], ]
+
+    smd_AC_unadj <- calculate_smd(
+      ipd_trt_unadj$mean, ipd_ctrl_unadj$mean,
+      ipd_trt_unadj$sd, ipd_ctrl_unadj$sd,
+      ipd_trt_unadj$n, ipd_ctrl_unadj$n,
+      method = smd_type
+    )
+    se_AC_unadj <- calculate_smd_se(smd_AC_unadj, ipd_trt_unadj$n, ipd_ctrl_unadj$n, method = smd_type)
+
+    res_AC_unadj <- list(
+      est = smd_AC_unadj,
+      se = se_AC_unadj,
+      ci_l = smd_AC_unadj - 1.96 * se_AC_unadj,
+      ci_u = smd_AC_unadj + 1.96 * se_AC_unadj,
+      pval = 2 * pnorm(-abs(smd_AC_unadj / se_AC_unadj))
+    )
+  } else {
+    # For MD and RoM, use regression coefficients
+    res_AC <- res_template
+    res_AC$est <- cont_robust_coef[2, "Estimate"]
+    res_AC$se <- cont_robust_coef[2, "Std. Error"]
+    res_AC$ci_l <- cont_robust_ci[2, "2.5 %"]
+    res_AC$ci_u <- cont_robust_ci[2, "97.5 %"]
+    res_AC$pval <- cont_robust_coef[2, "Pr(>|t|)"]
+
+    # unadjusted AC
+    res_AC_unadj <- res_template
+    res_AC_unadj$est <- summary(lmobj_ipd)$coefficients[2, "Estimate"]
+    res_AC_unadj$se <- summary(lmobj_ipd)$coefficients[2, "Std. Error"]
+    res_AC_unadj$ci_l <- confint(lmobj_ipd)[2, "2.5 %"]
+    res_AC_unadj$ci_u <- confint(lmobj_ipd)[2, "97.5 %"]
+    res_AC_unadj$pval <- summary(lmobj_ipd)$coefficients[2, "Pr(>|t|)"]
+
+    # BC
+    if (is.null(res_BC)) {
+      res_BC <- res_template
+      res_BC$est <- summary(lmobj_agd)$coefficients[2, "Estimate"]
+      res_BC$se <- summary(lmobj_agd)$coefficients[2, "Std. Error"]
+      res_BC$ci_l <- confint(lmobj_agd)[2, "2.5 %"]
+      res_BC$ci_u <- confint(lmobj_agd)[2, "97.5 %"]
+      res_BC$pval <- summary(lmobj_agd)$coefficients[2, "Pr(>|t|)"]
+    }
+  }
+
+  # derive AB via Bucher
+  res_AB <- bucher(res_AC, res_BC, conf_lv = 0.95)
+  res_AB_unadj <- bucher(res_AC_unadj, res_BC, conf_lv = 0.95)
+
+  # : get bootstrapped estimates if applicable
+  if (!is.null(weights_object$boot)) {
+    keep_rows <- setdiff(seq_len(nrow(weights_object$data)), weights_object$rows_with_missing)
+    boot_ipd_id <- weights_object$data[keep_rows, "USUBJID", drop = FALSE]
+
+    boot_ipd <- merge(boot_ipd_id, ipd, by = "USUBJID", all.x = TRUE)
+    if (nrow(boot_ipd) != nrow(boot_ipd_id)) stop("ipd has multiple observations for some patients")
+    boot_ipd <- boot_ipd[match(boot_ipd$USUBJID, boot_ipd_id$USUBJID), ]
+
+    stat_fun <- function(data, index, w_obj, eff_measure, smd_type, normalize) {
+      r <- dynGet("r", ifnotfound = NA) # Get bootstrap iteration
+      if (!is.na(r)) {
+        if (!all(index == w_obj$boot[, 1, r])) stop("Bootstrap and weight indices don't match")
+        boot_ipd <- data[w_obj$boot[, 1, r], ]
+        boot_ipd$weights <- w_obj$boot[, 2, r]
+
+        if (normalize) {
+          boot_ipd$weights <- ave(
+            boot_ipd$weights,
+            boot_ipd$ARM,
+            FUN = function(w) w / mean(w, na.rm = TRUE)
+          )
+        }
+      }
+
+      if (eff_measure == "SMD") {
+        # Calculate SMD from descriptive statistics
+        boot_lmobj <- lm(AVAL ~ ARM, boot_ipd, weights = boot_ipd$weights)
+        boot_desc <- lm_makeup(boot_lmobj, weighted = TRUE)
+        trt_row <- boot_desc[boot_desc$treatment == levels(boot_ipd$ARM)[2], ]
+        ctrl_row <- boot_desc[boot_desc$treatment == levels(boot_ipd$ARM)[1], ]
+        boot_AC_est <- calculate_smd(
+          trt_row$mean, ctrl_row$mean,
+          trt_row$sd, ctrl_row$sd,
+          trt_row$n, ctrl_row$n,
+          method = smd_type
+        )
+        boot_AC_var <- calculate_smd_se(boot_AC_est, trt_row$n, ctrl_row$n, method = smd_type)^2
+      } else {
+        boot_lmobj_dat_adj <- lm(AVAL ~ ARM, boot_ipd, weights = boot_ipd$weights)
+        boot_AC_est <- coef(boot_lmobj_dat_adj)[2]
+        boot_AC_var <- vcov(boot_lmobj_dat_adj)[2, 2]
+      }
+
+      boot_res_AC <- list(est = boot_AC_est, se = sqrt(boot_AC_var))
+      # temp method to source in variance of BC in AgD via monte carlo, may be removed in future
+      res_BC_mc <- res_BC
+      res_BC_mc$est <- rnorm(1, mean = res_BC$est, sd = res_BC$se)
+
+      boot_res_AB <- bucher(boot_res_AC, res_BC_mc, conf_lv = 0.95)
+
+      c(
+        est_AB = boot_res_AB$est,
+        var_AB = boot_res_AB$se^2,
+        se_AB = boot_res_AB$se,
+        est_AC = boot_res_AC$est,
+        se_AC = boot_res_AC$se,
+        var_AC = boot_res_AC$se^2
+      )
+    }
+
+    # Revert seed to how it was for weight bootstrap sampling
+    old_seed <- globalenv()$.Random.seed
+    on.exit(suspendInterrupts(set_random_seed(old_seed)))
+    set_random_seed(weights_object$boot_seed)
+
+    R <- dim(weights_object$boot)[3]
+    boot_res <- boot(
+      boot_ipd,
+      stat_fun,
+      R = R,
+      w_obj = weights_object,
+      eff_measure = eff_measure,
+      smd_type = smd_type,
+      normalize = normalize_weights,
+      strata = weights_object$boot_strata
+    )
+    boot_ci <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object)
+
+    l_u_index <- switch(boot_ci_type,
+      "norm" = list(2, 3, "normal"),
+      "basic" = list(4, 5, "basic"),
+      "stud" = list(4, 5, "student"),
+      "perc" = list(4, 5, "percent"),
+      "bca" = list(4, 5, "bca")
+    )
+
+    transform_estimate <- if (eff_measure == "RoM") exp else identity
+
+    # boot results for A v B, method 1 (maybe retired in future version)
+    boot_res_AB <- list(
+      est = as.vector(transform_estimate(boot_res$t0[1])),
+      se = NA,
+      ci_l = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[1]]]),
+      ci_u = transform_estimate(boot_ci[[l_u_index[[3]]]][l_u_index[[2]]]),
+      pval = NA
+    )
+
+    # boot results for A v C
+    boot_ci_ac <- boot.ci(boot_res, type = boot_ci_type, w_obj = weights_object, index = c(4, 6))
+    boot_res_AC <- list(
+      est = as.vector(transform_estimate(boot_res$t0[4])),
+      se = NA,
+      ci_l = transform_estimate(boot_ci_ac[[l_u_index[[3]]]][l_u_index[[1]]]),
+      ci_u = transform_estimate(boot_ci_ac[[l_u_index[[3]]]][l_u_index[[2]]]),
+      pval = NA
+    )
+
+    # boot results for A v B, method 2
+    boot_res_AC2 <- list(
+      est = as.vector(boot_res$t0[4]),
+      se = NA,
+      ci_l = boot_ci_ac[[l_u_index[[3]]]][l_u_index[[1]]],
+      ci_u = boot_ci_ac[[l_u_index[[3]]]][l_u_index[[2]]],
+      pval = NA
+    )
+    boot_res_AC2$se <- find_SE_from_CI(boot_res_AC2$ci_l, boot_res_AC2$ci_u, 0.95, log = FALSE)
+    boot_res_AB2 <- bucher(boot_res_AC2, res_BC, conf_lv = 0.95)
+    boot_res_AB2 <- list(
+      est = transform_estimate(boot_res_AB2$est),
+      se = NA,
+      ci_l = transform_estimate(boot_res_AB2$ci_l),
+      ci_u = transform_estimate(boot_res_AB2$ci_u),
+      pval = NA
+    )
+  } else {
+    boot_res_AC <- NULL
+    boot_res_AB <- NULL
+    boot_res_AB2 <- NULL
+    boot_res <- NULL
+  }
+
+  # transform effect measures for RoM
+  if (eff_measure == "RoM") {
+    res_AB$est <- exp(res_AB$est)
+    res_AB$ci_l <- exp(res_AB$ci_l)
+    res_AB$ci_u <- exp(res_AB$ci_u)
+    res_AB_unadj$est <- exp(res_AB_unadj$est)
+    res_AB_unadj$ci_l <- exp(res_AB_unadj$ci_l)
+    res_AB_unadj$ci_u <- exp(res_AB_unadj$ci_u)
+    res_AC$est <- exp(res_AC$est)
+    res_AC$ci_l <- exp(res_AC$ci_l)
+    res_AC$ci_u <- exp(res_AC$ci_u)
+    res_AC_unadj$est <- exp(res_AC_unadj$est)
+    res_AC_unadj$ci_l <- exp(res_AC_unadj$ci_l)
+    res_AC_unadj$ci_u <- exp(res_AC_unadj$ci_u)
+    res_BC$est <- exp(res_BC$est)
+    res_BC$ci_l <- exp(res_BC$ci_l)
+    res_BC$ci_u <- exp(res_BC$ci_u)
+  }
+
+  # report all raw fitted obj
+  res$inferential[["fit"]] <- list(
+    model_before_ipd = lmobj_ipd,
+    model_after_ipd = lmobj_ipd_adj,
+    model_agd = lmobj_agd,
+    res_AC = res_AC,
+    res_AC_unadj = res_AC_unadj,
+    res_BC = res_BC,
+    res_AB = res_AB,
+    res_AB_unadj = res_AB_unadj,
+    boot_res = boot_res,
+    boot_res_AC = boot_res_AC,
+    boot_res_AB_mc = boot_res_AB,
+    boot_res_AB = boot_res_AB2
+  )
+
+  # compile continuous effect estimate result
   res$inferential[["summary"]] <- data.frame(
     case = c("AC", "adjusted_AC", "BC", "AB", "adjusted_AB"),
     EST = c(
