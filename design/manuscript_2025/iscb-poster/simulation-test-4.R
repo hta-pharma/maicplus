@@ -1,71 +1,71 @@
 # Source the modified script
-setwd("/cloud/project/design/manuscript_2025/iscb-poster")
+# setwd("/cloud/project/design/manuscript_2025/iscb-poster")
 source("simulation-4.R")
 
 # =============================================================================
 # EXAMPLE CODE TO RUN FULL SIMULATION
 # =============================================================================
 
-# 1. QUICK TEST RUN (small scale)
-# --------------------------------
-test_params <- list(
-  n_sizes = c(50, 200),
-  conditional_hr = c(0.70),
-  distributions = c("weibull"),
-  median_surv = 24,
-  surv_48m = 0.15,
-  dropout_rates = 0.2,
-  event_rates = c(0.10, 0.25),
-  ess_ratios = c(0.25, 0.50),
-  n_sim = 100,  # Small number for testing
-  max_followup = 48,
-  n_boot = 100,  # Fewer bootstrap iterations
-  n_mc_truth = 5000,  # Smaller MC sample for truth
-  max_weight = 100,
-  n_cores = 2,
-  results_prefix = "test_run",
-  timestamp_files = TRUE
-)
-
-# Run test
-test_results <- main(test_params, run_analysis = TRUE)
-
-# View results
-print(test_results$analysis$method_comparison)
-head(test_results$results)
+# # 1. QUICK TEST RUN (small scale)
+# # --------------------------------
+# test_params <- list(
+#   n_sizes = c(50, 200),
+#   conditional_hr = c(0.70),
+#   distributions = c("weibull"),
+#   median_surv = 24,
+#   surv_48m = 0.15,
+#   dropout_rates = 0.2,
+#   event_rates = c(0.10, 0.25),
+#   ess_ratios = c(0.25, 0.50),
+#   n_sim = 100,  # Small number for testing
+#   max_followup = 48,
+#   n_boot = 100,  # Fewer bootstrap iterations
+#   n_mc_truth = 5000,  # Smaller MC sample for truth
+#   max_weight = 100,
+#   n_cores = 2,
+#   results_prefix = "test_run",
+#   timestamp_files = TRUE
+# )
+# 
+# # Run test
+# test_results <- main(test_params, run_analysis = TRUE)
+# 
+# # View results
+# print(test_results$analysis$method_comparison)
+# head(test_results$results)
 
 # 2. FULL SIMULATION RUN
 # ----------------------
 full_params <- list(
   # Sample sizes per arm
-  n_sizes = c(20, 50, 200, 500),
+  n_sizes = c(80, 350),
 
   # Conditional HR values (exp(gamma))
-  conditional_hr = c(0.70, 0.85),
+  conditional_hr = c(0.75),
 
   # Distributions
   distributions = c("weibull", "lognormal"),
 
   # Survival parameters
-  median_surv = c(24, 36),
-  surv_48m = c(0.05, 0.15),
+  median_surv = 24,
+  surv_48m = 0.15,
 
   # Censoring
-  dropout_rates = c(0.2, 0.4),
-  event_rates = c(0.05, 0.10, 0.25, 0.40),
+  dropout_rates = 0.2,
+  event_rates = c(0.7),
 
   # Population overlap
-  ess_ratios = c(0.15, 0.25, 0.33, 0.50),
+  ess_ratios = c(0.20, 0.50),
 
   # Simulation settings
-  n_sim = 10000,
+  n_sim = 300,
   max_followup = 48,
   n_boot = 500,
   n_mc_truth = 10000,
-  max_weight = 100,
+  max_weight = 50,
 
   # Computing
-  n_cores = parallel::detectCores() - 1,
+  n_cores = parallel::detectCores() - 10,
 
   # Output
   results_prefix = "maic_iptw_atut_full",
@@ -78,20 +78,19 @@ full_results <- main(full_params, run_analysis = TRUE)
 # 3. CUSTOM ANALYSIS OF EXISTING RESULTS
 # ---------------------------------------
 # Load saved results
-saved_results <- readRDS("simulation_results_20241201_143022/
-                         maic_iptw_atut_full_n20-500_chr0.70-0.85_sim10000.rds")
+saved_results <- readRDS("simulation_results_20250820_003631/maic_iptw_atut_full_n80-350_chr0.75-0.75_sim300.rds")
 
 # Run specific analyses
 weight_analysis <- check_weight_distributions(saved_results)
 print(weight_analysis)
 
 # Check specific scenario
-scenario_50_correct <- saved_results[
-  saved_results$n == 50 &
+scenario_80_correct <- saved_results[
+  saved_results$n == 80 &
   saved_results$weighting_scenario == "correct", ]
 
 # Compare methods for this scenario
-scenario_comparison <- compare_methods(scenario_50_correct)
+scenario_comparison <- compare_methods(scenario_80_correct)
 
 # Check convergence
 convergence_check <- summarize_convergence(saved_results, n_sim = 10000)
@@ -156,7 +155,7 @@ print(coverage_summary)
 # # Load and analyze existing results
 # saved_results <- readRDS("path/to/results.rds")
 # weight_analysis <- check_weight_distributions(saved_results)
-# scenario_comparison <- compare_methods(scenario_50_correct)
+# scenario_comparison <- compare_methods(scenario_80_correct)
 # convergence_check <- summarize_convergence(saved_results, n_sim = 10000)
 #
 # # Create formatted tables for manuscript

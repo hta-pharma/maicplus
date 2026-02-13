@@ -622,19 +622,30 @@ calibrate_d_for_ess <- function(target_ess_ratio, n_calib = 10000, tol = 0.01,
 generate_survival_times <- function(n, X, beta, gamma, Z, distribution, base_params) {
   # Linear predictor
   lp <- as.numeric(X %*% beta + gamma * Z)
-
+  
   if (distribution == "weibull") {
     # Ensure valid parameters
     if (base_params$shape <= 0 || base_params$lambda <= 0) {
       stop(sprintf("Invalid Weibull parameters: shape=%.4f, lambda=%.4f",
                    base_params$shape, base_params$lambda))
     }
-
+    
     # Generate from Weibull with covariates
+    # CORRECTED: R's rweibull uses scale = 1/lambda for the parameterization
+    # So we need to adjust our formula
     U <- runif(n)
-    # T = (-log(U) / (lambda * exp(lp)))^(1/shape)
-    T <- (-log(U) / (base_params$lambda * exp(lp)))^(1/base_params$shape)
-
+    
+    # For Weibull with shape k and rate lambda:
+    # CDF: F(t) = 1 - exp(-(lambda * t)^k)
+    # Inverse CDF: T = (1/lambda) * (-log(1-U))^(1/k)
+    # With covariates (proportional hazards):
+    # T = (1/(lambda * exp(lp))) * (-log(U))^(1/shape)
+    
+    # However, the issue is that we're using lambda as a rate parameter
+    # Let's use scale parameterization to match R's rweibull
+    scale <- 1 / (base_params$lambda * exp(lp))
+    T <- scale * (-log(U))^(1/base_params$shape)
+    
   } else if (distribution == "lognormal") {
     # Generate from log-normal with covariates
     # log(T) ~ N(mu - lp, sigma^2)
@@ -642,12 +653,13 @@ generate_survival_times <- function(n, X, beta, gamma, Z, distribution, base_par
   } else {
     stop("Unknown distribution")
   }
-
+  
   # Ensure positive survival times
   T <- pmax(T, 0.001)
-
+  
   return(as.numeric(T))
 }
+
 
 #' Calibrate baseline distribution parameters
 calibrate_base_params <- function(distribution, median_surv, surv_target, target_time = 48) {
@@ -961,48 +973,97 @@ calculate_maic_weights <- function(X_internal, X_external_means, max_weight = 10
 calculate_mew_weights <- function(X_internal, X_external_means, max_weight = 100) {
   n <- nrow(X_internal)
   p <- ncol(X_internal)
-
-  # Construct constraint matrix
-  # A = [1_n | X] for constraints on sum and means
+  
+  # Input validation
+  if (n == 0 || p == 0) {
+    warning("MEW: Empty input, returning uniform weights")
+    return(rep(1, max(n, 1)))
+  }
+  
+  if (length(X_external_means) != p) {
+    stop("MEW: Dimension mismatch between X_internal and X_external_means")
+  }
+  
+  # Check for any NA/Inf in inputs
+  if (any(is.na(X_internal)) || any(is.infinite(X_internal))) {
+    warning("MEW: NA or Inf in X_internal, returning uniform weights")
+    return(rep(1, n))
+  }
+  
+  if (any(is.na(X_external_means)) || any(is.infinite(X_external_means))) {
+    warning("MEW: NA or Inf in X_external_means, returning uniform weights")
+    return(rep(1, n))
+  }
+  
+  # Construct constraint matrix A = [1_n | X]
   A <- cbind(rep(1, n), X_internal)
-
-  # Right-hand side of constraints
-  # b = [n, n×μ_external] for sum=n and means=μ_external
+  
+  # Right-hand side b = [n, n×μ_external]
   b <- c(n, n * X_external_means)
-
-  # Compute A'A for closed-form solution
-  AtA <- t(A) %*% A
-
-  # Check for near-singularity and add regularization if needed
-  # This prevents numerical instability
-  if (det(AtA) < 1e-10 || rcond(AtA) < 1e-10) {
-    # Add small ridge penalty for numerical stability
-    # Manuscript: "regularization parameter ε = 10^-6"
-    AtA <- AtA + diag(1e-6, ncol(AtA))
-  }
-
-  # Closed-form solution for MEW
-  # Manuscript: w = A(A'A)^(-1)b
+  
+  # Try to solve the optimization problem
   weights <- tryCatch({
-    A %*% solve(AtA) %*% b
+    # Compute A'A
+    AtA <- t(A) %*% A
+    
+    # Check condition number
+    cond_num <- kappa(AtA)
+    
+    if (cond_num > 1e12) {
+      warning(sprintf("MEW: Very ill-conditioned (kappa=%.2e), using fallback", cond_num))
+      return(NULL)
+    }
+    
+    # Add regularization if needed
+    if (cond_num > 1e8) {
+      reg_param <- 1e-6 * mean(diag(AtA))
+      AtA <- AtA + diag(reg_param, ncol(AtA))
+    }
+    
+    # Solve for weights: w = A(A'A)^(-1)b
+    w <- as.numeric(A %*% solve(AtA) %*% b)
+    
+    # Check for NA/Inf in solution
+    if (any(is.na(w)) || any(is.infinite(w))) {
+      warning("MEW: NA or Inf in solution, using fallback")
+      return(NULL)
+    }
+    
+    w
+    
   }, error = function(e) {
-    # Use generalized inverse if regular inverse fails
-    A %*% MASS::ginv(AtA) %*% b
+    warning(sprintf("MEW: Optimization failed (%s), using fallback", e$message))
+    return(NULL)
   })
-
-  weights <- as.numeric(weights)
-
-  # Ensure non-negative weights
-  weights <- pmax(weights, 0)
-
-  # Handle degenerate case
-  if (sum(weights) == 0) {
-    weights <- rep(1, n)
+  
+  # If optimization failed, use uniform weights
+  if (is.null(weights)) {
+    return(rep(1, n))
   }
-
+  
+  # Handle non-positive weights
+  nonpos_count <- sum(weights <= 0)
+  if (nonpos_count > 0) {
+    nonpos_prop <- nonpos_count / n
+    
+    # If too many negative weights, MEW is unreliable
+    if (nonpos_prop > 0.5) {
+      warning(sprintf("MEW: %.1f%% non-positive weights, using uniform", 100*nonpos_prop))
+      return(rep(1, n))
+    }
+  }
+  # Otherwise truncate at small positive value
+  weights <- pmax(weights, 0.00001)
+  
   # Cap extreme weights
   weights <- pmin(weights, max_weight)
-
+  
+  # Final check - if all weights are essentially the same, something went wrong
+  if (sd(weights) / mean(weights) < 0.001) {
+    warning("MEW: Weights have no variation, using uniform")
+    return(rep(1, n))
+  }
+  
   return(weights)
 }
 
@@ -1436,6 +1497,7 @@ run_single_simulation_with_params <- function(params, sim_params) {
   })
 
   # MEW weights (maximum ESS)
+  browser()
   mew_weights <- tryCatch({
     calculate_mew_weights(X_internal_for_weights, X_external_means, max_weight)
   }, error = function(e) {
@@ -1722,7 +1784,7 @@ run_simulation_study <- function(sim_params, save_intermediate = TRUE,
 
     beta <- calibrate_beta(combo$event_rate, distribution = combo$distribution,
                            base_params = base_params, dropout_rate = combo$dropout_rate,
-                           max_followup = sim_params$max_followup)
+                           max_followup = sim_params$max_followup, method = "newton-raphson")
 
     gamma <- log(combo$conditional_hr)
 
@@ -2036,20 +2098,73 @@ create_comparison_tables <- function(results) {
 #' Create summary tables
 #'
 #' @description Creates formatted summary tables for reporting
+#' Create summary tables
+#'
+#' @description Creates formatted summary tables for reporting
 create_summary_tables <- function(results, output_format = "latex") {
   cat("\nCreating summary tables...\n")
-
-  # Main results table
-  main_table <- aggregate(
-    cbind(bias, rel_bias, covered_robust, ci_width_robust, ess) ~
-      method + n + weighting_scenario,
-    data = results,
-    FUN = function(x) {
-      c(mean = mean(x, na.rm = TRUE),
-        sd = sd(x, na.rm = TRUE))
+  
+  # First, ensure the required columns exist
+  if (!"bias" %in% names(results)) {
+    if ("hr_est" %in% names(results) && "true_marginal_hr" %in% names(results)) {
+      results$bias <- results$hr_est - results$true_marginal_hr
+      results$rel_bias <- (results$hr_est - results$true_marginal_hr) / results$true_marginal_hr
+    } else {
+      warning("Cannot calculate bias without hr_est and true_marginal_hr columns")
+      return(NULL)
     }
-  )
-
+  }
+  
+  # Create coverage indicators if they don't exist
+  if (!"covered_robust" %in% names(results)) {
+    if (all(c("true_marginal_hr", "ci_robust_lower", "ci_robust_upper") %in% names(results))) {
+      results$covered_robust <- (results$true_marginal_hr >= results$ci_robust_lower) &
+        (results$true_marginal_hr <= results$ci_robust_upper)
+    }
+  }
+  
+  # Calculate CI width if not present
+  if (!"ci_width_robust" %in% names(results)) {
+    if (all(c("ci_robust_lower", "ci_robust_upper") %in% names(results))) {
+      results$ci_width_robust <- results$ci_robust_upper - results$ci_robust_lower
+    }
+  }
+  
+  # Check which columns are available for aggregation
+  available_metrics <- c()
+  if ("bias" %in% names(results)) available_metrics <- c(available_metrics, "bias")
+  if ("rel_bias" %in% names(results)) available_metrics <- c(available_metrics, "rel_bias")
+  if ("covered_robust" %in% names(results)) available_metrics <- c(available_metrics, "covered_robust")
+  if ("ci_width_robust" %in% names(results)) available_metrics <- c(available_metrics, "ci_width_robust")
+  if ("ess" %in% names(results)) available_metrics <- c(available_metrics, "ess")
+  
+  if (length(available_metrics) == 0) {
+    warning("No metrics available for summary table")
+    return(NULL)
+  }
+  
+  # Build formula dynamically based on available columns
+  formula_str <- paste("cbind(", paste(available_metrics, collapse = ", "), ") ~ method + n + weighting_scenario")
+  
+  # Main results table
+  main_table <- tryCatch({
+    aggregate(
+      as.formula(formula_str),
+      data = results,
+      FUN = function(x) {
+        c(mean = mean(x, na.rm = TRUE),
+          sd = sd(x, na.rm = TRUE))
+      }
+    )
+  }, error = function(e) {
+    warning(paste("Error in aggregation:", e$message))
+    return(NULL)
+  })
+  
+  if (is.null(main_table)) {
+    return(NULL)
+  }
+  
   # Format for output
   if (output_format == "latex") {
     # Format as LaTeX table
@@ -2057,27 +2172,52 @@ create_summary_tables <- function(results, output_format = "latex") {
     cat("\\caption{Performance metrics by method and sample size}\n")
     cat("\\begin{tabular}{llrrrrrr}\n")
     cat("\\toprule\n")
-    cat("Method & n & Bias & Rel. Bias & Coverage & CI Width & ESS \\\\\n")
+    cat("Method & n & ")
+    
+    # Add column headers based on what's available
+    col_headers <- c()
+    if ("bias" %in% available_metrics) col_headers <- c(col_headers, "Bias")
+    if ("rel_bias" %in% available_metrics) col_headers <- c(col_headers, "Rel. Bias")
+    if ("covered_robust" %in% available_metrics) col_headers <- c(col_headers, "Coverage")
+    if ("ci_width_robust" %in% available_metrics) col_headers <- c(col_headers, "CI Width")
+    if ("ess" %in% available_metrics) col_headers <- c(col_headers, "ESS")
+    
+    cat(paste(col_headers, collapse = " & "), " \\\\\n")
     cat("\\midrule\n")
-
+    
     for (i in 1:nrow(main_table)) {
       row <- main_table[i, ]
-      cat(sprintf("%s & %d & %.3f (%.3f) & %.3f (%.3f) & %.3f & %.3f (%.3f) & %.1f (%.1f) \\\\\n",
-                  row$method, row$n,
-                  row$bias[1], row$bias[2],
-                  row$rel_bias[1], row$rel_bias[2],
-                  row$covered_robust[1],
-                  row$ci_width_robust[1], row$ci_width_robust[2],
-                  row$ess[1], row$ess[2]))
+      cat(sprintf("%s & %d & ", row$method, row$n))
+      
+      # Add values based on what's available
+      values <- c()
+      if ("bias" %in% available_metrics) {
+        values <- c(values, sprintf("%.3f (%.3f)", row$bias[1], row$bias[2]))
+      }
+      if ("rel_bias" %in% available_metrics) {
+        values <- c(values, sprintf("%.3f (%.3f)", row$rel_bias[1], row$rel_bias[2]))
+      }
+      if ("covered_robust" %in% available_metrics) {
+        values <- c(values, sprintf("%.3f", row$covered_robust[1]))
+      }
+      if ("ci_width_robust" %in% available_metrics) {
+        values <- c(values, sprintf("%.3f (%.3f)", row$ci_width_robust[1], row$ci_width_robust[2]))
+      }
+      if ("ess" %in% available_metrics) {
+        values <- c(values, sprintf("%.1f (%.1f)", row$ess[1], row$ess[2]))
+      }
+      
+      cat(paste(values, collapse = " & "), " \\\\\n")
     }
-
+    
     cat("\\bottomrule\n")
     cat("\\end{tabular}\n")
     cat("\\end{table}\n")
   }
-
+  
   return(main_table)
 }
+
 
 # =============================================================================
 # ANALYSIS HELPER FUNCTIONS
